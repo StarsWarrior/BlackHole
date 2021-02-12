@@ -2,11 +2,11 @@
 Awesome Music Player made with Flutter
 
 <h3>Features</h3>
-Music Search
-Streaming (320kbps)
-Top Playlists
-Local and Global Top 200 songs
-Download Support (320kbps with ID3 tags)
+Music Search<br>
+Streaming (320kbps)<br>
+Top Playlists<br>
+Local and Global Top 200 songs<br>
+Download Support (320kbps with ID3 tags)<br>
 
 
 
