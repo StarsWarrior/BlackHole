@@ -31,7 +31,7 @@ dependencies:
   audio_session: ^0.1.0
   salomon_bottom_bar: ^3.0.0
   url_launcher: ^6.0.3
-  permission_handler: ^7.0.0
+  permission_handler: ^7.1.0
   cached_network_image: ^3.0.0
   material_design_icons_flutter: ^4.0.5955
   share: ^2.0.1
@@ -43,7 +43,9 @@ dependencies:
   firebase_core: ^1.1.0
   firebase_database: ^6.1.2
   firebase_analytics: ^8.0.2
-
+  miniplayer:
+    git:
+      url: https://github.com/Sangwan5688/miniplayer.git
 
 
 
