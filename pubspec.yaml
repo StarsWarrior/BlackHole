@@ -23,26 +23,26 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  http: ^0.13.1
+  http: ^0.13.2
   des_plugin: ^0.0.3
   csv: ^5.0.0
-  just_audio: ^0.7.3
+  just_audio: ^0.7.4
   audio_service: ^0.17.0
   audio_session: ^0.1.0
   salomon_bottom_bar: ^3.0.0
-  url_launcher: ^6.0.2
-  permission_handler: ^6.1.1
+  url_launcher: ^6.0.3
+  permission_handler: ^7.0.0
   cached_network_image: ^3.0.0
   material_design_icons_flutter: ^4.0.5955
   share: ^2.0.1
   ext_storage: ^1.0.3
-  audiotagger: ^2.1.0
-  hive: ^2.0.2
+  audiotagger: ^2.2.0
+  hive: ^2.0.4
   hive_flutter: ^1.0.0
   path_provider: ^2.0.1
-  firebase_core: ^1.0.3
+  firebase_core: ^1.1.0
   firebase_database: ^6.1.2
-  firebase_analytics: ^7.1.1
+  firebase_analytics: ^8.0.2
 
 
 

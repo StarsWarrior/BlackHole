@@ -13,7 +13,7 @@ class SettingPage extends StatefulWidget {
 }
 
 class _SettingPageState extends State<SettingPage> {
-  double appVersion = 1.3;
+  double appVersion = 1.4;
   String downloadPath = '/storage/emulated/0/Music/';
   String streamingQuality = Hive.box('settings').get('streamingQuality');
   String downloadQuality = Hive.box('settings').get('downloadQuality');

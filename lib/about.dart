@@ -7,7 +7,7 @@ class AboutScreen extends StatefulWidget {
 }
 
 class _AboutScreenState extends State<AboutScreen> {
-  double appVersion = 1.3;
+  double appVersion = 1.4;
   @override
   Widget build(BuildContext context) {
     return Container(

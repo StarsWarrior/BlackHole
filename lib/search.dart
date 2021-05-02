@@ -92,140 +92,93 @@ class _SearchPageState extends State<SearchPage> {
                 ],
         ),
       ),
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        appBar: AppBar(
-          title: Text('Results'),
-          centerTitle: true,
-          backgroundColor: Colors.transparent,
-          textTheme: Theme.of(context).textTheme,
-          elevation: 0,
-          iconTheme: Theme.of(context).iconTheme,
-          toolbarHeight: 40,
-        ),
-        body: Stack(
-          children: [
-            Center(
-              child: Container(
-                height: MediaQuery.of(context).size.width / 6,
-                width: MediaQuery.of(context).size.width / 6,
-                child: !status
-                    ? CircularProgressIndicator(
-                        strokeWidth: 5,
-                      )
-                    : SizedBox(),
+      child: Column(
+        children: [
+          Expanded(
+            child: Scaffold(
+              backgroundColor: Colors.transparent,
+              appBar: AppBar(
+                title: Text('Results'),
+                centerTitle: true,
+                backgroundColor: Colors.transparent,
+                textTheme: Theme.of(context).textTheme,
+                elevation: 0,
+                iconTheme: Theme.of(context).iconTheme,
+                toolbarHeight: 40,
               ),
-            ),
-            SingleChildScrollView(
-              child: Column(
-                children: [
-                  ListView.builder(
-                    itemCount: searchedList.length,
-                    physics: NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    padding: EdgeInsets.fromLTRB(5, 10, 5, 0),
-                    itemBuilder: (context, index) {
-                      return Padding(
-                        padding: const EdgeInsets.fromLTRB(0, 7, 7, 5),
-                        child: ListTile(
-                          title: Text(
-                            '${searchedList[index]["title"].split("(")[0]}',
-                            style: TextStyle(fontWeight: FontWeight.w500),
-                          ),
-                          leading: Hero(
-                            tag: index,
-                            child: Card(
-                              elevation: 8,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(7.0)),
-                              clipBehavior: Clip.antiAlias,
-                              child: CachedNetworkImage(
-                                imageUrl:
-                                    '${searchedList[index]["image"].replaceAll('http:', 'https:')}',
-                                placeholder: (context, url) => Image(
-                                  image: AssetImage('assets/cover.jpg'),
+              body: !status
+                  ? Container(
+                      child: Center(
+                        child: Container(
+                            height: MediaQuery.of(context).size.width / 6,
+                            width: MediaQuery.of(context).size.width / 6,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 5,
+                            )),
+                      ),
+                    )
+                  : ListView.builder(
+                      itemCount: searchedList.length,
+                      physics: NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      padding: EdgeInsets.fromLTRB(5, 10, 5, 0),
+                      itemBuilder: (context, index) {
+                        return Padding(
+                          padding: const EdgeInsets.fromLTRB(0, 7, 7, 5),
+                          child: ListTile(
+                            title: Text(
+                              '${searchedList[index]["title"].split("(")[0]}',
+                              style: TextStyle(fontWeight: FontWeight.w500),
+                            ),
+                            leading: Hero(
+                              tag: index,
+                              child: Card(
+                                elevation: 8,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(7.0)),
+                                clipBehavior: Clip.antiAlias,
+                                child: CachedNetworkImage(
+                                  imageUrl:
+                                      '${searchedList[index]["image"].replaceAll('http:', 'https:')}',
+                                  placeholder: (context, url) => Image(
+                                    image: AssetImage('assets/cover.jpg'),
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                          subtitle: Text(
-                              '${searchedList[index]["more_info"]["primary_artists"].split("(")[0]}'),
-                          onTap: () {
-                            // print(searchedList);
-                            Navigator.push(
+                            subtitle: Text(
+                                '${searchedList[index]["more_info"]["primary_artists"].split("(")[0]}'),
+                            onTap: () {
+                              // print(searchedList);
+                              Navigator.push(
                                 context,
                                 PageRouteBuilder(
-                                    opaque: false, // set to false
-                                    pageBuilder: (_, __, ___) =>
-                                        PlayScreen(data: {
-                                          'response': searchedList,
-                                          'index': index,
-                                          'offline': false,
-                                        })));
+                                  opaque: false, // set to false
+                                  pageBuilder: (_, __, ___) => PlayScreen(
+                                    data: {
+                                      'response': searchedList,
+                                      'index': index,
+                                      'offline': false,
+                                    },
+                                    fromMiniplayer: false,
+                                  ),
+                                ),
+                              );
 
-                            // Navigator.pushNamed(context, '/play', arguments: {
-                            //   'response': searchedList,
-                            //   'index': index,
-                            //   'offline': false,
-                            // });
-                          },
-                        ),
-                      );
-                    },
-                  ),
-                  // searchedArtist.length == 0
-                  //     ? SizedBox()
-                  //     : Row(
-                  //         children: [
-                  //           Padding(
-                  //             padding: EdgeInsets.fromLTRB(25, 10, 0, 0),
-                  //             child: Text('Artists'),
-                  //           ),
-                  //         ],
-                  //       ),
-                  // searchedArtist.length == 0
-                  //     ? SizedBox()
-                  //     : ListView.builder(
-                  //         itemCount: searchedArtist.length,
-                  //         shrinkWrap: true,
-                  //         physics: NeverScrollableScrollPhysics(),
-                  //         padding: EdgeInsets.fromLTRB(5, 10, 5, 0),
-                  //         itemBuilder: (context, index) {
-                  //           return Padding(
-                  //             padding: const EdgeInsets.fromLTRB(0, 7, 7, 5),
-                  //             child: ListTile(
-                  //               title: Text(
-                  //                 '${searchedArtist[index]["title"].split("(")[0]}',
-                  //                 style: TextStyle(fontWeight: FontWeight.w500),
-                  //               ),
-                  //               leading: Card(
-                  //                 elevation: 8,
-                  //                 shape: RoundedRectangleBorder(
-                  //                     borderRadius: BorderRadius.circular(7.0)),
-                  //                 clipBehavior: Clip.antiAlias,
-                  //                 child: CachedNetworkImage(
-                  //                   imageUrl:
-                  //                       '${searchedArtist[index]["image"].replaceAll('http:', 'https:')}',
-                  //                   placeholder: (context, url) => Image(
-                  //                     image: AssetImage('assets/cover.jpg'),
-                  //                   ),
-                  //                 ),
-                  //               ),
-                  //               subtitle: Text(
-                  //                   '${searchedArtist[index]["description"].split("(")[0]}'),
-                  //               onTap: () {
-                  //                 // print(index);
-                  //               },
-                  //             ),
-                  //           );
-                  //         },
-                  //       ),
-                ],
-              ),
+                              // Navigator.pushNamed(context, '/play', arguments: {
+                              //   'response': searchedList,
+                              //   'index': index,
+                              //   'offline': false,
+                              // });
+                            },
+                          ),
+                        );
+                      },
+                    ),
             ),
-            MiniPlayer()
-          ],
-        ),
+          ),
+          MiniPlayer(),
+        ],
       ),
     );
   }

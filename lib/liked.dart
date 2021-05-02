@@ -53,21 +53,21 @@ class _LikedSongsState extends State<LikedSongs> {
                 ],
         ),
       ),
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        appBar: AppBar(
-          title: Text(widget.playlistName[0].toUpperCase() +
-              widget.playlistName.substring(1)),
-          centerTitle: true,
-          backgroundColor: Theme.of(context).brightness == Brightness.dark
-              ? Colors.transparent
-              : Theme.of(context).accentColor,
-          elevation: 0,
-        ),
-        body: Column(
-          children: [
-            Expanded(
-              child: ListView(
+      child: Column(
+        children: [
+          Expanded(
+            child: Scaffold(
+              backgroundColor: Colors.transparent,
+              appBar: AppBar(
+                title: Text(widget.playlistName[0].toUpperCase() +
+                    widget.playlistName.substring(1)),
+                centerTitle: true,
+                backgroundColor: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.transparent
+                    : Theme.of(context).accentColor,
+                elevation: 0,
+              ),
+              body: ListView(
                 padding: EdgeInsets.only(top: 10, bottom: 10),
                 // mainAxisSize: MainAxisSize.max,
                 children: [
@@ -130,14 +130,19 @@ class _LikedSongsState extends State<LikedSongs> {
                               ),
                             ),
                             onTap: () {
-                              Navigator.of(context).push(PageRouteBuilder(
+                              Navigator.of(context).push(
+                                PageRouteBuilder(
                                   opaque: false, // set to false
-                                  pageBuilder: (_, __, ___) =>
-                                      PlayScreen(data: {
-                                        'index': index,
-                                        'response': likedBox.values.toList(),
-                                        'offline': false,
-                                      })));
+                                  pageBuilder: (_, __, ___) => PlayScreen(
+                                    data: {
+                                      'index': index,
+                                      'response': likedBox.values.toList(),
+                                      'offline': false,
+                                    },
+                                    fromMiniplayer: false,
+                                  ),
+                                ),
+                              );
 
                               // Navigator.pushNamed(context, '/play', arguments: {
                               //   'index': index,
@@ -179,9 +184,9 @@ class _LikedSongsState extends State<LikedSongs> {
                 ],
               ),
             ),
-            MiniPlayer()
-          ],
-        ),
+          ),
+          MiniPlayer(),
+        ],
       ),
     );
   }

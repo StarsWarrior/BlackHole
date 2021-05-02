@@ -11,7 +11,7 @@ class AuthScreen extends StatefulWidget {
 }
 
 class _AuthScreenState extends State<AuthScreen> {
-  double appVersion = 1.3;
+  double appVersion = 1.4;
   String gender = "male";
   static FirebaseAnalytics analytics = FirebaseAnalytics();
   final dbRef = FirebaseDatabase.instance.reference().child("Users");
@@ -236,7 +236,7 @@ class _AuthScreenState extends State<AuthScreen> {
                                     Hive.box('settings').put('name', value);
                                     _sendAnalytics(value, gender);
                                   }
-                                  Navigator.pushNamed(context, '/');
+                                  Navigator.popAndPushNamed(context, '/');
                                 }),
                           ),
                         ),

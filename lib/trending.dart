@@ -139,7 +139,7 @@ class _TrendingPageState extends State<TrendingPage> {
           ),
         ),
         ListView.builder(
-            physics: NeverScrollableScrollPhysics(),
+            physics: BouncingScrollPhysics(), //NeverScrollableScrollPhysics(),
             shrinkWrap: true,
             padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
             scrollDirection: Axis.vertical,
@@ -227,6 +227,7 @@ class _TrendingPageState extends State<TrendingPage> {
                                                     'index': index,
                                                     'offline': false,
                                                   },
+                                                  fromMiniplayer: false,
                                                 )));
                                   },
                                 );
@@ -308,18 +309,20 @@ class _TrendingPageState extends State<TrendingPage> {
                                 ),
                                 onTap: () {
                                   Navigator.push(
-                                      context,
-                                      PageRouteBuilder(
-                                          opaque: false,
-                                          pageBuilder: (_, __, ___) =>
-                                              PlayScreen(
-                                                data: {
-                                                  'response': playlists[idx]
-                                                      ["songsList"],
-                                                  'index': index,
-                                                  'offline': false,
-                                                },
-                                              )));
+                                    context,
+                                    PageRouteBuilder(
+                                      opaque: false,
+                                      pageBuilder: (_, __, ___) => PlayScreen(
+                                        data: {
+                                          'response': playlists[idx]
+                                              ["songsList"],
+                                          'index': index,
+                                          'offline': false,
+                                        },
+                                        fromMiniplayer: false,
+                                      ),
+                                    ),
+                                  );
 
                                   // Navigator.pushNamed(
                                   //   context,
