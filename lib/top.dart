@@ -76,41 +76,80 @@ class _TopPageState extends State<TopPage> {
               ),
             ),
             Expanded(
-              child: ListView.builder(
-                itemCount: items.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    leading: Card(
-                      elevation: 5,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(7.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        ":( ",
+                        style: TextStyle(
+                          fontSize: 100,
+                          color: Theme.of(context).accentColor,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
-                      clipBehavior: Clip.antiAlias,
-                      child: Stack(
+                      Column(
                         children: [
-                          Image(
-                            image: AssetImage('assets/cover.jpg'),
+                          Text(
+                            "ERROR",
+                            style: TextStyle(
+                              fontSize: 60,
+                              color: Theme.of(context).accentColor,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
-                          Padding(
-                            padding: const EdgeInsets.all(3.0),
-                            child: Text(
-                              (index + 1).toString(),
-                              style: TextStyle(color: Colors.white),
+                          Text(
+                            "Service Unavailable",
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ],
                       ),
-                    ),
-                    title: Text('${items[index][1].split("(")[0]}'),
-                    subtitle: Text('${items[index][2].split("(")[0]}'),
-                    onTap: () {
-                      Navigator.pushNamed(context, '/search',
-                          arguments: items[index][1]);
-                    },
-                  );
-                },
+                    ],
+                  ),
+                ],
               ),
             ),
+            //         Expanded(
+            //           child: ListView.builder(
+            //             itemCount: items.length,
+            //             itemBuilder: (context, index) {
+            //               return ListTile(
+            //                 leading: Card(
+            //                   elevation: 5,
+            //                   shape: RoundedRectangleBorder(
+            //                     borderRadius: BorderRadius.circular(7.0),
+            //                   ),
+            //                   clipBehavior: Clip.antiAlias,
+            //                   child: Stack(
+            //                     children: [
+            //                       Image(
+            //                         image: AssetImage('assets/cover.jpg'),
+            //                       ),
+            //                       Padding(
+            //                         padding: const EdgeInsets.all(3.0),
+            //                         child: Text(
+            //                           (index + 1).toString(),
+            //                           style: TextStyle(color: Colors.white),
+            //                         ),
+            //                       ),
+            //                     ],
+            //                   ),
+            //                 ),
+            //                 title: Text('${items[index][1].split("(")[0]}'),
+            //                 subtitle: Text('${items[index][2].split("(")[0]}'),
+            //                 onTap: () {
+            //                   Navigator.pushNamed(context, '/search',
+            // //                       arguments: items[index][1]);
+            //                 },
+            //               );
+            //             },
+            //           ),
+            //         ),
           ],
         ),
       ],
@@ -188,42 +227,81 @@ class _GlobalPageState extends State<GlobalPage> {
               ),
             ),
             Expanded(
-              child: ListView.builder(
-                itemCount: globalItems.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    leading: Card(
-                      elevation: 5,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(7.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        ":( ",
+                        style: TextStyle(
+                          fontSize: 100,
+                          color: Theme.of(context).accentColor,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
-                      clipBehavior: Clip.antiAlias,
-                      child: Stack(
+                      Column(
                         children: [
-                          Image(
-                            image: AssetImage('assets/cover.jpg'),
+                          Text(
+                            "ERROR",
+                            style: TextStyle(
+                              fontSize: 60,
+                              color: Theme.of(context).accentColor,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
-                          Padding(
-                            padding: const EdgeInsets.all(3.0),
-                            child: Text(
-                              (index + 1).toString(),
-                              style: TextStyle(color: Colors.white),
+                          Text(
+                            "Service Unavailable",
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ],
                       ),
-                    ),
-                    title: Text(
-                        '${globalItems[index][1].toString().split("(")[0]}'),
-                    subtitle: Text('${globalItems[index][2].split("(")[0]}'),
-                    onTap: () {
-                      Navigator.pushNamed(context, '/search',
-                          arguments: globalItems[index][1].toString());
-                    },
-                  );
-                },
+                    ],
+                  ),
+                ],
               ),
             ),
+            // Expanded(
+            //   child: ListView.builder(
+            //     itemCount: globalItems.length,
+            //     itemBuilder: (context, index) {
+            //       return ListTile(
+            //         leading: Card(
+            //           elevation: 5,
+            //           shape: RoundedRectangleBorder(
+            //             borderRadius: BorderRadius.circular(7.0),
+            //           ),
+            //           clipBehavior: Clip.antiAlias,
+            //           child: Stack(
+            //             children: [
+            //               Image(
+            //                 image: AssetImage('assets/cover.jpg'),
+            //               ),
+            //               Padding(
+            //                 padding: const EdgeInsets.all(3.0),
+            //                 child: Text(
+            //                   (index + 1).toString(),
+            //                   style: TextStyle(color: Colors.white),
+            //                 ),
+            //               ),
+            //             ],
+            //           ),
+            //         ),
+            //         title: Text(
+            //             '${globalItems[index][1].toString().split("(")[0]}'),
+            //         subtitle: Text('${globalItems[index][2].split("(")[0]}'),
+            //         onTap: () {
+            //           Navigator.pushNamed(context, '/search',
+            //               arguments: globalItems[index][1].toString());
+            //         },
+            //       );
+            //     },
+            //   ),
+            // ),
           ],
         ),
       ],
