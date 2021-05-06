@@ -1,8 +1,10 @@
+import 'dart:io';
 import 'package:blackhole/config.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:blackhole/playlists.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
 import 'about.dart';
 import 'home.dart';
 import 'setting.dart';
@@ -17,7 +19,34 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
-  await Hive.openBox('settings');
+  try {
+    await Hive.openBox('settings');
+  } catch (e) {
+    print('Failed to open Settings Box');
+    print("Error: $e");
+    var dir = await getApplicationDocumentsDirectory();
+    String dirPath = dir.path;
+    String boxName = "settings";
+    File dbFile = File('$dirPath/$boxName.hive');
+    File lockFile = File('$dirPath/$boxName.lock');
+    await dbFile.delete();
+    await lockFile.delete();
+    await Hive.openBox("settings");
+  }
+  try {
+    await Hive.openBox('recent');
+  } catch (e) {
+    print('Failed to open Recent Box');
+    print("Error: $e");
+    var dir = await getApplicationDocumentsDirectory();
+    String dirPath = dir.path;
+    String boxName = "recent";
+    File dbFile = File('$dirPath/$boxName.hive');
+    File lockFile = File('$dirPath/$boxName.lock');
+    await dbFile.delete();
+    await lockFile.delete();
+    await Hive.openBox("recent");
+  }
   try {
     await Firebase.initializeApp();
   } catch (e) {

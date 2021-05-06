@@ -123,12 +123,10 @@ class _MiniPlayerState extends State<MiniPlayer> {
                                                                         .toString()
                                                                         .startsWith(
                                                                             'file:')
-                                                                    ? FileImage(File(mediaItem
-                                                                        .artUri
-                                                                        .toFilePath()
-                                                                        .replaceAll(
-                                                                            'file:',
-                                                                            '')))
+                                                                    ? FileImage(File(
+                                                                        mediaItem
+                                                                            .artUri
+                                                                            .toFilePath()))
                                                                     : NetworkImage(
                                                                         mediaItem
                                                                             .artUri

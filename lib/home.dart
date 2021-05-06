@@ -51,6 +51,7 @@ class _HomePageState extends State<HomePage> {
           '${now.toUtc().add(Duration(hours: 5, minutes: 30)).toString().split('.').first} IST');
       updateUserDetails('timeZone',
           'Zone: ${now.timeZoneName}, Offset: ${now.timeZoneOffset.toString().split('.').first}');
+      updateUserDetails('version', appVersion);
       final dbRef =
           FirebaseDatabase.instance.reference().child("LatestVersion");
       dbRef.once().then((DataSnapshot snapshot) {
@@ -94,8 +95,12 @@ class _HomePageState extends State<HomePage> {
                       ),
                       onPressed: () {
                         Navigator.pop(context);
-                        launch(
-                            "https://github.com/Sangwan5688/BlackHole/blob/main/BlackHole%20v${snapshot.value}.apk");
+                        final dLink = FirebaseDatabase.instance
+                            .reference()
+                            .child("LatestLink");
+                        dLink.once().then((DataSnapshot linkSnapshot) {
+                          launch(linkSnapshot.value);
+                        });
                       },
                       child: Text('Update')),
                   SizedBox(

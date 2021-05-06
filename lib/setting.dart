@@ -906,8 +906,14 @@ class _SettingPageState extends State<SettingPage> {
                                           ),
                                           onPressed: () {
                                             Navigator.pop(context);
-                                            launch(
-                                                "https://github.com/Sangwan5688/BlackHole/blob/main/BlackHole%20v${snapshot.value}.apk");
+                                            final dLink = FirebaseDatabase
+                                                .instance
+                                                .reference()
+                                                .child("LatestLink");
+                                            dLink.once().then(
+                                                (DataSnapshot linkSnapshot) {
+                                              launch(linkSnapshot.value);
+                                            });
                                           },
                                           child: Text('Update')),
                                       SizedBox(

@@ -106,7 +106,6 @@ class _PlayScreenState extends State<PlayScreen> {
   @override
   Widget build(BuildContext context) {
     BuildContext scaffoldContext;
-    // Map data = ModalRoute.of(context).settings.arguments;
     Map data = widget.data;
     if (response == data['response'] && globalIndex == data['index']) {
       same = true;
@@ -170,9 +169,8 @@ class _PlayScreenState extends State<PlayScreen> {
           title: playTitle != null ? playTitle.split("(")[0] : 'Unknown',
           artist: playArtist ?? 'Unknown',
           artUri: file == null
-              ? Uri.parse(
-                  'file:${(await getTemporaryDirectory()).path}/cover.jpg')
-              : Uri.parse('file:${file.path}'),
+              ? Uri.file('${(await getTemporaryDirectory()).path}/cover.jpg')
+              : Uri.file('${file.path}'),
           extras: {'URL': response['id']});
       globalQueue.add(tempDict);
       setState(() {});
@@ -353,10 +351,7 @@ class _PlayScreenState extends State<PlayScreen> {
                                                             globalQueue[
                                                                     globalIndex]
                                                                 .artUri
-                                                                .toFilePath()
-                                                                .replaceAll(
-                                                                    'file:',
-                                                                    ''),
+                                                                .toFilePath(),
                                                           )))
                                                       : Image(
                                                           fit: BoxFit.cover,
@@ -704,8 +699,6 @@ class _PlayScreenState extends State<PlayScreen> {
                                                 Hive.box('settings');
                                             var playlistNames =
                                                 settingsBox.get('playlists');
-                                            // print(
-                                            //     'AT START: $playlistNames');
 
                                             return Container(
                                               margin: EdgeInsets.fromLTRB(
@@ -1022,10 +1015,7 @@ class _PlayScreenState extends State<PlayScreen> {
                                                                 globalQueue[
                                                                         globalIndex]
                                                                     .artUri
-                                                                    .toFilePath()
-                                                                    .replaceAll(
-                                                                        'file:',
-                                                                        ''),
+                                                                    .toFilePath(),
                                                               ))
                                                             : NetworkImage(
                                                                 globalQueue[
@@ -1043,11 +1033,7 @@ class _PlayScreenState extends State<PlayScreen> {
                                                     image: offline
                                                         ? FileImage(File(
                                                             mediaItem.artUri
-                                                                .toFilePath()
-                                                                .replaceAll(
-                                                                    'file:',
-                                                                    ''),
-                                                          ))
+                                                                .toFilePath()))
                                                         : NetworkImage(mediaItem
                                                             .artUri
                                                             .toString()),
@@ -1587,7 +1573,7 @@ class _PlayScreenState extends State<PlayScreen> {
     String filepath;
     String filepath2;
     List<int> _bytes = [];
-    var status = await Permission.storage.status;
+    PermissionStatus status = await Permission.storage.status;
     if (status.isPermanentlyDenied || status.isDenied) {
       // code of read or write file in external storage (SD card)
       // You can request multiple permissions at once.
@@ -1604,17 +1590,34 @@ class _PlayScreenState extends State<PlayScreen> {
     }
     final filename = title + " - " + artist + ".m4a";
 
-    final artname = title + "_artwork.jpg";
+    final artname = title + "artwork.jpg";
 
     String dlPath = await ExtStorage.getExternalStoragePublicDirectory(
         ExtStorage.DIRECTORY_MUSIC);
-    await File(dlPath + "/" + filename)
-        .create(recursive: true)
-        .then((value) => filepath = value.path);
-    await File(dlPath + "/" + artname)
-        .create(recursive: true)
-        .then((value) => filepath2 = value.path);
+    Directory appDir = await getApplicationDocumentsDirectory();
+    String appPath = appDir.path;
+    try {
+      await File(dlPath + "/" + filename)
+          .create(recursive: true)
+          .then((value) => filepath = value.path);
+      print("created audio file");
+      await File(appPath + "/" + artname)
+          .create(recursive: true)
+          .then((value) => filepath2 = value.path);
+    } catch (e) {
+      await [
+        Permission.manageExternalStorage,
+      ].request();
+      await File(dlPath + "/" + filename)
+          .create(recursive: true)
+          .then((value) => filepath = value.path);
+      print("created audio file");
+      await File(appPath + "/" + artname)
+          .create(recursive: true)
+          .then((value) => filepath2 = value.path);
+    }
     debugPrint('Audio path $filepath');
+    debugPrint('Image path $filepath2');
     ScaffoldMessenger.of(scaffoldContext).showSnackBar(
       SnackBar(
         elevation: 6,
@@ -1897,14 +1900,41 @@ class AudioPlayerTask extends BackgroundAudioTask {
     try {
       await Hive.initFlutter();
     } catch (e) {}
-    await Hive.openBox('settings');
+    try {
+      await Hive.openBox('settings');
+    } catch (e) {
+      print('Failed to open Settings Box');
+      print("Error: $e");
+      var dir = await getApplicationDocumentsDirectory();
+      String dirPath = dir.path;
+      String boxName = "settings";
+      File dbFile = File('$dirPath/$boxName.hive');
+      File lockFile = File('$dirPath/$boxName.lock');
+      await dbFile.delete();
+      await lockFile.delete();
+      await Hive.openBox("settings");
+    }
+    try {
+      await Hive.openBox('recent');
+    } catch (e) {
+      print('Failed to open Recent Box');
+      print("Error: $e");
+      var dir = await getApplicationDocumentsDirectory();
+      String dirPath = dir.path;
+      String boxName = "recent";
+      File dbFile = File('$dirPath/$boxName.hive');
+      File lockFile = File('$dirPath/$boxName.lock');
+      await dbFile.delete();
+      await lockFile.delete();
+      await Hive.openBox("recent");
+    }
   }
 
   addRecentlyPlayed(mediaitem) async {
     await initiateBox();
     var recentList;
     try {
-      recentList = await Hive.box('settings').get('recentlyPlayed').toList();
+      recentList = await Hive.box('recent').get('recentlyPlayed').toList();
     } catch (e) {
       recentList = null;
     }
@@ -1921,7 +1951,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
     if (recentList.length > 30) {
       recentList = recentList.sublist(0, 30);
     }
-    Hive.box('settings').put('recentlyPlayed', recentList);
+    Hive.box('recent').put('recentlyPlayed', recentList);
     final userID = Hive.box('settings').get('userID');
     final dbRef = FirebaseDatabase.instance.reference().child("Users");
     dbRef.child(userID).update({"recentlyPlayed": recentList});
@@ -2052,8 +2082,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
     try {
       if (queue[index].artUri == null) {
         File f = await getImageFileFromAssets();
-        queue[index] =
-            queue[index].copyWith(artUri: Uri.parse('file:${f.path}'));
+        queue[index] = queue[index].copyWith(artUri: Uri.file('${f.path}'));
       }
       if (AudioServiceBackground.mediaItem != queue[index]) {
         if (offline) {

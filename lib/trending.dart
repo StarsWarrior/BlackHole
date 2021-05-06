@@ -23,7 +23,7 @@ class TrendingPage extends StatefulWidget {
 }
 
 class _TrendingPageState extends State<TrendingPage> {
-  var recentList = Hive.box('settings').get('recentlyPlayed');
+  var recentList = Hive.box('recent').get('recentlyPlayed');
   List preferredLanguage =
       Hive.box('settings').get('preferredLanguage') ?? ['Hindi'];
 
