@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1002304014127",
+    "project_id": "blackhole-6e784",
+    "storage_bucket": "blackhole-6e784.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1002304014127:android:57123ba8f2576d1a8843da",
+        "android_client_info": {
+          "package_name": "com.shadow.blackhole"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1002304014127-jd5rb2p1o5pvvfqqi34m7gm9tqsuo8mk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDtk-IsyvIkDcARTcqeo215OttCqgwiET8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1002304014127-jd5rb2p1o5pvvfqqi34m7gm9tqsuo8mk.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
