@@ -25,7 +25,6 @@ dependencies:
     sdk: flutter
   http: ^0.13.2
   des_plugin: ^0.0.3
-  csv: ^5.0.0
   just_audio: ^0.7.4
   audio_service: ^0.17.0
   audio_session: ^0.1.0
@@ -43,6 +42,7 @@ dependencies:
   firebase_core: ^1.1.0
   firebase_database: ^6.1.2
   firebase_analytics: ^8.0.2
+  web_scraper: ^0.1.4
   miniplayer:
     git:
       url: https://github.com/Sangwan5688/miniplayer.git

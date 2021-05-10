@@ -23,6 +23,7 @@ class _HomePageState extends State<HomePage> {
   double appVersion = 1.4;
   bool checked = false;
   bool update = false;
+  bool status = false;
   // final FirebaseAnalytics _analytics = FirebaseAnalytics();
   String capitalize(msg) {
     return "${msg[0].toUpperCase()}${msg.substring(1)}";
@@ -52,6 +53,11 @@ class _HomePageState extends State<HomePage> {
       updateUserDetails('timeZone',
           'Zone: ${now.timeZoneName}, Offset: ${now.timeZoneOffset.toString().split('.').first}');
       updateUserDetails('version', appVersion);
+      final tpStatus = FirebaseDatabase.instance.reference().child("TopStatus");
+      tpStatus.once().then((DataSnapshot snapshot) {
+        status = snapshot.value;
+        status ??= true;
+      });
       final dbRef =
           FirebaseDatabase.instance.reference().child("LatestVersion");
       dbRef.once().then((DataSnapshot snapshot) {
@@ -700,8 +706,14 @@ class _HomePageState extends State<HomePage> {
                           ),
                         ],
                       ),
-                      TopPage(),
-                      GlobalPage(),
+                      TopPage(
+                        region: 'in',
+                        status: status,
+                      ),
+                      TopPage(
+                        region: 'global',
+                        status: status,
+                      ),
                       LibraryPage(),
                     ],
                   ),

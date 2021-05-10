@@ -98,33 +98,56 @@ class _AboutScreenState extends State<AboutScreen> {
                 ),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(20.0, 20.0, 20.0, 0.0),
-                  child: Text(
-                    'Nobody wants to pay for listening to songs, but those long ads ruin all your mood. And even after watching all those irritating ads, still being limited to those bad quality songs with no downloading support sucks, right? So, I made this app for everyone out there who wants to listen to those millions of songs available out there without paying a single penny and ya most important thing, “without Ads”. If you appreciate my work and want to help by contributing something you can click on the button below. Any help will be appreciated : )',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 16),
+                  child: Column(
+                    children: [
+                      Text(
+                        'This is an open-source project and can be found on',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 16),
+                      ),
+                      TextButton(
+                          child: Container(
+                            width: MediaQuery.of(context).size.width / 4,
+                            child: Image(
+                              image: AssetImage('assets/GitHub_Logo_White.png'),
+                            ),
+                          ),
+                          onPressed: () {
+                            launch("https://github.com/Sangwan5688/BlackHole");
+                          }),
+                      Text(
+                        "If you liked my work\nshow some ♥ and ⭐ the repo",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    ],
                   ),
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                Column(
                   children: [
-                    Text('Donate by  '),
                     TextButton(
-                        style: TextButton.styleFrom(
-                          primary: Colors.white,
-                          backgroundColor: Theme.of(context).accentColor,
+                      child: Container(
+                        child: Image(
+                          image: AssetImage('assets/black-button.png'),
                         ),
-                        child: Text('PayPal'),
-                        onPressed: () {
-                          launch(
-                              "https://paypal.me/sangwan5688?locale.x=en_GB");
-                        }),
+                        width: MediaQuery.of(context).size.width / 2,
+                      ),
+                      onPressed: () {
+                        launch("https://www.buymeacoffee.com/ankitsangwan");
+                      },
+                    ),
+                    Text(
+                      "Sponsor this project",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 12),
+                    ),
                   ],
                 ),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(5, 30, 5, 20),
                   child: Center(
                     child: Text(
-                      'Made with ♥ for You',
+                      'Made with ♥ by Ankit Sangwan',
                       style: TextStyle(fontSize: 12),
                       textAlign: TextAlign.center,
                     ),
