@@ -68,6 +68,7 @@ class _LikedSongsState extends State<LikedSongs> {
                 elevation: 0,
               ),
               body: ListView(
+                physics: BouncingScrollPhysics(),
                 padding: EdgeInsets.only(top: 10, bottom: 10),
                 // mainAxisSize: MainAxisSize.max,
                 children: [

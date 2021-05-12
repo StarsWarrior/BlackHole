@@ -114,234 +114,238 @@ class _TrendingPageState extends State<TrendingPage> {
       fetchfun2();
       fetched = true;
     }
-    return Stack(
-      children: [
-        Container(
-          height: MediaQuery.of(context).size.width,
-          width: MediaQuery.of(context).size.width,
-          child: Center(
-            child: Column(
-              children: [
-                SizedBox(
-                  height: 250,
-                ),
-                SizedBox(
-                  height: MediaQuery.of(context).size.width / 6,
-                  width: MediaQuery.of(context).size.width / 6,
-                  child: playlists.length == 0
-                      ? CircularProgressIndicator(
-                          strokeWidth: 5,
-                        )
-                      : SizedBox(),
-                ),
-              ],
-            ),
-          ),
-        ),
-        ListView.builder(
-            physics: BouncingScrollPhysics(), //NeverScrollableScrollPhysics(),
-            shrinkWrap: true,
-            padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
-            scrollDirection: Axis.vertical,
-            itemCount: playlists.length,
-            itemBuilder: (context, idx) {
-              if (idx == 0) {
-                return (recentList == null)
-                    ? SizedBox()
-                    : Column(
+    return ListView.builder(
+        physics: BouncingScrollPhysics(), //NeverScrollableScrollPhysics(),
+        shrinkWrap: true,
+        padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+        scrollDirection: Axis.vertical,
+        itemCount: playlists.length,
+        itemBuilder: (context, idx) {
+          if (idx == 0) {
+            return (recentList == null)
+                ? SizedBox()
+                : Column(
+                    children: [
+                      Row(
                         children: [
-                          Row(
-                            children: [
-                              Padding(
-                                padding:
-                                    const EdgeInsets.fromLTRB(15, 10, 0, 5),
-                                child: Text(
-                                  'Last Session',
-                                  style: TextStyle(
-                                    color: Theme.of(context).accentColor,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w800,
-                                  ),
-                                ),
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(15, 10, 0, 5),
+                            child: Text(
+                              'Last Session',
+                              style: TextStyle(
+                                color: Theme.of(context).accentColor,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w800,
                               ),
-                            ],
-                          ),
-                          SizedBox(
-                            height: 200,
-                            child: ListView.builder(
-                              scrollDirection: Axis.horizontal,
-                              padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                              itemCount: recentList.length,
-                              itemBuilder: (context, index) {
-                                return GestureDetector(
-                                  child: SizedBox(
-                                    width: 150,
-                                    child: Column(
-                                      children: [
-                                        Card(
-                                          elevation: 5,
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(10.0),
-                                          ),
-                                          clipBehavior: Clip.antiAlias,
-                                          child: CachedNetworkImage(
-                                            imageUrl: recentList[index]["image"]
-                                                .replaceAll('http:', 'https:'),
-                                            placeholder: (context, url) =>
-                                                Image(
-                                              image: AssetImage(
-                                                  'assets/cover.jpg'),
-                                            ),
-                                          ),
-                                        ),
-                                        Text(
-                                          '${recentList[index]["title"].split("(")[0]}',
-                                          textAlign: TextAlign.center,
-                                          softWrap: false,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                        Text(
-                                          '${recentList[index]["artist"].split("(")[0]}',
-                                          textAlign: TextAlign.center,
-                                          softWrap: false,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: TextStyle(
-                                              color: Theme.of(context)
-                                                  .textTheme
-                                                  .caption
-                                                  .color),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  onTap: () {
-                                    Navigator.push(
-                                        context,
-                                        PageRouteBuilder(
-                                            opaque: false,
-                                            pageBuilder: (_, __, ___) =>
-                                                PlayScreen(
-                                                  data: {
-                                                    'response': recentList,
-                                                    'index': index,
-                                                    'offline': false,
-                                                  },
-                                                  fromMiniplayer: false,
-                                                )));
-                                  },
-                                );
-                              },
                             ),
                           ),
                         ],
-                      );
-              }
-              return Column(
-                children: [
-                  Row(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(15, 10, 0, 5),
-                        child: Text(
-                          '${(playlists[idx]["title"])}',
-                          style: TextStyle(
-                            color: Theme.of(context).accentColor,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w800,
-                          ),
+                      ),
+                      SizedBox(
+                        height: 200,
+                        child: ListView.builder(
+                          physics: BouncingScrollPhysics(),
+                          scrollDirection: Axis.horizontal,
+                          padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                          itemCount: recentList.length,
+                          itemBuilder: (context, index) {
+                            return GestureDetector(
+                              child: SizedBox(
+                                width: 150,
+                                child: Column(
+                                  children: [
+                                    Card(
+                                      elevation: 5,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
+                                      ),
+                                      clipBehavior: Clip.antiAlias,
+                                      child: CachedNetworkImage(
+                                        imageUrl: recentList[index]["image"]
+                                            .replaceAll('http:', 'https:'),
+                                        placeholder: (context, url) => Image(
+                                          image: AssetImage('assets/cover.jpg'),
+                                        ),
+                                      ),
+                                    ),
+                                    Text(
+                                      '${recentList[index]["title"].split("(")[0]}',
+                                      textAlign: TextAlign.center,
+                                      softWrap: false,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    Text(
+                                      '${recentList[index]["artist"].split("(")[0]}',
+                                      textAlign: TextAlign.center,
+                                      softWrap: false,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                          color: Theme.of(context)
+                                              .textTheme
+                                              .caption
+                                              .color),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    PageRouteBuilder(
+                                        opaque: false,
+                                        pageBuilder: (_, __, ___) => PlayScreen(
+                                              data: {
+                                                'response': recentList,
+                                                'index': index,
+                                                'offline': false,
+                                              },
+                                              fromMiniplayer: false,
+                                            )));
+                              },
+                            );
+                          },
                         ),
                       ),
                     ],
-                  ),
-                  SizedBox(
-                    height: 200,
-                    child: playlists[idx]["songsList"] == null
-                        ? SizedBox()
-                        : ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                            itemCount: playlists[idx]["songsList"].length,
-                            itemBuilder: (context, index) {
-                              return GestureDetector(
-                                child: SizedBox(
-                                  width: 150,
-                                  child: Column(
-                                    children: [
-                                      Card(
-                                        elevation: 5,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(10.0),
-                                        ),
-                                        clipBehavior: Clip.antiAlias,
-                                        child: CachedNetworkImage(
-                                          imageUrl: playlists[idx]["songsList"]
-                                                  [index]["image"]
-                                              .replaceAll('http:', 'https:'),
-                                          placeholder: (context, url) => Image(
-                                            image:
-                                                AssetImage('assets/cover.jpg'),
-                                          ),
-                                        ),
-                                      ),
-                                      Text(
-                                        '${playlists[idx]["songsList"][index]["title"].split("(")[0]}',
-                                        textAlign: TextAlign.center,
-                                        softWrap: false,
-                                        overflow: TextOverflow.ellipsis,
-                                        // style: TextStyle(
-                                        //     color: Theme.of(context).accentColor),
-                                      ),
-                                      Text(
-                                        '${playlists[idx]["songsList"][index]["more_info"]["artistMap"]["primary_artists"][0]["name"].split("(")[0]}',
-                                        textAlign: TextAlign.center,
-                                        softWrap: false,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: TextStyle(
-                                            color: Theme.of(context)
-                                                .textTheme
-                                                .caption
-                                                .color),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    PageRouteBuilder(
-                                      opaque: false,
-                                      pageBuilder: (_, __, ___) => PlayScreen(
-                                        data: {
-                                          'response': playlists[idx]
-                                              ["songsList"],
-                                          'index': index,
-                                          'offline': false,
-                                        },
-                                        fromMiniplayer: false,
-                                      ),
-                                    ),
-                                  );
-
-                                  // Navigator.pushNamed(
-                                  //   context,
-                                  //   '/play',
-                                  //   arguments: {
-                                  //     'response': playlists[tokens[idx]]["songsList"],
-                                  //     'index': index,
-                                  //     'offline': false,
-                                  //   },
-                                  // );
-                                },
-                              );
-                            },
-                          ),
+                  );
+          }
+          return Column(
+            children: [
+              Row(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(15, 10, 0, 5),
+                    child: Text(
+                      '${(playlists[idx]["title"])}',
+                      style: TextStyle(
+                        color: Theme.of(context).accentColor,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
                   ),
                 ],
-              );
-            }),
-      ],
-    );
+              ),
+              playlists[idx]["songsList"] == null
+                  ? SizedBox(
+                      height: 200,
+                      child: ListView.builder(
+                          physics: BouncingScrollPhysics(),
+                          scrollDirection: Axis.horizontal,
+                          padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                          itemCount: 10,
+                          itemBuilder: (context, index) {
+                            return SizedBox(
+                              width: 150,
+                              child: Column(
+                                children: [
+                                  Card(
+                                    elevation: 5,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                    ),
+                                    clipBehavior: Clip.antiAlias,
+                                    child: Image(
+                                      image: AssetImage('assets/cover.jpg'),
+                                    ),
+                                  ),
+                                  Text(
+                                    'Loading ...',
+                                    textAlign: TextAlign.center,
+                                    softWrap: false,
+                                    overflow: TextOverflow.ellipsis,
+                                    // style: TextStyle(
+                                    //     color: Theme.of(context).accentColor),
+                                  ),
+                                  Text(
+                                    'Please Wait',
+                                    textAlign: TextAlign.center,
+                                    softWrap: false,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                        color: Theme.of(context)
+                                            .textTheme
+                                            .caption
+                                            .color),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }),
+                    )
+                  : SizedBox(
+                      height: 200,
+                      child: ListView.builder(
+                        physics: BouncingScrollPhysics(),
+                        scrollDirection: Axis.horizontal,
+                        padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                        itemCount: playlists[idx]["songsList"].length,
+                        itemBuilder: (context, index) {
+                          return GestureDetector(
+                            child: SizedBox(
+                              width: 150,
+                              child: Column(
+                                children: [
+                                  Card(
+                                    elevation: 5,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                    ),
+                                    clipBehavior: Clip.antiAlias,
+                                    child: CachedNetworkImage(
+                                      imageUrl: playlists[idx]["songsList"]
+                                              [index]["image"]
+                                          .replaceAll('http:', 'https:'),
+                                      placeholder: (context, url) => Image(
+                                        image: AssetImage('assets/cover.jpg'),
+                                      ),
+                                    ),
+                                  ),
+                                  Text(
+                                    '${playlists[idx]["songsList"][index]["title"].split("(")[0]}',
+                                    textAlign: TextAlign.center,
+                                    softWrap: false,
+                                    overflow: TextOverflow.ellipsis,
+                                    // style: TextStyle(
+                                    //     color: Theme.of(context).accentColor),
+                                  ),
+                                  Text(
+                                    '${playlists[idx]["songsList"][index]["more_info"]["artistMap"]["primary_artists"][0]["name"].split("(")[0]}',
+                                    textAlign: TextAlign.center,
+                                    softWrap: false,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                        color: Theme.of(context)
+                                            .textTheme
+                                            .caption
+                                            .color),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                PageRouteBuilder(
+                                  opaque: false,
+                                  pageBuilder: (_, __, ___) => PlayScreen(
+                                    data: {
+                                      'response': playlists[idx]["songsList"],
+                                      'index': index,
+                                      'offline': false,
+                                    },
+                                    fromMiniplayer: false,
+                                  ),
+                                ),
+                              );
+                            },
+                          );
+                        },
+                      ),
+                    ),
+            ],
+          );
+        });
   }
 }

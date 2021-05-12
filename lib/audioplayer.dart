@@ -11,6 +11,7 @@ import 'package:audio_session/audio_session.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:miniplayer/miniplayer.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:rxdart/rxdart.dart';
@@ -571,6 +572,166 @@ class _PlayScreenState extends State<PlayScreen> {
                                       borderRadius: BorderRadius.all(
                                           Radius.circular(7.0))),
                                   onSelected: (value) {
+                                    if (value == 2) {
+                                      showModalBottomSheet(
+                                          isDismissible: true,
+                                          backgroundColor: Colors.transparent,
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return StreamBuilder<QueueState>(
+                                              stream: _queueStateStream,
+                                              builder: (context, snapshot) {
+                                                String lyrics;
+                                                final queueState =
+                                                    snapshot.data;
+                                                final mediaItem =
+                                                    queueState?.mediaItem;
+
+                                                Future<dynamic> fetchLyrics() {
+                                                  Uri lyricsUrl = Uri.https(
+                                                      "www.jiosaavn.com",
+                                                      "/api.php?__call=lyrics.getLyrics&lyrics_id=" +
+                                                          mediaItem.id +
+                                                          "&ctx=web6dot0&api_version=4&_format=json");
+                                                  return get(lyricsUrl,
+                                                      headers: {
+                                                        "Accept":
+                                                            "application/json"
+                                                      });
+                                                }
+
+                                                return mediaItem == null
+                                                    ? SizedBox()
+                                                    : Container(
+                                                        height: MediaQuery.of(
+                                                                    context)
+                                                                .size
+                                                                .height /
+                                                            2,
+                                                        margin:
+                                                            EdgeInsets.fromLTRB(
+                                                                25, 0, 25, 25),
+                                                        padding:
+                                                            EdgeInsets.fromLTRB(
+                                                                10, 15, 10, 15),
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          borderRadius:
+                                                              BorderRadius.all(
+                                                                  Radius
+                                                                      .circular(
+                                                                          15.0)),
+                                                          gradient:
+                                                              LinearGradient(
+                                                            begin: Alignment
+                                                                .topLeft,
+                                                            end: Alignment
+                                                                .bottomRight,
+                                                            colors: Theme.of(
+                                                                            context)
+                                                                        .brightness ==
+                                                                    Brightness
+                                                                        .dark
+                                                                ? [
+                                                                    Colors.grey[
+                                                                        850],
+                                                                    Colors.grey[
+                                                                        900],
+                                                                    Colors
+                                                                        .black,
+                                                                  ]
+                                                                : [
+                                                                    Colors
+                                                                        .white,
+                                                                    Theme.of(
+                                                                            context)
+                                                                        .canvasColor,
+                                                                  ],
+                                                          ),
+                                                        ),
+                                                        child: Center(
+                                                          child:
+                                                              SingleChildScrollView(
+                                                            physics:
+                                                                BouncingScrollPhysics(),
+                                                            padding: EdgeInsets
+                                                                .fromLTRB(0, 30,
+                                                                    0, 30),
+                                                            child: mediaItem.extras[
+                                                                        "lyrics"] ==
+                                                                    "true"
+                                                                ? FutureBuilder(
+                                                                    future:
+                                                                        fetchLyrics(),
+                                                                    builder: (BuildContext
+                                                                            context,
+                                                                        AsyncSnapshot
+                                                                            snapshot) {
+                                                                      if (snapshot
+                                                                              .connectionState !=
+                                                                          ConnectionState
+                                                                              .done) {
+                                                                        return CircularProgressIndicator();
+                                                                      } else {
+                                                                        var lyricsEdited =
+                                                                            (snapshot.data.body).split("-->");
+                                                                        var fetchedLyrics =
+                                                                            json.decode(lyricsEdited[1]);
+                                                                        lyrics = fetchedLyrics["lyrics"].toString().replaceAll(
+                                                                            "<br>",
+                                                                            "\n");
+                                                                        return Text(
+                                                                            lyrics);
+                                                                      }
+                                                                    },
+                                                                  )
+                                                                : Row(
+                                                                    mainAxisAlignment:
+                                                                        MainAxisAlignment
+                                                                            .center,
+                                                                    children: [
+                                                                      Text(
+                                                                        ":( ",
+                                                                        style:
+                                                                            TextStyle(
+                                                                          fontSize:
+                                                                              100,
+                                                                          color:
+                                                                              Theme.of(context).accentColor,
+                                                                          fontWeight:
+                                                                              FontWeight.w600,
+                                                                        ),
+                                                                      ),
+                                                                      Column(
+                                                                        children: [
+                                                                          Text(
+                                                                            "Lyrics",
+                                                                            style:
+                                                                                TextStyle(
+                                                                              fontSize: 60,
+                                                                              color: Theme.of(context).accentColor,
+                                                                              fontWeight: FontWeight.w600,
+                                                                            ),
+                                                                          ),
+                                                                          Text(
+                                                                            "Not Available",
+                                                                            style:
+                                                                                TextStyle(
+                                                                              fontSize: 20,
+                                                                              fontWeight: FontWeight.w600,
+                                                                            ),
+                                                                          ),
+                                                                        ],
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                          ),
+                                                        ),
+                                                      );
+                                              },
+                                            );
+                                          });
+                                    }
                                     if (value == 1) {
                                       showDialog(
                                         context: context,
@@ -958,6 +1119,17 @@ class _PlayScreenState extends State<PlayScreen> {
                                                   Icon(Icons.timer),
                                                   Spacer(),
                                                   Text('Sleep Timer'),
+                                                  Spacer(),
+                                                ],
+                                              )),
+                                          PopupMenuItem(
+                                              value: 2,
+                                              child: Row(
+                                                children: [
+                                                  Icon(
+                                                      Icons.music_note_rounded),
+                                                  Spacer(),
+                                                  Text('Show Lyrics'),
                                                   Spacer(),
                                                 ],
                                               )),
@@ -1566,7 +1738,7 @@ class _PlayScreenState extends State<PlayScreen> {
         '_96.', '_${preferredQuality.replaceAll(' kbps', '')}.');
     print('fetched url');
     // print(kUrl);
-    return kUrl;
+    return {'URL': kUrl, 'lyrics': getMain[songId]["more_info"]["has_lyrics"]};
   }
 
   downloadSong(id, scaffoldContext, title, artist, album, image, kUrl) async {
@@ -1707,9 +1879,9 @@ class _PlayScreenState extends State<PlayScreen> {
 
   audioPlayerButton() async {
     if (globalQueue[globalIndex].extras == null) {
-      globalQueue[globalIndex] = globalQueue[globalIndex].copyWith(extras: {
-        'URL': await fetchSongUrl(globalQueue[globalIndex].id),
-      });
+      globalQueue[globalIndex] = globalQueue[globalIndex].copyWith(
+        extras: await fetchSongUrl(globalQueue[globalIndex].id),
+      );
     }
     await AudioService.start(
       backgroundTaskEntrypoint: _audioPlayerTaskEntrypoint,
@@ -1977,7 +2149,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
     final response = await client.send(request);
     print(response);
     kUrl = (response.headers['location']);
-    return kUrl;
+    return {'URL': kUrl, 'lyrics': getMain[songId]["more_info"]["has_lyrics"]};
   }
 
   @override
@@ -2034,9 +2206,9 @@ class AudioPlayerTask extends BackgroundAudioTask {
     // _player.pause();
     // index = newIndex;
     if (queue[newIndex].extras == null) {
-      queue[newIndex] = queue[newIndex].copyWith(extras: {
-        'URL': await fetchSongUrl(queue[newIndex].id),
-      });
+      queue[newIndex] = queue[newIndex].copyWith(
+        extras: await fetchSongUrl(queue[newIndex].id),
+      );
       await AudioServiceBackground.setQueue(queue);
     }
 

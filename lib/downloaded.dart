@@ -173,7 +173,13 @@ class _DownloadedSongsState extends State<DownloadedSongs> {
                               child: Row(
                                 children: [
                                   sortValue == 0
-                                      ? Icon(Icons.check_rounded)
+                                      ? Icon(
+                                          Icons.check_rounded,
+                                          color: Theme.of(context).brightness ==
+                                                  Brightness.dark
+                                              ? Colors.white
+                                              : Colors.grey[700],
+                                        )
                                       : SizedBox(),
                                   SizedBox(width: 10),
                                   Text(
@@ -187,7 +193,13 @@ class _DownloadedSongsState extends State<DownloadedSongs> {
                               child: Row(
                                 children: [
                                   sortValue == 1
-                                      ? Icon(Icons.check_rounded)
+                                      ? Icon(
+                                          Icons.check_rounded,
+                                          color: Theme.of(context).brightness ==
+                                                  Brightness.dark
+                                              ? Colors.white
+                                              : Colors.grey[700],
+                                        )
                                       : SizedBox(),
                                   SizedBox(width: 10),
                                   Text(
@@ -201,7 +213,13 @@ class _DownloadedSongsState extends State<DownloadedSongs> {
                               child: Row(
                                 children: [
                                   sortValue == 2
-                                      ? Icon(Icons.check_rounded)
+                                      ? Icon(
+                                          Icons.check_rounded,
+                                          color: Theme.of(context).brightness ==
+                                                  Brightness.dark
+                                              ? Colors.white
+                                              : Colors.grey[700],
+                                        )
                                       : SizedBox(),
                                   SizedBox(width: 10),
                                   Text('Last Modified'),
@@ -213,7 +231,13 @@ class _DownloadedSongsState extends State<DownloadedSongs> {
                               child: Row(
                                 children: [
                                   sortValue == 3
-                                      ? Icon(Icons.shuffle_rounded)
+                                      ? Icon(
+                                          Icons.shuffle_rounded,
+                                          color: Theme.of(context).brightness ==
+                                                  Brightness.dark
+                                              ? Colors.white
+                                              : Colors.grey[700],
+                                        )
                                       : SizedBox(),
                                   SizedBox(width: 10),
                                   Text(

@@ -501,7 +501,7 @@ class _SettingPageState extends State<SettingPage> {
                                 box.put('darkMode', val);
                                 currentTheme.switchTheme(val);
                                 updateUserDetails('darkMode', val);
-                                themeColor = val ? 'Teal' : 'Blue';
+                                themeColor = val ? 'Teal' : 'Light Blue';
                                 colorHue = 400;
                                 updateUserDetails('themeColor', themeColor);
                                 updateUserDetails('colorHue', colorHue);

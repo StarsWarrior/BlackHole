@@ -11,7 +11,7 @@ class MyTheme with ChangeNotifier {
 
   void switchTheme(val) {
     _isDark = val;
-    _isDark ? switchColor('Teal') : switchColor('Blue');
+    _isDark ? switchColor('Teal') : switchColor('Light Blue');
     // notifyListeners();
   }
 
@@ -72,7 +72,7 @@ class MyTheme with ChangeNotifier {
         return Colors.lightGreenAccent[currentHue()];
 
       default:
-        return _isDark ? Colors.tealAccent[400] : Colors.blueAccent[400];
+        return _isDark ? Colors.tealAccent[400] : Colors.lightBlueAccent[400];
     }
   }
 }

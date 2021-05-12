@@ -109,7 +109,10 @@ class _AboutScreenState extends State<AboutScreen> {
                           child: Container(
                             width: MediaQuery.of(context).size.width / 4,
                             child: Image(
-                              image: AssetImage('assets/GitHub_Logo_White.png'),
+                              image: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? AssetImage('assets/GitHub_Logo_White.png')
+                                  : AssetImage('assets/GitHub_Logo.png'),
                             ),
                           ),
                           onPressed: () {

@@ -107,6 +107,7 @@ class _TopPageState extends State<TopPage> {
             : Expanded(
                 child: widget.status
                     ? ListView.builder(
+                        physics: BouncingScrollPhysics(),
                         itemCount: showList.length,
                         itemBuilder: (context, index) {
                           return ListTile(
