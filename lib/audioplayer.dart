@@ -655,8 +655,8 @@ class _PlayScreenState extends State<PlayScreen> {
                                                             physics:
                                                                 BouncingScrollPhysics(),
                                                             padding: EdgeInsets
-                                                                .fromLTRB(0, 30,
-                                                                    0, 30),
+                                                                .fromLTRB(0, 20,
+                                                                    0, 20),
                                                             child: mediaItem.extras[
                                                                         "lyrics"] ==
                                                                     "true"
@@ -2103,7 +2103,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
   }
 
   addRecentlyPlayed(mediaitem) async {
-    await initiateBox();
+    // await initiateBox();
     var recentList;
     try {
       recentList = await Hive.box('recent').get('recentlyPlayed').toList();
@@ -2120,6 +2120,11 @@ class AudioPlayerTask extends BackgroundAudioTask {
       'duration': mediaitem.duration.inSeconds.toString(),
     };
     await recentList == null ? recentList = [item] : recentList.insert(0, item);
+
+    final jsonList = recentList.map((item) => jsonEncode(item)).toList();
+    final uniqueJsonList = jsonList.toSet().toList();
+    recentList = uniqueJsonList.map((item) => jsonDecode(item)).toList();
+
     if (recentList.length > 30) {
       recentList = recentList.sublist(0, 30);
     }
@@ -2278,7 +2283,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
       }
     } catch (e) {
       // print('Error in onPlay: $e');
-      print(queue[index].extras['URl']);
+      print(queue[index].extras['URL']);
     }
   }
 
