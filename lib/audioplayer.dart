@@ -1742,9 +1742,6 @@ class _PlayScreenState extends State<PlayScreen> {
   }
 
   downloadSong(id, scaffoldContext, title, artist, album, image, kUrl) async {
-    String filepath;
-    String filepath2;
-    List<int> _bytes = [];
     PermissionStatus status = await Permission.storage.status;
     if (status.isPermanentlyDenied || status.isDenied) {
       // code of read or write file in external storage (SD card)
@@ -1761,11 +1758,80 @@ class _PlayScreenState extends State<PlayScreen> {
       print('permission granted');
     }
     final filename = title + " - " + artist + ".m4a";
-
-    final artname = title + "artwork.jpg";
-
     String dlPath = await ExtStorage.getExternalStoragePublicDirectory(
         ExtStorage.DIRECTORY_MUSIC);
+    bool exists = await File(dlPath + "/" + filename).exists();
+    if (exists) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text(
+              "Already Exists",
+              style: TextStyle(color: Theme.of(context).accentColor),
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      'Do you want to download it again?',
+                      // style: TextStyle(color: Theme.of(context).accentColor),
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                style: TextButton.styleFrom(
+                  primary: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white
+                      : Colors.grey[700],
+                ),
+                child: Text("Yes"),
+                onPressed: () {
+                  Navigator.pop(context);
+                  downSong(id, scaffoldContext, title, artist, album, image,
+                      kUrl, dlPath, filename);
+                },
+              ),
+              TextButton(
+                style: TextButton.styleFrom(
+                  primary: Theme.of(context).accentColor,
+                  backgroundColor: Theme.of(context).accentColor,
+                ),
+                child: Text(
+                  "No",
+                  style: TextStyle(color: Colors.white),
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+              SizedBox(
+                width: 5,
+              ),
+            ],
+          );
+        },
+      );
+    } else {
+      downSong(id, scaffoldContext, title, artist, album, image, kUrl, dlPath,
+          filename);
+    }
+  }
+
+  downSong(id, scaffoldContext, title, artist, album, image, kUrl, dlPath,
+      filename) async {
+    String filepath;
+    String filepath2;
+    List<int> _bytes = [];
+    final artname = title + "artwork.jpg";
     Directory appDir = await getApplicationDocumentsDirectory();
     String appPath = appDir.path;
     try {
@@ -1818,7 +1884,6 @@ class _PlayScreenState extends State<PlayScreen> {
       try {
         setState(() {
           _recieved += value.length;
-          // print('recieved is $_recieved');
         });
       } catch (e) {}
     }).onDone(() async {
@@ -1830,7 +1895,6 @@ class _PlayScreenState extends State<PlayScreen> {
       var bytes2 = await consolidateHttpClientResponseBytes(response2);
       File file2 = File(filepath2);
 
-      // await file.writeAsBytes(bytes);
       await file2.writeAsBytes(bytes2);
       debugPrint("Started tag editing");
 
@@ -1842,7 +1906,6 @@ class _PlayScreenState extends State<PlayScreen> {
         // genre: ,
       );
 
-      // debugPrint("Setting up Tags");
       final tagger = Audiotagger();
       await tagger.writeTags(
         path: filepath,
