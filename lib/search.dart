@@ -24,31 +24,33 @@ class _SearchPageState extends State<SearchPage> {
             searchQuery +
             "&__call=autocomplete.get");
     var res = await get(searchUrl);
-    var resEdited = (res.body).split("-->");
-    var getMain = json.decode(resEdited[1]);
-    searchedList = getMain["songs"]["data"];
-    // searchedArtist = getMain["artists"]["data"];
-    // print(searchedList);
-    for (int i = 0; i < searchedList.length; i++) {
-      searchedList[i]['title'] = searchedList[i]['title']
-          .toString()
-          .replaceAll("&amp;", "&")
-          .replaceAll("&#039;", "'")
-          .replaceAll("&quot;", "\"");
+    if (res.statusCode == 200) {
+      var resEdited = (res.body).split("-->");
+      var getMain = json.decode(resEdited[1]);
+      searchedList = getMain["songs"]["data"];
+      // searchedArtist = getMain["artists"]["data"];
+      // print(searchedList);
+      for (int i = 0; i < searchedList.length; i++) {
+        searchedList[i]['title'] = searchedList[i]['title']
+            .toString()
+            .replaceAll("&amp;", "&")
+            .replaceAll("&#039;", "'")
+            .replaceAll("&quot;", "\"");
 
-      searchedList[i]['more_info']['singers'] = searchedList[i]['more_info']
-              ['singers']
-          .toString()
-          .replaceAll("&amp;", "&")
-          .replaceAll("&#039;", "'")
-          .replaceAll("&quot;", "\"");
+        searchedList[i]['more_info']['singers'] = searchedList[i]['more_info']
+                ['singers']
+            .toString()
+            .replaceAll("&amp;", "&")
+            .replaceAll("&#039;", "'")
+            .replaceAll("&quot;", "\"");
 
-      searchedList[i]['more_info']['primary_artists'] = searchedList[i]
-              ['more_info']['primary_artists']
-          .toString()
-          .replaceAll("&amp;", "&")
-          .replaceAll("&#039;", "'")
-          .replaceAll("&quot;", "\"");
+        searchedList[i]['more_info']['primary_artists'] = searchedList[i]
+                ['more_info']['primary_artists']
+            .toString()
+            .replaceAll("&amp;", "&")
+            .replaceAll("&#039;", "'")
+            .replaceAll("&quot;", "\"");
+      }
     }
 
     // for (int i = 0; i < searchedArtist.length; i++) {
@@ -65,7 +67,7 @@ class _SearchPageState extends State<SearchPage> {
     //       .replaceAll("&quot;", "\"");
     // }
     status = true;
-    print(searchedList);
+    // print(searchedList);
     return searchedList;
   }
 
@@ -117,64 +119,103 @@ class _SearchPageState extends State<SearchPage> {
                             )),
                       ),
                     )
-                  : ListView.builder(
-                      itemCount: searchedList.length,
-                      physics: NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      padding: EdgeInsets.fromLTRB(5, 10, 5, 0),
-                      itemBuilder: (context, index) {
-                        return Padding(
-                          padding: const EdgeInsets.fromLTRB(0, 7, 7, 5),
-                          child: ListTile(
-                            title: Text(
-                              '${searchedList[index]["title"].split("(")[0]}',
-                              style: TextStyle(fontWeight: FontWeight.w500),
-                            ),
-                            leading: Hero(
-                              tag: index,
-                              child: Card(
-                                elevation: 8,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(7.0)),
-                                clipBehavior: Clip.antiAlias,
-                                child: CachedNetworkImage(
-                                  imageUrl:
-                                      '${searchedList[index]["image"].replaceAll('http:', 'https:')}',
-                                  placeholder: (context, url) => Image(
-                                    image: AssetImage('assets/cover.jpg'),
+                  : searchedList.length == 0
+                      ? Container(
+                          child: Center(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  ":( ",
+                                  style: TextStyle(
+                                    fontSize: 100,
+                                    color: Theme.of(context).accentColor,
+                                    fontWeight: FontWeight.w600,
                                   ),
                                 ),
-                              ),
-                            ),
-                            subtitle: Text(
-                                '${searchedList[index]["more_info"]["primary_artists"].split("(")[0]}'),
-                            onTap: () {
-                              // print(searchedList);
-                              Navigator.push(
-                                context,
-                                PageRouteBuilder(
-                                  opaque: false, // set to false
-                                  pageBuilder: (_, __, ___) => PlayScreen(
-                                    data: {
-                                      'response': searchedList,
-                                      'index': index,
-                                      'offline': false,
-                                    },
-                                    fromMiniplayer: false,
-                                  ),
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      "SORRY",
+                                      style: TextStyle(
+                                        fontSize: 60,
+                                        color: Theme.of(context).accentColor,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    Text(
+                                      "Results Not Found",
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              );
-
-                              // Navigator.pushNamed(context, '/play', arguments: {
-                              //   'response': searchedList,
-                              //   'index': index,
-                              //   'offline': false,
-                              // });
-                            },
+                              ],
+                            ),
                           ),
-                        );
-                      },
-                    ),
+                        )
+                      : ListView.builder(
+                          itemCount: searchedList.length,
+                          physics: NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          padding: EdgeInsets.fromLTRB(5, 10, 5, 0),
+                          itemBuilder: (context, index) {
+                            return Padding(
+                              padding: const EdgeInsets.fromLTRB(0, 7, 7, 5),
+                              child: ListTile(
+                                title: Text(
+                                  '${searchedList[index]["title"].split("(")[0]}',
+                                  style: TextStyle(fontWeight: FontWeight.w500),
+                                ),
+                                leading: Hero(
+                                  tag: index,
+                                  child: Card(
+                                    elevation: 8,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(7.0)),
+                                    clipBehavior: Clip.antiAlias,
+                                    child: CachedNetworkImage(
+                                      imageUrl:
+                                          '${searchedList[index]["image"].replaceAll('http:', 'https:')}',
+                                      placeholder: (context, url) => Image(
+                                        image: AssetImage('assets/cover.jpg'),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                subtitle: Text(
+                                    '${searchedList[index]["more_info"]["primary_artists"].split("(")[0]}'),
+                                onTap: () {
+                                  // print(searchedList);
+                                  Navigator.push(
+                                    context,
+                                    PageRouteBuilder(
+                                      opaque: false, // set to false
+                                      pageBuilder: (_, __, ___) => PlayScreen(
+                                        data: {
+                                          'response': searchedList,
+                                          'index': index,
+                                          'offline': false,
+                                        },
+                                        fromMiniplayer: false,
+                                      ),
+                                    ),
+                                  );
+
+                                  // Navigator.pushNamed(context, '/play', arguments: {
+                                  //   'response': searchedList,
+                                  //   'index': index,
+                                  //   'offline': false,
+                                  // });
+                                },
+                              ),
+                            );
+                          },
+                        ),
             ),
           ),
           MiniPlayer(),
