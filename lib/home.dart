@@ -238,15 +238,20 @@ class _HomePageState extends State<HomePage> {
                                                       autofocus: true,
                                                       controller: _controller,
                                                       onSubmitted: (value) {
-                                                        box.put('name', value);
-                                                        box.put('email',
-                                                            _controller2.text);
+                                                        box.put('name',
+                                                            value.trim());
+                                                        box.put(
+                                                            'email',
+                                                            _controller2.text
+                                                                .trim());
                                                         Navigator.pop(context);
                                                         updateUserDetails(
-                                                            'name', value);
+                                                            'name',
+                                                            value.trim());
                                                         updateUserDetails(
                                                             'email',
-                                                            _controller2.text);
+                                                            _controller2.text
+                                                                .trim());
                                                         // _analytics.logEvent(
                                                         //   name: 'Changed_Name_Email',
                                                         //   parameters: <String,
@@ -274,15 +279,20 @@ class _HomePageState extends State<HomePage> {
                                                       autofocus: true,
                                                       controller: _controller2,
                                                       onSubmitted: (value) {
-                                                        box.put('name',
-                                                            _controller.text);
-                                                        box.put('email', value);
+                                                        box.put(
+                                                            'name',
+                                                            _controller.text
+                                                                .trim());
+                                                        box.put('email',
+                                                            value.trim());
                                                         Navigator.pop(context);
                                                         updateUserDetails(
                                                             'name',
-                                                            _controller.text);
+                                                            _controller.text
+                                                                .trim());
                                                         updateUserDetails(
-                                                            'email', value);
+                                                            'email',
+                                                            value.trim());
                                                         // _analytics.logEvent(
                                                         //   name: 'Changed_Name_Email',
                                                         //   parameters: <String,
@@ -322,15 +332,23 @@ class _HomePageState extends State<HomePage> {
                                                         color: Colors.white),
                                                   ),
                                                   onPressed: () {
-                                                    box.put('name',
-                                                        _controller.text);
-                                                    box.put('email',
-                                                        _controller2.text);
+                                                    box.put(
+                                                        'name',
+                                                        _controller.text
+                                                            .trim());
+                                                    box.put(
+                                                        'email',
+                                                        _controller2.text
+                                                            .trim());
                                                     Navigator.pop(context);
-                                                    updateUserDetails('name',
-                                                        _controller.text);
-                                                    updateUserDetails('email',
-                                                        _controller2.text);
+                                                    updateUserDetails(
+                                                        'name',
+                                                        _controller.text
+                                                            .trim());
+                                                    updateUserDetails(
+                                                        'email',
+                                                        _controller2.text
+                                                            .trim());
                                                     // _analytics.logEvent(
                                                     //   name: 'Changed_Name_Email',
                                                     //   parameters: <String, dynamic>{
@@ -350,10 +368,16 @@ class _HomePageState extends State<HomePage> {
                                       })
                                 ],
                                 accountName: Text(
-                                  capitalize(box.get('name')) ?? 'Guest User',
+                                  capitalize((box.get('name') == null ||
+                                          box.get('name') == '')
+                                      ? 'Guest User'
+                                      : box.get('name')),
                                 ),
                                 accountEmail: Text(
-                                  box.get('email') ?? 'xxxxxxxxxx@gmail.com',
+                                  (box.get('email') == null ||
+                                          box.get('email') == '')
+                                      ? 'xxxxxxxxxx@gmail.com'
+                                      : box.get('email'),
                                 ),
                                 decoration: BoxDecoration(
                                     image: DecorationImage(
@@ -390,7 +414,8 @@ class _HomePageState extends State<HomePage> {
                                     backgroundColor: Colors.transparent,
                                     // backgroundImage: AssetImage('assets/cover.jpg'),
                                     child: Text(
-                                        box.get('name') == null
+                                        (box.get('name') == null ||
+                                                box.get('name') == '')
                                             ? 'G'
                                             : capitalize(box.get('name'))[0],
                                         style: TextStyle(
@@ -553,8 +578,10 @@ class _HomePageState extends State<HomePage> {
                                                         builder: (context, box,
                                                             widget) {
                                                           return Text(
-                                                            box.get('name') ==
-                                                                    null
+                                                            (box.get('name') ==
+                                                                        null ||
+                                                                    box.get('name') ==
+                                                                        '')
                                                                 ? 'Guest'
                                                                 : capitalize(box
                                                                     .get('name')

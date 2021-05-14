@@ -11,7 +11,6 @@ import 'package:audio_session/audio_session.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:miniplayer/miniplayer.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:rxdart/rxdart.dart';
@@ -673,18 +672,20 @@ class _PlayScreenState extends State<PlayScreen> {
                                                                               .done) {
                                                                         return CircularProgressIndicator();
                                                                       } else {
-                                                                        var lyricsEdited =
-                                                                            (snapshot.data.body).split("-->");
-                                                                        var fetchedLyrics =
-                                                                            json.decode(lyricsEdited[1]);
-                                                                        lyrics = fetchedLyrics["lyrics"].toString().replaceAll(
-                                                                            "<br>",
-                                                                            "\n");
-                                                                        return Text(
-                                                                            lyrics);
+                                                                        if (mediaItem.extras["lyrics"] ==
+                                                                            "true") {
+                                                                          var lyricsEdited =
+                                                                              (snapshot.data.body).split("-->");
+                                                                          var fetchedLyrics =
+                                                                              json.decode(lyricsEdited[1]);
+                                                                          lyrics = fetchedLyrics["lyrics"].toString().replaceAll(
+                                                                              "<br>",
+                                                                              "\n");
+                                                                          return Text(
+                                                                              lyrics);
+                                                                        }
                                                                       }
-                                                                    },
-                                                                  )
+                                                                    })
                                                                 : Row(
                                                                     mainAxisAlignment:
                                                                         MainAxisAlignment

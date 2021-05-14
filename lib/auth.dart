@@ -229,11 +229,12 @@ class _AuthScreenState extends State<AuthScreen> {
                                   hintText: "Your Name",
                                 ),
                                 onSubmitted: (value) {
-                                  if (value == '') {
+                                  if (value == null || value == '') {
                                     Hive.box('settings').put('name', 'Guest');
                                     _sendAnalytics('Guest', gender);
                                   } else {
-                                    Hive.box('settings').put('name', value);
+                                    Hive.box('settings')
+                                        .put('name', value.trim());
                                     _sendAnalytics(value, gender);
                                   }
                                   Navigator.popAndPushNamed(context, '/');

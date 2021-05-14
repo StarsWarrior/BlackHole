@@ -113,7 +113,9 @@ class _SettingPageState extends State<SettingPage> {
                             title: Text('Name'),
                             dense: true,
                             trailing: Text(
-                              box.get('name') ?? 'Guest User',
+                              box.get('name') == null || box.get('name') == ''
+                                  ? 'Guest User'
+                                  : box.get('name'),
                               style: TextStyle(fontSize: 12),
                             ),
                             onTap: () {
@@ -143,8 +145,9 @@ class _SettingPageState extends State<SettingPage> {
                                             autofocus: true,
                                             controller: controller,
                                             onSubmitted: (value) {
-                                              box.put('name', value);
-                                              updateUserDetails('name', value);
+                                              box.put('name', value.trim());
+                                              updateUserDetails(
+                                                  'name', value.trim());
                                               Navigator.pop(context);
                                             }),
                                       ],
@@ -177,9 +180,10 @@ class _SettingPageState extends State<SettingPage> {
                                           style: TextStyle(color: Colors.white),
                                         ),
                                         onPressed: () {
-                                          box.put('name', controller.text);
+                                          box.put(
+                                              'name', controller.text.trim());
                                           updateUserDetails(
-                                              'name', controller.text);
+                                              'name', controller.text.trim());
                                           Navigator.pop(context);
                                         },
                                       ),
@@ -201,7 +205,9 @@ class _SettingPageState extends State<SettingPage> {
                             title: Text('Email'),
                             dense: true,
                             trailing: Text(
-                              box.get('email') ?? 'xxxxxxxxxx@gmail.com',
+                              box.get('email') == null || box.get('email') == ''
+                                  ? 'xxxxxxxxxx@gmail.com'
+                                  : box.get('email'),
                               style: TextStyle(fontSize: 12),
                             ),
                             onTap: () {
@@ -231,8 +237,9 @@ class _SettingPageState extends State<SettingPage> {
                                             autofocus: true,
                                             controller: controller,
                                             onSubmitted: (value) {
-                                              box.put('email', value);
-                                              updateUserDetails('email', value);
+                                              box.put('email', value.trim());
+                                              updateUserDetails(
+                                                  'email', value.trim());
                                               Navigator.pop(context);
                                             }),
                                       ],
@@ -263,9 +270,10 @@ class _SettingPageState extends State<SettingPage> {
                                           style: TextStyle(color: Colors.white),
                                         ),
                                         onPressed: () {
-                                          box.put('email', controller.text);
+                                          box.put(
+                                              'email', controller.text.trim());
                                           updateUserDetails(
-                                              'email', controller.text);
+                                              'email', controller.text.trim());
                                           Navigator.pop(context);
                                         },
                                       ),
