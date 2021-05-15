@@ -453,8 +453,7 @@ class _HomePageState extends State<HomePage> {
                           ),
                           onTap: () {
                             Navigator.pop(context);
-                            Navigator.pushNamed(context, '/downloaded');
-                            print('pressed my music');
+                            Navigator.pushNamed(context, '/mymusic');
                           },
                         ),
                         ListTile(

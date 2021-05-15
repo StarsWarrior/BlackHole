@@ -52,6 +52,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                 elevation: 0,
               ),
               body: SingleChildScrollView(
+                physics: BouncingScrollPhysics(),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -90,13 +91,16 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                                       controller: _controller,
                                       autofocus: true,
                                       onSubmitted: (value) {
-                                        print(
-                                            'PLAYLIST NAMES IS $playlistNames');
+                                        if (value == null ||
+                                            value.trim() == '') {
+                                          playlistNames == null
+                                              ? value = 'Playlist 0'
+                                              : value =
+                                                  'Playlist ${playlistNames.length}';
+                                        }
                                         playlistNames == null
                                             ? playlistNames = [value]
                                             : playlistNames.add(value);
-                                        // print(
-                                        //     'PLAYLIST NAMES NOW IS $playlistNames');
                                         settingsBox.put(
                                             'playlists', playlistNames);
                                         Navigator.pop(context);
@@ -129,6 +133,13 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                                     style: TextStyle(color: Colors.white),
                                   ),
                                   onPressed: () {
+                                    if (_controller.text == null ||
+                                        _controller.text.trim() == '') {
+                                      playlistNames == null
+                                          ? _controller.text = 'Playlist 0'
+                                          : _controller.text =
+                                              'Playlist ${playlistNames.length}';
+                                    }
                                     playlistNames == null
                                         ? playlistNames = [_controller.text]
                                         : playlistNames.add(_controller.text);

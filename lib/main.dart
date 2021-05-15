@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:blackhole/config.dart';
 import 'package:audio_service/audio_service.dart';
+import 'package:blackhole/mymusic.dart';
 import 'package:blackhole/playlists.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
@@ -122,6 +123,7 @@ class _MyAppState extends State<MyApp> {
         // '/play': (context) => PlayScreen(),
         '/about': (context) => AboutScreen(),
         '/playlists': (context) => PlaylistScreen(),
+        '/mymusic': (context) => MyMusicScreen(),
       },
     );
   }

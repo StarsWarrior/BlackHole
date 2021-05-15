@@ -13,20 +13,12 @@ class LikedSongs extends StatefulWidget {
 
 class _LikedSongsState extends State<LikedSongs> {
   Box likedBox;
-
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   Hive.openBox(widget.playlistName);
-  // }
+  bool understood;
 
   void getLiked() {
-    // Future<Directory> document = getApplicationDocumentsDirectory();
-    // document.then((value) => Hive.init(value.path));
     likedBox = Hive.box(widget.playlistName);
-    // print(likedBox.values);
-    // likedBox.deleteFromDisk();
-    // setState(() {});
+    understood = Hive.box('settings').get('understood');
+    understood ??= false;
   }
 
   void deleteLiked(index) {
@@ -72,24 +64,32 @@ class _LikedSongsState extends State<LikedSongs> {
                 padding: EdgeInsets.only(top: 10, bottom: 10),
                 // mainAxisSize: MainAxisSize.max,
                 children: [
-                  Dismissible(
-                    key: Key('header'),
-                    child: Container(
-                      margin: const EdgeInsets.fromLTRB(30, 0, 30, 20),
-                      padding: EdgeInsets.fromLTRB(0, 20, 0, 20),
-                      decoration: BoxDecoration(
-                          border: Border.all(
-                            color:
-                                Theme.of(context).brightness == Brightness.dark
-                                    ? Colors.white
-                                    : Colors.grey[700],
+                  understood
+                      ? SizedBox()
+                      : Dismissible(
+                          key: Key('header'),
+                          child: Container(
+                            margin: const EdgeInsets.fromLTRB(30, 0, 30, 20),
+                            padding: EdgeInsets.fromLTRB(0, 20, 0, 20),
+                            decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? Colors.white
+                                      : Colors.grey[700],
+                                ),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(13))),
+                            child: Center(
+                                child: Text(
+                                    "Swipe right to remove from ${widget.playlistName}")),
                           ),
-                          borderRadius: BorderRadius.all(Radius.circular(13))),
-                      child: Center(
-                          child: Text(
-                              "Swipe right to remove from ${widget.playlistName}")),
-                    ),
-                  ),
+                          onDismissed: (direction) {
+                            print('Dismissed');
+                            understood = true;
+                            Hive.box('settings').put('understood', true);
+                          },
+                        ),
                   ListView.builder(
                       physics: NeverScrollableScrollPhysics(),
                       shrinkWrap: true,

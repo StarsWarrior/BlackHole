@@ -74,7 +74,7 @@ class _LibraryPageState extends State<LibraryPage> {
                 : Colors.grey[700],
           ),
           onTap: () {
-            Navigator.pushNamed(context, '/downloaded');
+            Navigator.pushNamed(context, '/mymusic');
           },
         ),
         // ListTile(

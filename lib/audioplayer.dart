@@ -934,6 +934,14 @@ class _PlayScreenState extends State<PlayScreen> {
                                                                           true,
                                                                       onSubmitted:
                                                                           (value) {
+                                                                        if (value ==
+                                                                                null ||
+                                                                            value.trim() ==
+                                                                                '') {
+                                                                          playlistNames == null
+                                                                              ? value = 'Playlist 0'
+                                                                              : value = 'Playlist ${playlistNames.length}';
+                                                                        }
                                                                         playlistNames ==
                                                                                 null
                                                                             ? playlistNames =
@@ -987,6 +995,17 @@ class _PlayScreenState extends State<PlayScreen> {
                                                                   ),
                                                                   onPressed:
                                                                       () {
+                                                                    if (controller.text ==
+                                                                            null ||
+                                                                        controller.text.trim() ==
+                                                                            '') {
+                                                                      playlistNames ==
+                                                                              null
+                                                                          ? controller.text =
+                                                                              'Playlist 0'
+                                                                          : controller.text =
+                                                                              'Playlist ${playlistNames.length}';
+                                                                    }
                                                                     playlistNames ==
                                                                             null
                                                                         ? playlistNames =
@@ -996,8 +1015,6 @@ class _PlayScreenState extends State<PlayScreen> {
                                                                         : playlistNames
                                                                             .add(controller.text);
 
-                                                                    // print(
-                                                                    //     'Putting as $playlistNames');
                                                                     settingsBox.put(
                                                                         'playlists',
                                                                         playlistNames);
