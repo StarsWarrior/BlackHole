@@ -154,9 +154,10 @@ class _PlayScreenState extends State<PlayScreen> {
 
       var playAlbum = response['album'];
       final playDuration = '180';
-      var file =
-          await File('${tempDir.path}/$playTitle-$playArtist.jpg').create();
+      var file;
       if (response['image'] != null) {
+        file =
+            await File('${tempDir.path}/$playTitle-$playArtist.jpg').create();
         file.writeAsBytesSync(response['image']);
       } else {
         file = null;
