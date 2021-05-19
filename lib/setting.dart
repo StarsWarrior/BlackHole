@@ -996,6 +996,14 @@ class _SettingPageState extends State<SettingPage> {
                         dense: true,
                       ),
                       ListTile(
+                        title: Text('Join us on Telegram'),
+                        subtitle: Text('Stay updated with the project'),
+                        onTap: () {
+                          launch("https://t.me/joinchat/fHDC1AWnOhw0ZmI9");
+                        },
+                        dense: true,
+                      ),
+                      ListTile(
                         title: Text('Contact Us'),
                         subtitle: Text('Feedbacks appreciated'),
                         dense: true,
@@ -1040,9 +1048,7 @@ class _SettingPageState extends State<SettingPage> {
                                             onPressed: () {
                                               Navigator.pop(context);
                                               launch(
-                                                  "https://mail.google.com/mail/?extsrc=mailto&url=mailto%3A%3Fto%3Dblackholeyoucantescape%40gmail.com%26subject%3DRegarding%2520Mobile%2520App"
-                                                  // "https://mail.google.com/mail/?view=cm&fs=1&to=blackholeyoucantescape@gmail.com&su=Regarding+Mobile+App"
-                                                  );
+                                                  "https://mail.google.com/mail/?extsrc=mailto&url=mailto%3A%3Fto%3Dblackholeyoucantescape%40gmail.com%26subject%3DRegarding%2520Mobile%2520App");
                                             },
                                           ),
                                           Text('Gmail'),
@@ -1057,7 +1063,7 @@ class _SettingPageState extends State<SettingPage> {
                                             onPressed: () {
                                               Navigator.pop(context);
                                               launch(
-                                                  "https://t.me/sangwan5688");
+                                                  "https://t.me/joinchat/fHDC1AWnOhw0ZmI9");
                                             },
                                           ),
                                           Text('Telegram'),

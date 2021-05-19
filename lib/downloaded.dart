@@ -31,12 +31,12 @@ class _DownloadedSongsState extends State<DownloadedSongs> {
     } else {
       print('permission NOT granted');
     }
-    var temp = await ExtStorage.getExternalStorageDirectory();
-    Directory dir = Directory('$temp');
     try {
+      String temp = await ExtStorage.getExternalStorageDirectory();
+      Directory dir = Directory('$temp');
       _files = dir.listSync(recursive: true, followLinks: false);
     } catch (e) {
-      var temp2 = await ExtStorage.getExternalStoragePublicDirectory(
+      String temp2 = await ExtStorage.getExternalStoragePublicDirectory(
           ExtStorage.DIRECTORY_MUSIC);
       Directory dir = Directory('$temp2');
       _files = dir.listSync(recursive: true, followLinks: false);
@@ -46,15 +46,20 @@ class _DownloadedSongsState extends State<DownloadedSongs> {
       if (entity.path.endsWith('.mp3') || entity.path.endsWith('.m4a')) {
         try {
           final tags = await tagger.readTags(path: entity.path);
-          var xyz = await entity.stat();
-          _songs.add({
-            'id': entity.path,
-            'image': await tagger.readArtwork(path: entity.path),
-            'title': tags.title,
-            'artist': tags.artist,
-            'album': tags.album,
-            'lastModified': xyz.modified,
-          });
+          FileStat stats = await entity.stat();
+          if (stats.size < 1048576) {
+            print("Size of mediaItem found less than 1 MB");
+            debugPrint("Ignoring media");
+          } else {
+            _songs.add({
+              'id': entity.path,
+              'image': await tagger.readArtwork(path: entity.path),
+              'title': tags.title,
+              'artist': tags.artist,
+              'album': tags.album,
+              'lastModified': stats.modified,
+            });
+          }
         } catch (e) {}
       }
       added = true;

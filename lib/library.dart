@@ -48,7 +48,31 @@ class _LibraryPageState extends State<LibraryPage> {
           ),
         ),
         ListTile(
-          title: Text('Favorites'),
+          title: Text('Now Playing'),
+          leading: Icon(
+            Icons.queue_music_rounded,
+            color: Theme.of(context).brightness == Brightness.dark
+                ? null
+                : Colors.grey[700],
+          ),
+          onTap: () async {
+            Navigator.pushNamed(context, '/nowplaying');
+          },
+        ),
+        ListTile(
+          title: Text('Recently Played'),
+          leading: Icon(
+            Icons.history_rounded,
+            color: Theme.of(context).brightness == Brightness.dark
+                ? null
+                : Colors.grey[700],
+          ),
+          onTap: () async {
+            Navigator.pushNamed(context, '/recent');
+          },
+        ),
+        ListTile(
+          title: Text('Favorite Songs'),
           leading: Icon(
             Icons.favorite_rounded,
             color: Theme.of(context).brightness == Brightness.dark
@@ -62,7 +86,6 @@ class _LibraryPageState extends State<LibraryPage> {
                 MaterialPageRoute(
                     builder: (context) =>
                         LikedSongs(playlistName: 'favorites')));
-            // Navigator.pushNamed(context, '/liked');
           },
         ),
         ListTile(
@@ -77,18 +100,6 @@ class _LibraryPageState extends State<LibraryPage> {
             Navigator.pushNamed(context, '/mymusic');
           },
         ),
-        // ListTile(
-        //   title: Text('Downloaded'),
-        //   leading: Icon(
-        //     Icons.music_note_rounded,
-        //     color: Theme.of(context).brightness == Brightness.dark
-        //         ? null
-        //         : Colors.grey[700],
-        //   ),
-        //   onTap: () {
-        //     Navigator.pushNamed(context, '/downloaded');
-        //   },
-        // ),
         ListTile(
           title: Text('Playlists'),
           leading: Icon(

@@ -180,9 +180,11 @@ class _MiniPlayerState extends State<MiniPlayer> {
                                                                         .data ??
                                                                     AudioProcessingState
                                                                         .none;
-                                                                return describeEnum(
-                                                                            processingState) !=
-                                                                        'ready'
+
+                                                                return (describeEnum(processingState) !=
+                                                                            'ready' &&
+                                                                        describeEnum(processingState) !=
+                                                                            'none')
                                                                     ? SizedBox(
                                                                         height:
                                                                             40,

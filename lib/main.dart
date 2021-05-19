@@ -2,7 +2,9 @@ import 'dart:io';
 import 'package:blackhole/config.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:blackhole/mymusic.dart';
+import 'package:blackhole/nowplaying.dart';
 import 'package:blackhole/playlists.dart';
+import 'package:blackhole/recent.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
@@ -124,6 +126,8 @@ class _MyAppState extends State<MyApp> {
         '/about': (context) => AboutScreen(),
         '/playlists': (context) => PlaylistScreen(),
         '/mymusic': (context) => MyMusicScreen(),
+        '/nowplaying': (context) => NowPlaying(),
+        '/recent': (context) => RecentlyPlayed(),
       },
     );
   }
