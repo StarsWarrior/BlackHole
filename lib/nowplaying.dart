@@ -169,7 +169,12 @@ class _NowPlayingState extends State<NowPlaying> {
                                                       subtitle: Text(
                                                         '${queue[index].artist}',
                                                       ),
-                                                      onTap: () {},
+                                                      onTap: () {
+                                                        AudioService
+                                                            .skipToQueueItem(
+                                                                queue[index]
+                                                                    .id);
+                                                      },
                                                     );
                                             });
                                       },
