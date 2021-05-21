@@ -1,4 +1,5 @@
 import 'package:blackhole/liked.dart';
+import 'package:blackhole/mymusic.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 
@@ -89,6 +90,21 @@ class _LibraryPageState extends State<LibraryPage> {
           },
         ),
         ListTile(
+          title: Text('Downloaded'),
+          leading: Icon(
+            Icons.download_done_rounded,
+            color: Theme.of(context).brightness == Brightness.dark
+                ? null
+                : Colors.grey[700],
+          ),
+          onTap: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => MyMusicScreen(type: 'downloaded')));
+          },
+        ),
+        ListTile(
           title: Text('My Music'),
           leading: Icon(
             Icons.music_note_rounded,
@@ -97,7 +113,10 @@ class _LibraryPageState extends State<LibraryPage> {
                 : Colors.grey[700],
           ),
           onTap: () {
-            Navigator.pushNamed(context, '/mymusic');
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => MyMusicScreen(type: 'all')));
           },
         ),
         ListTile(

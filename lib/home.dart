@@ -5,6 +5,7 @@ import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 import 'package:blackhole/miniplayer.dart';
 // import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'mymusic.dart';
 import 'top.dart';
 import 'dart:math';
 import 'trending.dart';
@@ -453,7 +454,11 @@ class _HomePageState extends State<HomePage> {
                           ),
                           onTap: () {
                             Navigator.pop(context);
-                            Navigator.pushNamed(context, '/mymusic');
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        MyMusicScreen(type: 'all')));
                           },
                         ),
                         ListTile(

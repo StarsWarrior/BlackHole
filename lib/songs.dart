@@ -198,6 +198,8 @@ class _SongsListState extends State<SongsList> {
                             height: MediaQuery.of(context).size.width / 6,
                             width: MediaQuery.of(context).size.width / 6,
                             child: CircularProgressIndicator(
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                  Theme.of(context).accentColor),
                               strokeWidth: 5,
                             )),
                       ),

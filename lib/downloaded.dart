@@ -1,5 +1,4 @@
 import 'package:blackhole/miniplayer.dart';
-import 'package:blackhole/songs.dart';
 import 'package:flutter/material.dart';
 import 'package:ext_storage/ext_storage.dart';
 import 'package:hive/hive.dart';
@@ -10,6 +9,8 @@ import 'dart:io';
 import 'audioplayer.dart';
 
 class DownloadedSongs extends StatefulWidget {
+  final String type;
+  DownloadedSongs({Key key, @required this.type}) : super(key: key);
   @override
   _DownloadedSongsState createState() => _DownloadedSongsState();
 }
@@ -36,7 +37,10 @@ class _DownloadedSongsState extends State<DownloadedSongs> {
       print('permission NOT granted');
     }
     try {
-      String temp = await ExtStorage.getExternalStorageDirectory();
+      String temp = widget.type == 'all'
+          ? await ExtStorage.getExternalStorageDirectory()
+          : await ExtStorage.getExternalStoragePublicDirectory(
+              ExtStorage.DIRECTORY_MUSIC);
       Directory dir = Directory('$temp');
       _files = dir.listSync(recursive: true, followLinks: false);
     } catch (e) {
@@ -248,6 +252,8 @@ class _DownloadedSongsState extends State<DownloadedSongs> {
                             height: MediaQuery.of(context).size.width / 6,
                             width: MediaQuery.of(context).size.width / 6,
                             child: CircularProgressIndicator(
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                  Theme.of(context).accentColor),
                               strokeWidth: 5,
                             )),
                       ),

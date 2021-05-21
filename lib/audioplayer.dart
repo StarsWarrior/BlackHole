@@ -122,14 +122,20 @@ class _PlayScreenState extends State<PlayScreen> {
     setFavValues(response) {
       for (int i = 0; i < response.length; i++) {
         var tempDict = MediaItem(
-          id: response[i]['id'],
-          album: response[i]['album'],
-          duration: Duration(seconds: int.parse(response[i]['duration'])),
-          title: response[i]['title'].split("(")[0],
-          artist: response[i]["artist"],
-          artUri: Uri.parse(response[i]['image'].replaceAll('http:', 'https:')),
-        );
+            id: response[i]['id'],
+            album: response[i]['album'],
+            duration: Duration(seconds: int.parse(response[i]['duration'])),
+            title: response[i]['title'].split("(")[0],
+            artist: response[i]["artist"],
+            artUri:
+                Uri.parse(response[i]['image'].replaceAll('http:', 'https:')),
+            extras: response[i]["url"] == null
+                ? null
+                : {
+                    'URL': response[i]["url"],
+                  });
         globalQueue.add(tempDict);
+        print(tempDict);
       }
       // fetched = true;
     }
@@ -514,7 +520,13 @@ class _PlayScreenState extends State<PlayScreen> {
                                                   height: 65,
                                                   width: 65,
                                                   child:
-                                                      CircularProgressIndicator(),
+                                                      CircularProgressIndicator(
+                                                    valueColor:
+                                                        AlwaysStoppedAnimation<
+                                                                Color>(
+                                                            Theme.of(context)
+                                                                .accentColor),
+                                                  ),
                                                 )),
                                                 Center(
                                                   child: Container(
@@ -676,7 +688,10 @@ class _PlayScreenState extends State<PlayScreen> {
                                                                               .connectionState !=
                                                                           ConnectionState
                                                                               .done) {
-                                                                        return CircularProgressIndicator();
+                                                                        return CircularProgressIndicator(
+                                                                          valueColor:
+                                                                              AlwaysStoppedAnimation<Color>(Theme.of(context).accentColor),
+                                                                        );
                                                                       } else {
                                                                         if (mediaItem.extras["lyrics"] ==
                                                                             "true") {
@@ -1081,7 +1096,8 @@ class _PlayScreenState extends State<PlayScreen> {
                                                                               'album': mediaItem.album.toString(),
                                                                               'image': mediaItem.artUri.toString(),
                                                                               'duration': mediaItem.duration.inSeconds.toString(),
-                                                                              'title': mediaItem.title.toString()
+                                                                              'title': mediaItem.title.toString(),
+                                                                              'url': mediaItem.extras['URL'].toString(),
                                                                             });
                                                                             ScaffoldMessenger.of(scaffoldContext).showSnackBar(
                                                                               SnackBar(
@@ -1429,6 +1445,9 @@ class _PlayScreenState extends State<PlayScreen> {
                                                                     .toString(),
                                                             'title': mediaItem
                                                                 .title
+                                                                .toString(),
+                                                            'url': mediaItem
+                                                                .extras['URL']
                                                                 .toString()
                                                           });
                                                     liked = !liked;
@@ -1470,6 +1489,9 @@ class _PlayScreenState extends State<PlayScreen> {
                                                                               .toString(),
                                                                           'title': mediaItem
                                                                               .title
+                                                                              .toString(),
+                                                                          'url': mediaItem
+                                                                              .extras['URL']
                                                                               .toString()
                                                                         });
                                                               liked = !liked;
@@ -1536,7 +1558,13 @@ class _PlayScreenState extends State<PlayScreen> {
                                                   height: 65,
                                                   width: 65,
                                                   child:
-                                                      CircularProgressIndicator(),
+                                                      CircularProgressIndicator(
+                                                    valueColor:
+                                                        AlwaysStoppedAnimation<
+                                                                Color>(
+                                                            Theme.of(context)
+                                                                .accentColor),
+                                                  ),
                                                 )
                                               : SizedBox();
                                         },
@@ -1656,8 +1684,9 @@ class _PlayScreenState extends State<PlayScreen> {
                                                                               : ''),
                                                                         ),
                                                                         Center(
-                                                                          child:
-                                                                              CircularProgressIndicator(value: _total != 0 ? _recieved / _total : 0),
+                                                                          child: CircularProgressIndicator(
+                                                                              valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).accentColor),
+                                                                              value: _total != 0 ? _recieved / _total : 0),
                                                                         ),
                                                                       ],
                                                                     ),
@@ -1927,7 +1956,7 @@ class _PlayScreenState extends State<PlayScreen> {
         artist: artist.toString(),
         artwork: filepath2.toString(),
         album: album.toString(),
-        // genre: ,
+        comment: 'BlackHole',
       );
 
       final tagger = Audiotagger();

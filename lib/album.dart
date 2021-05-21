@@ -9,7 +9,9 @@ import 'dart:io';
 
 class AlbumSongs extends StatefulWidget {
   final String data;
-  AlbumSongs({Key key, @required this.data}) : super(key: key);
+  final String type;
+  AlbumSongs({Key key, @required this.data, @required this.type})
+      : super(key: key);
   @override
   _AlbumSongsState createState() => _AlbumSongsState();
 }
@@ -37,12 +39,15 @@ class _AlbumSongsState extends State<AlbumSongs> {
     } else {
       print('permission NOT granted');
     }
-    var temp = await ExtStorage.getExternalStorageDirectory();
-    Directory dir = Directory('$temp');
     try {
+      String temp = widget.type == 'all'
+          ? await ExtStorage.getExternalStorageDirectory()
+          : await ExtStorage.getExternalStoragePublicDirectory(
+              ExtStorage.DIRECTORY_MUSIC);
+      Directory dir = Directory('$temp');
       _files = dir.listSync(recursive: true, followLinks: false);
     } catch (e) {
-      var temp2 = await ExtStorage.getExternalStoragePublicDirectory(
+      String temp2 = await ExtStorage.getExternalStoragePublicDirectory(
           ExtStorage.DIRECTORY_MUSIC);
       Directory dir = Directory('$temp2');
       _files = dir.listSync(recursive: true, followLinks: false);
@@ -303,6 +308,8 @@ class _AlbumSongsState extends State<AlbumSongs> {
                             height: MediaQuery.of(context).size.width / 6,
                             width: MediaQuery.of(context).size.width / 6,
                             child: CircularProgressIndicator(
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                  Theme.of(context).accentColor),
                               strokeWidth: 5,
                             )),
                       ),

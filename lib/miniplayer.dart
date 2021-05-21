@@ -190,12 +190,11 @@ class _MiniPlayerState extends State<MiniPlayer> {
                                                                             40,
                                                                         width:
                                                                             40,
-                                                                        child: CircularProgressIndicator(
-                                                                            // valueColor:
-                                                                            //     AlwaysStoppedAnimation<
-                                                                            //             Color>(
-                                                                            //         Colors.white),
-                                                                            ),
+                                                                        child:
+                                                                            CircularProgressIndicator(
+                                                                          valueColor:
+                                                                              AlwaysStoppedAnimation<Color>(Theme.of(context).accentColor),
+                                                                        ),
                                                                       )
                                                                     : SizedBox();
                                                               },

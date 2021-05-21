@@ -1,8 +1,11 @@
 import 'package:blackhole/album.dart';
+import 'package:blackhole/downloaded.dart';
 import 'package:blackhole/miniplayer.dart';
 import 'package:flutter/material.dart';
 
 class MyMusicScreen extends StatefulWidget {
+  final String type;
+  MyMusicScreen({Key key, @required this.type}) : super(key: key);
   @override
   _MyMusicScreenState createState() => _MyMusicScreenState();
 }
@@ -34,7 +37,7 @@ class _MyMusicScreenState extends State<MyMusicScreen> {
               backgroundColor: Colors.transparent,
               appBar: AppBar(
                 title: Text(
-                  'My Music',
+                  widget.type == 'all' ? 'My Music' : 'Downloaded',
                 ),
                 centerTitle: true,
                 backgroundColor: Theme.of(context).brightness == Brightness.dark
@@ -62,7 +65,11 @@ class _MyMusicScreenState extends State<MyMusicScreen> {
                       ),
                     ),
                     onTap: () {
-                      Navigator.pushNamed(context, '/downloaded');
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  DownloadedSongs(type: widget.type)));
                     },
                   ),
                   SizedBox(height: 5),
@@ -83,7 +90,7 @@ class _MyMusicScreenState extends State<MyMusicScreen> {
                         PageRouteBuilder(
                           opaque: false, // set to false
                           pageBuilder: (_, __, ___) =>
-                              AlbumSongs(data: 'album'),
+                              AlbumSongs(data: 'album', type: widget.type),
                         ),
                       );
                     },
@@ -106,7 +113,7 @@ class _MyMusicScreenState extends State<MyMusicScreen> {
                         PageRouteBuilder(
                           opaque: false, // set to false
                           pageBuilder: (_, __, ___) =>
-                              AlbumSongs(data: 'artist'),
+                              AlbumSongs(data: 'artist', type: widget.type),
                         ),
                       );
                     },
