@@ -1,4 +1,5 @@
 import 'package:blackhole/audioplayer.dart';
+import 'package:blackhole/emptyScreen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
@@ -59,131 +60,137 @@ class _LikedSongsState extends State<LikedSongs> {
                     : Theme.of(context).accentColor,
                 elevation: 0,
               ),
-              body: ListView(
-                physics: BouncingScrollPhysics(),
-                padding: EdgeInsets.only(top: 10, bottom: 10),
-                // mainAxisSize: MainAxisSize.max,
-                children: [
-                  understood
-                      ? SizedBox()
-                      : Dismissible(
-                          key: Key('header'),
-                          child: Container(
-                            margin: const EdgeInsets.fromLTRB(30, 0, 30, 20),
-                            padding: EdgeInsets.fromLTRB(0, 20, 0, 20),
-                            decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: Theme.of(context).brightness ==
-                                          Brightness.dark
-                                      ? Colors.white
-                                      : Colors.grey[700],
+              body: likedBox.length == 0
+                  ? EmptyScreen().emptyScreen(context, 3, "Nothing to ", 15.0,
+                      "Show Here", 50, "Go and Add Something", 23.0)
+                  : ListView(
+                      physics: BouncingScrollPhysics(),
+                      padding: EdgeInsets.only(top: 10, bottom: 10),
+                      // mainAxisSize: MainAxisSize.max,
+                      children: [
+                        understood
+                            ? SizedBox()
+                            : Dismissible(
+                                key: Key('header'),
+                                child: Container(
+                                  margin:
+                                      const EdgeInsets.fromLTRB(30, 0, 30, 20),
+                                  padding: EdgeInsets.fromLTRB(0, 20, 0, 20),
+                                  decoration: BoxDecoration(
+                                      border: Border.all(
+                                        color: Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? Colors.white
+                                            : Colors.grey[700],
+                                      ),
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(13))),
+                                  child: Center(
+                                      child: Text(
+                                          "Swipe right to remove from ${widget.playlistName}")),
                                 ),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(13))),
-                            child: Center(
-                                child: Text(
-                                    "Swipe right to remove from ${widget.playlistName}")),
-                          ),
-                          onDismissed: (direction) {
-                            print('Dismissed');
-                            understood = true;
-                            Hive.box('settings').put('understood', true);
-                          },
-                        ),
-                  ListView.builder(
-                      physics: NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemCount: likedBox.length,
-                      itemBuilder: (context, index) {
-                        return Dismissible(
-                          direction: DismissDirection.startToEnd,
-                          background: Container(
-                            color: Colors.red,
-                            child: Padding(
-                              padding: const EdgeInsets.only(
-                                  left: 20.0, right: 20.0),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Icon(
-                                    Icons.delete,
-                                  ),
-                                ],
+                                onDismissed: (direction) {
+                                  print('Dismissed');
+                                  understood = true;
+                                  Hive.box('settings').put('understood', true);
+                                },
                               ),
-                            ),
-                          ),
-                          key: Key(likedBox.getAt(index)['id']),
-                          child: ListTile(
-                            leading: Card(
-                              elevation: 5,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(7.0),
-                              ),
-                              clipBehavior: Clip.antiAlias,
-                              child: CachedNetworkImage(
-                                imageUrl: likedBox
-                                    .getAt(index)['image']
-                                    .replaceAll('http:', 'https:'),
-                                placeholder: (context, url) => Image(
-                                  image: AssetImage('assets/cover.jpg'),
-                                ),
-                              ),
-                            ),
-                            onTap: () {
-                              Navigator.of(context).push(
-                                PageRouteBuilder(
-                                  opaque: false, // set to false
-                                  pageBuilder: (_, __, ___) => PlayScreen(
-                                    data: {
-                                      'index': index,
-                                      'response': likedBox.values.toList(),
-                                      'offline': false,
-                                    },
-                                    fromMiniplayer: false,
+                        ListView.builder(
+                            physics: NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            itemCount: likedBox.length,
+                            itemBuilder: (context, index) {
+                              return Dismissible(
+                                direction: DismissDirection.startToEnd,
+                                background: Container(
+                                  color: Colors.red,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 20.0, right: 20.0),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Icon(
+                                          Icons.delete,
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
-                              );
+                                key: Key(likedBox.getAt(index)['id']),
+                                child: ListTile(
+                                  leading: Card(
+                                    elevation: 5,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(7.0),
+                                    ),
+                                    clipBehavior: Clip.antiAlias,
+                                    child: CachedNetworkImage(
+                                      imageUrl: likedBox
+                                          .getAt(index)['image']
+                                          .replaceAll('http:', 'https:'),
+                                      placeholder: (context, url) => Image(
+                                        image: AssetImage('assets/cover.jpg'),
+                                      ),
+                                    ),
+                                  ),
+                                  onTap: () {
+                                    Navigator.of(context).push(
+                                      PageRouteBuilder(
+                                        opaque: false, // set to false
+                                        pageBuilder: (_, __, ___) => PlayScreen(
+                                          data: {
+                                            'index': index,
+                                            'response':
+                                                likedBox.values.toList(),
+                                            'offline': false,
+                                          },
+                                          fromMiniplayer: false,
+                                        ),
+                                      ),
+                                    );
 
-                              // Navigator.pushNamed(context, '/play', arguments: {
-                              //   'index': index,
-                              //   'response': likedBox.values.toList(),
-                              //   'offline': false,
-                              // }
-                              // );
-                            },
-                            title: Text(
-                              '${likedBox.getAt(index)['title'].split("(")[0]}',
-                            ),
-                            subtitle: Text(
-                              '${likedBox.getAt(index)['artist'] != null ? likedBox.getAt(index)['artist'].split("(")[0] : 'Artist name'}',
-                            ),
-                          ),
-                          onDismissed: (direction) {
-                            setState(() {
-                              deleteLiked(index);
-                            });
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                elevation: 6,
-                                backgroundColor: Colors.grey[900],
-                                behavior: SnackBarBehavior.floating,
-                                content: Text(
-                                  'Removed from ${widget.playlistName}',
-                                  style: TextStyle(color: Colors.white),
+                                    // Navigator.pushNamed(context, '/play', arguments: {
+                                    //   'index': index,
+                                    //   'response': likedBox.values.toList(),
+                                    //   'offline': false,
+                                    // }
+                                    // );
+                                  },
+                                  title: Text(
+                                    '${likedBox.getAt(index)['title'].split("(")[0]}',
+                                  ),
+                                  subtitle: Text(
+                                    '${likedBox.getAt(index)['artist'] != null ? likedBox.getAt(index)['artist'].split("(")[0] : 'Artist name'}',
+                                  ),
                                 ),
-                                action: SnackBarAction(
-                                  textColor: Theme.of(context).accentColor,
-                                  label: 'Ok',
-                                  onPressed: () {},
-                                ),
-                              ),
-                            );
-                          },
-                        );
-                      }),
-                ],
-              ),
+                                onDismissed: (direction) {
+                                  setState(() {
+                                    deleteLiked(index);
+                                  });
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      elevation: 6,
+                                      backgroundColor: Colors.grey[900],
+                                      behavior: SnackBarBehavior.floating,
+                                      content: Text(
+                                        'Removed from ${widget.playlistName}',
+                                        style: TextStyle(color: Colors.white),
+                                      ),
+                                      action: SnackBarAction(
+                                        textColor:
+                                            Theme.of(context).accentColor,
+                                        label: 'Ok',
+                                        onPressed: () {},
+                                      ),
+                                    ),
+                                  );
+                                },
+                              );
+                            }),
+                      ],
+                    ),
             ),
           ),
           MiniPlayer(),

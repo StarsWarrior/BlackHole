@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:audio_service/audio_service.dart';
+import 'package:blackhole/emptyScreen.dart';
 import 'package:flutter/material.dart';
-import 'package:just_audio/just_audio.dart';
 import 'miniplayer.dart';
 
 class NowPlaying extends StatefulWidget {
@@ -50,47 +50,8 @@ class _NowPlayingState extends State<NowPlaying> {
                     }
                     final running = snapshot.data ?? false;
                     return !running
-                        ? Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  RotatedBox(
-                                    quarterTurns: 3,
-                                    child: Text(
-                                      "Nothing is ",
-                                      textAlign: TextAlign.start,
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        color: Theme.of(context).accentColor,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  ),
-                                  Column(
-                                    children: [
-                                      Text(
-                                        "PLAYING",
-                                        style: TextStyle(
-                                          fontSize: 60,
-                                          color: Theme.of(context).accentColor,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                      Text(
-                                        "Go and Play Something",
-                                        style: TextStyle(
-                                          fontSize: 23,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ],
-                          )
+                        ? EmptyScreen().emptyScreen(context, 3, "Nothing is ",
+                            18.0, "PLAYING", 60, "Go and Play Something", 23.0)
                         : StreamBuilder<List<MediaItem>>(
                             stream: AudioService.queueStream,
                             builder: (context, snapshot) {

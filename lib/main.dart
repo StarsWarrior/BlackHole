@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:blackhole/config.dart';
 import 'package:audio_service/audio_service.dart';
-import 'package:blackhole/mymusic.dart';
 import 'package:blackhole/nowplaying.dart';
 import 'package:blackhole/playlists.dart';
 import 'package:blackhole/recent.dart';
@@ -14,7 +13,6 @@ import 'setting.dart';
 import 'search.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'downloaded.dart';
 import 'auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';

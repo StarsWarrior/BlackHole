@@ -1,3 +1,4 @@
+import 'package:blackhole/downloaded.dart';
 import 'package:blackhole/library.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -5,7 +6,6 @@ import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 import 'package:blackhole/miniplayer.dart';
 // import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'mymusic.dart';
 import 'top.dart';
 import 'dart:math';
 import 'trending.dart';
@@ -458,7 +458,7 @@ class _HomePageState extends State<HomePage> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) =>
-                                        MyMusicScreen(type: 'all')));
+                                        DownloadedSongs(type: 'all')));
                           },
                         ),
                         ListTile(

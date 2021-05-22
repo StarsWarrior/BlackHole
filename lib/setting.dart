@@ -1063,7 +1063,7 @@ class _SettingPageState extends State<SettingPage> {
                                             onPressed: () {
                                               Navigator.pop(context);
                                               launch(
-                                                  "https://t.me/joinchat/fHDC1AWnOhw0ZmI9");
+                                                  "https://t.me/sangwan5688");
                                             },
                                           ),
                                           Text('Telegram'),

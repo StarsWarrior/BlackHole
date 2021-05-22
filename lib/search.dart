@@ -4,6 +4,7 @@ import 'package:blackhole/audioplayer.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+import 'emptyScreen.dart';
 import 'miniplayer.dart';
 
 class SearchPage extends StatefulWidget {
@@ -122,43 +123,8 @@ class _SearchPageState extends State<SearchPage> {
                       ),
                     )
                   : searchedList.length == 0
-                      ? Container(
-                          child: Center(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  ":( ",
-                                  style: TextStyle(
-                                    fontSize: 100,
-                                    color: Theme.of(context).accentColor,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                                Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      "SORRY",
-                                      style: TextStyle(
-                                        fontSize: 60,
-                                        color: Theme.of(context).accentColor,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                    Text(
-                                      "Results Not Found",
-                                      style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                        )
+                      ? EmptyScreen().emptyScreen(context, 0, ":( ", 100,
+                          "SORRY", 60, "Results Not Found", 20)
                       : ListView.builder(
                           itemCount: searchedList.length,
                           physics: NeverScrollableScrollPhysics(),

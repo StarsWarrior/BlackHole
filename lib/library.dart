@@ -1,5 +1,5 @@
+import 'package:blackhole/downloaded.dart';
 import 'package:blackhole/liked.dart';
-import 'package:blackhole/mymusic.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 
@@ -101,7 +101,7 @@ class _LibraryPageState extends State<LibraryPage> {
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => MyMusicScreen(type: 'downloaded')));
+                    builder: (context) => DownloadedSongs(type: 'downloaded')));
           },
         ),
         ListTile(
@@ -116,7 +116,7 @@ class _LibraryPageState extends State<LibraryPage> {
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => MyMusicScreen(type: 'all')));
+                    builder: (context) => DownloadedSongs(type: 'all')));
           },
         ),
         ListTile(

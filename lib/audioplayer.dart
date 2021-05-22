@@ -23,6 +23,8 @@ import 'package:hive_flutter/hive_flutter.dart';
 // import 'package:audio_session/audio_session.dart';
 import 'package:flutter/services.dart' show rootBundle;
 
+import 'emptyScreen.dart';
+
 class PlayScreen extends StatefulWidget {
   final Map data;
   final controller;
@@ -135,7 +137,6 @@ class _PlayScreenState extends State<PlayScreen> {
                     'URL': response[i]["url"],
                   });
         globalQueue.add(tempDict);
-        print(tempDict);
       }
       // fetched = true;
     }
@@ -707,46 +708,16 @@ class _PlayScreenState extends State<PlayScreen> {
                                                                         }
                                                                       }
                                                                     })
-                                                                : Row(
-                                                                    mainAxisAlignment:
-                                                                        MainAxisAlignment
-                                                                            .center,
-                                                                    children: [
-                                                                      Text(
+                                                                : EmptyScreen()
+                                                                    .emptyScreen(
+                                                                        context,
+                                                                        0,
                                                                         ":( ",
-                                                                        style:
-                                                                            TextStyle(
-                                                                          fontSize:
-                                                                              100,
-                                                                          color:
-                                                                              Theme.of(context).accentColor,
-                                                                          fontWeight:
-                                                                              FontWeight.w600,
-                                                                        ),
-                                                                      ),
-                                                                      Column(
-                                                                        children: [
-                                                                          Text(
-                                                                            "Lyrics",
-                                                                            style:
-                                                                                TextStyle(
-                                                                              fontSize: 60,
-                                                                              color: Theme.of(context).accentColor,
-                                                                              fontWeight: FontWeight.w600,
-                                                                            ),
-                                                                          ),
-                                                                          Text(
-                                                                            "Not Available",
-                                                                            style:
-                                                                                TextStyle(
-                                                                              fontSize: 20,
-                                                                              fontWeight: FontWeight.w600,
-                                                                            ),
-                                                                          ),
-                                                                        ],
-                                                                      ),
-                                                                    ],
-                                                                  ),
+                                                                        100.0,
+                                                                        "Lyrics",
+                                                                        60.0,
+                                                                        "Not Available",
+                                                                        20.0),
                                                           ),
                                                         ),
                                                       );

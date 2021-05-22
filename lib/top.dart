@@ -1,3 +1,4 @@
+import 'package:blackhole/emptyScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:web_scraper/web_scraper.dart';
 
@@ -145,42 +146,15 @@ class _TopPageState extends State<TopPage> {
                           );
                         },
                       )
-                    : Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                ":( ",
-                                style: TextStyle(
-                                  fontSize: 100,
-                                  color: Theme.of(context).accentColor,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              Column(
-                                children: [
-                                  Text(
-                                    "ERROR",
-                                    style: TextStyle(
-                                      fontSize: 60,
-                                      color: Theme.of(context).accentColor,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                  Text(
-                                    "Service Unavailable",
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ],
+                    : EmptyScreen().emptyScreen(
+                        context,
+                        0,
+                        ":( ",
+                        100,
+                        "ERROR",
+                        60,
+                        "Service Unavailable",
+                        20,
                       ),
               ),
       ],

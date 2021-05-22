@@ -1,3 +1,4 @@
+import 'package:blackhole/emptyScreen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:blackhole/audioplayer.dart';
@@ -57,47 +58,8 @@ class _RecentlyPlayedState extends State<RecentlyPlayed> {
                 elevation: 0,
               ),
               body: (_songs == null || _songs.length == 0)
-                  ? Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            RotatedBox(
-                              quarterTurns: 3,
-                              child: Text(
-                                "Nothing to ",
-                                textAlign: TextAlign.start,
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  color: Theme.of(context).accentColor,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                            Column(
-                              children: [
-                                Text(
-                                  "Show Here",
-                                  style: TextStyle(
-                                    fontSize: 50,
-                                    color: Theme.of(context).accentColor,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                                Text(
-                                  "Go and Play Something",
-                                  style: TextStyle(
-                                    fontSize: 23,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ],
-                    )
+                  ? EmptyScreen().emptyScreen(context, 3, "Nothing to ", 15,
+                      "Show Here", 50.0, "Go and Play Something", 23.0)
                   : ListView.builder(
                       physics: BouncingScrollPhysics(),
                       padding: EdgeInsets.only(top: 10, bottom: 10),
