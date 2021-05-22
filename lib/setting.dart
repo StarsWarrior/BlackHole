@@ -17,8 +17,8 @@ class _SettingPageState extends State<SettingPage> {
   String downloadPath = '/storage/emulated/0/Music/';
   String streamingQuality = Hive.box('settings').get('streamingQuality');
   String downloadQuality = Hive.box('settings').get('downloadQuality');
-  String themeColor = Hive.box('settings').get('themeColor');
-  int colorHue = Hive.box('settings').get('colorHue');
+  String themeColor = Hive.box('settings').get('themeColor') ?? 'Teal';
+  int colorHue = Hive.box('settings').get('colorHue') ?? 400;
   bool synced = false;
   List languages = [
     "Hindi",
@@ -332,80 +332,6 @@ class _SettingPageState extends State<SettingPage> {
                                 updateUserDetails('DOB',
                                     pickedDate.toString().split(" ").first);
                               }
-                              // showDialog(
-                              //   context: context,
-                              //   builder: (BuildContext context) {
-                              //     final controller = TextEditingController(
-                              //         text: box.get('age'));
-                              //     return AlertDialog(
-                              //       content: Column(
-                              //         mainAxisSize: MainAxisSize.min,
-                              //         children: [
-                              //           Row(
-                              //             children: [
-                              //               Text(
-                              //                 'Age',
-                              //                 style: TextStyle(
-                              //                     color: Theme.of(context)
-                              //                         .accentColor),
-                              //               ),
-                              //             ],
-                              //           ),
-                              //           SizedBox(
-                              //             height: 10,
-                              //           ),
-                              //           TextField(
-                              //               autofocus: true,
-                              //               controller: controller,
-                              //               keyboardType: TextInputType.number,
-                              //               onSubmitted: (value) {
-                              //                 box.put('age', value);
-                              //                 updateUserDetails('age', value);
-                              //                 Navigator.pop(context);
-                              //               }),
-                              //         ],
-                              //       ),
-                              //       actions: [
-                              //         TextButton(
-                              //           style: TextButton.styleFrom(
-                              //             primary:
-                              //                 Theme.of(context).brightness ==
-                              //                         Brightness.dark
-                              //                     ? Colors.white
-                              //                     : Colors.grey[700],
-                              //             //       backgroundColor: Theme.of(context).accentColor,
-                              //           ),
-                              //           child: Text(
-                              //             "Cancel",
-                              //           ),
-                              //           onPressed: () {
-                              //             Navigator.pop(context);
-                              //           },
-                              //         ),
-                              //         TextButton(
-                              //           style: TextButton.styleFrom(
-                              //             primary: Colors.white,
-                              //             backgroundColor:
-                              //                 Theme.of(context).accentColor,
-                              //           ),
-                              //           child: Text(
-                              //             "Ok",
-                              //             style: TextStyle(color: Colors.white),
-                              //           ),
-                              //           onPressed: () {
-                              //             box.put('age', controller.text);
-                              //             updateUserDetails(
-                              //                 'age', controller.text);
-                              //             Navigator.pop(context);
-                              //           },
-                              //         ),
-                              //         SizedBox(
-                              //           width: 5,
-                              //         ),
-                              //       ],
-                              //     );
-                              //   },
-                              // );
                             },
                           );
                         },
@@ -415,40 +341,24 @@ class _SettingPageState extends State<SettingPage> {
                         builder: (context, box, widget) {
                           var gender = box.get('gender');
                           return ListTile(
-                            // activeColor: Colors.pinkAccent,
-                            // activeTrackColor:
-                            // Colors.pinkAccent.withOpacity(0.5),
-                            // activeThumbImage: AssetImage('assets/female.png'),
-                            // inactiveThumbColor: Colors.blueAccent,
-                            // inactiveTrackColor:
-                            // Colors.blueAccent.withOpacity(0.5),
-                            // inactiveThumbImage: AssetImage('assets/male.png'),
                             title: Text('Gender'),
                             dense: true,
                             trailing: SizedBox(
                               width: 30,
                               height: 30,
-                              child: GestureDetector(
-                                child: Image(
-                                    image: AssetImage(gender == 'female'
-                                        ? 'assets/female.png'
-                                        : 'assets/male.png')),
-                                onTap: () {
-                                  gender == 'female'
-                                      ? gender = 'male'
-                                      : gender = 'female';
-                                  box.put('gender', gender);
-                                  updateUserDetails('gender', gender);
-                                  setState(() {});
-                                },
-                              ),
+                              child: Image(
+                                  image: AssetImage(gender == 'female'
+                                      ? 'assets/female.png'
+                                      : 'assets/male.png')),
                             ),
-                            // value: box.get('gender') ?? false,
-                            // onChanged: (val) {
-                            // box.put('gender', val);
-                            // updateUserDetails(
-                            // 'gender', val == true ? 'female' : 'male');
-                            // }
+                            onTap: () {
+                              gender == 'female'
+                                  ? gender = 'male'
+                                  : gender = 'female';
+                              box.put('gender', gender);
+                              updateUserDetails('gender', gender);
+                              setState(() {});
+                            },
                           );
                         },
                       ),
@@ -517,105 +427,151 @@ class _SettingPageState extends State<SettingPage> {
                         },
                       ),
                       ListTile(
-                        title: Text('Accent Color'),
-                        onTap: () {},
-                        trailing: DropdownButton(
-                          value: themeColor ?? 'Teal',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Theme.of(context).textTheme.bodyText1.color,
+                        title: Text('Accent Color & Hue'),
+                        subtitle: Text('$themeColor, $colorHue'),
+                        trailing: Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Container(
+                            height: 25,
+                            width: 25,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(100.0),
+                              color: Theme.of(context).accentColor,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black26,
+                                  blurRadius: 5.0,
+                                  spreadRadius: 0.0,
+                                  offset: Offset(0.0, 3.0),
+                                )
+                              ],
+                            ),
                           ),
-                          underline: SizedBox(),
-                          onChanged: (String newValue) {
-                            themeColor = newValue;
-                            colorHue = 400;
-                            updateUserDetails('themeColor', themeColor);
-                            updateUserDetails('colorHue', colorHue);
-                            currentTheme.switchColor(newValue);
-                            setState(() {});
-                          },
-                          selectedItemBuilder: (BuildContext context) {
-                            final items = [
-                              'Amber',
-                              'Blue',
-                              'Cyan',
-                              'Deep Orange',
-                              'Deep Purple',
-                              'Green',
-                              'Indigo',
-                              'Light Blue',
-                              'Light Green',
-                              'Lime',
-                              'Orange',
-                              'Pink',
-                              'Purple',
-                              'Red',
-                              'Teal',
-                              'Yellow',
-                            ];
-                            return items.map<Widget>((String item) {
+                        ),
+                        onTap: () {
+                          showModalBottomSheet(
+                            isDismissible: true,
+                            backgroundColor: Colors.transparent,
+                            context: context,
+                            builder: (BuildContext context) {
+                              List colors = [
+                                'Amber',
+                                'Blue',
+                                'Cyan',
+                                'Deep Orange',
+                                'Deep Purple',
+                                'Green',
+                                'Indigo',
+                                'Light Blue',
+                                'Light Green',
+                                'Lime',
+                                'Orange',
+                                'Pink',
+                                'Purple',
+                                'Red',
+                                'Teal',
+                                'Yellow',
+                              ];
                               return Container(
-                                  alignment: Alignment.centerRight,
-                                  width: 70,
-                                  child: Text(item, textAlign: TextAlign.end));
-                            }).toList();
-                          },
-                          items: <String>[
-                            'Amber',
-                            'Blue',
-                            'Cyan',
-                            'Deep Orange',
-                            'Deep Purple',
-                            'Green',
-                            'Indigo',
-                            'Light Blue',
-                            'Light Green',
-                            'Lime',
-                            'Orange',
-                            'Pink',
-                            'Purple',
-                            'Red',
-                            'Teal',
-                            'Yellow',
-                          ].map<DropdownMenuItem<String>>((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(
-                                value,
-                              ),
-                            );
-                          }).toList(),
-                        ),
-                        dense: true,
-                      ),
-                      ListTile(
-                        title: Text('Color Hue'),
-                        onTap: () {},
-                        trailing: DropdownButton(
-                          value: colorHue ?? 400,
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Theme.of(context).textTheme.bodyText1.color,
-                          ),
-                          underline: SizedBox(),
-                          onChanged: (int newValue) {
-                            colorHue = newValue;
-                            updateUserDetails('colorHue', newValue);
-                            currentTheme.switchHue(newValue);
-                            setState(() {});
-                          },
-                          items: <int>[
-                            100,
-                            200,
-                            400,
-                            700,
-                          ].map<DropdownMenuItem<int>>((int value) {
-                            return DropdownMenuItem<int>(
-                              value: value,
-                              child: Text('$value'),
-                            );
-                          }).toList(),
-                        ),
+                                margin: EdgeInsets.fromLTRB(25, 0, 25, 25),
+                                padding: EdgeInsets.fromLTRB(10, 15, 10, 15),
+                                decoration: BoxDecoration(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(15.0)),
+                                  gradient: LinearGradient(
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                    colors: Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? [
+                                            Colors.grey[850],
+                                            Colors.grey[900],
+                                            Colors.black,
+                                          ]
+                                        : [
+                                            Colors.white,
+                                            Theme.of(context).canvasColor,
+                                          ],
+                                  ),
+                                ),
+                                child: ListView.builder(
+                                    shrinkWrap: true,
+                                    physics: BouncingScrollPhysics(),
+                                    padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+                                    scrollDirection: Axis.vertical,
+                                    itemCount: colors.length,
+                                    itemBuilder: (context, index) {
+                                      return Padding(
+                                        padding:
+                                            const EdgeInsets.only(bottom: 15.0),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceEvenly,
+                                          children: [
+                                            for (var hue in [
+                                              100,
+                                              200,
+                                              400,
+                                              700
+                                            ])
+                                              GestureDetector(
+                                                  child: Container(
+                                                    width:
+                                                        MediaQuery.of(context)
+                                                                .size
+                                                                .width *
+                                                            0.125,
+                                                    height:
+                                                        MediaQuery.of(context)
+                                                                .size
+                                                                .width *
+                                                            0.125,
+                                                    decoration: BoxDecoration(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              100.0),
+                                                      color: MyTheme().getColor(
+                                                          colors[index], hue),
+                                                      boxShadow: [
+                                                        BoxShadow(
+                                                          color: Colors.black26,
+                                                          blurRadius: 5.0,
+                                                          spreadRadius: 0.0,
+                                                          offset:
+                                                              Offset(0.0, 3.0),
+                                                        )
+                                                      ],
+                                                    ),
+                                                    child: (themeColor ==
+                                                                colors[index] &&
+                                                            colorHue == hue)
+                                                        ? Icon(
+                                                            Icons.done_rounded)
+                                                        : SizedBox(),
+                                                  ),
+                                                  onTap: () {
+                                                    themeColor = colors[index];
+                                                    colorHue = hue;
+                                                    updateUserDetails(
+                                                        'themeColor',
+                                                        themeColor);
+                                                    updateUserDetails(
+                                                        'colorHue', colorHue);
+                                                    currentTheme.switchColor(
+                                                        colors[index]);
+                                                    currentTheme
+                                                        .switchHue(colorHue);
+                                                    setState(() {});
+                                                    Navigator.pop(context);
+                                                  }),
+                                          ],
+                                        ),
+                                      );
+                                    }),
+                              );
+                            },
+                          );
+                        },
                         dense: true,
                       ),
                       ListTile(

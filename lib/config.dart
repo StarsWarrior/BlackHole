@@ -12,14 +12,12 @@ class MyTheme with ChangeNotifier {
   void switchTheme(val) {
     _isDark = val;
     _isDark ? switchColor('Teal') : switchColor('Light Blue');
-    // notifyListeners();
   }
 
   void switchColor(val) {
     Hive.box('settings').put('themeColor', val);
     accentColor = val;
     switchHue(400);
-    // notifyListeners();
   }
 
   void switchHue(val) {
@@ -34,6 +32,46 @@ class MyTheme with ChangeNotifier {
 
   int currentHue() {
     return colorHue ?? 400;
+  }
+
+  Color getColor(color, hue) {
+    switch (color) {
+      case 'Red':
+        return Colors.redAccent[hue];
+      case 'Teal':
+        return Colors.tealAccent[hue];
+      case 'Light Blue':
+        return Colors.lightBlueAccent[hue];
+      case 'Yellow':
+        return Colors.yellowAccent[hue];
+      case 'Orange':
+        return Colors.orangeAccent[hue];
+      case 'Blue':
+        return Colors.blueAccent[hue];
+      case 'Cyan':
+        return Colors.cyanAccent[hue];
+      case 'Lime':
+        return Colors.limeAccent[hue];
+      case 'Pink':
+        return Colors.pinkAccent[hue];
+      case 'Green':
+        return Colors.greenAccent[hue];
+      case 'Amber':
+        return Colors.amberAccent[hue];
+      case 'Indigo':
+        return Colors.indigoAccent[hue];
+      case 'Purple':
+        return Colors.purpleAccent[hue];
+      case 'Deep Orange':
+        return Colors.deepOrangeAccent[hue];
+      case 'Deep Purple':
+        return Colors.deepPurpleAccent[hue];
+      case 'Light Green':
+        return Colors.lightGreenAccent[hue];
+
+      default:
+        return _isDark ? Colors.tealAccent[400] : Colors.lightBlueAccent[400];
+    }
   }
 
   Color currentColor() {
