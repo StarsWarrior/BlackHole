@@ -157,6 +157,11 @@ class _DownloadedSongsState extends State<DownloadedSongs>
           .last
           .toUpperCase()
           .compareTo(b["id"].split('/').last.toString().toUpperCase()));
+      _videos.sort((a, b) => a["id"]
+          .split('/')
+          .last
+          .toUpperCase()
+          .compareTo(b["id"].split('/').last.toString().toUpperCase()));
     }
     if (sortValue == 1) {
       _songs.sort((b, a) => a["id"]
@@ -164,12 +169,19 @@ class _DownloadedSongsState extends State<DownloadedSongs>
           .last
           .toUpperCase()
           .compareTo(b["id"].split('/').last.toString().toUpperCase()));
+      _videos.sort((b, a) => a["id"]
+          .split('/')
+          .last
+          .toUpperCase()
+          .compareTo(b["id"].split('/').last.toString().toUpperCase()));
     }
     if (sortValue == 2) {
       _songs.sort((b, a) => a["lastModified"].compareTo(b["lastModified"]));
+      _videos.sort((b, a) => a["lastModified"].compareTo(b["lastModified"]));
     }
     if (sortValue == 3) {
       _songs.shuffle();
+      _videos.shuffle();
     }
     albumSortValue ??= 2;
     if (albumSortValue == 0) {
@@ -281,12 +293,17 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                         shape: RoundedRectangleBorder(
                             borderRadius:
                                 BorderRadius.all(Radius.circular(7.0))),
-                        onSelected: (currentIndex == 0 || currentIndex == 4)
+                        onSelected: (currentIndex == 0 || currentIndex == 3)
                             ? (value) {
                                 sortValue = value;
                                 Hive.box('settings').put('sortValue', value);
                                 if (sortValue == 0) {
                                   _songs.sort((a, b) => a["id"]
+                                      .split('/')
+                                      .last
+                                      .toUpperCase()
+                                      .compareTo(b["id"].split('/').last));
+                                  _videos.sort((a, b) => a["id"]
                                       .split('/')
                                       .last
                                       .toUpperCase()
@@ -298,13 +315,21 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                                       .last
                                       .toUpperCase()
                                       .compareTo(b["id"].split('/').last));
+                                  _videos.sort((b, a) => a["id"]
+                                      .split('/')
+                                      .last
+                                      .toUpperCase()
+                                      .compareTo(b["id"].split('/').last));
                                 }
                                 if (sortValue == 2) {
                                   _songs.sort((b, a) => a["lastModified"]
                                       .compareTo(b["lastModified"]));
+                                  _videos.sort((b, a) => a["lastModified"]
+                                      .compareTo(b["lastModified"]));
                                 }
                                 if (sortValue == 3) {
                                   _songs.shuffle();
+                                  _videos.shuffle();
                                 }
                                 setState(() {});
                               }
@@ -356,7 +381,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                                 }
                                 setState(() {});
                               },
-                        itemBuilder: (currentIndex == 0 || currentIndex == 4)
+                        itemBuilder: (currentIndex == 0 || currentIndex == 3)
                             ? (context) => [
                                   PopupMenuItem(
                                     value: 0,
