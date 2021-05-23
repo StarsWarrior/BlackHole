@@ -24,6 +24,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
   List sortedAlbumKeysList;
   List sortedArtistKeysList;
   List _songs = [];
+  List _videos = [];
   bool added = false;
   int sortValue = Hive.box('settings').get('sortValue');
   int albumSortValue = Hive.box('settings').get('albumSortValue');
@@ -32,7 +33,8 @@ class _DownloadedSongsState extends State<DownloadedSongs>
 
   @override
   void initState() {
-    _tcontroller = TabController(length: 3, vsync: this);
+    _tcontroller =
+        TabController(length: widget.type == 'all' ? 4 : 3, vsync: this);
     _tcontroller.addListener(changeTitle); // Registering listener
     super.initState();
   }
@@ -120,6 +122,29 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                 MapEntry(artistTag, [data])
               ]);
             }
+          }
+        } catch (e) {}
+      }
+
+      if (widget.type == 'all' &&
+          (entity.path.endsWith('.mp4') ||
+              entity.path.endsWith('.mkv') ||
+              entity.path.endsWith('.webm'))) {
+        try {
+          FileStat stats = await entity.stat();
+          if (stats.size < 1048576) {
+            print("Size of mediaItem found less than 1 MB");
+            debugPrint("Ignoring media: ${entity.path}");
+          } else {
+            Map data = {
+              'id': entity.path,
+              'image': null,
+              'title': entity.path.split('/').last.toString(),
+              'artist': '',
+              'album': '',
+              'lastModified': stats.modified,
+            };
+            _videos.add(data);
           }
         } catch (e) {}
       }
@@ -216,24 +241,39 @@ class _DownloadedSongsState extends State<DownloadedSongs>
         children: [
           Expanded(
             child: DefaultTabController(
-              length: 3,
+              length: widget.type == 'all' ? 4 : 3,
               child: Scaffold(
                 backgroundColor: Colors.transparent,
                 appBar: AppBar(
                   title: Text(widget.type == 'all' ? 'My Music' : 'Downloaded'),
                   bottom: TabBar(
                     controller: _tcontroller,
-                    tabs: [
-                      Tab(
-                        text: 'Songs',
-                      ),
-                      Tab(
-                        text: 'Albums',
-                      ),
-                      Tab(
-                        text: 'Artists',
-                      ),
-                    ],
+                    tabs: widget.type == 'all'
+                        ? [
+                            Tab(
+                              text: 'Songs',
+                            ),
+                            Tab(
+                              text: 'Albums',
+                            ),
+                            Tab(
+                              text: 'Artists',
+                            ),
+                            Tab(
+                              text: 'Videos',
+                            )
+                          ]
+                        : [
+                            Tab(
+                              text: 'Songs',
+                            ),
+                            Tab(
+                              text: 'Albums',
+                            ),
+                            Tab(
+                              text: 'Artists',
+                            ),
+                          ],
                   ),
                   actions: [
                     PopupMenuButton(
@@ -241,7 +281,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                         shape: RoundedRectangleBorder(
                             borderRadius:
                                 BorderRadius.all(Radius.circular(7.0))),
-                        onSelected: currentIndex == 0
+                        onSelected: (currentIndex == 0 || currentIndex == 4)
                             ? (value) {
                                 sortValue = value;
                                 Hive.box('settings').put('sortValue', value);
@@ -316,7 +356,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                                 }
                                 setState(() {});
                               },
-                        itemBuilder: currentIndex == 0
+                        itemBuilder: (currentIndex == 0 || currentIndex == 4)
                             ? (context) => [
                                   PopupMenuItem(
                                     value: 0,
@@ -529,310 +569,20 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                               )),
                         ),
                       )
-                    : _songs.length == 0
-                        ? TabBarView(controller: _tcontroller, children: [
-                            EmptyScreen().emptyScreen(
-                                context,
-                                3,
-                                "Nothing to ",
-                                15.0,
-                                "Show Here",
-                                45,
-                                "Download Something",
-                                23.0),
-                            EmptyScreen().emptyScreen(
-                                context,
-                                3,
-                                "Nothing to ",
-                                15.0,
-                                "Show Here",
-                                45,
-                                "Download Something",
-                                23.0),
-                            EmptyScreen().emptyScreen(
-                                context,
-                                3,
-                                "Nothing to ",
-                                15.0,
-                                "Show Here",
-                                45,
-                                "Download Something",
-                                23.0),
-                          ])
-                        : TabBarView(controller: _tcontroller, children: [
-                            ListView.builder(
-                                physics: BouncingScrollPhysics(),
-                                padding: EdgeInsets.only(top: 20, bottom: 10),
-                                shrinkWrap: true,
-                                itemCount: _songs.length,
-                                itemBuilder: (context, index) {
-                                  return _songs.length == 0
-                                      ? SizedBox()
-                                      : ListTile(
-                                          leading: Card(
-                                            elevation: 5,
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(7.0),
-                                            ),
-                                            clipBehavior: Clip.antiAlias,
-                                            child: Stack(
-                                              children: [
-                                                Image(
-                                                  image: AssetImage(
-                                                      'assets/cover.jpg'),
-                                                ),
-                                                _songs[index]['image'] == null
-                                                    ? SizedBox()
-                                                    : Image(
-                                                        image: MemoryImage(
-                                                            _songs[index]
-                                                                ['image']),
-                                                      )
-                                              ],
-                                            ),
-                                          ),
-                                          title: Text(
-                                              '${_songs[index]['id'].split('/').last}'),
-                                          trailing: PopupMenuButton(
-                                            icon: Icon(Icons.more_vert_rounded),
-                                            shape: RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.all(
-                                                    Radius.circular(7.0))),
-                                            onSelected: (value) async {
-                                              try {
-                                                File(_songs[index]['id'])
-                                                    .delete();
-                                                ScaffoldMessenger.of(context)
-                                                    .showSnackBar(
-                                                  SnackBar(
-                                                    elevation: 6,
-                                                    backgroundColor:
-                                                        Colors.grey[900],
-                                                    behavior: SnackBarBehavior
-                                                        .floating,
-                                                    content: Text(
-                                                      'Deleted ${_songs[index]['id'].split('/').last}',
-                                                      style: TextStyle(
-                                                          color: Colors.white),
-                                                    ),
-                                                    action: SnackBarAction(
-                                                      textColor:
-                                                          Theme.of(context)
-                                                              .accentColor,
-                                                      label: 'Ok',
-                                                      onPressed: () {},
-                                                    ),
-                                                  ),
-                                                );
-                                                if (_albums[_songs[index]
-                                                            ['album']]
-                                                        .length ==
-                                                    1) {
-                                                  sortedAlbumKeysList.remove(
-                                                      _songs[index]['album']);
-                                                }
-
-                                                _albums[_songs[index]['album']]
-                                                    .remove(_songs[index]);
-                                                if (_artists[_songs[index]
-                                                            ['artist']]
-                                                        .length ==
-                                                    1) {
-                                                  sortedArtistKeysList.remove(
-                                                      _songs[index]['artist']);
-                                                }
-
-                                                _artists[_songs[index]
-                                                        ['artist']]
-                                                    .remove(_songs[index]);
-                                                _songs.remove(_songs[index]);
-                                              } catch (e) {
-                                                ScaffoldMessenger.of(context)
-                                                    .showSnackBar(
-                                                  SnackBar(
-                                                    elevation: 6,
-                                                    backgroundColor:
-                                                        Colors.grey[900],
-                                                    behavior: SnackBarBehavior
-                                                        .floating,
-                                                    content: Text(
-                                                      'Failed to delete ${_songs[index]['id']}',
-                                                      style: TextStyle(
-                                                          color: Colors.white),
-                                                    ),
-                                                    action: SnackBarAction(
-                                                      textColor:
-                                                          Theme.of(context)
-                                                              .accentColor,
-                                                      label: 'Ok',
-                                                      onPressed: () {},
-                                                    ),
-                                                  ),
-                                                );
-                                              }
-                                              setState(() {});
-                                            },
-                                            itemBuilder: (context) => [
-                                              PopupMenuItem(
-                                                value: 0,
-                                                child: Row(
-                                                  children: [
-                                                    Icon(Icons.delete),
-                                                    Spacer(),
-                                                    Text('Delete'),
-                                                    Spacer(),
-                                                  ],
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                          onTap: () {
-                                            Navigator.of(context).push(
-                                              PageRouteBuilder(
-                                                opaque: false, // set to false
-                                                pageBuilder: (_, __, ___) =>
-                                                    PlayScreen(
-                                                  data: {
-                                                    'response': _songs,
-                                                    'index': index,
-                                                    'offline': true
-                                                  },
-                                                  fromMiniplayer: false,
-                                                ),
-                                              ),
-                                            );
-                                          },
-                                        );
-                                }),
-                            //
-                            // Albums
-                            //
-                            ListView.builder(
-                                physics: BouncingScrollPhysics(),
-                                padding: EdgeInsets.only(top: 20, bottom: 10),
-                                shrinkWrap: true,
-                                itemCount: sortedAlbumKeysList.length,
-                                itemBuilder: (context, index) {
-                                  return sortedAlbumKeysList.length == 0
-                                      ? SizedBox()
-                                      : ListTile(
-                                          leading: Card(
-                                            elevation: 5,
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(7.0),
-                                            ),
-                                            clipBehavior: Clip.antiAlias,
-                                            child: Stack(
-                                              children: [
-                                                Image(
-                                                  image: AssetImage(
-                                                      'assets/album.png'),
-                                                ),
-                                                _albums[sortedAlbumKeysList[
-                                                                index]][0]
-                                                            ['image'] ==
-                                                        null
-                                                    ? SizedBox()
-                                                    : Image(
-                                                        image: MemoryImage(_albums[
-                                                                sortedAlbumKeysList[
-                                                                    index]][0]
-                                                            ['image']),
-                                                      )
-                                              ],
-                                            ),
-                                          ),
-                                          title: Text(
-                                              '${sortedAlbumKeysList[index]}'),
-                                          subtitle: Text(
-                                            _albums[sortedAlbumKeysList[index]]
-                                                        .length ==
-                                                    1
-                                                ? '${_albums[sortedAlbumKeysList[index]].length} Song'
-                                                : '${_albums[sortedAlbumKeysList[index]].length} Songs',
-                                          ),
-                                          onTap: () {
-                                            Navigator.of(context).push(
-                                              PageRouteBuilder(
-                                                opaque: false, // set to false
-                                                pageBuilder: (_, __, ___) =>
-                                                    SongsList(
-                                                  data: _albums[
-                                                      sortedAlbumKeysList[
-                                                          index]],
-                                                ),
-                                              ),
-                                            );
-                                          },
-                                        );
-                                }),
-                            //
-                            // Artists
-                            //
-                            ListView.builder(
-                                physics: BouncingScrollPhysics(),
-                                padding: EdgeInsets.only(top: 20, bottom: 10),
-                                shrinkWrap: true,
-                                itemCount: sortedArtistKeysList.length,
-                                itemBuilder: (context, index) {
-                                  return sortedArtistKeysList.length == 0
-                                      ? SizedBox()
-                                      : ListTile(
-                                          leading: Card(
-                                            elevation: 5,
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(7.0),
-                                            ),
-                                            clipBehavior: Clip.antiAlias,
-                                            child: Stack(
-                                              children: [
-                                                Image(
-                                                  image: AssetImage(
-                                                      'assets/artist.png'),
-                                                ),
-                                                _artists[sortedArtistKeysList[
-                                                                index]][0]
-                                                            ['image'] ==
-                                                        null
-                                                    ? SizedBox()
-                                                    : Image(
-                                                        image: MemoryImage(_artists[
-                                                                sortedArtistKeysList[
-                                                                    index]][0]
-                                                            ['image']),
-                                                      )
-                                              ],
-                                            ),
-                                          ),
-                                          title: Text(
-                                              '${sortedArtistKeysList[index]}'),
-                                          subtitle: Text(
-                                            _artists[sortedArtistKeysList[
-                                                            index]]
-                                                        .length ==
-                                                    1
-                                                ? '${_artists[sortedArtistKeysList[index]].length} Song'
-                                                : '${_artists[sortedArtistKeysList[index]].length} Songs',
-                                          ),
-                                          onTap: () {
-                                            Navigator.of(context).push(
-                                              PageRouteBuilder(
-                                                opaque: false, // set to false
-                                                pageBuilder: (_, __, ___) =>
-                                                    SongsList(
-                                                  data: _artists[
-                                                      sortedArtistKeysList[
-                                                          index]],
-                                                ),
-                                              ),
-                                            );
-                                          },
-                                        );
-                                }),
-                          ]),
+                    : TabBarView(
+                        controller: _tcontroller,
+                        children: widget.type == 'all'
+                            ? [
+                                songsTab(),
+                                albumsTab(),
+                                artistsTab(),
+                                videosTab(),
+                              ]
+                            : [
+                                songsTab(),
+                                albumsTab(),
+                                artistsTab(),
+                              ]),
               ),
             ),
           ),
@@ -840,5 +590,336 @@ class _DownloadedSongsState extends State<DownloadedSongs>
         ],
       ),
     );
+  }
+
+  songsTab() {
+    return ListView.builder(
+        physics: BouncingScrollPhysics(),
+        padding: EdgeInsets.only(top: 20, bottom: 10),
+        shrinkWrap: true,
+        itemCount: _songs.length,
+        itemBuilder: (context, index) {
+          return _songs.length == 0
+              ? EmptyScreen().emptyScreen(context, 3, "Nothing to ", 15.0,
+                  "Show Here", 45, "Download Something", 23.0)
+              : ListTile(
+                  leading: Card(
+                    elevation: 5,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(7.0),
+                    ),
+                    clipBehavior: Clip.antiAlias,
+                    child: Stack(
+                      children: [
+                        Image(
+                          image: AssetImage('assets/cover.jpg'),
+                        ),
+                        _songs[index]['image'] == null
+                            ? SizedBox()
+                            : Image(
+                                image: MemoryImage(_songs[index]['image']),
+                              )
+                      ],
+                    ),
+                  ),
+                  title: Text('${_songs[index]['id'].split('/').last}'),
+                  trailing: PopupMenuButton(
+                    icon: Icon(Icons.more_vert_rounded),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(7.0))),
+                    onSelected: (value) async {
+                      try {
+                        File(_songs[index]['id']).delete();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            elevation: 6,
+                            backgroundColor: Colors.grey[900],
+                            behavior: SnackBarBehavior.floating,
+                            content: Text(
+                              'Deleted ${_songs[index]['id'].split('/').last}',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            action: SnackBarAction(
+                              textColor: Theme.of(context).accentColor,
+                              label: 'Ok',
+                              onPressed: () {},
+                            ),
+                          ),
+                        );
+                        if (_albums[_songs[index]['album']].length == 1) {
+                          sortedAlbumKeysList.remove(_songs[index]['album']);
+                        }
+
+                        _albums[_songs[index]['album']].remove(_songs[index]);
+                        if (_artists[_songs[index]['artist']].length == 1) {
+                          sortedArtistKeysList.remove(_songs[index]['artist']);
+                        }
+
+                        _artists[_songs[index]['artist']].remove(_songs[index]);
+                        _songs.remove(_songs[index]);
+                      } catch (e) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            elevation: 6,
+                            backgroundColor: Colors.grey[900],
+                            behavior: SnackBarBehavior.floating,
+                            content: Text(
+                              'Failed to delete ${_songs[index]['id']}',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            action: SnackBarAction(
+                              textColor: Theme.of(context).accentColor,
+                              label: 'Ok',
+                              onPressed: () {},
+                            ),
+                          ),
+                        );
+                      }
+                      setState(() {});
+                    },
+                    itemBuilder: (context) => [
+                      PopupMenuItem(
+                        value: 0,
+                        child: Row(
+                          children: [
+                            Icon(Icons.delete),
+                            Spacer(),
+                            Text('Delete'),
+                            Spacer(),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  onTap: () {
+                    Navigator.of(context).push(
+                      PageRouteBuilder(
+                        opaque: false, // set to false
+                        pageBuilder: (_, __, ___) => PlayScreen(
+                          data: {
+                            'response': _songs,
+                            'index': index,
+                            'offline': true
+                          },
+                          fromMiniplayer: false,
+                        ),
+                      ),
+                    );
+                  },
+                );
+        });
+  }
+
+  albumsTab() {
+    return ListView.builder(
+        physics: BouncingScrollPhysics(),
+        padding: EdgeInsets.only(top: 20, bottom: 10),
+        shrinkWrap: true,
+        itemCount: sortedAlbumKeysList.length,
+        itemBuilder: (context, index) {
+          return sortedAlbumKeysList.length == 0
+              ? EmptyScreen().emptyScreen(context, 3, "Nothing to ", 15.0,
+                  "Show Here", 45, "Download Something", 23.0)
+              : ListTile(
+                  leading: Card(
+                    elevation: 5,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(7.0),
+                    ),
+                    clipBehavior: Clip.antiAlias,
+                    child: Stack(
+                      children: [
+                        Image(
+                          image: AssetImage('assets/album.png'),
+                        ),
+                        _albums[sortedAlbumKeysList[index]][0]['image'] == null
+                            ? SizedBox()
+                            : Image(
+                                image: MemoryImage(
+                                    _albums[sortedAlbumKeysList[index]][0]
+                                        ['image']),
+                              )
+                      ],
+                    ),
+                  ),
+                  title: Text('${sortedAlbumKeysList[index]}'),
+                  subtitle: Text(
+                    _albums[sortedAlbumKeysList[index]].length == 1
+                        ? '${_albums[sortedAlbumKeysList[index]].length} Song'
+                        : '${_albums[sortedAlbumKeysList[index]].length} Songs',
+                  ),
+                  onTap: () {
+                    Navigator.of(context).push(
+                      PageRouteBuilder(
+                        opaque: false, // set to false
+                        pageBuilder: (_, __, ___) => SongsList(
+                          data: _albums[sortedAlbumKeysList[index]],
+                        ),
+                      ),
+                    );
+                  },
+                );
+        });
+  }
+
+  artistsTab() {
+    return ListView.builder(
+        physics: BouncingScrollPhysics(),
+        padding: EdgeInsets.only(top: 20, bottom: 10),
+        shrinkWrap: true,
+        itemCount: sortedArtistKeysList.length,
+        itemBuilder: (context, index) {
+          return sortedArtistKeysList.length == 0
+              ? EmptyScreen().emptyScreen(context, 3, "Nothing to ", 15.0,
+                  "Show Here", 45, "Download Something", 23.0)
+              : ListTile(
+                  leading: Card(
+                    elevation: 5,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(7.0),
+                    ),
+                    clipBehavior: Clip.antiAlias,
+                    child: Stack(
+                      children: [
+                        Image(
+                          image: AssetImage('assets/artist.png'),
+                        ),
+                        _artists[sortedArtistKeysList[index]][0]['image'] ==
+                                null
+                            ? SizedBox()
+                            : Image(
+                                image: MemoryImage(
+                                    _artists[sortedArtistKeysList[index]][0]
+                                        ['image']),
+                              )
+                      ],
+                    ),
+                  ),
+                  title: Text('${sortedArtistKeysList[index]}'),
+                  subtitle: Text(
+                    _artists[sortedArtistKeysList[index]].length == 1
+                        ? '${_artists[sortedArtistKeysList[index]].length} Song'
+                        : '${_artists[sortedArtistKeysList[index]].length} Songs',
+                  ),
+                  onTap: () {
+                    Navigator.of(context).push(
+                      PageRouteBuilder(
+                        opaque: false, // set to false
+                        pageBuilder: (_, __, ___) => SongsList(
+                          data: _artists[sortedArtistKeysList[index]],
+                        ),
+                      ),
+                    );
+                  },
+                );
+        });
+  }
+
+  videosTab() {
+    return ListView.builder(
+        physics: BouncingScrollPhysics(),
+        padding: EdgeInsets.only(top: 20, bottom: 10),
+        shrinkWrap: true,
+        itemCount: _videos.length,
+        itemBuilder: (context, index) {
+          return _videos.length == 0
+              ? EmptyScreen().emptyScreen(context, 3, "Nothing to ", 15.0,
+                  "Show Here", 45, "Download Something", 23.0)
+              : ListTile(
+                  leading: Card(
+                    elevation: 5,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(7.0),
+                    ),
+                    clipBehavior: Clip.antiAlias,
+                    child: Stack(
+                      children: [
+                        Image(
+                          image: AssetImage('assets/cover.jpg'),
+                        ),
+                        _videos[index]['image'] == null
+                            ? SizedBox()
+                            : Image(
+                                image: MemoryImage(_videos[index]['image']),
+                              )
+                      ],
+                    ),
+                  ),
+                  title: Text('${_videos[index]['id'].split('/').last}'),
+                  trailing: PopupMenuButton(
+                    icon: Icon(Icons.more_vert_rounded),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(7.0))),
+                    onSelected: (value) async {
+                      try {
+                        File(_videos[index]['id']).delete();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            elevation: 6,
+                            backgroundColor: Colors.grey[900],
+                            behavior: SnackBarBehavior.floating,
+                            content: Text(
+                              'Deleted ${_videos[index]['id'].split('/').last}',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            action: SnackBarAction(
+                              textColor: Theme.of(context).accentColor,
+                              label: 'Ok',
+                              onPressed: () {},
+                            ),
+                          ),
+                        );
+                        _videos.remove(_videos[index]);
+                      } catch (e) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            elevation: 6,
+                            backgroundColor: Colors.grey[900],
+                            behavior: SnackBarBehavior.floating,
+                            content: Text(
+                              'Failed to delete ${_videos[index]['id']}',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            action: SnackBarAction(
+                              textColor: Theme.of(context).accentColor,
+                              label: 'Ok',
+                              onPressed: () {},
+                            ),
+                          ),
+                        );
+                      }
+                      setState(() {});
+                    },
+                    itemBuilder: (context) => [
+                      PopupMenuItem(
+                        value: 0,
+                        child: Row(
+                          children: [
+                            Icon(Icons.delete),
+                            Spacer(),
+                            Text('Delete'),
+                            Spacer(),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  onTap: () {
+                    Navigator.of(context).push(
+                      PageRouteBuilder(
+                        opaque: false, // set to false
+                        pageBuilder: (_, __, ___) => PlayScreen(
+                          data: {
+                            'response': _videos,
+                            'index': index,
+                            'offline': true
+                          },
+                          fromMiniplayer: false,
+                        ),
+                      ),
+                    );
+                  },
+                );
+        });
   }
 }
