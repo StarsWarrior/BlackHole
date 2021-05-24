@@ -7,6 +7,7 @@ import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:package_info/package_info.dart';
 
 class SettingPage extends StatefulWidget {
   @override
@@ -14,7 +15,11 @@ class SettingPage extends StatefulWidget {
 }
 
 class _SettingPageState extends State<SettingPage> {
+<<<<<<< HEAD
   double appVersion = 1.4;
+=======
+  double appVersion;
+>>>>>>> b843d55 (final wrap-ups for v1.6)
   String downloadPath = '/storage/emulated/0/Music/';
   String streamingQuality = Hive.box('settings').get('streamingQuality');
   String downloadQuality = Hive.box('settings').get('downloadQuality');
@@ -44,15 +49,28 @@ class _SettingPageState extends State<SettingPage> {
       Hive.box('settings').get('preferredLanguage')?.toList() ?? ['Hindi'];
 
   @override
-  Widget build(BuildContext context) {
-    updateUserDetails(key, value) {
-      final userID = Hive.box('settings').get('userID');
-      final dbRef = FirebaseDatabase.instance.reference().child("Users");
-      dbRef.child(userID).update({"$key": "$value"});
-    }
+  void initState() {
+    main();
+    super.initState();
+  }
 
+  void main() async {
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    List temp = packageInfo.version.split('.');
+    temp.removeLast();
+    appVersion = double.parse(temp.join('.'));
+    setState(() {});
+  }
+
+  updateUserDetails(key, value) {
+    final userID = Hive.box('settings').get('userID');
+    final dbRef = FirebaseDatabase.instance.reference().child("Users");
+    dbRef.child(userID).update({"$key": "$value"});
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
-      // backgroundColor: Colors.transparent,
       appBar: AppBar(
         backgroundColor: Theme.of(context).brightness == Brightness.dark
             ? Colors.transparent
@@ -768,7 +786,7 @@ class _SettingPageState extends State<SettingPage> {
                                               Hive.box('settings')
                                                   .put('region', region);
                                               updateUserDetails(
-                                                  "country", preferredLanguage);
+                                                  "country", region);
                                               Navigator.pop(context);
                                             },
                                           );

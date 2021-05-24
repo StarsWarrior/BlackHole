@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:package_info/package_info.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AboutScreen extends StatefulWidget {
@@ -7,7 +8,26 @@ class AboutScreen extends StatefulWidget {
 }
 
 class _AboutScreenState extends State<AboutScreen> {
+<<<<<<< HEAD
   double appVersion = 1.4;
+=======
+  double appVersion;
+
+  @override
+  void initState() {
+    main();
+    super.initState();
+  }
+
+  void main() async {
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    List temp = packageInfo.version.split('.');
+    temp.removeLast();
+    appVersion = double.parse(temp.join('.'));
+    setState(() {});
+  }
+
+>>>>>>> b843d55 (final wrap-ups for v1.6)
   @override
   Widget build(BuildContext context) {
     return Container(

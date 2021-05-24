@@ -258,7 +258,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
               child: Scaffold(
                 backgroundColor: Colors.transparent,
                 appBar: AppBar(
-                  title: Text(widget.type == 'all' ? 'My Music' : 'Downloaded'),
+                  title: Text(widget.type == 'all' ? 'My Music' : 'Downloads'),
                   bottom: TabBar(
                     controller: _tcontroller,
                     tabs: widget.type == 'all'

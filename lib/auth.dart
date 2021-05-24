@@ -1,9 +1,10 @@
 import 'dart:ui';
-
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:package_info/package_info.dart';
+import 'package:device_info/device_info.dart';
 
 class AuthScreen extends StatefulWidget {
   @override
@@ -11,14 +12,41 @@ class AuthScreen extends StatefulWidget {
 }
 
 class _AuthScreenState extends State<AuthScreen> {
+<<<<<<< HEAD
   double appVersion = 1.4;
+=======
+  double appVersion;
+  Map deviceInfo = {};
+>>>>>>> b843d55 (final wrap-ups for v1.6)
   String gender = "male";
   static FirebaseAnalytics analytics = FirebaseAnalytics();
   final dbRef = FirebaseDatabase.instance.reference().child("Users");
 
-  Future _sendAnalytics(name, gender) async {
-    // final FirebaseAnalytics analytics = FirebaseAnalytics();
+  @override
+  void initState() {
+    main();
+    super.initState();
+  }
 
+  void main() async {
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    DeviceInfoPlugin info = DeviceInfoPlugin();
+    AndroidDeviceInfo androidInfo = await info.androidInfo;
+    List temp = packageInfo.version.split('.');
+    temp.removeLast();
+    appVersion = double.parse(temp.join('.'));
+    deviceInfo.addAll({
+      'Brand': androidInfo.brand,
+      'Device': androidInfo.device,
+      'isPhysicalDevice': androidInfo.isPhysicalDevice,
+      'Model': androidInfo.model,
+      'Product': androidInfo.product,
+      'androidVersion': androidInfo.version.release,
+    });
+    setState(() {});
+  }
+
+  Future _sendAnalytics(name, gender) async {
     DatabaseReference pushedPostRef = dbRef.push();
     String postId = pushedPostRef.key;
     pushedPostRef.set({
@@ -40,7 +68,7 @@ class _AuthScreenState extends State<AuthScreen> {
           .toString()
           .split('.')
           .first,
-      "deviceInfo": "",
+      "deviceInfo": deviceInfo,
       "preferredLanguage": ["Hindi"],
     });
     Hive.box('settings').put('userID', postId);
@@ -55,8 +83,6 @@ class _AuthScreenState extends State<AuthScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Firebase.initializeApp();
-    // _auth = FirebaseAuth.instance;
     final controller = TextEditingController();
     return Container(
       decoration: BoxDecoration(
@@ -91,7 +117,6 @@ class _AuthScreenState extends State<AuthScreen> {
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                // stops: [0, 0.2, 0.8, 1],
                 colors: Theme.of(context).brightness == Brightness.dark
                     ? [
                         Colors.grey[850].withOpacity(0.8),
@@ -224,7 +249,14 @@ class _AuthScreenState extends State<AuthScreen> {
                             child: TextField(
                                 controller: controller,
                                 decoration: InputDecoration(
-                                  prefixIcon: Icon(Icons.person),
+                                  focusedBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(
+                                        width: 1.5, color: Colors.transparent),
+                                  ),
+                                  prefixIcon: Icon(
+                                    Icons.person,
+                                    color: Theme.of(context).accentColor,
+                                  ),
                                   border: InputBorder.none,
                                   hintText: "Your Name",
                                 ),

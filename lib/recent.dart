@@ -50,7 +50,7 @@ class _RecentlyPlayedState extends State<RecentlyPlayed> {
             child: Scaffold(
               backgroundColor: Colors.transparent,
               appBar: AppBar(
-                title: Text('Recently Played'),
+                title: Text('Last Session'),
                 centerTitle: true,
                 backgroundColor: Theme.of(context).brightness == Brightness.dark
                     ? Colors.transparent

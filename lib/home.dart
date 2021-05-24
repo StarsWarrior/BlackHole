@@ -13,6 +13,7 @@ import 'trending.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'miniplayer.dart';
+import 'package:package_info/package_info.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -22,7 +23,11 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
   Box settingsBox;
+<<<<<<< HEAD
   double appVersion = 1.4;
+=======
+  double appVersion;
+>>>>>>> b843d55 (final wrap-ups for v1.6)
   bool checked = false;
   bool update = false;
   bool status = false;
@@ -62,6 +67,12 @@ class _HomePageState extends State<HomePage> {
       });
       final dbRef =
           FirebaseDatabase.instance.reference().child("LatestVersion");
+
+      PackageInfo.fromPlatform().then((PackageInfo packageInfo) {
+        List temp = packageInfo.version.split('.');
+        temp.removeLast();
+        appVersion = double.parse(temp.join('.'));
+      });
       dbRef.once().then((DataSnapshot snapshot) {
         print('Data : ${snapshot.value}');
         if (double.parse(snapshot.value) > appVersion) {
@@ -254,14 +265,6 @@ class _HomePageState extends State<HomePage> {
                                                             'email',
                                                             _controller2.text
                                                                 .trim());
-                                                        // _analytics.logEvent(
-                                                        //   name: 'Changed_Name_Email',
-                                                        //   parameters: <String,
-                                                        //       dynamic>{
-                                                        //     'Name': value,
-                                                        //     'Email': controller2.text,
-                                                        //   },
-                                                        // );
                                                       }),
                                                   SizedBox(
                                                     height: 30,
@@ -650,8 +653,18 @@ class _HomePageState extends State<HomePage> {
                                         child: TextField(
                                           controller: controller,
                                           decoration: InputDecoration(
-                                            prefixIcon:
-                                                Icon(Icons.search_rounded),
+                                            focusedBorder: UnderlineInputBorder(
+                                              borderSide: BorderSide(
+                                                  width: 1.5,
+                                                  color: Colors.transparent),
+                                            ),
+                                            fillColor:
+                                                Theme.of(context).accentColor,
+                                            prefixIcon: Icon(
+                                              Icons.search_rounded,
+                                              color:
+                                                  Theme.of(context).accentColor,
+                                            ),
                                             border: InputBorder.none,
                                             hintText:
                                                 "Songs, artists or podcasts",
@@ -784,12 +797,12 @@ class _HomePageState extends State<HomePage> {
 
                       SalomonBottomBarItem(
                         icon: Icon(Icons.trending_up_rounded),
-                        title: Text("Local Top 200"),
+                        title: Text("Local Top Chart"),
                         selectedColor: Theme.of(context).accentColor,
                       ),
                       SalomonBottomBarItem(
                         icon: Icon(Icons.bar_chart_rounded),
-                        title: Text("Global Top 200"),
+                        title: Text("Global Top Chart"),
                         selectedColor: Theme.of(context).accentColor,
                       ),
                       SalomonBottomBarItem(

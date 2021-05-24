@@ -98,7 +98,8 @@ class _MyAppState extends State<MyApp> {
         ),
         inputDecorationTheme: InputDecorationTheme(
           focusedBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: currentTheme.currentColor())),
+              borderSide:
+                  BorderSide(width: 1.5, color: currentTheme.currentColor())),
         ),
         visualDensity: VisualDensity.adaptivePlatformDensity,
         brightness: Brightness.light,
@@ -113,7 +114,8 @@ class _MyAppState extends State<MyApp> {
         ),
         inputDecorationTheme: InputDecorationTheme(
           focusedBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: currentTheme.currentColor())),
+              borderSide:
+                  BorderSide(width: 1.5, color: currentTheme.currentColor())),
         ),
         visualDensity: VisualDensity.adaptivePlatformDensity,
         brightness: Brightness.dark,

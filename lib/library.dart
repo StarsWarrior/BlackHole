@@ -61,7 +61,7 @@ class _LibraryPageState extends State<LibraryPage> {
           },
         ),
         ListTile(
-          title: Text('Recently Played'),
+          title: Text('Last Session'),
           leading: Icon(
             Icons.history_rounded,
             color: Theme.of(context).brightness == Brightness.dark
@@ -73,7 +73,7 @@ class _LibraryPageState extends State<LibraryPage> {
           },
         ),
         ListTile(
-          title: Text('Favorite Songs'),
+          title: Text('Favorites'),
           leading: Icon(
             Icons.favorite_rounded,
             color: Theme.of(context).brightness == Brightness.dark
@@ -90,21 +90,6 @@ class _LibraryPageState extends State<LibraryPage> {
           },
         ),
         ListTile(
-          title: Text('Downloaded'),
-          leading: Icon(
-            Icons.download_done_rounded,
-            color: Theme.of(context).brightness == Brightness.dark
-                ? null
-                : Colors.grey[700],
-          ),
-          onTap: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => DownloadedSongs(type: 'downloaded')));
-          },
-        ),
-        ListTile(
           title: Text('My Music'),
           leading: Icon(
             Icons.music_note_rounded,
@@ -117,6 +102,21 @@ class _LibraryPageState extends State<LibraryPage> {
                 context,
                 MaterialPageRoute(
                     builder: (context) => DownloadedSongs(type: 'all')));
+          },
+        ),
+        ListTile(
+          title: Text('Downloads'),
+          leading: Icon(
+            Icons.download_done_rounded,
+            color: Theme.of(context).brightness == Brightness.dark
+                ? null
+                : Colors.grey[700],
+          ),
+          onTap: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => DownloadedSongs(type: 'downloaded')));
           },
         ),
         ListTile(
