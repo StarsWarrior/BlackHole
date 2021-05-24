@@ -50,6 +50,24 @@ git clone https://github.com/Sangwan5688/BlackHole.git
 3. Run the app with Android Studio or Visual Studio. Or the command line.
 >>>>>>> 4c264a7 (Update README.md)
 
+<<<<<<< HEAD
+=======
+``` 
+flutter pub get
+flutter run
+```
+4. (Optional) You can setup your own database for the app or use the default. To setup your own follow [these instructions](https://github.com/Sangwan5688/BlackHole/wiki/Set-up-your-own-Firebase-Database).
+
+## Contribute 
+
+Contributions are welcomed. Please read our [contributing guidelines](https://github.com/Sangwan5688/BlackHole/blob/main/CONTRIBUTING.md) before contributing.
+
+## Need help?
+
+You can join our [Telegram Group](https://t.me/joinchat/fHDC1AWnOhw0ZmI9) if you have any query, or need help with something as well as to stay updated with the project and contact me.
+
+## Liked my work?
+>>>>>>> 47d4796 (Update README.md)
 <a href="https://www.buymeacoffee.com/ankitsangwan" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" alt="Buy Me A Coffee" style="height: 41px !important;width: 174px !important;box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;-webkit-box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;" ></a>
 <h3><a href="https://github.com/Sangwan5688/BlackHole/releases" rel="GitHub Releases">Download Latest Version</h3>
 
