@@ -73,69 +73,76 @@ class _NowPlayingState extends State<NowPlaying> {
                                               return (mediaItem == null ||
                                                       queue.length == 0)
                                                   ? SizedBox()
-                                                  : ListTile(
-                                                      selected: queue[index] ==
-                                                          mediaItem,
-                                                      trailing: queue[index] ==
-                                                              mediaItem
-                                                          ? Icon(Icons
-                                                              .bar_chart_rounded)
-                                                          : SizedBox(),
-                                                      leading: Card(
-                                                        elevation: 5,
-                                                        shape:
-                                                            RoundedRectangleBorder(
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(
-                                                                      7.0),
+                                                  : ListTileTheme(
+                                                      selectedColor:
+                                                          Theme.of(context)
+                                                              .accentColor,
+                                                      child: ListTile(
+                                                        selected:
+                                                            queue[index] ==
+                                                                mediaItem,
+                                                        trailing: queue[
+                                                                    index] ==
+                                                                mediaItem
+                                                            ? Icon(Icons
+                                                                .bar_chart_rounded)
+                                                            : SizedBox(),
+                                                        leading: Card(
+                                                          elevation: 5,
+                                                          shape:
+                                                              RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        7.0),
+                                                          ),
+                                                          clipBehavior:
+                                                              Clip.antiAlias,
+                                                          child: Stack(
+                                                            children: [
+                                                              Image(
+                                                                image: AssetImage(
+                                                                    'assets/cover.jpg'),
+                                                              ),
+                                                              queue[index].artUri ==
+                                                                      null
+                                                                  ? SizedBox()
+                                                                  : Image(
+                                                                      image: queue[index]
+                                                                              .artUri
+                                                                              .toString()
+                                                                              .startsWith(
+                                                                                  'file:')
+                                                                          ? FileImage(File(queue[index]
+                                                                              .artUri
+                                                                              .toFilePath()))
+                                                                          : NetworkImage(queue[index]
+                                                                              .artUri
+                                                                              .toString()))
+                                                            ],
+                                                          ),
                                                         ),
-                                                        clipBehavior:
-                                                            Clip.antiAlias,
-                                                        child: Stack(
-                                                          children: [
-                                                            Image(
-                                                              image: AssetImage(
-                                                                  'assets/cover.jpg'),
-                                                            ),
-                                                            queue[index].artUri ==
-                                                                    null
-                                                                ? SizedBox()
-                                                                : Image(
-                                                                    image: queue[index]
-                                                                            .artUri
-                                                                            .toString()
-                                                                            .startsWith(
-                                                                                'file:')
-                                                                        ? FileImage(File(queue[index]
-                                                                            .artUri
-                                                                            .toFilePath()))
-                                                                        : NetworkImage(queue[index]
-                                                                            .artUri
-                                                                            .toString()))
-                                                          ],
+                                                        title: Text(
+                                                          '${queue[index].title}',
+                                                          style: TextStyle(
+                                                              fontWeight: queue[
+                                                                          index] ==
+                                                                      mediaItem
+                                                                  ? FontWeight
+                                                                      .w600
+                                                                  : FontWeight
+                                                                      .normal),
                                                         ),
+                                                        subtitle: Text(
+                                                          '${queue[index].artist}',
+                                                        ),
+                                                        onTap: () {
+                                                          AudioService
+                                                              .skipToQueueItem(
+                                                                  queue[index]
+                                                                      .id);
+                                                        },
                                                       ),
-                                                      title: Text(
-                                                        '${queue[index].title}',
-                                                        style: TextStyle(
-                                                            fontWeight: queue[
-                                                                        index] ==
-                                                                    mediaItem
-                                                                ? FontWeight
-                                                                    .w600
-                                                                : FontWeight
-                                                                    .normal),
-                                                      ),
-                                                      subtitle: Text(
-                                                        '${queue[index].artist}',
-                                                      ),
-                                                      onTap: () {
-                                                        AudioService
-                                                            .skipToQueueItem(
-                                                                queue[index]
-                                                                    .id);
-                                                      },
                                                     );
                                             });
                                       },

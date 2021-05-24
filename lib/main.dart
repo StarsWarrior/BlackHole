@@ -96,6 +96,10 @@ class _MyAppState extends State<MyApp> {
           cursorColor: currentTheme.currentColor(),
           selectionColor: currentTheme.currentColor(),
         ),
+        inputDecorationTheme: InputDecorationTheme(
+          focusedBorder: UnderlineInputBorder(
+              borderSide: BorderSide(color: currentTheme.currentColor())),
+        ),
         visualDensity: VisualDensity.adaptivePlatformDensity,
         brightness: Brightness.light,
         accentColor: currentTheme.currentColor(),
@@ -106,6 +110,10 @@ class _MyAppState extends State<MyApp> {
           selectionHandleColor: currentTheme.currentColor(),
           cursorColor: currentTheme.currentColor(),
           selectionColor: currentTheme.currentColor(),
+        ),
+        inputDecorationTheme: InputDecorationTheme(
+          focusedBorder: UnderlineInputBorder(
+              borderSide: BorderSide(color: currentTheme.currentColor())),
         ),
         visualDensity: VisualDensity.adaptivePlatformDensity,
         brightness: Brightness.dark,

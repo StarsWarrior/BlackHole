@@ -1,3 +1,4 @@
+import 'package:audiotagger/models/tag.dart';
 import 'package:blackhole/emptyScreen.dart';
 import 'package:blackhole/miniplayer.dart';
 import 'package:flutter/material.dart';
@@ -653,58 +654,426 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.all(Radius.circular(7.0))),
                     onSelected: (value) async {
-                      try {
-                        File(_songs[index]['id']).delete();
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            elevation: 6,
-                            backgroundColor: Colors.grey[900],
-                            behavior: SnackBarBehavior.floating,
-                            content: Text(
-                              'Deleted ${_songs[index]['id'].split('/').last}',
-                              style: TextStyle(color: Colors.white),
-                            ),
-                            action: SnackBarAction(
-                              textColor: Theme.of(context).accentColor,
-                              label: 'Ok',
-                              onPressed: () {},
-                            ),
-                          ),
-                        );
-                        if (_albums[_songs[index]['album']].length == 1) {
-                          sortedAlbumKeysList.remove(_songs[index]['album']);
-                        }
+                      if (value == 0) {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            String fileName =
+                                _songs[index]['id'].split('/').last.toString();
+                            List temp = fileName.split('.');
+                            String ext = temp.removeLast();
+                            String songName = temp.join('.');
+                            final controller =
+                                TextEditingController(text: songName);
+                            return AlertDialog(
+                              content: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Text(
+                                        'Name',
+                                        style: TextStyle(
+                                            color:
+                                                Theme.of(context).accentColor),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: 10,
+                                  ),
+                                  TextField(
+                                      autofocus: true,
+                                      controller: controller,
+                                      onSubmitted: (value) async {
+                                        try {
+                                          Navigator.pop(context);
+                                          String newName = _songs[index]['id']
+                                              .toString()
+                                              .replaceFirst(songName, value);
 
-                        _albums[_songs[index]['album']].remove(_songs[index]);
-                        if (_artists[_songs[index]['artist']].length == 1) {
-                          sortedArtistKeysList.remove(_songs[index]['artist']);
-                        }
+                                          while (await File(newName).exists()) {
+                                            newName = newName.replaceFirst(
+                                                value, value + ' (1)');
+                                          }
 
-                        _artists[_songs[index]['artist']].remove(_songs[index]);
-                        _songs.remove(_songs[index]);
-                      } catch (e) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            elevation: 6,
-                            backgroundColor: Colors.grey[900],
-                            behavior: SnackBarBehavior.floating,
-                            content: Text(
-                              'Failed to delete ${_songs[index]['id']}',
-                              style: TextStyle(color: Colors.white),
-                            ),
-                            action: SnackBarAction(
-                              textColor: Theme.of(context).accentColor,
-                              label: 'Ok',
-                              onPressed: () {},
-                            ),
-                          ),
+                                          File(_songs[index]['id'])
+                                              .rename(newName);
+                                          _songs[index]['id'] = newName;
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            SnackBar(
+                                              elevation: 6,
+                                              backgroundColor: Colors.grey[900],
+                                              behavior:
+                                                  SnackBarBehavior.floating,
+                                              content: Text(
+                                                'Renamed to ${_songs[index]['id'].split('/').last}',
+                                                style: TextStyle(
+                                                    color: Colors.white),
+                                              ),
+                                              action: SnackBarAction(
+                                                textColor: Theme.of(context)
+                                                    .accentColor,
+                                                label: 'Ok',
+                                                onPressed: () {},
+                                              ),
+                                            ),
+                                          );
+                                        } catch (e) {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            SnackBar(
+                                              elevation: 6,
+                                              backgroundColor: Colors.grey[900],
+                                              behavior:
+                                                  SnackBarBehavior.floating,
+                                              content: Text(
+                                                'Failed to Rename ${_songs[index]['id'].split('/').last}',
+                                                style: TextStyle(
+                                                    color: Colors.white),
+                                              ),
+                                              action: SnackBarAction(
+                                                textColor: Theme.of(context)
+                                                    .accentColor,
+                                                label: 'Ok',
+                                                onPressed: () {},
+                                              ),
+                                            ),
+                                          );
+                                        }
+                                        setState(() {});
+                                      }),
+                                ],
+                              ),
+                              actions: [
+                                TextButton(
+                                  style: TextButton.styleFrom(
+                                    primary: Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? Colors.white
+                                        : Colors.grey[700],
+                                    //       backgroundColor: Theme.of(context).accentColor,
+                                  ),
+                                  child: Text(
+                                    "Cancel",
+                                  ),
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                ),
+                                TextButton(
+                                  style: TextButton.styleFrom(
+                                    primary: Colors.white,
+                                    backgroundColor:
+                                        Theme.of(context).accentColor,
+                                  ),
+                                  child: Text(
+                                    "Ok",
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                  onPressed: () async {
+                                    try {
+                                      Navigator.pop(context);
+                                      String newName = _songs[index]['id']
+                                          .toString()
+                                          .replaceFirst(
+                                              songName, controller.text);
+
+                                      while (await File(newName).exists()) {
+                                        newName = newName.replaceFirst(
+                                            controller.text,
+                                            controller.text + ' (1)');
+                                      }
+
+                                      File(_songs[index]['id']).rename(newName);
+                                      _songs[index]['id'] = newName;
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackBar(
+                                          elevation: 6,
+                                          backgroundColor: Colors.grey[900],
+                                          behavior: SnackBarBehavior.floating,
+                                          content: Text(
+                                            'Renamed to ${_songs[index]['id'].split('/').last}',
+                                            style:
+                                                TextStyle(color: Colors.white),
+                                          ),
+                                          action: SnackBarAction(
+                                            textColor:
+                                                Theme.of(context).accentColor,
+                                            label: 'Ok',
+                                            onPressed: () {},
+                                          ),
+                                        ),
+                                      );
+                                    } catch (e) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackBar(
+                                          elevation: 6,
+                                          backgroundColor: Colors.grey[900],
+                                          behavior: SnackBarBehavior.floating,
+                                          content: Text(
+                                            'Failed to Rename ${_songs[index]['id'].split('/').last}',
+                                            style:
+                                                TextStyle(color: Colors.white),
+                                          ),
+                                          action: SnackBarAction(
+                                            textColor:
+                                                Theme.of(context).accentColor,
+                                            label: 'Ok',
+                                            onPressed: () {},
+                                          ),
+                                        ),
+                                      );
+                                    }
+                                    setState(() {});
+                                  },
+                                ),
+                                SizedBox(
+                                  width: 5,
+                                ),
+                              ],
+                            );
+                          },
                         );
                       }
-                      setState(() {});
+                      if (value == 1) {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            final _titlecontroller = TextEditingController(
+                                text: _songs[index]['title']);
+                            final _albumcontroller = TextEditingController(
+                                text: _songs[index]['album']);
+                            final _artistcontroller = TextEditingController(
+                                text: _songs[index]['artist']);
+                            return AlertDialog(
+                              content: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Text(
+                                        'Title',
+                                        style: TextStyle(
+                                            color:
+                                                Theme.of(context).accentColor),
+                                      ),
+                                    ],
+                                  ),
+                                  TextField(
+                                      autofocus: true,
+                                      controller: _titlecontroller,
+                                      onSubmitted: (value) {}),
+                                  SizedBox(
+                                    height: 30,
+                                  ),
+                                  Row(
+                                    children: [
+                                      Text(
+                                        'Artist',
+                                        style: TextStyle(
+                                            color:
+                                                Theme.of(context).accentColor),
+                                      ),
+                                    ],
+                                  ),
+                                  TextField(
+                                      autofocus: true,
+                                      controller: _artistcontroller,
+                                      onSubmitted: (value) {}),
+                                  SizedBox(
+                                    height: 30,
+                                  ),
+                                  Row(
+                                    children: [
+                                      Text(
+                                        'Album',
+                                        style: TextStyle(
+                                            color:
+                                                Theme.of(context).accentColor),
+                                      ),
+                                    ],
+                                  ),
+                                  TextField(
+                                      autofocus: true,
+                                      controller: _albumcontroller,
+                                      onSubmitted: (value) {}),
+                                ],
+                              ),
+                              actions: [
+                                TextButton(
+                                  style: TextButton.styleFrom(
+                                    primary: Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? Colors.white
+                                        : Colors.grey[700],
+                                  ),
+                                  child: Text("Cancel"),
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                ),
+                                TextButton(
+                                  style: TextButton.styleFrom(
+                                    primary: Colors.white,
+                                    backgroundColor:
+                                        Theme.of(context).accentColor,
+                                  ),
+                                  child: Text(
+                                    "Ok",
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                  onPressed: () async {
+                                    try {
+                                      Navigator.pop(context);
+                                      _songs[index]['title'] =
+                                          _titlecontroller.text;
+                                      _songs[index]['album'] =
+                                          _albumcontroller.text;
+                                      _songs[index]['artist'] =
+                                          _artistcontroller.text;
+                                      final tag = Tag(
+                                        title: _titlecontroller.text,
+                                        artist: _artistcontroller.text,
+                                        album: _albumcontroller.text,
+                                      );
+
+                                      final tagger = Audiotagger();
+                                      await tagger.writeTags(
+                                        path: _songs[index]['id'],
+                                        tag: tag,
+                                      );
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackBar(
+                                          elevation: 6,
+                                          backgroundColor: Colors.grey[900],
+                                          behavior: SnackBarBehavior.floating,
+                                          content: Text(
+                                            'Successfully edited tags',
+                                            style:
+                                                TextStyle(color: Colors.white),
+                                          ),
+                                          action: SnackBarAction(
+                                            textColor:
+                                                Theme.of(context).accentColor,
+                                            label: 'Ok',
+                                            onPressed: () {},
+                                          ),
+                                        ),
+                                      );
+                                    } catch (e) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackBar(
+                                          elevation: 6,
+                                          backgroundColor: Colors.grey[900],
+                                          behavior: SnackBarBehavior.floating,
+                                          content: Text(
+                                            'Failed to edit tags',
+                                            style:
+                                                TextStyle(color: Colors.white),
+                                          ),
+                                          action: SnackBarAction(
+                                            textColor:
+                                                Theme.of(context).accentColor,
+                                            label: 'Ok',
+                                            onPressed: () {},
+                                          ),
+                                        ),
+                                      );
+                                    }
+                                  },
+                                ),
+                                SizedBox(
+                                  width: 5,
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      }
+                      if (value == 2) {
+                        try {
+                          File(_songs[index]['id']).delete();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              elevation: 6,
+                              backgroundColor: Colors.grey[900],
+                              behavior: SnackBarBehavior.floating,
+                              content: Text(
+                                'Deleted ${_songs[index]['id'].split('/').last}',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                              action: SnackBarAction(
+                                textColor: Theme.of(context).accentColor,
+                                label: 'Ok',
+                                onPressed: () {},
+                              ),
+                            ),
+                          );
+                          if (_albums[_songs[index]['album']].length == 1) {
+                            sortedAlbumKeysList.remove(_songs[index]['album']);
+                          }
+
+                          _albums[_songs[index]['album']].remove(_songs[index]);
+                          if (_artists[_songs[index]['artist']].length == 1) {
+                            sortedArtistKeysList
+                                .remove(_songs[index]['artist']);
+                          }
+
+                          _artists[_songs[index]['artist']]
+                              .remove(_songs[index]);
+                          _songs.remove(_songs[index]);
+                        } catch (e) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              elevation: 6,
+                              backgroundColor: Colors.grey[900],
+                              behavior: SnackBarBehavior.floating,
+                              content: Text(
+                                'Failed to delete ${_songs[index]['id']}',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                              action: SnackBarAction(
+                                textColor: Theme.of(context).accentColor,
+                                label: 'Ok',
+                                onPressed: () {},
+                              ),
+                            ),
+                          );
+                        }
+                        setState(() {});
+                      }
                     },
                     itemBuilder: (context) => [
                       PopupMenuItem(
                         value: 0,
+                        child: Row(
+                          children: [
+                            Icon(Icons.edit_rounded),
+                            Spacer(),
+                            Text('Rename'),
+                            Spacer(),
+                          ],
+                        ),
+                      ),
+                      PopupMenuItem(
+                        value: 1,
+                        child: Row(
+                          children: [
+                            Icon(Icons.tag_rounded),
+                            Spacer(),
+                            Text('Edit Tags'),
+                            Spacer(),
+                          ],
+                        ),
+                      ),
+                      PopupMenuItem(
+                        value: 2,
                         child: Row(
                           children: [
                             Icon(Icons.delete),
@@ -876,48 +1245,247 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.all(Radius.circular(7.0))),
                     onSelected: (value) async {
-                      try {
-                        File(_videos[index]['id']).delete();
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            elevation: 6,
-                            backgroundColor: Colors.grey[900],
-                            behavior: SnackBarBehavior.floating,
-                            content: Text(
-                              'Deleted ${_videos[index]['id'].split('/').last}',
-                              style: TextStyle(color: Colors.white),
-                            ),
-                            action: SnackBarAction(
-                              textColor: Theme.of(context).accentColor,
-                              label: 'Ok',
-                              onPressed: () {},
-                            ),
-                          ),
-                        );
-                        _videos.remove(_videos[index]);
-                      } catch (e) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            elevation: 6,
-                            backgroundColor: Colors.grey[900],
-                            behavior: SnackBarBehavior.floating,
-                            content: Text(
-                              'Failed to delete ${_videos[index]['id']}',
-                              style: TextStyle(color: Colors.white),
-                            ),
-                            action: SnackBarAction(
-                              textColor: Theme.of(context).accentColor,
-                              label: 'Ok',
-                              onPressed: () {},
-                            ),
-                          ),
+                      if (value == 0) {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            String fileName =
+                                _videos[index]['id'].split('/').last.toString();
+                            List temp = fileName.split('.');
+                            String ext = temp.removeLast();
+                            String videoName = temp.join('.');
+                            final controller =
+                                TextEditingController(text: videoName);
+                            return AlertDialog(
+                              content: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Text(
+                                        'Name',
+                                        style: TextStyle(
+                                            color:
+                                                Theme.of(context).accentColor),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: 10,
+                                  ),
+                                  TextField(
+                                      autofocus: true,
+                                      controller: controller,
+                                      onSubmitted: (value) async {
+                                        try {
+                                          Navigator.pop(context);
+                                          String newName = _videos[index]['id']
+                                              .toString()
+                                              .replaceFirst(videoName, value);
+
+                                          while (await File(newName).exists()) {
+                                            newName = newName.replaceFirst(
+                                                value, value + ' (1)');
+                                          }
+
+                                          File(_videos[index]['id'])
+                                              .rename(newName);
+                                          _videos[index]['id'] = newName;
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            SnackBar(
+                                              elevation: 6,
+                                              backgroundColor: Colors.grey[900],
+                                              behavior:
+                                                  SnackBarBehavior.floating,
+                                              content: Text(
+                                                'Renamed to ${_videos[index]['id'].split('/').last}',
+                                                style: TextStyle(
+                                                    color: Colors.white),
+                                              ),
+                                              action: SnackBarAction(
+                                                textColor: Theme.of(context)
+                                                    .accentColor,
+                                                label: 'Ok',
+                                                onPressed: () {},
+                                              ),
+                                            ),
+                                          );
+                                        } catch (e) {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            SnackBar(
+                                              elevation: 6,
+                                              backgroundColor: Colors.grey[900],
+                                              behavior:
+                                                  SnackBarBehavior.floating,
+                                              content: Text(
+                                                'Failed to Rename ${_videos[index]['id'].split('/').last}',
+                                                style: TextStyle(
+                                                    color: Colors.white),
+                                              ),
+                                              action: SnackBarAction(
+                                                textColor: Theme.of(context)
+                                                    .accentColor,
+                                                label: 'Ok',
+                                                onPressed: () {},
+                                              ),
+                                            ),
+                                          );
+                                        }
+                                        setState(() {});
+                                      }),
+                                ],
+                              ),
+                              actions: [
+                                TextButton(
+                                  style: TextButton.styleFrom(
+                                    primary: Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? Colors.white
+                                        : Colors.grey[700],
+                                    //       backgroundColor: Theme.of(context).accentColor,
+                                  ),
+                                  child: Text(
+                                    "Cancel",
+                                  ),
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                ),
+                                TextButton(
+                                  style: TextButton.styleFrom(
+                                    primary: Colors.white,
+                                    backgroundColor:
+                                        Theme.of(context).accentColor,
+                                  ),
+                                  child: Text(
+                                    "Ok",
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                  onPressed: () async {
+                                    try {
+                                      Navigator.pop(context);
+                                      String newName = _videos[index]['id']
+                                          .toString()
+                                          .replaceFirst(
+                                              videoName, controller.text);
+
+                                      while (await File(newName).exists()) {
+                                        newName = newName.replaceFirst(
+                                            controller.text,
+                                            controller.text + ' (1)');
+                                      }
+
+                                      File(_videos[index]['id'])
+                                          .rename(newName);
+                                      _videos[index]['id'] = newName;
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackBar(
+                                          elevation: 6,
+                                          backgroundColor: Colors.grey[900],
+                                          behavior: SnackBarBehavior.floating,
+                                          content: Text(
+                                            'Renamed to ${_videos[index]['id'].split('/').last}',
+                                            style:
+                                                TextStyle(color: Colors.white),
+                                          ),
+                                          action: SnackBarAction(
+                                            textColor:
+                                                Theme.of(context).accentColor,
+                                            label: 'Ok',
+                                            onPressed: () {},
+                                          ),
+                                        ),
+                                      );
+                                    } catch (e) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackBar(
+                                          elevation: 6,
+                                          backgroundColor: Colors.grey[900],
+                                          behavior: SnackBarBehavior.floating,
+                                          content: Text(
+                                            'Failed to Rename ${_videos[index]['id'].split('/').last}',
+                                            style:
+                                                TextStyle(color: Colors.white),
+                                          ),
+                                          action: SnackBarAction(
+                                            textColor:
+                                                Theme.of(context).accentColor,
+                                            label: 'Ok',
+                                            onPressed: () {},
+                                          ),
+                                        ),
+                                      );
+                                    }
+                                    setState(() {});
+                                  },
+                                ),
+                                SizedBox(
+                                  width: 5,
+                                ),
+                              ],
+                            );
+                          },
                         );
                       }
-                      setState(() {});
+                      if (value == 1) {
+                        try {
+                          File(_videos[index]['id']).delete();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              elevation: 6,
+                              backgroundColor: Colors.grey[900],
+                              behavior: SnackBarBehavior.floating,
+                              content: Text(
+                                'Deleted ${_videos[index]['id'].split('/').last}',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                              action: SnackBarAction(
+                                textColor: Theme.of(context).accentColor,
+                                label: 'Ok',
+                                onPressed: () {},
+                              ),
+                            ),
+                          );
+                          _videos.remove(_videos[index]);
+                        } catch (e) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              elevation: 6,
+                              backgroundColor: Colors.grey[900],
+                              behavior: SnackBarBehavior.floating,
+                              content: Text(
+                                'Failed to delete ${_videos[index]['id']}',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                              action: SnackBarAction(
+                                textColor: Theme.of(context).accentColor,
+                                label: 'Ok',
+                                onPressed: () {},
+                              ),
+                            ),
+                          );
+                        }
+                        setState(() {});
+                      }
                     },
                     itemBuilder: (context) => [
                       PopupMenuItem(
                         value: 0,
+                        child: Row(
+                          children: [
+                            Icon(Icons.edit_rounded),
+                            Spacer(),
+                            Text('Rename'),
+                            Spacer(),
+                          ],
+                        ),
+                      ),
+                      PopupMenuItem(
+                        value: 1,
                         child: Row(
                           children: [
                             Icon(Icons.delete),
