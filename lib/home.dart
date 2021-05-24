@@ -1,3 +1,4 @@
+import 'package:blackhole/countrycodes.dart';
 import 'package:blackhole/downloaded.dart';
 import 'package:blackhole/library.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -46,7 +47,7 @@ class _HomePageState extends State<HomePage> {
 
   Widget checkVersion() {
     if (!checked && Theme.of(context).platform == TargetPlatform.android) {
-      print('checking......');
+      print('checking...');
       checked = true;
       var now = DateTime.now();
       updateUserDetails('lastLogin',
@@ -738,7 +739,8 @@ class _HomePageState extends State<HomePage> {
                         ],
                       ),
                       TopPage(
-                        region: 'in',
+                        region: CountryCodes().countryCodes[
+                            Hive.box('settings').get('region') ?? 'India'],
                         status: status,
                       ),
                       TopPage(

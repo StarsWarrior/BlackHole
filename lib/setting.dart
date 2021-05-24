@@ -1,3 +1,4 @@
+import 'package:blackhole/countrycodes.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'config.dart';
@@ -17,6 +18,7 @@ class _SettingPageState extends State<SettingPage> {
   String downloadPath = '/storage/emulated/0/Music/';
   String streamingQuality = Hive.box('settings').get('streamingQuality');
   String downloadQuality = Hive.box('settings').get('downloadQuality');
+  String region = Hive.box('settings').get('region') ?? 'India';
   String themeColor = Hive.box('settings').get('themeColor') ?? 'Teal';
   int colorHue = Hive.box('settings').get('colorHue') ?? 400;
   bool synced = false;
@@ -706,6 +708,74 @@ class _SettingPageState extends State<SettingPage> {
                               });
                         },
                       ),
+                      ListTile(
+                          title: Text("Spotify Local Charts Location"),
+                          subtitle: Text('Restart App to see changes'),
+                          trailing: SizedBox(
+                            width: 150,
+                            child: Text(
+                              region,
+                              textAlign: TextAlign.end,
+                            ),
+                          ),
+                          dense: true,
+                          onTap: () {
+                            showModalBottomSheet(
+                                isDismissible: true,
+                                backgroundColor: Colors.transparent,
+                                context: context,
+                                builder: (BuildContext context) {
+                                  Map<String, String> codes =
+                                      CountryCodes().countryCodes;
+                                  List<String> countries = codes.keys.toList();
+                                  return Container(
+                                    margin: EdgeInsets.fromLTRB(25, 0, 25, 25),
+                                    padding:
+                                        EdgeInsets.fromLTRB(10, 15, 10, 15),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(15.0)),
+                                      gradient: LinearGradient(
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight,
+                                        colors: Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? [
+                                                Colors.grey[850],
+                                                Colors.grey[900],
+                                                Colors.black,
+                                              ]
+                                            : [
+                                                Colors.white,
+                                                Theme.of(context).canvasColor,
+                                              ],
+                                      ),
+                                    ),
+                                    child: ListView.builder(
+                                        shrinkWrap: true,
+                                        padding:
+                                            EdgeInsets.fromLTRB(0, 10, 0, 10),
+                                        scrollDirection: Axis.vertical,
+                                        itemCount: countries.length,
+                                        itemBuilder: (context, idx) {
+                                          return ListTile(
+                                            title: Text(countries[idx]),
+                                            leading: region == countries[idx]
+                                                ? Icon(Icons.check_rounded)
+                                                : SizedBox(),
+                                            onTap: () {
+                                              region = countries[idx];
+                                              Hive.box('settings')
+                                                  .put('region', region);
+                                              updateUserDetails(
+                                                  "country", preferredLanguage);
+                                              Navigator.pop(context);
+                                            },
+                                          );
+                                        }),
+                                  );
+                                });
+                          }),
                       ListTile(
                         title: Text('Streaming Quality'),
                         subtitle: Text('Higher quality uses more data'),
