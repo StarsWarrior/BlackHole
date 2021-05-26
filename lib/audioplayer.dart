@@ -1898,6 +1898,8 @@ class _PlayScreenState extends State<PlayScreen> {
     );
     kUrl = kUrl.replaceAll(
         "_96.", "_${preferredDownloadQuality.replaceAll(' kbps', '')}.");
+    kUrl = kUrl.replaceAll(
+        "_160.", "_${preferredDownloadQuality.replaceAll(' kbps', '')}.");
     print(kUrl);
     final response = await Client().send(Request('GET', Uri.parse(kUrl)));
     _total = response.contentLength;
