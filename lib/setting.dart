@@ -23,6 +23,8 @@ class _SettingPageState extends State<SettingPage> {
   String downloadPath = '/storage/emulated/0/Music/';
   String streamingQuality = Hive.box('settings').get('streamingQuality');
   String downloadQuality = Hive.box('settings').get('downloadQuality');
+  bool stopForegroundService =
+      Hive.box('settings').get('stopForegroundService') ?? true;
   String region = Hive.box('settings').get('region') ?? 'India';
   String themeColor = Hive.box('settings').get('themeColor') ?? 'Teal';
   int colorHue = Hive.box('settings').get('colorHue') ?? 400;
@@ -854,6 +856,18 @@ class _SettingPageState extends State<SettingPage> {
                         ),
                         dense: true,
                       ),
+                      SwitchListTile(
+                          activeColor: Theme.of(context).accentColor,
+                          title: Text('Stop music on Exit'),
+                          dense: true,
+                          value: stopForegroundService ?? true,
+                          onChanged: (val) {
+                            Hive.box('settings')
+                                .put('stopForegroundService', val);
+                            stopForegroundService = val;
+                            updateUserDetails('stopForegroundService', val);
+                            setState(() {});
+                          }),
                       ListTile(
                         title: Text('Download Location'),
                         subtitle: Text('$downloadPath'),

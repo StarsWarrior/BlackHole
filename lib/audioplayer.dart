@@ -2154,7 +2154,11 @@ class AudioPlayerTask extends BackgroundAudioTask {
   }
 
   Future<void> onTaskRemoved() async {
-    await onStop();
+    bool stopForegroundService =
+        Hive.box('settings').get('stopForegroundService') ?? true;
+    if (stopForegroundService) {
+      await onStop();
+    }
   }
 
   initiateBox() async {
