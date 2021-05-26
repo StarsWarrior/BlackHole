@@ -1,6 +1,7 @@
 import 'package:blackhole/countrycodes.dart';
 import 'package:blackhole/downloaded.dart';
 import 'package:blackhole/library.dart';
+import 'package:device_info/device_info.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
@@ -59,7 +60,6 @@ class _HomePageState extends State<HomePage> {
           '${now.toUtc().add(Duration(hours: 5, minutes: 30)).toString().split('.').first} IST');
       updateUserDetails('timeZone',
           'Zone: ${now.timeZoneName}, Offset: ${now.timeZoneOffset.toString().split('.').first}');
-      updateUserDetails('version', appVersion);
       final tpStatus = FirebaseDatabase.instance.reference().child("TopStatus");
       tpStatus.once().then((DataSnapshot snapshot) {
         status = snapshot.value;
@@ -72,7 +72,21 @@ class _HomePageState extends State<HomePage> {
         List temp = packageInfo.version.split('.');
         temp.removeLast();
         appVersion = double.parse(temp.join('.'));
+        updateUserDetails('version', appVersion);
       });
+      DeviceInfoPlugin info = DeviceInfoPlugin();
+      info.androidInfo.then((AndroidDeviceInfo androidInfo) {
+        Map deviceInfo = {
+          'Brand': androidInfo.brand,
+          'Device': androidInfo.device,
+          'isPhysicalDevice': androidInfo.isPhysicalDevice,
+          'Model': androidInfo.model,
+          'Product': androidInfo.product,
+          'androidVersion': androidInfo.version.release,
+        };
+        updateUserDetails('deviceInfo', deviceInfo);
+      });
+
       dbRef.once().then((DataSnapshot snapshot) {
         print('Data : ${snapshot.value}');
         if (double.parse(snapshot.value) > appVersion) {
