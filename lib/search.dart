@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:ui';
 import 'package:blackhole/audioplayer.dart';
+import 'package:blackhole/format.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
@@ -16,59 +17,23 @@ class _SearchPageState extends State<SearchPage> {
   String query = '';
   bool status = false;
   List searchedList = [];
-  // List searchedArtist = [];
+  bool fetched = false;
 
   Future<List> fetchResults(searchQuery) async {
+    status = true;
     var searchUrl = Uri.https(
-        "www.jiosaavn.com",
-        "/api.php?app_version=5.18.3&api_version=4&readable_version=5.18.3&v=79&_format=json&query=" +
-            searchQuery +
-            "&__call=autocomplete.get");
+      "www.jiosaavn.com",
+      "/api.php?p=1&q=" +
+          searchQuery +
+          "&_format=json&_marker=0&api_version=4&ctx=wap6dot0&n=10&__call=search.getResults",
+    );
     var res = await get(searchUrl);
     if (res.statusCode == 200) {
-      var resEdited = (res.body).split("-->");
-      var getMain = json.decode(resEdited[1]);
-      searchedList = getMain["songs"]["data"];
-      // searchedArtist = getMain["artists"]["data"];
-      // print(searchedList);
-      for (int i = 0; i < searchedList.length; i++) {
-        searchedList[i]['title'] = searchedList[i]['title']
-            .toString()
-            .replaceAll("&amp;", "&")
-            .replaceAll("&#039;", "'")
-            .replaceAll("&quot;", "\"");
-
-        searchedList[i]['more_info']['singers'] = searchedList[i]['more_info']
-                ['singers']
-            .toString()
-            .replaceAll("&amp;", "&")
-            .replaceAll("&#039;", "'")
-            .replaceAll("&quot;", "\"");
-
-        searchedList[i]['more_info']['primary_artists'] = searchedList[i]
-                ['more_info']['primary_artists']
-            .toString()
-            .replaceAll("&amp;", "&")
-            .replaceAll("&#039;", "'")
-            .replaceAll("&quot;", "\"");
-      }
+      var getMain = json.decode(res.body);
+      List responseList = getMain["results"];
+      searchedList = await FormatResponse().formatResponse(responseList);
     }
-
-    // for (int i = 0; i < searchedArtist.length; i++) {
-    //   searchedArtist[i]['title'] = searchedArtist[i]['title']
-    //       .toString()
-    //       .replaceAll("&amp;", "&")
-    //       .replaceAll("&#039;", "'")
-    //       .replaceAll("&quot;", "\"");
-
-    //   searchedArtist[i]['description'] = searchedArtist[i]['description']
-    //       .toString()
-    //       .replaceAll("&amp;", "&")
-    //       .replaceAll("&#039;", "'")
-    //       .replaceAll("&quot;", "\"");
-    // }
-    status = true;
-    // print(searchedList);
+    fetched = true;
     return searchedList;
   }
 
@@ -109,7 +74,7 @@ class _SearchPageState extends State<SearchPage> {
                 iconTheme: Theme.of(context).iconTheme,
                 toolbarHeight: 40,
               ),
-              body: !status
+              body: !fetched
                   ? Container(
                       child: Center(
                         child: Container(
@@ -127,7 +92,7 @@ class _SearchPageState extends State<SearchPage> {
                           "SORRY", 60, "Results Not Found", 20)
                       : ListView.builder(
                           itemCount: searchedList.length,
-                          physics: NeverScrollableScrollPhysics(),
+                          physics: BouncingScrollPhysics(),
                           shrinkWrap: true,
                           padding: EdgeInsets.fromLTRB(5, 10, 5, 0),
                           itemBuilder: (context, index) {
@@ -155,14 +120,13 @@ class _SearchPageState extends State<SearchPage> {
                                     ),
                                   ),
                                 ),
-                                subtitle: Text(
-                                    '${searchedList[index]["more_info"]["primary_artists"].split("(")[0]}'),
+                                subtitle:
+                                    Text('${searchedList[index]["subtitle"]}'),
                                 onTap: () {
-                                  // print(searchedList);
                                   Navigator.push(
                                     context,
                                     PageRouteBuilder(
-                                      opaque: false, // set to false
+                                      opaque: false,
                                       pageBuilder: (_, __, ___) => PlayScreen(
                                         data: {
                                           'response': searchedList,
@@ -173,12 +137,6 @@ class _SearchPageState extends State<SearchPage> {
                                       ),
                                     ),
                                   );
-
-                                  // Navigator.pushNamed(context, '/play', arguments: {
-                                  //   'response': searchedList,
-                                  //   'index': index,
-                                  //   'offline': false,
-                                  // });
                                 },
                               ),
                             );

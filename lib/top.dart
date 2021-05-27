@@ -41,7 +41,7 @@ class _TopPageState extends State<TopPage> {
           });
         }
       } catch (e) {
-        // print(e);
+        print("Error in Spotify Charts: $e");
       }
     }
     setState(() {});

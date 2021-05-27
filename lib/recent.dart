@@ -15,8 +15,8 @@ class _RecentlyPlayedState extends State<RecentlyPlayed> {
   bool added = false;
 
   void getSongs() async {
-    await Hive.openBox('recent');
-    _songs = Hive.box('recent').get('recentlyPlayed');
+    await Hive.openBox('recentlyPlayed');
+    _songs = Hive.box('recentlyPlayed').get('recentSongs');
     added = true;
     setState(() {});
   }

@@ -143,7 +143,6 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                                     playlistNames == null
                                         ? playlistNames = [_controller.text]
                                         : playlistNames.add(_controller.text);
-                                    print('Putting as $playlistNames');
                                     settingsBox.put('playlists', playlistNames);
                                     Navigator.pop(context);
                                     setState(() {});
@@ -165,7 +164,6 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                             shrinkWrap: true,
                             itemCount: playlistNames.length,
                             itemBuilder: (context, index) {
-                              print('PLAYLIST IS $playlistNames');
                               return ListTile(
                                 leading: Icon(
                                   Icons.music_note_rounded,

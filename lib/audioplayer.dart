@@ -55,8 +55,8 @@ class _PlayScreenState extends State<PlayScreen> {
   bool same = false;
   List response = [];
   bool fetched = false;
-  Box likedBox;
-  bool liked = false;
+  // Box likedBox;
+  // bool liked = false;
   bool offline = false;
   MediaItem playItem;
   // sleepTimer(0) cancels the timer
@@ -67,7 +67,7 @@ class _PlayScreenState extends State<PlayScreen> {
   Duration _time;
 
   void main() async {
-    await Hive.openBox('favorites');
+    await Hive.openBox('Favorite Songs');
   }
 
   @override
@@ -76,32 +76,49 @@ class _PlayScreenState extends State<PlayScreen> {
     main();
   }
 
-  void checkLiked(key) async {
-    likedBox = Hive.box('favorites');
-    liked = likedBox.containsKey(key);
-  }
-
-  // Future<bool> checkPlaylist(name, key) async {
-  //   await Hive.openBox(name);
-  //   final playlistBox = Hive.box(name);
-  //   return playlistBox.containsKey(key);
+  // void checkLiked(key) async {
+  //   likedBox = Hive.box('Favorite Songs');
+  //   liked = likedBox.containsKey(key);
   // }
 
-  void addPlaylist(name, id, info) async {
-    await Hive.openBox(name);
+  bool checkPlaylist(name, key) {
+    if (name != 'Favorite Songs') {
+      Hive.openBox(name).then((value) {
+        final playlistBox = Hive.box(name);
+        return playlistBox.containsKey(key);
+      });
+    }
     final playlistBox = Hive.box(name);
-    playlistBox.put(id, info);
+    return playlistBox.containsKey(key);
   }
 
   void removeLiked(key) async {
-    likedBox = Hive.box('favorites');
+    Box likedBox = Hive.box('Favorite Songs');
     likedBox.delete(key);
     setState(() {});
   }
 
-  void addLiked(id, info) async {
-    likedBox = Hive.box('favorites');
-    likedBox.put(id, info);
+  void addPlaylist(String name, MediaItem mediaItem) async {
+    if (name != 'Favorite Songs') await Hive.openBox(name);
+    Box playlistBox = Hive.box(name);
+    Map info = {
+      'id': mediaItem.id.toString(),
+      'artist': mediaItem.artist.toString(),
+      'album': mediaItem.album.toString(),
+      'image': mediaItem.artUri.toString(),
+      'duration': mediaItem.duration.inSeconds.toString(),
+      'title': mediaItem.title.toString(),
+      'url': mediaItem.extras['url'].toString(),
+      "year": mediaItem.extras["year"].toString(),
+      "language": mediaItem.extras["language"].toString(),
+      "genre": mediaItem.genre.toString(),
+      "320kbps": mediaItem.extras["320kbps"],
+      "has_lyrics": mediaItem.extras["has_lyrics"],
+      "release_date": mediaItem.extras["release_date"],
+      "album_id": mediaItem.extras["album_id"],
+      "subtitle": mediaItem.extras["subtitle"]
+    };
+    playlistBox.put(mediaItem.id.toString(), info);
     setState(() {});
   }
 
@@ -116,29 +133,9 @@ class _PlayScreenState extends State<PlayScreen> {
     globalIndex = data['index'];
     offline = data['offline'];
     if (offline == null) {
-      offline = AudioService.currentMediaItem.extras['URL'].startsWith('http')
+      offline = AudioService.currentMediaItem.extras['url'].startsWith('http')
           ? false
           : true;
-    }
-
-    setFavValues(response) {
-      for (int i = 0; i < response.length; i++) {
-        var tempDict = MediaItem(
-            id: response[i]['id'],
-            album: response[i]['album'],
-            duration: Duration(seconds: int.parse(response[i]['duration'])),
-            title: response[i]['title'].split("(")[0],
-            artist: response[i]["artist"],
-            artUri:
-                Uri.parse(response[i]['image'].replaceAll('http:', 'https:')),
-            extras: response[i]["url"] == null
-                ? null
-                : {
-                    'URL': response[i]["url"],
-                  });
-        globalQueue.add(tempDict);
-      }
-      // fetched = true;
     }
 
     setTags(response, tempDir) async {
@@ -184,7 +181,7 @@ class _PlayScreenState extends State<PlayScreen> {
           artUri: file == null
               ? Uri.file('${(await getTemporaryDirectory()).path}/cover.jpg')
               : Uri.file('${file.path}'),
-          extras: {'URL': response['id']});
+          extras: {'url': response['id']});
       globalQueue.add(tempDict);
       setState(() {});
     }
@@ -196,10 +193,8 @@ class _PlayScreenState extends State<PlayScreen> {
         await file.writeAsBytes(byteData.buffer
             .asUint8List(byteData.offsetInBytes, byteData.lengthInBytes));
         for (int i = 0; i < response.length; i++) {
-          // print(response[i]['id']);
           await setTags(response[i], tempDir);
         }
-        // print('global queue is $globalQueue');
       });
     }
 
@@ -207,38 +202,26 @@ class _PlayScreenState extends State<PlayScreen> {
       for (int i = 0; i < response.length; i++) {
         var tempDict = MediaItem(
             id: response[i]['id'],
-            album: response[i]['more_info']['album']
-                .toString()
-                .replaceAll("&amp;", "&")
-                .replaceAll("&#039;", "'")
-                .replaceAll("&quot;", "\"")
-                .split('(')
-                .first,
-            duration: Duration(
-                seconds:
-                    int.parse(response[i]['more_info']['duration'] ?? '180')),
-            title: response[i]['title']
-                .toString()
-                .replaceAll("&amp;", "&")
-                .replaceAll("&#039;", "'")
-                .replaceAll("&quot;", "\"")
-                .split('(')
-                .first,
-            artist: response[i]["more_info"]["artistMap"] == null
-                ? response[i]['more_info']['primary_artists']
-                : response[i]["more_info"]["artistMap"]["primary_artists"][0]
-                        ["name"]
-                    .toString()
-                    .replaceAll("&amp;", "&")
-                    .replaceAll("&#039;", "'")
-                    .replaceAll("&quot;", "\""),
-            artUri: Uri.parse(response[i]['image']
-                .toString()
-                .replaceAll("150x150", "500x500")
-                .replaceAll('http:', 'https:')));
+            album: response[i]['album'],
+            duration:
+                Duration(seconds: int.parse(response[i]['duration'] ?? '180')),
+            title: response[i]['title'],
+            artist: response[i]["artist"],
+            artUri: Uri.parse(response[i]['image']),
+            genre: response[i]["language"],
+            extras: {
+              "url": response[i]["url"],
+              "year": response[i]["year"],
+              "language": response[i]["language"],
+              "320kbps": response[i]["320kbps"],
+              "has_lyrics": response[i]["has_lyrics"],
+              "release_date": response[i]["release_date"],
+              "album_id": response[i]["album_id"],
+              "subtitle": response[i]['subtitle']
+            });
         globalQueue.add(tempDict);
       }
-      // fetched = true;
+      fetched = true;
     }
 
     if (!fetched) {
@@ -254,11 +237,7 @@ class _PlayScreenState extends State<PlayScreen> {
         if (offline) {
           setOffValues(response);
         } else {
-          try {
-            setValues(response);
-          } catch (e) {
-            setFavValues(response);
-          }
+          setValues(response);
         }
       }
     }
@@ -676,7 +655,7 @@ class _PlayScreenState extends State<PlayScreen> {
                                                                 .fromLTRB(0, 20,
                                                                     0, 20),
                                                             child: mediaItem.extras[
-                                                                        "lyrics"] ==
+                                                                        "has_lyrics"] ==
                                                                     "true"
                                                                 ? FutureBuilder(
                                                                     future:
@@ -694,7 +673,7 @@ class _PlayScreenState extends State<PlayScreen> {
                                                                               AlwaysStoppedAnimation<Color>(Theme.of(context).accentColor),
                                                                         );
                                                                       } else {
-                                                                        if (mediaItem.extras["lyrics"] ==
+                                                                        if (mediaItem.extras["has_lyrics"] ==
                                                                             "true") {
                                                                           var lyricsEdited =
                                                                               (snapshot.data.body).split("-->");
@@ -1048,47 +1027,34 @@ class _PlayScreenState extends State<PlayScreen> {
                                                                       itemBuilder:
                                                                           (context,
                                                                               index) {
-                                                                        // print(
-                                                                        //     'PLAYLIST IS $playlistNames');
                                                                         return ListTile(
-                                                                          leading:
-                                                                              Icon(Icons.music_note_rounded),
-                                                                          title:
-                                                                              Text('${playlistNames[index]}'),
-                                                                          onTap:
-                                                                              () {
-                                                                            Navigator.pop(context);
-                                                                            // checkPlaylist(playlistNames[index], mediaItem.id.toString())
-                                                                            // ? print('Already There'):
-                                                                            addPlaylist(playlistNames[index],
-                                                                                mediaItem.id, {
-                                                                              'id': mediaItem.id.toString(),
-                                                                              'artist': mediaItem.artist.toString(),
-                                                                              'album': mediaItem.album.toString(),
-                                                                              'image': mediaItem.artUri.toString(),
-                                                                              'duration': mediaItem.duration.inSeconds.toString(),
-                                                                              'title': mediaItem.title.toString(),
-                                                                              'url': mediaItem.extras['URL'].toString(),
+                                                                            leading:
+                                                                                Icon(Icons.music_note_rounded),
+                                                                            title: Text('${playlistNames[index]}'),
+                                                                            onTap: () {
+                                                                              Navigator.pop(context);
+                                                                              // checkPlaylist(playlistNames[index],
+                                                                              // mediaItem.id.toString())
+
+                                                                              addPlaylist(playlistNames[index], mediaItem);
+                                                                              ScaffoldMessenger.of(scaffoldContext).showSnackBar(
+                                                                                SnackBar(
+                                                                                  duration: Duration(seconds: 2),
+                                                                                  elevation: 6,
+                                                                                  backgroundColor: Colors.grey[900],
+                                                                                  behavior: SnackBarBehavior.floating,
+                                                                                  content: Text(
+                                                                                    'Added to ${playlistNames[index]}',
+                                                                                    style: TextStyle(color: Colors.white),
+                                                                                  ),
+                                                                                  action: SnackBarAction(
+                                                                                    textColor: Theme.of(context).accentColor,
+                                                                                    label: 'Ok',
+                                                                                    onPressed: () {},
+                                                                                  ),
+                                                                                ),
+                                                                              );
                                                                             });
-                                                                            ScaffoldMessenger.of(scaffoldContext).showSnackBar(
-                                                                              SnackBar(
-                                                                                duration: Duration(seconds: 2),
-                                                                                elevation: 6,
-                                                                                backgroundColor: Colors.grey[900],
-                                                                                behavior: SnackBarBehavior.floating,
-                                                                                content: Text(
-                                                                                  'Added to ${playlistNames[index]}',
-                                                                                  style: TextStyle(color: Colors.white),
-                                                                                ),
-                                                                                action: SnackBarAction(
-                                                                                  textColor: Theme.of(context).accentColor,
-                                                                                  label: 'Ok',
-                                                                                  onPressed: () {},
-                                                                                ),
-                                                                              ),
-                                                                            );
-                                                                          },
-                                                                        );
                                                                       });
                                                             }),
                                                   ],
@@ -1370,11 +1336,13 @@ class _PlayScreenState extends State<PlayScreen> {
                                         stream: _queueStateStream,
                                         builder: (context, snapshot) {
                                           final queueState = snapshot.data;
+                                          bool liked = false;
                                           // final queue = queueState?.queue ?? [];
                                           final mediaItem =
                                               queueState?.mediaItem;
                                           try {
-                                            checkLiked(mediaItem.id);
+                                            liked = checkPlaylist(
+                                                'Favorite Songs', mediaItem.id);
                                           } catch (e) {}
 
                                           return mediaItem == null
@@ -1396,31 +1364,9 @@ class _PlayScreenState extends State<PlayScreen> {
                                                     liked
                                                         ? removeLiked(
                                                             mediaItem.id)
-                                                        : addLiked(
-                                                            mediaItem.id, {
-                                                            'id': mediaItem.id
-                                                                .toString(),
-                                                            'artist': mediaItem
-                                                                .artist
-                                                                .toString(),
-                                                            'album': mediaItem
-                                                                .album
-                                                                .toString(),
-                                                            'image': mediaItem
-                                                                .artUri
-                                                                .toString(),
-                                                            'duration':
-                                                                mediaItem
-                                                                    .duration
-                                                                    .inSeconds
-                                                                    .toString(),
-                                                            'title': mediaItem
-                                                                .title
-                                                                .toString(),
-                                                            'url': mediaItem
-                                                                .extras['URL']
-                                                                .toString()
-                                                          });
+                                                        : addPlaylist(
+                                                            'Favorite Songs',
+                                                            mediaItem);
                                                     liked = !liked;
                                                     ScaffoldMessenger.of(
                                                             scaffoldContext)
@@ -1438,33 +1384,9 @@ class _PlayScreenState extends State<PlayScreen> {
                                                                   ? removeLiked(
                                                                       mediaItem
                                                                           .id)
-                                                                  : addLiked(
-                                                                      mediaItem
-                                                                          .id,
-                                                                      {
-                                                                          'id': mediaItem
-                                                                              .id
-                                                                              .toString(),
-                                                                          'artist': mediaItem
-                                                                              .artist
-                                                                              .toString(),
-                                                                          'album': mediaItem
-                                                                              .album
-                                                                              .toString(),
-                                                                          'image': mediaItem
-                                                                              .artUri
-                                                                              .toString(),
-                                                                          'duration': mediaItem
-                                                                              .duration
-                                                                              .inSeconds
-                                                                              .toString(),
-                                                                          'title': mediaItem
-                                                                              .title
-                                                                              .toString(),
-                                                                          'url': mediaItem
-                                                                              .extras['URL']
-                                                                              .toString()
-                                                                        });
+                                                                  : addPlaylist(
+                                                                      'Favorite Songs',
+                                                                      mediaItem);
                                                               liked = !liked;
                                                             }),
                                                         elevation: 6,
@@ -1672,25 +1594,8 @@ class _PlayScreenState extends State<PlayScreen> {
                                                               ),
                                                               onPressed: () {
                                                                 downloadSong(
-                                                                    mediaItem.id
-                                                                        .toString(),
-                                                                    scaffoldContext,
-                                                                    mediaItem
-                                                                        .title
-                                                                        .toString(),
-                                                                    mediaItem
-                                                                        .artist
-                                                                        .toString(),
-                                                                    mediaItem
-                                                                        .album
-                                                                        .toString(),
-                                                                    mediaItem
-                                                                        .artUri
-                                                                        .toString(),
-                                                                    mediaItem
-                                                                        .extras[
-                                                                            'URL']
-                                                                        .toString());
+                                                                    mediaItem,
+                                                                    scaffoldContext);
                                                               })
                                                           : SizedBox(),
                                                     ),
@@ -1743,29 +1648,7 @@ class _PlayScreenState extends State<PlayScreen> {
           AudioService.currentMediaItemStream,
           (queue, mediaItem) => QueueState(queue, mediaItem));
 
-  fetchSongUrl(songId) async {
-    String kUrl = '';
-    String key = "38346591";
-
-    // print('starting fetching url');
-    var songUrl = Uri.https(
-        "www.jiosaavn.com",
-        "/api.php?app_version=5.18.3&api_version=4&readable_version=5.18.3&v=79&_format=json&__call=song.getDetails&pids=" +
-            songId);
-    var res = await get(songUrl, headers: {"Accept": "application/json"});
-    var resEdited = (res.body).split("-->");
-    var getMain = jsonDecode(resEdited[1]);
-    kUrl = await DesPlugin.decrypt(
-        key, getMain[songId]["more_info"]["encrypted_media_url"]);
-
-    kUrl = kUrl.replaceAll(
-        '_96.', '_${preferredQuality.replaceAll(' kbps', '')}.');
-    print('fetched url');
-    // print(kUrl);
-    return {'URL': kUrl, 'lyrics': getMain[songId]["more_info"]["has_lyrics"]};
-  }
-
-  downloadSong(id, scaffoldContext, title, artist, album, image, kUrl) async {
+  downloadSong(mediaItem, scaffoldContext) async {
     PermissionStatus status = await Permission.storage.status;
     if (status.isPermanentlyDenied || status.isDenied) {
       // code of read or write file in external storage (SD card)
@@ -1781,7 +1664,10 @@ class _PlayScreenState extends State<PlayScreen> {
     if (status.isGranted) {
       print('permission granted');
     }
-    final filename = title + " - " + artist + ".m4a";
+    final filename = mediaItem.title.toString() +
+        " - " +
+        mediaItem.artist.toString() +
+        ".m4a";
     String dlPath = await ExtStorage.getExternalStoragePublicDirectory(
         ExtStorage.DIRECTORY_MUSIC);
     bool exists = await File(dlPath + "/" + filename).exists();
@@ -1820,8 +1706,7 @@ class _PlayScreenState extends State<PlayScreen> {
                 child: Text("Yes"),
                 onPressed: () {
                   Navigator.pop(context);
-                  downSong(id, scaffoldContext, title, artist, album, image,
-                      kUrl, dlPath, filename);
+                  downSong(mediaItem, scaffoldContext, dlPath, filename);
                 },
               ),
               TextButton(
@@ -1845,17 +1730,15 @@ class _PlayScreenState extends State<PlayScreen> {
         },
       );
     } else {
-      downSong(id, scaffoldContext, title, artist, album, image, kUrl, dlPath,
-          filename);
+      downSong(mediaItem, scaffoldContext, dlPath, filename);
     }
   }
 
-  downSong(id, scaffoldContext, title, artist, album, image, kUrl, dlPath,
-      filename) async {
+  downSong(mediaItem, scaffoldContext, dlPath, filename) async {
     String filepath;
     String filepath2;
     List<int> _bytes = [];
-    final artname = title + "artwork.jpg";
+    final artname = mediaItem.title.toString() + "artwork.jpg";
     Directory appDir = await getApplicationDocumentsDirectory();
     String appPath = appDir.path;
     try {
@@ -1896,14 +1779,10 @@ class _PlayScreenState extends State<PlayScreen> {
         ),
       ),
     );
-    kUrl = kUrl.replaceAll(
+    String kUrl = mediaItem.extras["url"].replaceAll(
         "_96.", "_${preferredDownloadQuality.replaceAll(' kbps', '')}.");
-    kUrl = kUrl.replaceAll(
-        "_160.", "_${preferredDownloadQuality.replaceAll(' kbps', '')}.");
-    print(kUrl);
     final response = await Client().send(Request('GET', Uri.parse(kUrl)));
     _total = response.contentLength;
-    // print('total length is $_total');
     _recieved = 0;
     response.stream.listen((value) {
       _bytes.addAll(value);
@@ -1916,7 +1795,8 @@ class _PlayScreenState extends State<PlayScreen> {
       final file = File("${(filepath)}");
       await file.writeAsBytes(_bytes);
 
-      var request2 = await HttpClient().getUrl(Uri.parse(image));
+      var request2 =
+          await HttpClient().getUrl(Uri.parse(mediaItem.artUri.toString()));
       var response2 = await request2.close();
       var bytes2 = await consolidateHttpClientResponseBytes(response2);
       File file2 = File(filepath2);
@@ -1925,10 +1805,12 @@ class _PlayScreenState extends State<PlayScreen> {
       debugPrint("Started tag editing");
 
       final tag = Tag(
-        title: title.toString(),
-        artist: artist.toString(),
+        title: mediaItem.title.toString(),
+        artist: mediaItem.artist.toString(),
         artwork: filepath2.toString(),
-        album: album.toString(),
+        album: mediaItem.album.toString(),
+        genre: mediaItem.genre.toString(),
+        year: mediaItem.extras["year"].toString(),
         comment: 'BlackHole',
       );
 
@@ -1942,14 +1824,14 @@ class _PlayScreenState extends State<PlayScreen> {
         await file2.delete();
       }
       debugPrint("Done");
-      downloadedId = id;
+      downloadedId = mediaItem.id.toString();
 
       ScaffoldMessenger.of(scaffoldContext).showSnackBar(SnackBar(
         elevation: 6,
         backgroundColor: Colors.grey[900],
         behavior: SnackBarBehavior.floating,
         content: Text(
-          '"$title" has been downloaded',
+          '"${mediaItem.title.toString()}" has been downloaded',
           style: TextStyle(color: Colors.white),
         ),
         action: SnackBarAction(
@@ -1967,11 +1849,6 @@ class _PlayScreenState extends State<PlayScreen> {
   }
 
   audioPlayerButton() async {
-    if (globalQueue[globalIndex].extras == null) {
-      globalQueue[globalIndex] = globalQueue[globalIndex].copyWith(
-        extras: await fetchSongUrl(globalQueue[globalIndex].id),
-      );
-    }
     await AudioService.start(
       backgroundTaskEntrypoint: _audioPlayerTaskEntrypoint,
       params: {
@@ -1987,11 +1864,8 @@ class _PlayScreenState extends State<PlayScreen> {
     );
 
     await AudioService.updateQueue(globalQueue);
-    // print('updated queue at the start');
-    // print('queue now is $globalQueue');
     // AudioService.setRepeatMode(AudioServiceRepeatMode.all);
     // await AudioService.setShuffleMode(AudioServiceShuffleMode.all);
-    // print('calling play in audioplayerbutton');
     await AudioService.play();
   }
 
@@ -2131,9 +2005,6 @@ class AudioPlayerTask extends BackgroundAudioTask {
   Seeker _seeker;
   Timer _sleepTimer;
   StreamSubscription<PlaybackEvent> _eventSubscription;
-  String kUrl = '';
-  String key = "38346591";
-  String decrypt = "";
   String preferredQuality;
   List<MediaItem> queue = [];
   String repeatMode = 'None';
@@ -2180,39 +2051,47 @@ class AudioPlayerTask extends BackgroundAudioTask {
       await Hive.openBox("settings");
     }
     try {
-      await Hive.openBox('recent');
+      await Hive.openBox('recentlyPlayed');
     } catch (e) {
       print('Failed to open Recent Box');
       print("Error: $e");
       var dir = await getApplicationDocumentsDirectory();
       String dirPath = dir.path;
-      String boxName = "recent";
+      String boxName = "recentlyPlayed";
       File dbFile = File('$dirPath/$boxName.hive');
       File lockFile = File('$dirPath/$boxName.lock');
       await dbFile.delete();
       await lockFile.delete();
-      await Hive.openBox("recent");
+      await Hive.openBox("recentlyPlayed");
     }
   }
 
   addRecentlyPlayed(mediaitem) async {
-    // await initiateBox();
-    var recentList;
+    List recentList;
     try {
-      recentList = await Hive.box('recent').get('recentlyPlayed').toList();
+      recentList = await Hive.box('recentlyPlayed').get('recentSongs').toList();
     } catch (e) {
       recentList = null;
     }
 
-    var item = {
-      'title': mediaitem.title.toString(),
-      'id': mediaitem.id.toString(),
-      'artist': mediaitem.artist.toString(),
-      'album': mediaitem.album.toString(),
-      'image': mediaitem.artUri.toString(),
-      'duration': mediaitem.duration.inSeconds.toString(),
+    Map item = {
+      'id': mediaItem.id.toString(),
+      'artist': mediaItem.artist.toString(),
+      'album': mediaItem.album.toString(),
+      'image': mediaItem.artUri.toString(),
+      'duration': mediaItem.duration.inSeconds.toString(),
+      'title': mediaItem.title.toString(),
+      'url': mediaItem.extras['url'].toString(),
+      "year": mediaItem.extras["year"].toString(),
+      "language": mediaItem.extras["language"].toString(),
+      "genre": mediaItem.genre.toString(),
+      "320kbps": mediaItem.extras["320kbps"],
+      "has_lyrics": mediaItem.extras["has_lyrics"],
+      "release_date": mediaItem.extras["release_date"],
+      "album_id": mediaItem.extras["album_id"],
+      "subtitle": mediaItem.extras["subtitle"]
     };
-    await recentList == null ? recentList = [item] : recentList.insert(0, item);
+    recentList == null ? recentList = [item] : recentList.insert(0, item);
 
     final jsonList = recentList.map((item) => jsonEncode(item)).toList();
     final uniqueJsonList = jsonList.toSet().toList();
@@ -2221,33 +2100,10 @@ class AudioPlayerTask extends BackgroundAudioTask {
     if (recentList.length > 30) {
       recentList = recentList.sublist(0, 30);
     }
-    Hive.box('recent').put('recentlyPlayed', recentList);
+    Hive.box('recentlyPlayed').put('recentSongs', recentList);
     final userID = Hive.box('settings').get('userID');
     final dbRef = FirebaseDatabase.instance.reference().child("Users");
     dbRef.child(userID).update({"recentlyPlayed": recentList});
-  }
-
-  fetchSongUrl(songId) async {
-    print('starting fetching url');
-    var songUrl = Uri.https(
-        "www.jiosaavn.com",
-        "/api.php?app_version=5.18.3&api_version=4&readable_version=5.18.3&v=79&_format=json&__call=song.getDetails&pids=" +
-            songId);
-    var res = await get(songUrl, headers: {"Accept": "application/json"});
-    var resEdited = (res.body).split("-->");
-    var getMain = jsonDecode(resEdited[1]);
-    kUrl = await DesPlugin.decrypt(
-        key, getMain[songId]["more_info"]["encrypted_media_url"]);
-    kUrl = kUrl.replaceAll(
-        '_96.', "_${preferredQuality.replaceAll(' kbps', '')}.");
-    print('fetched url');
-    print(kUrl);
-    final client = Client();
-    final request = Request('HEAD', Uri.parse(kUrl))..followRedirects = false;
-    final response = await client.send(request);
-    print(response);
-    kUrl = (response.headers['location']);
-    return {'URL': kUrl, 'lyrics': getMain[songId]["more_info"]["has_lyrics"]};
   }
 
   @override
@@ -2259,12 +2115,9 @@ class AudioPlayerTask extends BackgroundAudioTask {
 
     final session = await AudioSession.instance;
     await session.configure(AudioSessionConfiguration.speech());
-    // _player.currentIndexStream.listen((index) {
-    //   if (index != null) AudioServiceBackground.setMediaItem(queue[index]);
-    // });
-    // _eventSubscription = _player.playbackEventStream.listen((event) {
-    //   _broadcastState();
-    // });
+    _eventSubscription = _player.playbackEventStream.listen((event) {
+      _broadcastState();
+    });
     _player.processingStateStream.listen((state) {
       switch (state) {
         case ProcessingState.completed:
@@ -2293,7 +2146,6 @@ class AudioPlayerTask extends BackgroundAudioTask {
           break;
       }
     });
-    // print('finished onStart function');
   }
 
   @override
@@ -2302,20 +2154,12 @@ class AudioPlayerTask extends BackgroundAudioTask {
     index = newIndex;
     if (newIndex == -1) return;
     // _player.pause();
-    // index = newIndex;
-    if (queue[newIndex].extras == null) {
-      queue[newIndex] = queue[newIndex].copyWith(
-        extras: await fetchSongUrl(queue[newIndex].id),
-      );
-      await AudioServiceBackground.setQueue(queue);
-    }
-
-    // print(AudioService.currentMediaItem);
-    // print('new song is ${queue[newIndex]}');
     if (offline) {
-      await _player.setFilePath(queue[newIndex].extras['URL']);
+      await _player.setFilePath(queue[newIndex].extras['url']);
     } else {
-      await _player.setUrl(queue[newIndex].extras['URL']);
+      await _player.setUrl(queue[newIndex]
+          .extras['url']
+          .replaceAll("_96.", "_${preferredQuality.replaceAll(' kbps', '')}."));
       addRecentlyPlayed(queue[newIndex]);
     }
 
@@ -2330,25 +2174,17 @@ class AudioPlayerTask extends BackgroundAudioTask {
     } else {
       await AudioServiceBackground.setMediaItem(queue[index]);
     }
-    // await AudioServiceBackground.setMediaItem(queue[newIndex]);
   }
 
   @override
   Future<void> onUpdateQueue(List<MediaItem> _queue) {
     queue = _queue;
     AudioServiceBackground.setQueue(_queue);
-    // print('Queue inside service updated is $queue');
     return super.onUpdateQueue(_queue);
   }
 
   @override
   Future<void> onPlay() async {
-    // _player.currentIndexStream.listen((index) {
-    //   if (index != null) AudioServiceBackground.setMediaItem(queue[index]);
-    // });
-    _eventSubscription = _player.playbackEventStream.listen((event) {
-      _broadcastState();
-    });
     try {
       if (queue[index].artUri == null) {
         File f = await getImageFileFromAssets();
@@ -2356,9 +2192,10 @@ class AudioPlayerTask extends BackgroundAudioTask {
       }
       if (AudioServiceBackground.mediaItem != queue[index]) {
         if (offline) {
-          await _player.setFilePath(queue[index].extras['URL']);
+          await _player.setFilePath(queue[index].extras['url']);
         } else {
-          await _player.setUrl(queue[index].extras['URL']);
+          await _player.setUrl(queue[index].extras['url'].replaceAll(
+              "_96.", "_${preferredQuality.replaceAll(' kbps', '')}."));
           addRecentlyPlayed(queue[index]);
         }
         _player.play();
@@ -2375,8 +2212,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
         _player.play();
       }
     } catch (e) {
-      // print('Error in onPlay: $e');
-      print(queue[index].extras['URL']);
+      print('Error in onPlay: $e');
     }
   }
 

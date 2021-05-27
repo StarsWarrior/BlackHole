@@ -1,4 +1,5 @@
 import 'package:blackhole/countrycodes.dart';
+import 'package:blackhole/top.dart' as topScreen;
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'config.dart';
@@ -730,7 +731,7 @@ class _SettingPageState extends State<SettingPage> {
                       ),
                       ListTile(
                           title: Text("Spotify Local Charts Location"),
-                          subtitle: Text('Restart App to see changes'),
+                          subtitle: Text('Select country for Local Charts'),
                           trailing: SizedBox(
                             width: 150,
                             child: Text(
@@ -784,12 +785,14 @@ class _SettingPageState extends State<SettingPage> {
                                                 ? Icon(Icons.check_rounded)
                                                 : SizedBox(),
                                             onTap: () {
+                                              topScreen.items = [];
                                               region = countries[idx];
                                               Hive.box('settings')
                                                   .put('region', region);
                                               updateUserDetails(
                                                   "country", region);
                                               Navigator.pop(context);
+                                              setState(() {});
                                             },
                                           );
                                         }),

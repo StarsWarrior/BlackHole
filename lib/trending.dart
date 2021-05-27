@@ -1,4 +1,5 @@
 import 'package:blackhole/audioplayer.dart';
+import 'package:blackhole/format.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -23,68 +24,26 @@ class TrendingPage extends StatefulWidget {
 }
 
 class _TrendingPageState extends State<TrendingPage> {
-  var recentList = Hive.box('recent').get('recentlyPlayed');
+  var recentList = Hive.box('recentlyPlayed').get('recentSongs');
   List preferredLanguage =
       Hive.box('settings').get('preferredLanguage') ?? ['Hindi'];
 
-  Future<List> trendingSongs(index) async {
-    List topSongsList = [];
-    var topSongsUrl = Uri.https("www.jiosaavn.com",
+  Future<Map> trendingSongs(index) async {
+    var playlistUrl = Uri.https("www.jiosaavn.com",
         "/api.php?__call=webapi.get&token=${playlists[index]["id"]}&type=playlist&p=1&n=20&includeMetaTags=0&ctx=web6dot0&api_version=4&_format=json&_marker=0");
-    var songsListJSON =
-        await get(topSongsUrl, headers: {"Accept": "application/json"});
-    var songsList = json.decode(songsListJSON.body);
-    // print(songsList);
-    playlists[index]["title"] = songsList["title"];
-    playlists[index]["image"] = songsList["image"];
-    topSongsList = songsList["list"];
-    for (int i = 0; i < topSongsList.length; i++) {
-      try {
-        topSongsList[i]['title'] = topSongsList[i]['title']
-            .toString()
-            .replaceAll("&amp;", "&")
-            .replaceAll("&#039;", "'")
-            .replaceAll("&quot;", "\"");
-        try {
-          if (topSongsList[i]["more_info"]["artistMap"]["primary_artists"]
-                  .length ==
-              0) {
-            topSongsList[i]["more_info"]["artistMap"]["primary_artists"] =
-                topSongsList[i]["more_info"]["artistMap"]["featured_artists"];
-          }
-          topSongsList[i]["more_info"]["artistMap"]["primary_artists"][0]
-              ["name"] = topSongsList[i]["more_info"]["artistMap"]
-                  ["primary_artists"][0]["name"]
-              .toString()
-              .replaceAll("&amp;", "&")
-              .replaceAll("&#039;", "'")
-              .replaceAll("&quot;", "\"");
-        } catch (e) {
-          topSongsList[i]["more_info"]["artistMap"]["primary_artists"] = [
-            {"name": ""}
-          ];
-        }
-
-        topSongsList[i]['image'] = topSongsList[i]['image']
-            .toString()
-            .replaceAll("150x150", "500x500");
-        topSongsList[i]['subtitle'] = topSongsList[i]['subtitle']
-            .toString()
-            .replaceAll("&amp;", "&")
-            .replaceAll("&#039;", "'")
-            .replaceAll("&quot;", "\"");
-      } catch (e) {
-        print("Error in index $i : $e");
-      }
-    }
-    // print(topSongsList);
-
-    playlists[index]["songsList"] = topSongsList;
+    // print(playlistUrl);
+    var playlistJSON =
+        await get(playlistUrl, headers: {"Accept": "application/json"});
+    var playlist = json.decode(playlistJSON.body);
+    playlists[index]["title"] = playlist["title"];
+    playlists[index]["image"] = playlist["image"];
+    playlists[index]["songsList"] =
+        await FormatResponse().formatResponse(playlist["list"]);
     setState(() {});
-    return topSongsList;
+    return playlists[index];
   }
 
-  fetchfun() async {
+  getPlaylists() async {
     final dbRef = FirebaseDatabase.instance.reference().child("Playlists");
     for (int a = 0; a < preferredLanguage.length; a++) {
       await dbRef
@@ -96,8 +55,8 @@ class _TrendingPageState extends State<TrendingPage> {
     }
   }
 
-  fetchfun2() async {
-    await fetchfun();
+  getPlaylistSongs() async {
+    await getPlaylists();
     for (int i = 1; i < playlists.length; i++) {
       try {
         await trendingSongs(i);
@@ -111,7 +70,7 @@ class _TrendingPageState extends State<TrendingPage> {
   @override
   Widget build(BuildContext context) {
     if (!fetched) {
-      fetchfun2();
+      getPlaylistSongs();
       fetched = true;
     }
     return ListView.builder(
@@ -311,7 +270,7 @@ class _TrendingPageState extends State<TrendingPage> {
                                     //     color: Theme.of(context).accentColor),
                                   ),
                                   Text(
-                                    '${playlists[idx]["songsList"][index]["more_info"]["artistMap"]["primary_artists"][0]["name"].split("(")[0]}',
+                                    '${playlists[idx]["songsList"][index]["artist"].split("(")[0]}',
                                     textAlign: TextAlign.center,
                                     softWrap: false,
                                     overflow: TextOverflow.ellipsis,

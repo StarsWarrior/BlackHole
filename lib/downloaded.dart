@@ -79,7 +79,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
           FileStat stats = await entity.stat();
           if (stats.size < 1048576) {
             print("Size of mediaItem found less than 1 MB");
-            debugPrint("Ignoring media");
+            debugPrint("Ignoring media: ${entity.path}");
           } else {
             if (widget.type != 'all' && tags.comment != 'BlackHole') {
               continue;
@@ -101,6 +101,8 @@ class _DownloadedSongsState extends State<DownloadedSongs>
               'artist': artistTag,
               'album': albumTag,
               'lastModified': stats.modified,
+              'genre': tags.genre,
+              'year': tags.year,
             };
             _songs.add(data);
 
@@ -144,6 +146,8 @@ class _DownloadedSongsState extends State<DownloadedSongs>
               'artist': '',
               'album': '',
               'lastModified': stats.modified,
+              'year': '',
+              'genre': '',
             };
             _videos.add(data);
           }

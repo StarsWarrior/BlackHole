@@ -145,9 +145,6 @@ class _AuthScreenState extends State<AuthScreen> {
                       width: MediaQuery.of(context).size.width / 1.1,
                       child: Image(image: AssetImage('assets/hello.png')),
                     ),
-                    // SizedBox(
-                    //   height: 1,
-                    // ),
                     Column(
                       children: [
                         RichText(
@@ -241,8 +238,7 @@ class _AuthScreenState extends State<AuthScreen> {
                                   color: Colors.black26,
                                   blurRadius: 5.0,
                                   spreadRadius: 0.0,
-                                  offset: Offset(0.0,
-                                      3.0), // shadow direction: bottom right
+                                  offset: Offset(0.0, 3.0),
                                 )
                               ],
                             ),
@@ -273,46 +269,12 @@ class _AuthScreenState extends State<AuthScreen> {
                                 }),
                           ),
                         ),
-                        // SizedBox(
-                        //   height: 15,
-                        // ),
-
-                        // TextButton(
-                        //     style: TextButton.styleFrom(
-                        //       primary: Colors.white,
-                        //       backgroundColor: Theme.of(context).accentColor,
-                        //     ),
-                        //     onPressed: () {
-                        //       Hive.box('settings')
-                        //           .put('name', controller.text);
-                        //       Navigator.pushNamed(context, '/');
-                        //     },
-                        //     child: Text('Submit')),
                       ],
                     ),
-                    // SizedBox(
-                    //   height: 1,
-                    // ),
                   ],
                 ),
               ),
             ),
-
-            // TextButton(
-            //   child: Text('Signin with Google',
-            //       style: TextStyle(color: Colors.white)),
-            //   onPressed: () async {
-            //     dynamic result = await signIn();
-            //     if (result != null) {
-            //       print(result);
-            //       Hive.box('settings').put('signin', true);
-            //     } else {
-            //       print('Failed to Signin');
-            //     }
-            //     // Navigator.pushNamed(context, '/');
-            //   },
-            // ),
-            // TextButton(onPressed: null, child: Text('Signout'))
           ),
         ],
       ),

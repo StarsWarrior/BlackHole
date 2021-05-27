@@ -53,7 +53,7 @@ class _HomePageState extends State<HomePage> {
 
   Widget checkVersion() {
     if (!checked && Theme.of(context).platform == TargetPlatform.android) {
-      print('checking...');
+      print('checking for update..');
       checked = true;
       var now = DateTime.now();
       updateUserDetails('lastLogin',

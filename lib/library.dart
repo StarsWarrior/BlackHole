@@ -14,7 +14,7 @@ class _LibraryPageState extends State<LibraryPage> {
   @override
   void initState() {
     super.initState();
-    Hive.openBox('favorites');
+    Hive.openBox('Favorite Songs');
   }
 
   @override
@@ -81,12 +81,12 @@ class _LibraryPageState extends State<LibraryPage> {
                 : Colors.grey[700],
           ),
           onTap: () async {
-            await Hive.openBox('favorites');
+            await Hive.openBox('Favorite Songs');
             Navigator.push(
                 context,
                 MaterialPageRoute(
                     builder: (context) =>
-                        LikedSongs(playlistName: 'favorites')));
+                        LikedSongs(playlistName: 'Favorite Songs')));
           },
         ),
         ListTile(
