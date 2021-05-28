@@ -35,6 +35,20 @@ void main() async {
     await Hive.openBox("settings");
   }
   try {
+    await Hive.openBox('cache');
+  } catch (e) {
+    print('Failed to open Cache Box');
+    print("Error: $e");
+    var dir = await getApplicationDocumentsDirectory();
+    String dirPath = dir.path;
+    String boxName = "cache";
+    File dbFile = File('$dirPath/$boxName.hive');
+    File lockFile = File('$dirPath/$boxName.lock');
+    await dbFile.delete();
+    await lockFile.delete();
+    await Hive.openBox("cache");
+  }
+  try {
     await Hive.openBox('recentlyPlayed');
   } catch (e) {
     print('Failed to open Recent Box');
