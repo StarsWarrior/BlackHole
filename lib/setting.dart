@@ -1,5 +1,6 @@
 import 'package:blackhole/countrycodes.dart';
 import 'package:blackhole/top.dart' as topScreen;
+import 'package:blackhole/trending.dart' as trendingScreen;
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'config.dart';
@@ -11,6 +12,8 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:package_info/package_info.dart';
 
 class SettingPage extends StatefulWidget {
+  final Function callback;
+  SettingPage({this.callback});
   @override
   _SettingPageState createState() => _SettingPageState();
 }
@@ -656,7 +659,7 @@ class _SettingPageState extends State<SettingPage> {
                     children: [
                       ListTile(
                         title: Text("Music Language"),
-                        subtitle: Text('Restart App to see changes'),
+                        subtitle: Text('To display songs on Home Screen'),
                         trailing: SizedBox(
                           width: 150,
                           child: Text(
@@ -673,59 +676,131 @@ class _SettingPageState extends State<SettingPage> {
                               backgroundColor: Colors.transparent,
                               context: context,
                               builder: (BuildContext context) {
-                                return Container(
-                                  margin: EdgeInsets.fromLTRB(25, 0, 25, 25),
-                                  padding: EdgeInsets.fromLTRB(10, 15, 10, 15),
-                                  decoration: BoxDecoration(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(15.0)),
-                                    gradient: LinearGradient(
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
-                                      colors: Theme.of(context).brightness ==
-                                              Brightness.dark
-                                          ? [
-                                              Colors.grey[850],
-                                              Colors.grey[900],
-                                              Colors.black,
-                                            ]
-                                          : [
-                                              Colors.white,
-                                              Theme.of(context).canvasColor,
-                                            ],
+                                List checked = List.from(preferredLanguage);
+                                return StatefulBuilder(builder:
+                                    (BuildContext context, StateSetter setStt) {
+                                  return Container(
+                                    margin: EdgeInsets.fromLTRB(25, 0, 25, 25),
+                                    padding:
+                                        EdgeInsets.fromLTRB(10, 15, 10, 15),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(15.0)),
+                                      gradient: LinearGradient(
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight,
+                                        colors: Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? [
+                                                Colors.grey[850],
+                                                Colors.grey[900],
+                                                Colors.black,
+                                              ]
+                                            : [
+                                                Colors.white,
+                                                Theme.of(context).canvasColor,
+                                              ],
+                                      ),
                                     ),
-                                  ),
-                                  child: ListView.builder(
-                                      shrinkWrap: true,
-                                      padding:
-                                          EdgeInsets.fromLTRB(0, 10, 0, 10),
-                                      scrollDirection: Axis.vertical,
-                                      itemCount: languages.length,
-                                      itemBuilder: (context, idx) {
-                                        return ListTile(
-                                          title: Text(languages[idx]),
-                                          leading: preferredLanguage
-                                                  .contains(languages[idx])
-                                              ? Icon(Icons.check_rounded)
-                                              : SizedBox(),
-                                          onTap: () {
-                                            preferredLanguage
-                                                    .contains(languages[idx])
-                                                ? preferredLanguage
-                                                    .remove(languages[idx])
-                                                : preferredLanguage
-                                                    .add(languages[idx]);
-                                            Hive.box('settings').put(
-                                                'preferredLanguage',
-                                                preferredLanguage);
-                                            updateUserDetails(
-                                                "preferredLanguage",
-                                                preferredLanguage);
-                                            Navigator.pop(context);
-                                          },
-                                        );
-                                      }),
-                                );
+                                    child: Column(
+                                      children: [
+                                        Expanded(
+                                          child: ListView.builder(
+                                              physics: BouncingScrollPhysics(),
+                                              shrinkWrap: true,
+                                              padding: EdgeInsets.fromLTRB(
+                                                  0, 10, 0, 10),
+                                              scrollDirection: Axis.vertical,
+                                              itemCount: languages.length,
+                                              itemBuilder: (context, idx) {
+                                                return CheckboxListTile(
+                                                  activeColor: Theme.of(context)
+                                                      .accentColor,
+                                                  value: checked
+                                                      .contains(languages[idx]),
+                                                  title: Text(languages[idx]),
+                                                  onChanged: (value) {
+                                                    value
+                                                        ? checked
+                                                            .add(languages[idx])
+                                                        : checked.remove(
+                                                            languages[idx]);
+                                                    setStt(() {});
+                                                  },
+                                                );
+                                              }),
+                                        ),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.end,
+                                          children: [
+                                            TextButton(
+                                              child: Text('Cancel'),
+                                              style: TextButton.styleFrom(
+                                                primary: Theme.of(context)
+                                                    .accentColor,
+                                              ),
+                                              onPressed: () {
+                                                Navigator.pop(context);
+                                              },
+                                            ),
+                                            TextButton(
+                                              child: Text(
+                                                'Ok',
+                                                style: TextStyle(
+                                                    fontWeight:
+                                                        FontWeight.w600),
+                                              ),
+                                              style: TextButton.styleFrom(
+                                                primary: Theme.of(context)
+                                                    .accentColor,
+                                              ),
+                                              onPressed: () {
+                                                setState(() {
+                                                  preferredLanguage = checked;
+                                                  Navigator.pop(context);
+                                                  Hive.box('settings').put(
+                                                      'preferredLanguage',
+                                                      checked);
+                                                  updateUserDetails(
+                                                      "preferredLanguage",
+                                                      checked);
+                                                  trendingScreen.fetched =
+                                                      false;
+                                                  trendingScreen.showCached =
+                                                      true;
+                                                  trendingScreen.playlists = [
+                                                    {
+                                                      "id": "RecentlyPlayed",
+                                                      "title": "RecentlyPlayed",
+                                                      "image": "",
+                                                      "songsList": [],
+                                                      "type": ""
+                                                    }
+                                                  ];
+                                                  trendingScreen
+                                                      .cachedPlaylists = [
+                                                    {
+                                                      "id": "RecentlyPlayed",
+                                                      "title": "RecentlyPlayed",
+                                                      "image": "",
+                                                      "songsList": [],
+                                                      "type": ""
+                                                    }
+                                                  ];
+                                                  trendingScreen
+                                                          .preferredLanguage =
+                                                      preferredLanguage;
+                                                  widget.callback();
+                                                });
+                                              },
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                });
                               });
                         },
                       ),
@@ -773,27 +848,38 @@ class _SettingPageState extends State<SettingPage> {
                                       ),
                                     ),
                                     child: ListView.builder(
+                                        physics: BouncingScrollPhysics(),
                                         shrinkWrap: true,
                                         padding:
                                             EdgeInsets.fromLTRB(0, 10, 0, 10),
                                         scrollDirection: Axis.vertical,
                                         itemCount: countries.length,
                                         itemBuilder: (context, idx) {
-                                          return ListTile(
-                                            title: Text(countries[idx]),
-                                            leading: region == countries[idx]
-                                                ? Icon(Icons.check_rounded)
-                                                : SizedBox(),
-                                            onTap: () {
-                                              topScreen.items = [];
-                                              region = countries[idx];
-                                              Hive.box('settings')
-                                                  .put('region', region);
-                                              updateUserDetails(
-                                                  "country", region);
-                                              Navigator.pop(context);
-                                              setState(() {});
-                                            },
+                                          return ListTileTheme(
+                                            selectedColor:
+                                                Theme.of(context).accentColor,
+                                            child: ListTile(
+                                              contentPadding: EdgeInsets.only(
+                                                  left: 25.0, right: 25.0),
+                                              title: Text(countries[idx]),
+                                              trailing: region == countries[idx]
+                                                  ? Icon(Icons.check_rounded)
+                                                  : SizedBox(),
+                                              selected:
+                                                  region == countries[idx],
+                                              onTap: () {
+                                                topScreen.items = [];
+                                                region = countries[idx];
+                                                topScreen.fetched = false;
+                                                Hive.box('settings')
+                                                    .put('region', region);
+                                                updateUserDetails(
+                                                    "country", region);
+                                                Navigator.pop(context);
+                                                widget.callback();
+                                                setState(() {});
+                                              },
+                                            ),
                                           );
                                         }),
                                   );

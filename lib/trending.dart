@@ -27,6 +27,8 @@ List cachedPlaylists = [
 ];
 bool fetched = false;
 bool showCached = true;
+List preferredLanguage =
+    Hive.box('settings').get('preferredLanguage') ?? ['Hindi'];
 
 class TrendingPage extends StatefulWidget {
   @override
@@ -36,8 +38,6 @@ class TrendingPage extends StatefulWidget {
 class _TrendingPageState extends State<TrendingPage> {
   var recentList = Hive.box('recentlyPlayed').get('recentSongs');
   var temp = Hive.box('cache').get('trendingList');
-  List preferredLanguage =
-      Hive.box('settings').get('preferredLanguage') ?? ['Hindi'];
 
   Future<Map> trendingSongs(index) async {
     var playlistUrl = Uri.https("www.jiosaavn.com",

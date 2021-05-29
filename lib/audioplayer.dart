@@ -4,7 +4,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart';
 import 'dart:math';
 import 'dart:convert';
-import 'package:des_plugin/des_plugin.dart';
 import 'package:audiotagger/models/tag.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:audio_session/audio_session.dart';
@@ -1769,7 +1768,7 @@ class _PlayScreenState extends State<PlayScreen> {
         backgroundColor: Colors.grey[900],
         behavior: SnackBarBehavior.floating,
         content: Text(
-          'Downloading your song',
+          'Downloading your song in $preferredDownloadQuality',
           style: TextStyle(color: Colors.white),
         ),
         action: SnackBarAction(

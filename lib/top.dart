@@ -4,6 +4,7 @@ import 'package:web_scraper/web_scraper.dart';
 
 List<Map> items = [];
 List<Map> globalItems = [];
+bool fetched = false;
 
 class TopPage extends StatefulWidget {
   final region;
@@ -18,6 +19,7 @@ class _TopPageState extends State<TopPage> {
   final webScraper = WebScraper("https://www.spotifycharts.com");
 
   void getData(region) async {
+    if (region != 'global') fetched = true;
     await webScraper.loadWebPage('/regional/' + region + '/daily/latest/');
     for (int i = 1; i <= 200; i++) {
       final title = webScraper.getElement(
@@ -61,6 +63,7 @@ class _TopPageState extends State<TopPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (!fetched) getData(widget.region);
     List<Map> showList = (widget.region == 'global' ? globalItems : items);
     return Column(
       children: [

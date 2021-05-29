@@ -5,7 +5,7 @@ class FormatResponse {
     List searchedList = [];
     for (int i = 0; i < responseList.length; i++) {
       try {
-        List artist_names = [];
+        List artistNames = [];
         if (responseList[i]['more_info']["artistMap"]['primary_artists'] ==
                 null ||
             responseList[i]['more_info']["artistMap"]['primary_artists']
@@ -19,23 +19,23 @@ class FormatResponse {
             if (responseList[i]['more_info']["artistMap"]['artists'] == null ||
                 responseList[i]['more_info']["artistMap"]['artists'].length ==
                     0) {
-              artist_names.add("Unknown");
+              artistNames.add("Unknown");
             } else {
               responseList[i]['more_info']["artistMap"]['artists']
                   .forEach((element) {
-                artist_names.add(element["name"]);
+                artistNames.add(element["name"]);
               });
             }
           } else {
             responseList[i]['more_info']["artistMap"]['featured_artists']
                 .forEach((element) {
-              artist_names.add(element["name"]);
+              artistNames.add(element["name"]);
             });
           }
         } else {
           responseList[i]['more_info']["artistMap"]['primary_artists']
               .forEach((element) {
-            artist_names.add(element["name"]);
+            artistNames.add(element["name"]);
           });
         }
 
@@ -74,7 +74,7 @@ class FormatResponse {
               .split('(')
               .first
               .trim(),
-          "artist": artist_names
+          "artist": artistNames
               .join(", ")
               .toString()
               .replaceAll("&amp;", "&")
