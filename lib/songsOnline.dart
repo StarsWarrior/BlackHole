@@ -1,17 +1,19 @@
 import 'package:blackhole/audioplayer.dart';
 import 'package:blackhole/miniplayer.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 
-class SongsList extends StatefulWidget {
+class SongsOnlineList extends StatefulWidget {
   final List data;
-  SongsList({Key key, @required this.data}) : super(key: key);
+  SongsOnlineList({Key key, @required this.data}) : super(key: key);
   @override
-  _SongsListState createState() => _SongsListState();
+  _SongsOnlineListState createState() => _SongsOnlineListState();
 }
 
-class _SongsListState extends State<SongsList> {
+class _SongsOnlineListState extends State<SongsOnlineList> {
   List _songs = [];
+  List original = [];
   bool added = false;
   bool processStatus = false;
   int sortValue = Hive.box('settings').get('sortValue');
@@ -19,23 +21,18 @@ class _SongsListState extends State<SongsList> {
   void getSongs() async {
     added = true;
     _songs = widget.data;
+    original = List.from(_songs);
     sortValue ??= 2;
     if (sortValue == 0) {
-      _songs.sort((a, b) => a["id"]
-          .split('/')
-          .last
-          .toUpperCase()
-          .compareTo(b["id"].split('/').last.toString().toUpperCase()));
+      _songs.sort((a, b) =>
+          a["title"].toUpperCase().compareTo(b["title"].toUpperCase()));
     }
     if (sortValue == 1) {
-      _songs.sort((b, a) => a["id"]
-          .split('/')
-          .last
-          .toUpperCase()
-          .compareTo(b["id"].split('/').last.toString().toUpperCase()));
+      _songs.sort((b, a) =>
+          a["title"].toUpperCase().compareTo(b["title"].toUpperCase()));
     }
     if (sortValue == 2) {
-      _songs.sort((b, a) => a["lastModified"].compareTo(b["lastModified"]));
+      _songs = List.from(original);
     }
     if (sortValue == 3) {
       _songs.shuffle();
@@ -83,24 +80,17 @@ class _SongsListState extends State<SongsList> {
                         sortValue = value;
                         Hive.box('settings').put('sortValue', value);
                         if (sortValue == 0) {
-                          _songs.sort((a, b) => a["id"]
-                              .split('/')
-                              .last
+                          _songs.sort((a, b) => a["title"]
                               .toUpperCase()
-                              .compareTo(
-                                  b["id"].split('/').last.toUpperCase()));
+                              .compareTo(b["title"].toUpperCase()));
                         }
                         if (sortValue == 1) {
-                          _songs.sort((b, a) => a["id"]
-                              .split('/')
-                              .last
+                          _songs.sort((b, a) => a["title"]
                               .toUpperCase()
-                              .compareTo(
-                                  b["id"].split('/').last.toUpperCase()));
+                              .compareTo(b["title"].toUpperCase()));
                         }
                         if (sortValue == 2) {
-                          _songs.sort((b, a) =>
-                              a["lastModified"].compareTo(b["lastModified"]));
+                          _songs = List.from(original);
                         }
                         if (sortValue == 3) {
                           _songs.shuffle();
@@ -162,7 +152,7 @@ class _SongsListState extends State<SongsList> {
                                         )
                                       : SizedBox(),
                                   SizedBox(width: 10),
-                                  Text('Last Modified'),
+                                  Text('Last Added'),
                                 ],
                               ),
                             ),
@@ -222,22 +212,15 @@ class _SongsListState extends State<SongsList> {
                                     borderRadius: BorderRadius.circular(7.0),
                                   ),
                                   clipBehavior: Clip.antiAlias,
-                                  child: Stack(
-                                    children: [
-                                      Image(
-                                        image: AssetImage('assets/cover.jpg'),
-                                      ),
-                                      _songs[index]['image'] == null
-                                          ? SizedBox()
-                                          : Image(
-                                              image: MemoryImage(
-                                                  _songs[index]['image']),
-                                            )
-                                    ],
+                                  child: CachedNetworkImage(
+                                    imageUrl: _songs[index]['image']
+                                        .replaceAll('http:', 'https:'),
+                                    placeholder: (context, url) => Image(
+                                      image: AssetImage('assets/cover.jpg'),
+                                    ),
                                   ),
                                 ),
-                                title: Text(
-                                    '${_songs[index]['id'].split('/').last}'),
+                                title: Text('${_songs[index]['title']}'),
                                 onTap: () {
                                   Navigator.of(context).push(
                                     PageRouteBuilder(
@@ -246,7 +229,7 @@ class _SongsListState extends State<SongsList> {
                                         data: {
                                           'response': _songs,
                                           'index': index,
-                                          'offline': true
+                                          'offline': false,
                                         },
                                         fromMiniplayer: false,
                                       ),

@@ -1,5 +1,6 @@
 import 'package:blackhole/audioplayer.dart';
 import 'package:blackhole/emptyScreen.dart';
+import 'package:blackhole/songsOnline.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
@@ -12,23 +13,140 @@ class LikedSongs extends StatefulWidget {
   _LikedSongsState createState() => _LikedSongsState();
 }
 
-class _LikedSongsState extends State<LikedSongs> {
+class _LikedSongsState extends State<LikedSongs>
+    with SingleTickerProviderStateMixin {
   Box likedBox;
-  bool understood;
+  bool added = false;
+  List _songs = [];
+  Map<String, List<Map>> _albums = {};
+  Map<String, List<Map>> _artists = {};
+  List sortedAlbumKeysList;
+  List sortedArtistKeysList;
+  TabController _tcontroller;
+  int currentIndex = 0;
+  int sortValue = Hive.box('settings').get('playlistSortValue');
+  int albumSortValue = Hive.box('settings').get('albumSortValue');
+
+  @override
+  void initState() {
+    _tcontroller = TabController(length: 3, vsync: this);
+    _tcontroller.addListener(changeTitle);
+    getLiked();
+    super.initState();
+  }
+
+  void changeTitle() {
+    setState(() {
+      currentIndex = _tcontroller.index;
+    });
+  }
 
   void getLiked() {
     likedBox = Hive.box(widget.playlistName);
-    understood = Hive.box('settings').get('understood');
-    understood ??= false;
+    _songs = likedBox?.values?.toList();
+    _songs ??= [];
+    setArtistAlbum();
+  }
+
+  void setArtistAlbum() {
+    for (var element in _songs) {
+      if (_albums.containsKey(element['album'])) {
+        List tempAlbum = _albums[element['album']];
+        tempAlbum.add(element);
+        _albums.addEntries([MapEntry(element['album'], tempAlbum)]);
+      } else {
+        _albums.addEntries([
+          MapEntry(element['album'], [element])
+        ]);
+      }
+
+      if (_artists.containsKey(element['artist'])) {
+        List tempArtist = _artists[element['artist']];
+        tempArtist.add(element);
+        _artists.addEntries([MapEntry(element['artist'], tempArtist)]);
+      } else {
+        _artists.addEntries([
+          MapEntry(element['artist'], [element])
+        ]);
+      }
+    }
+
+    sortValue ??= 2;
+    if (sortValue == 0) {
+      _songs.sort((a, b) =>
+          a["title"].toUpperCase().compareTo(b["title"].toUpperCase()));
+    }
+    if (sortValue == 1) {
+      _songs.sort((b, a) =>
+          a["title"].toUpperCase().compareTo(b["title"].toUpperCase()));
+    }
+    if (sortValue == 2) {
+      _songs = likedBox.values.toList();
+    }
+    if (sortValue == 3) {
+      _songs.shuffle();
+    }
+    albumSortValue ??= 2;
+    if (albumSortValue == 0) {
+      sortedAlbumKeysList = _albums.keys.toList();
+      sortedArtistKeysList = _artists.keys.toList();
+      sortedAlbumKeysList.sort(
+          (a, b) => a.toString().toUpperCase().compareTo(b.toUpperCase()));
+      sortedArtistKeysList.sort(
+          (a, b) => a.toString().toUpperCase().compareTo(b.toUpperCase()));
+    }
+    if (albumSortValue == 1) {
+      sortedAlbumKeysList = _albums.keys.toList();
+      sortedArtistKeysList = _artists.keys.toList();
+      sortedAlbumKeysList.sort((b, a) =>
+          a.toString().toUpperCase().compareTo(b.toString().toUpperCase()));
+      sortedArtistKeysList.sort((b, a) =>
+          a.toString().toUpperCase().compareTo(b.toString().toUpperCase()));
+    }
+    if (albumSortValue == 2) {
+      sortedAlbumKeysList = _albums.keys.toList();
+      sortedArtistKeysList = _artists.keys.toList();
+      sortedAlbumKeysList
+          .sort((b, a) => _albums[a].length.compareTo(_albums[b].length));
+      sortedArtistKeysList
+          .sort((b, a) => _artists[a].length.compareTo(_artists[b].length));
+    }
+    if (albumSortValue == 3) {
+      sortedAlbumKeysList = _albums.keys.toList();
+      sortedArtistKeysList = _artists.keys.toList();
+      sortedAlbumKeysList
+          .sort((a, b) => _albums[a].length.compareTo(_albums[b].length));
+      sortedArtistKeysList
+          .sort((a, b) => _artists[a].length.compareTo(_artists[b].length));
+    }
+    if (albumSortValue == 4) {
+      sortedAlbumKeysList = _albums.keys.toList();
+      sortedArtistKeysList = _artists.keys.toList();
+      sortedAlbumKeysList.shuffle();
+      sortedArtistKeysList.shuffle();
+    }
+
+    added = true;
+    setState(() {});
   }
 
   void deleteLiked(index) {
     likedBox.deleteAt(index);
+    if (_albums[_songs[index]['album']].length == 1) {
+      sortedAlbumKeysList.remove(_songs[index]['album']);
+    }
+
+    _albums[_songs[index]['album']].remove(_songs[index]);
+    if (_artists[_songs[index]['artist']].length == 1) {
+      sortedArtistKeysList.remove(_songs[index]['artist']);
+    }
+
+    _artists[_songs[index]['artist']].remove(_songs[index]);
+    _songs.remove(_songs[index]);
   }
 
   @override
   Widget build(BuildContext context) {
-    getLiked();
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -49,153 +167,521 @@ class _LikedSongsState extends State<LikedSongs> {
       child: Column(
         children: [
           Expanded(
-            child: Scaffold(
-              backgroundColor: Colors.transparent,
-              appBar: AppBar(
-                title: Text(widget.playlistName[0].toUpperCase() +
-                    widget.playlistName.substring(1)),
-                centerTitle: true,
-                backgroundColor: Theme.of(context).brightness == Brightness.dark
-                    ? Colors.transparent
-                    : Theme.of(context).accentColor,
-                elevation: 0,
-              ),
-              body: likedBox.length == 0
-                  ? EmptyScreen().emptyScreen(context, 3, "Nothing to ", 15.0,
-                      "Show Here", 50, "Go and Add Something", 23.0)
-                  : ListView(
-                      physics: BouncingScrollPhysics(),
-                      padding: EdgeInsets.only(top: 10, bottom: 10),
-                      // mainAxisSize: MainAxisSize.max,
-                      children: [
-                        understood
-                            ? SizedBox()
-                            : Dismissible(
-                                key: Key('header'),
-                                child: Container(
-                                  margin:
-                                      const EdgeInsets.fromLTRB(30, 0, 30, 20),
-                                  padding: EdgeInsets.fromLTRB(0, 20, 0, 20),
-                                  decoration: BoxDecoration(
-                                      border: Border.all(
-                                        color: Theme.of(context).brightness ==
-                                                Brightness.dark
-                                            ? Colors.white
-                                            : Colors.grey[700],
-                                      ),
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(13))),
-                                  child: Center(
-                                      child: Text(
-                                          "Swipe right to remove from ${widget.playlistName}")),
-                                ),
-                                onDismissed: (direction) {
-                                  print('Dismissed');
-                                  understood = true;
-                                  Hive.box('settings').put('understood', true);
-                                },
-                              ),
-                        ListView.builder(
-                            physics: NeverScrollableScrollPhysics(),
-                            shrinkWrap: true,
-                            itemCount: likedBox.length,
-                            itemBuilder: (context, index) {
-                              return Dismissible(
-                                direction: DismissDirection.startToEnd,
-                                background: Container(
-                                  color: Colors.red,
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(
-                                        left: 20.0, right: 20.0),
+            child: DefaultTabController(
+              length: 3,
+              child: Scaffold(
+                backgroundColor: Colors.transparent,
+                appBar: AppBar(
+                  title: Text(widget.playlistName[0].toUpperCase() +
+                      widget.playlistName.substring(1)),
+                  centerTitle: true,
+                  backgroundColor:
+                      Theme.of(context).brightness == Brightness.dark
+                          ? Colors.transparent
+                          : Theme.of(context).accentColor,
+                  elevation: 0,
+                  bottom: TabBar(controller: _tcontroller, tabs: [
+                    Tab(
+                      text: 'Songs',
+                    ),
+                    Tab(
+                      text: 'Albums',
+                    ),
+                    Tab(
+                      text: 'Artists',
+                    ),
+                  ]),
+                  actions: [
+                    PopupMenuButton(
+                        icon: Icon(Icons.sort_rounded),
+                        shape: RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(7.0))),
+                        onSelected: (currentIndex == 0 || currentIndex == 3)
+                            ? (value) {
+                                sortValue = value;
+                                Hive.box('settings').put('sortValue', value);
+                                if (sortValue == 0) {
+                                  _songs.sort((a, b) => a["title"]
+                                      .toUpperCase()
+                                      .compareTo(b["title"].toUpperCase()));
+                                }
+                                if (sortValue == 1) {
+                                  _songs.sort((b, a) => a["title"]
+                                      .toUpperCase()
+                                      .compareTo(b["title"].toUpperCase()));
+                                }
+                                if (sortValue == 2) {
+                                  _songs = likedBox.values.toList();
+                                }
+                                if (sortValue == 3) {
+                                  _songs.shuffle();
+                                }
+                                setState(() {});
+                              }
+                            : (value) {
+                                albumSortValue = value;
+                                Hive.box('settings')
+                                    .put('albumSortValue', value);
+                                if (albumSortValue == 0) {
+                                  sortedAlbumKeysList.sort((a, b) => a
+                                      .toString()
+                                      .toUpperCase()
+                                      .compareTo(b.toUpperCase()));
+                                  sortedArtistKeysList.sort((a, b) => a
+                                      .toString()
+                                      .toUpperCase()
+                                      .compareTo(b.toUpperCase()));
+                                }
+                                if (albumSortValue == 1) {
+                                  sortedAlbumKeysList.sort((b, a) => a
+                                      .toString()
+                                      .toUpperCase()
+                                      .compareTo(b.toString().toUpperCase()));
+                                  sortedArtistKeysList.sort((b, a) => a
+                                      .toString()
+                                      .toUpperCase()
+                                      .compareTo(b.toString().toUpperCase()));
+                                }
+                                if (albumSortValue == 2) {
+                                  sortedAlbumKeysList.sort((b, a) => _albums[a]
+                                      .length
+                                      .compareTo(_albums[b].length));
+                                  sortedArtistKeysList.sort((b, a) =>
+                                      _artists[a]
+                                          .length
+                                          .compareTo(_artists[b].length));
+                                }
+                                if (albumSortValue == 3) {
+                                  sortedAlbumKeysList.sort((a, b) => _albums[a]
+                                      .length
+                                      .compareTo(_albums[b].length));
+                                  sortedArtistKeysList.sort((a, b) =>
+                                      _artists[a]
+                                          .length
+                                          .compareTo(_artists[b].length));
+                                }
+                                if (albumSortValue == 4) {
+                                  sortedAlbumKeysList.shuffle();
+                                  sortedArtistKeysList.shuffle();
+                                }
+                                setState(() {});
+                              },
+                        itemBuilder: (currentIndex == 0 || currentIndex == 3)
+                            ? (context) => [
+                                  PopupMenuItem(
+                                    value: 0,
                                     child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
                                       children: [
-                                        Icon(
-                                          Icons.delete,
+                                        sortValue == 0
+                                            ? Icon(
+                                                Icons.check_rounded,
+                                                color: Theme.of(context)
+                                                            .brightness ==
+                                                        Brightness.dark
+                                                    ? Colors.white
+                                                    : Colors.grey[700],
+                                              )
+                                            : SizedBox(),
+                                        SizedBox(width: 10),
+                                        Text(
+                                          'A-Z',
                                         ),
                                       ],
                                     ),
                                   ),
-                                ),
-                                key: Key(likedBox.getAt(index)['id']),
-                                child: ListTile(
-                                  leading: Card(
-                                    elevation: 5,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(7.0),
-                                    ),
-                                    clipBehavior: Clip.antiAlias,
-                                    child: CachedNetworkImage(
-                                      imageUrl: likedBox
-                                          .getAt(index)['image']
-                                          .replaceAll('http:', 'https:'),
-                                      placeholder: (context, url) => Image(
-                                        image: AssetImage('assets/cover.jpg'),
-                                      ),
-                                    ),
-                                  ),
-                                  onTap: () {
-                                    Navigator.of(context).push(
-                                      PageRouteBuilder(
-                                        opaque: false, // set to false
-                                        pageBuilder: (_, __, ___) => PlayScreen(
-                                          data: {
-                                            'index': index,
-                                            'response':
-                                                likedBox.values.toList(),
-                                            'offline': false,
-                                          },
-                                          fromMiniplayer: false,
+                                  PopupMenuItem(
+                                    value: 1,
+                                    child: Row(
+                                      children: [
+                                        sortValue == 1
+                                            ? Icon(
+                                                Icons.check_rounded,
+                                                color: Theme.of(context)
+                                                            .brightness ==
+                                                        Brightness.dark
+                                                    ? Colors.white
+                                                    : Colors.grey[700],
+                                              )
+                                            : SizedBox(),
+                                        SizedBox(width: 10),
+                                        Text(
+                                          'Z-A',
                                         ),
-                                      ),
-                                    );
-
-                                    // Navigator.pushNamed(context, '/play', arguments: {
-                                    //   'index': index,
-                                    //   'response': likedBox.values.toList(),
-                                    //   'offline': false,
-                                    // }
-                                    // );
-                                  },
-                                  title: Text(
-                                    '${likedBox.getAt(index)['title'].split("(")[0]}',
-                                  ),
-                                  subtitle: Text(
-                                    '${likedBox.getAt(index)['artist'] != null ? likedBox.getAt(index)['artist'].split("(")[0] : 'Artist name'}',
-                                  ),
-                                ),
-                                onDismissed: (direction) {
-                                  setState(() {
-                                    deleteLiked(index);
-                                  });
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      elevation: 6,
-                                      backgroundColor: Colors.grey[900],
-                                      behavior: SnackBarBehavior.floating,
-                                      content: Text(
-                                        'Removed from ${widget.playlistName}',
-                                        style: TextStyle(color: Colors.white),
-                                      ),
-                                      action: SnackBarAction(
-                                        textColor:
-                                            Theme.of(context).accentColor,
-                                        label: 'Ok',
-                                        onPressed: () {},
-                                      ),
+                                      ],
                                     ),
-                                  );
-                                },
-                              );
-                            }),
-                      ],
-                    ),
+                                  ),
+                                  PopupMenuItem(
+                                    value: 2,
+                                    child: Row(
+                                      children: [
+                                        sortValue == 2
+                                            ? Icon(
+                                                Icons.check_rounded,
+                                                color: Theme.of(context)
+                                                            .brightness ==
+                                                        Brightness.dark
+                                                    ? Colors.white
+                                                    : Colors.grey[700],
+                                              )
+                                            : SizedBox(),
+                                        SizedBox(width: 10),
+                                        Text('Last Added'),
+                                      ],
+                                    ),
+                                  ),
+                                  PopupMenuItem(
+                                    value: 3,
+                                    child: Row(
+                                      children: [
+                                        sortValue == 3
+                                            ? Icon(
+                                                Icons.shuffle_rounded,
+                                                color: Theme.of(context)
+                                                            .brightness ==
+                                                        Brightness.dark
+                                                    ? Colors.white
+                                                    : Colors.grey[700],
+                                              )
+                                            : SizedBox(),
+                                        SizedBox(width: 10),
+                                        Text(
+                                          'Shuffle',
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ]
+                            : (context) => [
+                                  PopupMenuItem(
+                                    value: 0,
+                                    child: Row(
+                                      children: [
+                                        albumSortValue == 0
+                                            ? Icon(
+                                                Icons.check_rounded,
+                                                color: Theme.of(context)
+                                                            .brightness ==
+                                                        Brightness.dark
+                                                    ? Colors.white
+                                                    : Colors.grey[700],
+                                              )
+                                            : SizedBox(),
+                                        SizedBox(width: 10),
+                                        Text(
+                                          'A-Z',
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  PopupMenuItem(
+                                    value: 1,
+                                    child: Row(
+                                      children: [
+                                        albumSortValue == 1
+                                            ? Icon(
+                                                Icons.check_rounded,
+                                                color: Theme.of(context)
+                                                            .brightness ==
+                                                        Brightness.dark
+                                                    ? Colors.white
+                                                    : Colors.grey[700],
+                                              )
+                                            : SizedBox(),
+                                        SizedBox(width: 10),
+                                        Text(
+                                          'Z-A',
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  PopupMenuItem(
+                                    value: 2,
+                                    child: Row(
+                                      children: [
+                                        albumSortValue == 2
+                                            ? Icon(
+                                                Icons.check_rounded,
+                                                color: Theme.of(context)
+                                                            .brightness ==
+                                                        Brightness.dark
+                                                    ? Colors.white
+                                                    : Colors.grey[700],
+                                              )
+                                            : SizedBox(),
+                                        SizedBox(width: 10),
+                                        Text(
+                                          '10-1',
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  PopupMenuItem(
+                                    value: 3,
+                                    child: Row(
+                                      children: [
+                                        albumSortValue == 3
+                                            ? Icon(
+                                                Icons.check_rounded,
+                                                color: Theme.of(context)
+                                                            .brightness ==
+                                                        Brightness.dark
+                                                    ? Colors.white
+                                                    : Colors.grey[700],
+                                              )
+                                            : SizedBox(),
+                                        SizedBox(width: 10),
+                                        Text(
+                                          '1-10',
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  PopupMenuItem(
+                                    value: 4,
+                                    child: Row(
+                                      children: [
+                                        albumSortValue == 4
+                                            ? Icon(
+                                                Icons.shuffle_rounded,
+                                                color: Theme.of(context)
+                                                            .brightness ==
+                                                        Brightness.dark
+                                                    ? Colors.white
+                                                    : Colors.grey[700],
+                                              )
+                                            : SizedBox(),
+                                        SizedBox(width: 10),
+                                        Text(
+                                          'Shuffle',
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ]),
+                  ],
+                ),
+                body: !added
+                    ? Container(
+                        child: Center(
+                          child: Container(
+                              height: MediaQuery.of(context).size.width / 6,
+                              width: MediaQuery.of(context).size.width / 6,
+                              child: CircularProgressIndicator(
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                    Theme.of(context).accentColor),
+                                strokeWidth: 5,
+                              )),
+                        ),
+                      )
+                    : TabBarView(
+                        controller: _tcontroller,
+                        children: [
+                          _songs.length == 0
+                              ? EmptyScreen().emptyScreen(
+                                  context,
+                                  3,
+                                  "Nothing to ",
+                                  15.0,
+                                  "Show Here",
+                                  50,
+                                  "Go and Add Something",
+                                  23.0)
+                              : ListView.builder(
+                                  physics: BouncingScrollPhysics(),
+                                  padding: EdgeInsets.only(top: 10, bottom: 10),
+                                  shrinkWrap: true,
+                                  itemCount: _songs.length,
+                                  itemBuilder: (context, index) {
+                                    return ListTile(
+                                        leading: Card(
+                                          elevation: 5,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(7.0),
+                                          ),
+                                          clipBehavior: Clip.antiAlias,
+                                          child: CachedNetworkImage(
+                                            imageUrl: _songs[index]['image']
+                                                .replaceAll('http:', 'https:'),
+                                            placeholder: (context, url) =>
+                                                Image(
+                                              image: AssetImage(
+                                                  'assets/cover.jpg'),
+                                            ),
+                                          ),
+                                        ),
+                                        onTap: () {
+                                          Navigator.of(context).push(
+                                            PageRouteBuilder(
+                                              opaque: false, // set to false
+                                              pageBuilder: (_, __, ___) =>
+                                                  PlayScreen(
+                                                data: {
+                                                  'index': index,
+                                                  'response': _songs,
+                                                  'offline': false,
+                                                },
+                                                fromMiniplayer: false,
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                        title: Text(
+                                          '${_songs[index]['title'].split("(")[0]}',
+                                        ),
+                                        subtitle: Text(
+                                          '${_songs[index]['artist'] ?? 'Artist name'}',
+                                        ),
+                                        trailing: PopupMenuButton(
+                                            icon: Icon(Icons.more_vert_rounded),
+                                            shape: RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(7.0))),
+                                            itemBuilder: (context) => [
+                                                  PopupMenuItem(
+                                                    value: 0,
+                                                    child: Row(
+                                                      children: [
+                                                        Icon(Icons
+                                                            .delete_rounded),
+                                                        Spacer(),
+                                                        Text('Remove'),
+                                                        Spacer(),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ],
+                                            onSelected: (value) async {
+                                              if (value == 0) {
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(
+                                                  SnackBar(
+                                                    elevation: 6,
+                                                    backgroundColor:
+                                                        Colors.grey[900],
+                                                    behavior: SnackBarBehavior
+                                                        .floating,
+                                                    content: Text(
+                                                      'Removed ${_songs[index]["title"]} from ${widget.playlistName}',
+                                                      style: TextStyle(
+                                                          color: Colors.white),
+                                                    ),
+                                                    action: SnackBarAction(
+                                                      textColor:
+                                                          Theme.of(context)
+                                                              .accentColor,
+                                                      label: 'Ok',
+                                                      onPressed: () {},
+                                                    ),
+                                                  ),
+                                                );
+                                                setState(() {
+                                                  deleteLiked(index);
+                                                });
+                                              }
+                                            }));
+                                  }),
+                          albumsTab(),
+                          artistsTab()
+                        ],
+                      ),
+              ),
             ),
           ),
           MiniPlayer(),
         ],
       ),
     );
+  }
+
+  albumsTab() {
+    return sortedAlbumKeysList.length == 0
+        ? EmptyScreen().emptyScreen(context, 3, "Nothing to ", 15.0,
+            "Show Here", 45, "Download Something", 23.0)
+        : ListView.builder(
+            physics: BouncingScrollPhysics(),
+            padding: EdgeInsets.only(top: 20, bottom: 10),
+            shrinkWrap: true,
+            itemCount: sortedAlbumKeysList.length,
+            itemBuilder: (context, index) {
+              return ListTile(
+                leading: Card(
+                  elevation: 5,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(7.0),
+                  ),
+                  clipBehavior: Clip.antiAlias,
+                  child: CachedNetworkImage(
+                    imageUrl: _albums[sortedAlbumKeysList[index]][0]['image']
+                        .replaceAll('http:', 'https:'),
+                    placeholder: (context, url) => Image(
+                      image: AssetImage('assets/cover.jpg'),
+                    ),
+                  ),
+                ),
+                title: Text('${sortedAlbumKeysList[index]}'),
+                subtitle: Text(
+                  _albums[sortedAlbumKeysList[index]].length == 1
+                      ? '${_albums[sortedAlbumKeysList[index]].length} Song'
+                      : '${_albums[sortedAlbumKeysList[index]].length} Songs',
+                ),
+                onTap: () {
+                  Navigator.of(context).push(
+                    PageRouteBuilder(
+                      opaque: false, // set to false
+                      pageBuilder: (_, __, ___) => SongsOnlineList(
+                        data: _albums[sortedAlbumKeysList[index]],
+                      ),
+                    ),
+                  );
+                },
+              );
+            });
+  }
+
+  artistsTab() {
+    return (sortedArtistKeysList == null || sortedArtistKeysList.length == 0)
+        ? EmptyScreen().emptyScreen(context, 3, "Nothing to ", 15.0,
+            "Show Here", 45, "Download Something", 23.0)
+        : ListView.builder(
+            physics: BouncingScrollPhysics(),
+            padding: EdgeInsets.only(top: 20, bottom: 10),
+            shrinkWrap: true,
+            itemCount: sortedArtistKeysList.length,
+            itemBuilder: (context, index) {
+              return ListTile(
+                leading: Card(
+                  elevation: 5,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(7.0),
+                  ),
+                  clipBehavior: Clip.antiAlias,
+                  child: CachedNetworkImage(
+                    imageUrl: _artists[sortedArtistKeysList[index]][0]['image']
+                        .replaceAll('http:', 'https:'),
+                    placeholder: (context, url) => Image(
+                      image: AssetImage('assets/cover.jpg'),
+                    ),
+                  ),
+                ),
+                title: Text('${sortedArtistKeysList[index]}'),
+                subtitle: Text(
+                  _artists[sortedArtistKeysList[index]].length == 1
+                      ? '${_artists[sortedArtistKeysList[index]].length} Song'
+                      : '${_artists[sortedArtistKeysList[index]].length} Songs',
+                ),
+                onTap: () {
+                  Navigator.of(context).push(
+                    PageRouteBuilder(
+                      opaque: false, // set to false
+                      pageBuilder: (_, __, ___) => SongsOnlineList(
+                        data: _artists[sortedArtistKeysList[index]],
+                      ),
+                    ),
+                  );
+                },
+              );
+            });
   }
 }

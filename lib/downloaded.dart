@@ -36,7 +36,8 @@ class _DownloadedSongsState extends State<DownloadedSongs>
   void initState() {
     _tcontroller =
         TabController(length: widget.type == 'all' ? 4 : 3, vsync: this);
-    _tcontroller.addListener(changeTitle); // Registering listener
+    _tcontroller.addListener(changeTitle);
+    getDownloaded();
     super.initState();
   }
 
@@ -234,9 +235,6 @@ class _DownloadedSongsState extends State<DownloadedSongs>
 
   @override
   Widget build(BuildContext context) {
-    if (!added) {
-      getDownloaded();
-    }
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -307,24 +305,36 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                                       .split('/')
                                       .last
                                       .toUpperCase()
-                                      .compareTo(b["id"].split('/').last));
+                                      .compareTo(b["id"]
+                                          .split('/')
+                                          .last
+                                          .toUpperCase()));
                                   _videos.sort((a, b) => a["id"]
                                       .split('/')
                                       .last
                                       .toUpperCase()
-                                      .compareTo(b["id"].split('/').last));
+                                      .compareTo(b["id"]
+                                          .split('/')
+                                          .last
+                                          .toUpperCase()));
                                 }
                                 if (sortValue == 1) {
                                   _songs.sort((b, a) => a["id"]
                                       .split('/')
                                       .last
                                       .toUpperCase()
-                                      .compareTo(b["id"].split('/').last));
+                                      .compareTo(b["id"]
+                                          .split('/')
+                                          .last
+                                          .toUpperCase()));
                                   _videos.sort((b, a) => a["id"]
                                       .split('/')
                                       .last
                                       .toUpperCase()
-                                      .compareTo(b["id"].split('/').last));
+                                      .compareTo(b["id"]
+                                          .split('/')
+                                          .last
+                                          .toUpperCase()));
                                 }
                                 if (sortValue == 2) {
                                   _songs.sort((b, a) => a["lastModified"]
