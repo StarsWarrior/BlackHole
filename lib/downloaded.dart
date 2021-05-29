@@ -623,900 +623,875 @@ class _DownloadedSongsState extends State<DownloadedSongs>
   }
 
   songsTab() {
-    return ListView.builder(
-        physics: BouncingScrollPhysics(),
-        padding: EdgeInsets.only(top: 20, bottom: 10),
-        shrinkWrap: true,
-        itemCount: _songs.length,
-        itemBuilder: (context, index) {
-          return _songs.length == 0
-              ? EmptyScreen().emptyScreen(context, 3, "Nothing to ", 15.0,
-                  "Show Here", 45, "Download Something", 23.0)
-              : ListTile(
-                  leading: Card(
-                    elevation: 5,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(7.0),
-                    ),
-                    clipBehavior: Clip.antiAlias,
-                    child: Stack(
-                      children: [
-                        Image(
-                          image: AssetImage('assets/cover.jpg'),
-                        ),
-                        _songs[index]['image'] == null
-                            ? SizedBox()
-                            : Image(
-                                image: MemoryImage(_songs[index]['image']),
-                              )
-                      ],
-                    ),
+    return _songs.length == 0
+        ? EmptyScreen().emptyScreen(context, 3, "Nothing to ", 15.0,
+            "Show Here", 45, "Download Something", 23.0)
+        : ListView.builder(
+            physics: BouncingScrollPhysics(),
+            padding: EdgeInsets.only(top: 20, bottom: 10),
+            shrinkWrap: true,
+            itemCount: _songs.length,
+            itemBuilder: (context, index) {
+              return ListTile(
+                leading: Card(
+                  elevation: 5,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(7.0),
                   ),
-                  title: Text('${_songs[index]['id'].split('/').last}'),
-                  trailing: PopupMenuButton(
-                    icon: Icon(Icons.more_vert_rounded),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(7.0))),
-                    onSelected: (value) async {
-                      if (value == 0) {
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            String fileName =
-                                _songs[index]['id'].split('/').last.toString();
-                            List temp = fileName.split('.');
-                            String ext = temp.removeLast();
-                            String songName = temp.join('.');
-                            final controller =
-                                TextEditingController(text: songName);
-                            return AlertDialog(
-                              content: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Text(
-                                        'Name',
-                                        style: TextStyle(
-                                            color:
-                                                Theme.of(context).accentColor),
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(
-                                    height: 10,
-                                  ),
-                                  TextField(
-                                      autofocus: true,
-                                      controller: controller,
-                                      onSubmitted: (value) async {
-                                        try {
-                                          Navigator.pop(context);
-                                          String newName = _songs[index]['id']
-                                              .toString()
-                                              .replaceFirst(songName, value);
-
-                                          while (await File(newName).exists()) {
-                                            newName = newName.replaceFirst(
-                                                value, value + ' (1)');
-                                          }
-
-                                          File(_songs[index]['id'])
-                                              .rename(newName);
-                                          _songs[index]['id'] = newName;
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            SnackBar(
-                                              elevation: 6,
-                                              backgroundColor: Colors.grey[900],
-                                              behavior:
-                                                  SnackBarBehavior.floating,
-                                              content: Text(
-                                                'Renamed to ${_songs[index]['id'].split('/').last}',
-                                                style: TextStyle(
-                                                    color: Colors.white),
-                                              ),
-                                              action: SnackBarAction(
-                                                textColor: Theme.of(context)
-                                                    .accentColor,
-                                                label: 'Ok',
-                                                onPressed: () {},
-                                              ),
-                                            ),
-                                          );
-                                        } catch (e) {
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            SnackBar(
-                                              elevation: 6,
-                                              backgroundColor: Colors.grey[900],
-                                              behavior:
-                                                  SnackBarBehavior.floating,
-                                              content: Text(
-                                                'Failed to Rename ${_songs[index]['id'].split('/').last}',
-                                                style: TextStyle(
-                                                    color: Colors.white),
-                                              ),
-                                              action: SnackBarAction(
-                                                textColor: Theme.of(context)
-                                                    .accentColor,
-                                                label: 'Ok',
-                                                onPressed: () {},
-                                              ),
-                                            ),
-                                          );
-                                        }
-                                        setState(() {});
-                                      }),
-                                ],
-                              ),
-                              actions: [
-                                TextButton(
-                                  style: TextButton.styleFrom(
-                                    primary: Theme.of(context).brightness ==
-                                            Brightness.dark
-                                        ? Colors.white
-                                        : Colors.grey[700],
-                                    //       backgroundColor: Theme.of(context).accentColor,
-                                  ),
-                                  child: Text(
-                                    "Cancel",
-                                  ),
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                  },
-                                ),
-                                TextButton(
-                                  style: TextButton.styleFrom(
-                                    primary: Colors.white,
-                                    backgroundColor:
-                                        Theme.of(context).accentColor,
-                                  ),
-                                  child: Text(
-                                    "Ok",
-                                    style: TextStyle(color: Colors.white),
-                                  ),
-                                  onPressed: () async {
-                                    try {
-                                      Navigator.pop(context);
-                                      String newName = _songs[index]['id']
-                                          .toString()
-                                          .replaceFirst(
-                                              songName, controller.text);
-
-                                      while (await File(newName).exists()) {
-                                        newName = newName.replaceFirst(
-                                            controller.text,
-                                            controller.text + ' (1)');
-                                      }
-
-                                      File(_songs[index]['id']).rename(newName);
-                                      _songs[index]['id'] = newName;
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        SnackBar(
-                                          elevation: 6,
-                                          backgroundColor: Colors.grey[900],
-                                          behavior: SnackBarBehavior.floating,
-                                          content: Text(
-                                            'Renamed to ${_songs[index]['id'].split('/').last}',
-                                            style:
-                                                TextStyle(color: Colors.white),
-                                          ),
-                                          action: SnackBarAction(
-                                            textColor:
-                                                Theme.of(context).accentColor,
-                                            label: 'Ok',
-                                            onPressed: () {},
-                                          ),
-                                        ),
-                                      );
-                                    } catch (e) {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        SnackBar(
-                                          elevation: 6,
-                                          backgroundColor: Colors.grey[900],
-                                          behavior: SnackBarBehavior.floating,
-                                          content: Text(
-                                            'Failed to Rename ${_songs[index]['id'].split('/').last}',
-                                            style:
-                                                TextStyle(color: Colors.white),
-                                          ),
-                                          action: SnackBarAction(
-                                            textColor:
-                                                Theme.of(context).accentColor,
-                                            label: 'Ok',
-                                            onPressed: () {},
-                                          ),
-                                        ),
-                                      );
-                                    }
-                                    setState(() {});
-                                  },
-                                ),
-                                SizedBox(
-                                  width: 5,
-                                ),
-                              ],
-                            );
-                          },
-                        );
-                      }
-                      if (value == 1) {
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            final _titlecontroller = TextEditingController(
-                                text: _songs[index]['title']);
-                            final _albumcontroller = TextEditingController(
-                                text: _songs[index]['album']);
-                            final _artistcontroller = TextEditingController(
-                                text: _songs[index]['artist']);
-                            return AlertDialog(
-                              content: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Text(
-                                        'Title',
-                                        style: TextStyle(
-                                            color:
-                                                Theme.of(context).accentColor),
-                                      ),
-                                    ],
-                                  ),
-                                  TextField(
-                                      autofocus: true,
-                                      controller: _titlecontroller,
-                                      onSubmitted: (value) {}),
-                                  SizedBox(
-                                    height: 30,
-                                  ),
-                                  Row(
-                                    children: [
-                                      Text(
-                                        'Artist',
-                                        style: TextStyle(
-                                            color:
-                                                Theme.of(context).accentColor),
-                                      ),
-                                    ],
-                                  ),
-                                  TextField(
-                                      autofocus: true,
-                                      controller: _artistcontroller,
-                                      onSubmitted: (value) {}),
-                                  SizedBox(
-                                    height: 30,
-                                  ),
-                                  Row(
-                                    children: [
-                                      Text(
-                                        'Album',
-                                        style: TextStyle(
-                                            color:
-                                                Theme.of(context).accentColor),
-                                      ),
-                                    ],
-                                  ),
-                                  TextField(
-                                      autofocus: true,
-                                      controller: _albumcontroller,
-                                      onSubmitted: (value) {}),
-                                ],
-                              ),
-                              actions: [
-                                TextButton(
-                                  style: TextButton.styleFrom(
-                                    primary: Theme.of(context).brightness ==
-                                            Brightness.dark
-                                        ? Colors.white
-                                        : Colors.grey[700],
-                                  ),
-                                  child: Text("Cancel"),
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                  },
-                                ),
-                                TextButton(
-                                  style: TextButton.styleFrom(
-                                    primary: Colors.white,
-                                    backgroundColor:
-                                        Theme.of(context).accentColor,
-                                  ),
-                                  child: Text(
-                                    "Ok",
-                                    style: TextStyle(color: Colors.white),
-                                  ),
-                                  onPressed: () async {
-                                    try {
-                                      Navigator.pop(context);
-                                      _songs[index]['title'] =
-                                          _titlecontroller.text;
-                                      _songs[index]['album'] =
-                                          _albumcontroller.text;
-                                      _songs[index]['artist'] =
-                                          _artistcontroller.text;
-                                      final tag = Tag(
-                                        title: _titlecontroller.text,
-                                        artist: _artistcontroller.text,
-                                        album: _albumcontroller.text,
-                                      );
-
-                                      final tagger = Audiotagger();
-                                      await tagger.writeTags(
-                                        path: _songs[index]['id'],
-                                        tag: tag,
-                                      );
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        SnackBar(
-                                          elevation: 6,
-                                          backgroundColor: Colors.grey[900],
-                                          behavior: SnackBarBehavior.floating,
-                                          content: Text(
-                                            'Successfully edited tags',
-                                            style:
-                                                TextStyle(color: Colors.white),
-                                          ),
-                                          action: SnackBarAction(
-                                            textColor:
-                                                Theme.of(context).accentColor,
-                                            label: 'Ok',
-                                            onPressed: () {},
-                                          ),
-                                        ),
-                                      );
-                                    } catch (e) {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        SnackBar(
-                                          elevation: 6,
-                                          backgroundColor: Colors.grey[900],
-                                          behavior: SnackBarBehavior.floating,
-                                          content: Text(
-                                            'Failed to edit tags',
-                                            style:
-                                                TextStyle(color: Colors.white),
-                                          ),
-                                          action: SnackBarAction(
-                                            textColor:
-                                                Theme.of(context).accentColor,
-                                            label: 'Ok',
-                                            onPressed: () {},
-                                          ),
-                                        ),
-                                      );
-                                    }
-                                  },
-                                ),
-                                SizedBox(
-                                  width: 5,
-                                ),
-                              ],
-                            );
-                          },
-                        );
-                      }
-                      if (value == 2) {
-                        try {
-                          File(_songs[index]['id']).delete();
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              elevation: 6,
-                              backgroundColor: Colors.grey[900],
-                              behavior: SnackBarBehavior.floating,
-                              content: Text(
-                                'Deleted ${_songs[index]['id'].split('/').last}',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                              action: SnackBarAction(
-                                textColor: Theme.of(context).accentColor,
-                                label: 'Ok',
-                                onPressed: () {},
-                              ),
-                            ),
-                          );
-                          if (_albums[_songs[index]['album']].length == 1) {
-                            sortedAlbumKeysList.remove(_songs[index]['album']);
-                          }
-
-                          _albums[_songs[index]['album']].remove(_songs[index]);
-                          if (_artists[_songs[index]['artist']].length == 1) {
-                            sortedArtistKeysList
-                                .remove(_songs[index]['artist']);
-                          }
-
-                          _artists[_songs[index]['artist']]
-                              .remove(_songs[index]);
-                          _songs.remove(_songs[index]);
-                        } catch (e) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              elevation: 6,
-                              backgroundColor: Colors.grey[900],
-                              behavior: SnackBarBehavior.floating,
-                              content: Text(
-                                'Failed to delete ${_songs[index]['id']}',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                              action: SnackBarAction(
-                                textColor: Theme.of(context).accentColor,
-                                label: 'Ok',
-                                onPressed: () {},
-                              ),
-                            ),
-                          );
-                        }
-                        setState(() {});
-                      }
-                    },
-                    itemBuilder: (context) => [
-                      PopupMenuItem(
-                        value: 0,
-                        child: Row(
-                          children: [
-                            Icon(Icons.edit_rounded),
-                            Spacer(),
-                            Text('Rename'),
-                            Spacer(),
-                          ],
-                        ),
+                  clipBehavior: Clip.antiAlias,
+                  child: Stack(
+                    children: [
+                      Image(
+                        image: AssetImage('assets/cover.jpg'),
                       ),
-                      PopupMenuItem(
-                        value: 1,
-                        child: Row(
-                          children: [
-                            Icon(Icons.tag_rounded),
-                            Spacer(),
-                            Text('Edit Tags'),
-                            Spacer(),
-                          ],
-                        ),
-                      ),
-                      PopupMenuItem(
-                        value: 2,
-                        child: Row(
-                          children: [
-                            Icon(Icons.delete),
-                            Spacer(),
-                            Text('Delete'),
-                            Spacer(),
-                          ],
-                        ),
-                      ),
+                      _songs[index]['image'] == null
+                          ? SizedBox()
+                          : Image(
+                              image: MemoryImage(_songs[index]['image']),
+                            )
                     ],
                   ),
-                  onTap: () {
-                    Navigator.of(context).push(
-                      PageRouteBuilder(
-                        opaque: false, // set to false
-                        pageBuilder: (_, __, ___) => PlayScreen(
-                          data: {
-                            'response': _songs,
-                            'index': index,
-                            'offline': true
-                          },
-                          fromMiniplayer: false,
-                        ),
-                      ),
-                    );
+                ),
+                title: Text('${_songs[index]['id'].split('/').last}'),
+                trailing: PopupMenuButton(
+                  icon: Icon(Icons.more_vert_rounded),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(7.0))),
+                  onSelected: (value) async {
+                    if (value == 0) {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          String fileName =
+                              _songs[index]['id'].split('/').last.toString();
+                          List temp = fileName.split('.');
+                          String ext = temp.removeLast();
+                          String songName = temp.join('.');
+                          final controller =
+                              TextEditingController(text: songName);
+                          return AlertDialog(
+                            content: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Row(
+                                  children: [
+                                    Text(
+                                      'Name',
+                                      style: TextStyle(
+                                          color: Theme.of(context).accentColor),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                TextField(
+                                    autofocus: true,
+                                    controller: controller,
+                                    onSubmitted: (value) async {
+                                      try {
+                                        Navigator.pop(context);
+                                        String newName = _songs[index]['id']
+                                            .toString()
+                                            .replaceFirst(songName, value);
+
+                                        while (await File(newName).exists()) {
+                                          newName = newName.replaceFirst(
+                                              value, value + ' (1)');
+                                        }
+
+                                        File(_songs[index]['id'])
+                                            .rename(newName);
+                                        _songs[index]['id'] = newName;
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          SnackBar(
+                                            elevation: 6,
+                                            backgroundColor: Colors.grey[900],
+                                            behavior: SnackBarBehavior.floating,
+                                            content: Text(
+                                              'Renamed to ${_songs[index]['id'].split('/').last}',
+                                              style: TextStyle(
+                                                  color: Colors.white),
+                                            ),
+                                            action: SnackBarAction(
+                                              textColor:
+                                                  Theme.of(context).accentColor,
+                                              label: 'Ok',
+                                              onPressed: () {},
+                                            ),
+                                          ),
+                                        );
+                                      } catch (e) {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          SnackBar(
+                                            elevation: 6,
+                                            backgroundColor: Colors.grey[900],
+                                            behavior: SnackBarBehavior.floating,
+                                            content: Text(
+                                              'Failed to Rename ${_songs[index]['id'].split('/').last}',
+                                              style: TextStyle(
+                                                  color: Colors.white),
+                                            ),
+                                            action: SnackBarAction(
+                                              textColor:
+                                                  Theme.of(context).accentColor,
+                                              label: 'Ok',
+                                              onPressed: () {},
+                                            ),
+                                          ),
+                                        );
+                                      }
+                                      setState(() {});
+                                    }),
+                              ],
+                            ),
+                            actions: [
+                              TextButton(
+                                style: TextButton.styleFrom(
+                                  primary: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? Colors.white
+                                      : Colors.grey[700],
+                                  //       backgroundColor: Theme.of(context).accentColor,
+                                ),
+                                child: Text(
+                                  "Cancel",
+                                ),
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                              ),
+                              TextButton(
+                                style: TextButton.styleFrom(
+                                  primary: Colors.white,
+                                  backgroundColor:
+                                      Theme.of(context).accentColor,
+                                ),
+                                child: Text(
+                                  "Ok",
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                                onPressed: () async {
+                                  try {
+                                    Navigator.pop(context);
+                                    String newName = _songs[index]['id']
+                                        .toString()
+                                        .replaceFirst(
+                                            songName, controller.text);
+
+                                    while (await File(newName).exists()) {
+                                      newName = newName.replaceFirst(
+                                          controller.text,
+                                          controller.text + ' (1)');
+                                    }
+
+                                    File(_songs[index]['id']).rename(newName);
+                                    _songs[index]['id'] = newName;
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        elevation: 6,
+                                        backgroundColor: Colors.grey[900],
+                                        behavior: SnackBarBehavior.floating,
+                                        content: Text(
+                                          'Renamed to ${_songs[index]['id'].split('/').last}',
+                                          style: TextStyle(color: Colors.white),
+                                        ),
+                                        action: SnackBarAction(
+                                          textColor:
+                                              Theme.of(context).accentColor,
+                                          label: 'Ok',
+                                          onPressed: () {},
+                                        ),
+                                      ),
+                                    );
+                                  } catch (e) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        elevation: 6,
+                                        backgroundColor: Colors.grey[900],
+                                        behavior: SnackBarBehavior.floating,
+                                        content: Text(
+                                          'Failed to Rename ${_songs[index]['id'].split('/').last}',
+                                          style: TextStyle(color: Colors.white),
+                                        ),
+                                        action: SnackBarAction(
+                                          textColor:
+                                              Theme.of(context).accentColor,
+                                          label: 'Ok',
+                                          onPressed: () {},
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                  setState(() {});
+                                },
+                              ),
+                              SizedBox(
+                                width: 5,
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    }
+                    if (value == 1) {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          final _titlecontroller = TextEditingController(
+                              text: _songs[index]['title']);
+                          final _albumcontroller = TextEditingController(
+                              text: _songs[index]['album']);
+                          final _artistcontroller = TextEditingController(
+                              text: _songs[index]['artist']);
+                          return AlertDialog(
+                            content: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Row(
+                                  children: [
+                                    Text(
+                                      'Title',
+                                      style: TextStyle(
+                                          color: Theme.of(context).accentColor),
+                                    ),
+                                  ],
+                                ),
+                                TextField(
+                                    autofocus: true,
+                                    controller: _titlecontroller,
+                                    onSubmitted: (value) {}),
+                                SizedBox(
+                                  height: 30,
+                                ),
+                                Row(
+                                  children: [
+                                    Text(
+                                      'Artist',
+                                      style: TextStyle(
+                                          color: Theme.of(context).accentColor),
+                                    ),
+                                  ],
+                                ),
+                                TextField(
+                                    autofocus: true,
+                                    controller: _artistcontroller,
+                                    onSubmitted: (value) {}),
+                                SizedBox(
+                                  height: 30,
+                                ),
+                                Row(
+                                  children: [
+                                    Text(
+                                      'Album',
+                                      style: TextStyle(
+                                          color: Theme.of(context).accentColor),
+                                    ),
+                                  ],
+                                ),
+                                TextField(
+                                    autofocus: true,
+                                    controller: _albumcontroller,
+                                    onSubmitted: (value) {}),
+                              ],
+                            ),
+                            actions: [
+                              TextButton(
+                                style: TextButton.styleFrom(
+                                  primary: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? Colors.white
+                                      : Colors.grey[700],
+                                ),
+                                child: Text("Cancel"),
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                              ),
+                              TextButton(
+                                style: TextButton.styleFrom(
+                                  primary: Colors.white,
+                                  backgroundColor:
+                                      Theme.of(context).accentColor,
+                                ),
+                                child: Text(
+                                  "Ok",
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                                onPressed: () async {
+                                  try {
+                                    Navigator.pop(context);
+                                    _songs[index]['title'] =
+                                        _titlecontroller.text;
+                                    _songs[index]['album'] =
+                                        _albumcontroller.text;
+                                    _songs[index]['artist'] =
+                                        _artistcontroller.text;
+                                    final tag = Tag(
+                                      title: _titlecontroller.text,
+                                      artist: _artistcontroller.text,
+                                      album: _albumcontroller.text,
+                                    );
+
+                                    final tagger = Audiotagger();
+                                    await tagger.writeTags(
+                                      path: _songs[index]['id'],
+                                      tag: tag,
+                                    );
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        elevation: 6,
+                                        backgroundColor: Colors.grey[900],
+                                        behavior: SnackBarBehavior.floating,
+                                        content: Text(
+                                          'Successfully edited tags',
+                                          style: TextStyle(color: Colors.white),
+                                        ),
+                                        action: SnackBarAction(
+                                          textColor:
+                                              Theme.of(context).accentColor,
+                                          label: 'Ok',
+                                          onPressed: () {},
+                                        ),
+                                      ),
+                                    );
+                                  } catch (e) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        elevation: 6,
+                                        backgroundColor: Colors.grey[900],
+                                        behavior: SnackBarBehavior.floating,
+                                        content: Text(
+                                          'Failed to edit tags',
+                                          style: TextStyle(color: Colors.white),
+                                        ),
+                                        action: SnackBarAction(
+                                          textColor:
+                                              Theme.of(context).accentColor,
+                                          label: 'Ok',
+                                          onPressed: () {},
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                },
+                              ),
+                              SizedBox(
+                                width: 5,
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    }
+                    if (value == 2) {
+                      try {
+                        File(_songs[index]['id']).delete();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            elevation: 6,
+                            backgroundColor: Colors.grey[900],
+                            behavior: SnackBarBehavior.floating,
+                            content: Text(
+                              'Deleted ${_songs[index]['id'].split('/').last}',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            action: SnackBarAction(
+                              textColor: Theme.of(context).accentColor,
+                              label: 'Ok',
+                              onPressed: () {},
+                            ),
+                          ),
+                        );
+                        if (_albums[_songs[index]['album']].length == 1) {
+                          sortedAlbumKeysList.remove(_songs[index]['album']);
+                        }
+
+                        _albums[_songs[index]['album']].remove(_songs[index]);
+                        if (_artists[_songs[index]['artist']].length == 1) {
+                          sortedArtistKeysList.remove(_songs[index]['artist']);
+                        }
+
+                        _artists[_songs[index]['artist']].remove(_songs[index]);
+                        _songs.remove(_songs[index]);
+                      } catch (e) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            elevation: 6,
+                            backgroundColor: Colors.grey[900],
+                            behavior: SnackBarBehavior.floating,
+                            content: Text(
+                              'Failed to delete ${_songs[index]['id']}',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            action: SnackBarAction(
+                              textColor: Theme.of(context).accentColor,
+                              label: 'Ok',
+                              onPressed: () {},
+                            ),
+                          ),
+                        );
+                      }
+                      setState(() {});
+                    }
                   },
-                );
-        });
+                  itemBuilder: (context) => [
+                    PopupMenuItem(
+                      value: 0,
+                      child: Row(
+                        children: [
+                          Icon(Icons.edit_rounded),
+                          Spacer(),
+                          Text('Rename'),
+                          Spacer(),
+                        ],
+                      ),
+                    ),
+                    PopupMenuItem(
+                      value: 1,
+                      child: Row(
+                        children: [
+                          Icon(Icons.tag_rounded),
+                          Spacer(),
+                          Text('Edit Tags'),
+                          Spacer(),
+                        ],
+                      ),
+                    ),
+                    PopupMenuItem(
+                      value: 2,
+                      child: Row(
+                        children: [
+                          Icon(Icons.delete),
+                          Spacer(),
+                          Text('Delete'),
+                          Spacer(),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                onTap: () {
+                  Navigator.of(context).push(
+                    PageRouteBuilder(
+                      opaque: false, // set to false
+                      pageBuilder: (_, __, ___) => PlayScreen(
+                        data: {
+                          'response': _songs,
+                          'index': index,
+                          'offline': true
+                        },
+                        fromMiniplayer: false,
+                      ),
+                    ),
+                  );
+                },
+              );
+            });
   }
 
   albumsTab() {
-    return ListView.builder(
-        physics: BouncingScrollPhysics(),
-        padding: EdgeInsets.only(top: 20, bottom: 10),
-        shrinkWrap: true,
-        itemCount: sortedAlbumKeysList.length,
-        itemBuilder: (context, index) {
-          return sortedAlbumKeysList.length == 0
-              ? EmptyScreen().emptyScreen(context, 3, "Nothing to ", 15.0,
-                  "Show Here", 45, "Download Something", 23.0)
-              : ListTile(
-                  leading: Card(
-                    elevation: 5,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(7.0),
-                    ),
-                    clipBehavior: Clip.antiAlias,
-                    child: Stack(
-                      children: [
-                        Image(
-                          image: AssetImage('assets/album.png'),
-                        ),
-                        _albums[sortedAlbumKeysList[index]][0]['image'] == null
-                            ? SizedBox()
-                            : Image(
-                                image: MemoryImage(
-                                    _albums[sortedAlbumKeysList[index]][0]
-                                        ['image']),
-                              )
-                      ],
-                    ),
+    return sortedAlbumKeysList.length == 0
+        ? EmptyScreen().emptyScreen(context, 3, "Nothing to ", 15.0,
+            "Show Here", 45, "Download Something", 23.0)
+        : ListView.builder(
+            physics: BouncingScrollPhysics(),
+            padding: EdgeInsets.only(top: 20, bottom: 10),
+            shrinkWrap: true,
+            itemCount: sortedAlbumKeysList.length,
+            itemBuilder: (context, index) {
+              return ListTile(
+                leading: Card(
+                  elevation: 5,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(7.0),
                   ),
-                  title: Text('${sortedAlbumKeysList[index]}'),
-                  subtitle: Text(
-                    _albums[sortedAlbumKeysList[index]].length == 1
-                        ? '${_albums[sortedAlbumKeysList[index]].length} Song'
-                        : '${_albums[sortedAlbumKeysList[index]].length} Songs',
-                  ),
-                  onTap: () {
-                    Navigator.of(context).push(
-                      PageRouteBuilder(
-                        opaque: false, // set to false
-                        pageBuilder: (_, __, ___) => SongsList(
-                          data: _albums[sortedAlbumKeysList[index]],
-                        ),
+                  clipBehavior: Clip.antiAlias,
+                  child: Stack(
+                    children: [
+                      Image(
+                        image: AssetImage('assets/album.png'),
                       ),
-                    );
-                  },
-                );
-        });
+                      _albums[sortedAlbumKeysList[index]][0]['image'] == null
+                          ? SizedBox()
+                          : Image(
+                              image: MemoryImage(
+                                  _albums[sortedAlbumKeysList[index]][0]
+                                      ['image']),
+                            )
+                    ],
+                  ),
+                ),
+                title: Text('${sortedAlbumKeysList[index]}'),
+                subtitle: Text(
+                  _albums[sortedAlbumKeysList[index]].length == 1
+                      ? '${_albums[sortedAlbumKeysList[index]].length} Song'
+                      : '${_albums[sortedAlbumKeysList[index]].length} Songs',
+                ),
+                onTap: () {
+                  Navigator.of(context).push(
+                    PageRouteBuilder(
+                      opaque: false, // set to false
+                      pageBuilder: (_, __, ___) => SongsList(
+                        data: _albums[sortedAlbumKeysList[index]],
+                      ),
+                    ),
+                  );
+                },
+              );
+            });
   }
 
   artistsTab() {
-    return ListView.builder(
-        physics: BouncingScrollPhysics(),
-        padding: EdgeInsets.only(top: 20, bottom: 10),
-        shrinkWrap: true,
-        itemCount: sortedArtistKeysList.length,
-        itemBuilder: (context, index) {
-          return sortedArtistKeysList.length == 0
-              ? EmptyScreen().emptyScreen(context, 3, "Nothing to ", 15.0,
-                  "Show Here", 45, "Download Something", 23.0)
-              : ListTile(
-                  leading: Card(
-                    elevation: 5,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(7.0),
-                    ),
-                    clipBehavior: Clip.antiAlias,
-                    child: Stack(
-                      children: [
-                        Image(
-                          image: AssetImage('assets/artist.png'),
-                        ),
-                        _artists[sortedArtistKeysList[index]][0]['image'] ==
-                                null
-                            ? SizedBox()
-                            : Image(
-                                image: MemoryImage(
-                                    _artists[sortedArtistKeysList[index]][0]
-                                        ['image']),
-                              )
-                      ],
-                    ),
+    return sortedArtistKeysList.length == 0
+        ? EmptyScreen().emptyScreen(context, 3, "Nothing to ", 15.0,
+            "Show Here", 45, "Download Something", 23.0)
+        : ListView.builder(
+            physics: BouncingScrollPhysics(),
+            padding: EdgeInsets.only(top: 20, bottom: 10),
+            shrinkWrap: true,
+            itemCount: sortedArtistKeysList.length,
+            itemBuilder: (context, index) {
+              return ListTile(
+                leading: Card(
+                  elevation: 5,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(7.0),
                   ),
-                  title: Text('${sortedArtistKeysList[index]}'),
-                  subtitle: Text(
-                    _artists[sortedArtistKeysList[index]].length == 1
-                        ? '${_artists[sortedArtistKeysList[index]].length} Song'
-                        : '${_artists[sortedArtistKeysList[index]].length} Songs',
-                  ),
-                  onTap: () {
-                    Navigator.of(context).push(
-                      PageRouteBuilder(
-                        opaque: false, // set to false
-                        pageBuilder: (_, __, ___) => SongsList(
-                          data: _artists[sortedArtistKeysList[index]],
-                        ),
+                  clipBehavior: Clip.antiAlias,
+                  child: Stack(
+                    children: [
+                      Image(
+                        image: AssetImage('assets/artist.png'),
                       ),
-                    );
-                  },
-                );
-        });
+                      _artists[sortedArtistKeysList[index]][0]['image'] == null
+                          ? SizedBox()
+                          : Image(
+                              image: MemoryImage(
+                                  _artists[sortedArtistKeysList[index]][0]
+                                      ['image']),
+                            )
+                    ],
+                  ),
+                ),
+                title: Text('${sortedArtistKeysList[index]}'),
+                subtitle: Text(
+                  _artists[sortedArtistKeysList[index]].length == 1
+                      ? '${_artists[sortedArtistKeysList[index]].length} Song'
+                      : '${_artists[sortedArtistKeysList[index]].length} Songs',
+                ),
+                onTap: () {
+                  Navigator.of(context).push(
+                    PageRouteBuilder(
+                      opaque: false, // set to false
+                      pageBuilder: (_, __, ___) => SongsList(
+                        data: _artists[sortedArtistKeysList[index]],
+                      ),
+                    ),
+                  );
+                },
+              );
+            });
   }
 
   videosTab() {
-    return ListView.builder(
-        physics: BouncingScrollPhysics(),
-        padding: EdgeInsets.only(top: 20, bottom: 10),
-        shrinkWrap: true,
-        itemCount: _videos.length,
-        itemBuilder: (context, index) {
-          return _videos.length == 0
-              ? EmptyScreen().emptyScreen(context, 3, "Nothing to ", 15.0,
-                  "Show Here", 45, "Download Something", 23.0)
-              : ListTile(
-                  leading: Card(
-                    elevation: 5,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(7.0),
-                    ),
-                    clipBehavior: Clip.antiAlias,
-                    child: Stack(
-                      children: [
-                        Image(
-                          image: AssetImage('assets/cover.jpg'),
-                        ),
-                        _videos[index]['image'] == null
-                            ? SizedBox()
-                            : Image(
-                                image: MemoryImage(_videos[index]['image']),
-                              )
-                      ],
-                    ),
+    return _videos.length == 0
+        ? EmptyScreen().emptyScreen(context, 3, "Nothing to ", 15.0,
+            "Show Here", 45, "Download Something", 23.0)
+        : ListView.builder(
+            physics: BouncingScrollPhysics(),
+            padding: EdgeInsets.only(top: 20, bottom: 10),
+            shrinkWrap: true,
+            itemCount: _videos.length,
+            itemBuilder: (context, index) {
+              return ListTile(
+                leading: Card(
+                  elevation: 5,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(7.0),
                   ),
-                  title: Text('${_videos[index]['id'].split('/').last}'),
-                  trailing: PopupMenuButton(
-                    icon: Icon(Icons.more_vert_rounded),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(7.0))),
-                    onSelected: (value) async {
-                      if (value == 0) {
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            String fileName =
-                                _videos[index]['id'].split('/').last.toString();
-                            List temp = fileName.split('.');
-                            String ext = temp.removeLast();
-                            String videoName = temp.join('.');
-                            final controller =
-                                TextEditingController(text: videoName);
-                            return AlertDialog(
-                              content: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Text(
-                                        'Name',
-                                        style: TextStyle(
-                                            color:
-                                                Theme.of(context).accentColor),
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(
-                                    height: 10,
-                                  ),
-                                  TextField(
-                                      autofocus: true,
-                                      controller: controller,
-                                      onSubmitted: (value) async {
-                                        try {
-                                          Navigator.pop(context);
-                                          String newName = _videos[index]['id']
-                                              .toString()
-                                              .replaceFirst(videoName, value);
-
-                                          while (await File(newName).exists()) {
-                                            newName = newName.replaceFirst(
-                                                value, value + ' (1)');
-                                          }
-
-                                          File(_videos[index]['id'])
-                                              .rename(newName);
-                                          _videos[index]['id'] = newName;
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            SnackBar(
-                                              elevation: 6,
-                                              backgroundColor: Colors.grey[900],
-                                              behavior:
-                                                  SnackBarBehavior.floating,
-                                              content: Text(
-                                                'Renamed to ${_videos[index]['id'].split('/').last}',
-                                                style: TextStyle(
-                                                    color: Colors.white),
-                                              ),
-                                              action: SnackBarAction(
-                                                textColor: Theme.of(context)
-                                                    .accentColor,
-                                                label: 'Ok',
-                                                onPressed: () {},
-                                              ),
-                                            ),
-                                          );
-                                        } catch (e) {
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            SnackBar(
-                                              elevation: 6,
-                                              backgroundColor: Colors.grey[900],
-                                              behavior:
-                                                  SnackBarBehavior.floating,
-                                              content: Text(
-                                                'Failed to Rename ${_videos[index]['id'].split('/').last}',
-                                                style: TextStyle(
-                                                    color: Colors.white),
-                                              ),
-                                              action: SnackBarAction(
-                                                textColor: Theme.of(context)
-                                                    .accentColor,
-                                                label: 'Ok',
-                                                onPressed: () {},
-                                              ),
-                                            ),
-                                          );
-                                        }
-                                        setState(() {});
-                                      }),
-                                ],
-                              ),
-                              actions: [
-                                TextButton(
-                                  style: TextButton.styleFrom(
-                                    primary: Theme.of(context).brightness ==
-                                            Brightness.dark
-                                        ? Colors.white
-                                        : Colors.grey[700],
-                                    //       backgroundColor: Theme.of(context).accentColor,
-                                  ),
-                                  child: Text(
-                                    "Cancel",
-                                  ),
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                  },
-                                ),
-                                TextButton(
-                                  style: TextButton.styleFrom(
-                                    primary: Colors.white,
-                                    backgroundColor:
-                                        Theme.of(context).accentColor,
-                                  ),
-                                  child: Text(
-                                    "Ok",
-                                    style: TextStyle(color: Colors.white),
-                                  ),
-                                  onPressed: () async {
-                                    try {
-                                      Navigator.pop(context);
-                                      String newName = _videos[index]['id']
-                                          .toString()
-                                          .replaceFirst(
-                                              videoName, controller.text);
-
-                                      while (await File(newName).exists()) {
-                                        newName = newName.replaceFirst(
-                                            controller.text,
-                                            controller.text + ' (1)');
-                                      }
-
-                                      File(_videos[index]['id'])
-                                          .rename(newName);
-                                      _videos[index]['id'] = newName;
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        SnackBar(
-                                          elevation: 6,
-                                          backgroundColor: Colors.grey[900],
-                                          behavior: SnackBarBehavior.floating,
-                                          content: Text(
-                                            'Renamed to ${_videos[index]['id'].split('/').last}',
-                                            style:
-                                                TextStyle(color: Colors.white),
-                                          ),
-                                          action: SnackBarAction(
-                                            textColor:
-                                                Theme.of(context).accentColor,
-                                            label: 'Ok',
-                                            onPressed: () {},
-                                          ),
-                                        ),
-                                      );
-                                    } catch (e) {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        SnackBar(
-                                          elevation: 6,
-                                          backgroundColor: Colors.grey[900],
-                                          behavior: SnackBarBehavior.floating,
-                                          content: Text(
-                                            'Failed to Rename ${_videos[index]['id'].split('/').last}',
-                                            style:
-                                                TextStyle(color: Colors.white),
-                                          ),
-                                          action: SnackBarAction(
-                                            textColor:
-                                                Theme.of(context).accentColor,
-                                            label: 'Ok',
-                                            onPressed: () {},
-                                          ),
-                                        ),
-                                      );
-                                    }
-                                    setState(() {});
-                                  },
-                                ),
-                                SizedBox(
-                                  width: 5,
-                                ),
-                              ],
-                            );
-                          },
-                        );
-                      }
-                      if (value == 1) {
-                        try {
-                          File(_videos[index]['id']).delete();
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              elevation: 6,
-                              backgroundColor: Colors.grey[900],
-                              behavior: SnackBarBehavior.floating,
-                              content: Text(
-                                'Deleted ${_videos[index]['id'].split('/').last}',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                              action: SnackBarAction(
-                                textColor: Theme.of(context).accentColor,
-                                label: 'Ok',
-                                onPressed: () {},
-                              ),
-                            ),
-                          );
-                          _videos.remove(_videos[index]);
-                        } catch (e) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              elevation: 6,
-                              backgroundColor: Colors.grey[900],
-                              behavior: SnackBarBehavior.floating,
-                              content: Text(
-                                'Failed to delete ${_videos[index]['id']}',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                              action: SnackBarAction(
-                                textColor: Theme.of(context).accentColor,
-                                label: 'Ok',
-                                onPressed: () {},
-                              ),
-                            ),
-                          );
-                        }
-                        setState(() {});
-                      }
-                    },
-                    itemBuilder: (context) => [
-                      PopupMenuItem(
-                        value: 0,
-                        child: Row(
-                          children: [
-                            Icon(Icons.edit_rounded),
-                            Spacer(),
-                            Text('Rename'),
-                            Spacer(),
-                          ],
-                        ),
+                  clipBehavior: Clip.antiAlias,
+                  child: Stack(
+                    children: [
+                      Image(
+                        image: AssetImage('assets/cover.jpg'),
                       ),
-                      PopupMenuItem(
-                        value: 1,
-                        child: Row(
-                          children: [
-                            Icon(Icons.delete),
-                            Spacer(),
-                            Text('Delete'),
-                            Spacer(),
-                          ],
-                        ),
-                      ),
+                      _videos[index]['image'] == null
+                          ? SizedBox()
+                          : Image(
+                              image: MemoryImage(_videos[index]['image']),
+                            )
                     ],
                   ),
-                  onTap: () {
-                    Navigator.of(context).push(
-                      PageRouteBuilder(
-                        opaque: false, // set to false
-                        pageBuilder: (_, __, ___) => PlayScreen(
-                          data: {
-                            'response': _videos,
-                            'index': index,
-                            'offline': true
-                          },
-                          fromMiniplayer: false,
-                        ),
-                      ),
-                    );
+                ),
+                title: Text('${_videos[index]['id'].split('/').last}'),
+                trailing: PopupMenuButton(
+                  icon: Icon(Icons.more_vert_rounded),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(7.0))),
+                  onSelected: (value) async {
+                    if (value == 0) {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          String fileName =
+                              _videos[index]['id'].split('/').last.toString();
+                          List temp = fileName.split('.');
+                          String ext = temp.removeLast();
+                          String videoName = temp.join('.');
+                          final controller =
+                              TextEditingController(text: videoName);
+                          return AlertDialog(
+                            content: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Row(
+                                  children: [
+                                    Text(
+                                      'Name',
+                                      style: TextStyle(
+                                          color: Theme.of(context).accentColor),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                TextField(
+                                    autofocus: true,
+                                    controller: controller,
+                                    onSubmitted: (value) async {
+                                      try {
+                                        Navigator.pop(context);
+                                        String newName = _videos[index]['id']
+                                            .toString()
+                                            .replaceFirst(videoName, value);
+
+                                        while (await File(newName).exists()) {
+                                          newName = newName.replaceFirst(
+                                              value, value + ' (1)');
+                                        }
+
+                                        File(_videos[index]['id'])
+                                            .rename(newName);
+                                        _videos[index]['id'] = newName;
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          SnackBar(
+                                            elevation: 6,
+                                            backgroundColor: Colors.grey[900],
+                                            behavior: SnackBarBehavior.floating,
+                                            content: Text(
+                                              'Renamed to ${_videos[index]['id'].split('/').last}',
+                                              style: TextStyle(
+                                                  color: Colors.white),
+                                            ),
+                                            action: SnackBarAction(
+                                              textColor:
+                                                  Theme.of(context).accentColor,
+                                              label: 'Ok',
+                                              onPressed: () {},
+                                            ),
+                                          ),
+                                        );
+                                      } catch (e) {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          SnackBar(
+                                            elevation: 6,
+                                            backgroundColor: Colors.grey[900],
+                                            behavior: SnackBarBehavior.floating,
+                                            content: Text(
+                                              'Failed to Rename ${_videos[index]['id'].split('/').last}',
+                                              style: TextStyle(
+                                                  color: Colors.white),
+                                            ),
+                                            action: SnackBarAction(
+                                              textColor:
+                                                  Theme.of(context).accentColor,
+                                              label: 'Ok',
+                                              onPressed: () {},
+                                            ),
+                                          ),
+                                        );
+                                      }
+                                      setState(() {});
+                                    }),
+                              ],
+                            ),
+                            actions: [
+                              TextButton(
+                                style: TextButton.styleFrom(
+                                  primary: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? Colors.white
+                                      : Colors.grey[700],
+                                  //       backgroundColor: Theme.of(context).accentColor,
+                                ),
+                                child: Text(
+                                  "Cancel",
+                                ),
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                              ),
+                              TextButton(
+                                style: TextButton.styleFrom(
+                                  primary: Colors.white,
+                                  backgroundColor:
+                                      Theme.of(context).accentColor,
+                                ),
+                                child: Text(
+                                  "Ok",
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                                onPressed: () async {
+                                  try {
+                                    Navigator.pop(context);
+                                    String newName = _videos[index]['id']
+                                        .toString()
+                                        .replaceFirst(
+                                            videoName, controller.text);
+
+                                    while (await File(newName).exists()) {
+                                      newName = newName.replaceFirst(
+                                          controller.text,
+                                          controller.text + ' (1)');
+                                    }
+
+                                    File(_videos[index]['id']).rename(newName);
+                                    _videos[index]['id'] = newName;
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        elevation: 6,
+                                        backgroundColor: Colors.grey[900],
+                                        behavior: SnackBarBehavior.floating,
+                                        content: Text(
+                                          'Renamed to ${_videos[index]['id'].split('/').last}',
+                                          style: TextStyle(color: Colors.white),
+                                        ),
+                                        action: SnackBarAction(
+                                          textColor:
+                                              Theme.of(context).accentColor,
+                                          label: 'Ok',
+                                          onPressed: () {},
+                                        ),
+                                      ),
+                                    );
+                                  } catch (e) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        elevation: 6,
+                                        backgroundColor: Colors.grey[900],
+                                        behavior: SnackBarBehavior.floating,
+                                        content: Text(
+                                          'Failed to Rename ${_videos[index]['id'].split('/').last}',
+                                          style: TextStyle(color: Colors.white),
+                                        ),
+                                        action: SnackBarAction(
+                                          textColor:
+                                              Theme.of(context).accentColor,
+                                          label: 'Ok',
+                                          onPressed: () {},
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                  setState(() {});
+                                },
+                              ),
+                              SizedBox(
+                                width: 5,
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    }
+                    if (value == 1) {
+                      try {
+                        File(_videos[index]['id']).delete();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            elevation: 6,
+                            backgroundColor: Colors.grey[900],
+                            behavior: SnackBarBehavior.floating,
+                            content: Text(
+                              'Deleted ${_videos[index]['id'].split('/').last}',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            action: SnackBarAction(
+                              textColor: Theme.of(context).accentColor,
+                              label: 'Ok',
+                              onPressed: () {},
+                            ),
+                          ),
+                        );
+                        _videos.remove(_videos[index]);
+                      } catch (e) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            elevation: 6,
+                            backgroundColor: Colors.grey[900],
+                            behavior: SnackBarBehavior.floating,
+                            content: Text(
+                              'Failed to delete ${_videos[index]['id']}',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            action: SnackBarAction(
+                              textColor: Theme.of(context).accentColor,
+                              label: 'Ok',
+                              onPressed: () {},
+                            ),
+                          ),
+                        );
+                      }
+                      setState(() {});
+                    }
                   },
-                );
-        });
+                  itemBuilder: (context) => [
+                    PopupMenuItem(
+                      value: 0,
+                      child: Row(
+                        children: [
+                          Icon(Icons.edit_rounded),
+                          Spacer(),
+                          Text('Rename'),
+                          Spacer(),
+                        ],
+                      ),
+                    ),
+                    PopupMenuItem(
+                      value: 1,
+                      child: Row(
+                        children: [
+                          Icon(Icons.delete),
+                          Spacer(),
+                          Text('Delete'),
+                          Spacer(),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                onTap: () {
+                  Navigator.of(context).push(
+                    PageRouteBuilder(
+                      opaque: false, // set to false
+                      pageBuilder: (_, __, ___) => PlayScreen(
+                        data: {
+                          'response': _videos,
+                          'index': index,
+                          'offline': true
+                        },
+                        fromMiniplayer: false,
+                      ),
+                    ),
+                  );
+                },
+              );
+            });
   }
 }

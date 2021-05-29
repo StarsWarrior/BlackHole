@@ -51,6 +51,7 @@ class _TrendingPageState extends State<TrendingPage> {
     playlists[index]["songsList"] =
         await FormatResponse().formatResponse(playlist["list"]);
     Hive.box('cache').put(playlists[index]["id"], playlists[index]);
+    setState(() {});
     return playlists[index];
   }
 
