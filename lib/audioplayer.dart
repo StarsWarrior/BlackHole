@@ -266,31 +266,28 @@ class _PlayScreenState extends State<PlayScreen> {
         body: Builder(builder: (BuildContext context) {
           scaffoldContext = context;
           return SafeArea(
-            child: SingleChildScrollView(
-              child: StreamBuilder<bool>(
-                  stream: AudioService.runningStream,
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState != ConnectionState.active) {
-                      return SizedBox();
-                    }
-                    final running = snapshot.data ?? false;
-                    return Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        if (!running) ...[
-                          FutureBuilder(
-                              future: audioPlayerButton(),
-                              builder: (context, AsyncSnapshot spshot) {
-                                if (spshot.hasData) {
-                                  return SizedBox();
-                                } else {
-                                  return Column(
-                                    children: [
-                                      Container(
-                                        height:
-                                            MediaQuery.of(context).size.height *
-                                                0.0725,
-                                        child: Row(
+            child: StreamBuilder<bool>(
+                stream: AudioService.runningStream,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState != ConnectionState.active) {
+                    return SizedBox();
+                  }
+                  final running = snapshot.data ?? false;
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      if (!running) ...[
+                        FutureBuilder(
+                            future: audioPlayerButton(),
+                            builder: (context, AsyncSnapshot spshot) {
+                              if (spshot.hasData) {
+                                return SizedBox();
+                              } else {
+                                return Column(
+                                  children: [
+                                    Column(
+                                      children: [
+                                        Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.spaceBetween,
                                           children: [
@@ -313,12 +310,7 @@ class _PlayScreenState extends State<PlayScreen> {
                                                 itemBuilder: (context) => []),
                                           ],
                                         ),
-                                      ),
-                                      Container(
-                                        height:
-                                            MediaQuery.of(context).size.width *
-                                                0.925,
-                                        child: Card(
+                                        Card(
                                           elevation: 10,
                                           shape: RoundedRectangleBorder(
                                               borderRadius:
@@ -356,200 +348,154 @@ class _PlayScreenState extends State<PlayScreen> {
                                                                       context)
                                                                   .size
                                                                   .width *
-                                                              0.925,
+                                                              0.9,
                                                         ),
                                             ],
                                           ),
                                         ),
-                                      ),
-                                      Container(
-                                        height: (MediaQuery.of(context)
-                                                        .size
-                                                        .height *
-                                                    0.9 -
-                                                MediaQuery.of(context)
-                                                        .size
-                                                        .width *
-                                                    0.925) /
-                                            3,
-                                        child: Padding(
-                                          padding: const EdgeInsets.fromLTRB(
-                                              15, 25, 15, 0),
-                                          child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.end,
-                                            children: [
-                                              Container(
-                                                height: (MediaQuery.of(context)
-                                                                .size
-                                                                .height *
-                                                            0.9 -
-                                                        MediaQuery.of(context)
-                                                                .size
-                                                                .width *
-                                                            0.925) *
-                                                    2 /
-                                                    14.0,
-                                                child: FittedBox(
-                                                    child: Text(
-                                                  globalQueue.length <=
-                                                          globalIndex
-                                                      ? 'Unknown'
-                                                      : globalQueue[globalIndex]
-                                                          .title,
-                                                  textAlign: TextAlign.center,
-                                                  style: TextStyle(
-                                                      fontSize: 50,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      color: Theme.of(context)
-                                                          .accentColor),
-                                                )),
-                                              ),
-                                              Container(
-                                                height: (MediaQuery.of(context)
-                                                                .size
-                                                                .height *
-                                                            0.95 -
-                                                        MediaQuery.of(context)
-                                                                .size
-                                                                .width *
-                                                            0.925) *
-                                                    1 /
-                                                    16.0,
+                                      ],
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.fromLTRB(
+                                          15, 25, 15, 0),
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        children: [
+                                          Container(
+                                            height: (MediaQuery.of(context)
+                                                            .size
+                                                            .height *
+                                                        0.9 -
+                                                    MediaQuery.of(context)
+                                                            .size
+                                                            .width *
+                                                        0.925) *
+                                                2 /
+                                                14.0,
+                                            child: FittedBox(
                                                 child: Text(
-                                                  globalQueue.length <=
-                                                          globalIndex
-                                                      ? 'Unknown'
-                                                      : globalQueue[globalIndex]
-                                                          .artist,
-                                                  textAlign: TextAlign.center,
-                                                  style: TextStyle(
-                                                      fontSize: 18,
-                                                      fontWeight:
-                                                          FontWeight.w500),
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                ),
-                                              ),
-                                            ],
+                                              globalQueue.length <= globalIndex
+                                                  ? 'Unknown'
+                                                  : globalQueue[globalIndex]
+                                                      .title,
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontSize: 50,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Theme.of(context)
+                                                      .accentColor),
+                                            )),
                                           ),
-                                        ),
+                                          Text(
+                                            globalQueue.length <= globalIndex
+                                                ? 'Unknown'
+                                                : globalQueue[globalIndex]
+                                                    .artist,
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.w500),
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ],
                                       ),
-                                      Container(
-                                          height: (MediaQuery.of(context)
-                                                          .size
-                                                          .height *
-                                                      0.9 -
-                                                  MediaQuery.of(context)
-                                                          .size
-                                                          .width *
-                                                      0.925) /
-                                              3.5,
-                                          child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceEvenly,
-                                            children: [
-                                              SeekBar(
-                                                duration: Duration.zero,
-                                                position: Duration.zero,
-                                              ),
-                                            ],
-                                          )),
-                                      Container(
-                                        height: (MediaQuery.of(context)
-                                                        .size
-                                                        .height *
-                                                    0.9 -
-                                                MediaQuery.of(context)
-                                                        .size
-                                                        .width *
-                                                    0.925) /
-                                            3,
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceEvenly,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
+                                    ),
+                                    SeekBar(
+                                      duration: Duration.zero,
+                                      position: Duration.zero,
+                                    ),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Column(
                                           children: [
-                                            offline
-                                                ? IconButton(
-                                                    icon: Icon(
-                                                      Icons.shuffle_rounded,
-                                                    ),
-                                                    onPressed: null,
-                                                  )
-                                                : IconButton(
-                                                    icon: Icon(
-                                                      Icons
-                                                          .favorite_border_rounded,
-                                                    ),
-                                                    onPressed: null,
-                                                  ),
+                                            SizedBox(height: 6.0),
                                             IconButton(
                                               icon: Icon(
-                                                  Icons.skip_previous_rounded),
-                                              iconSize: 45.0,
+                                                Icons.shuffle_rounded,
+                                              ),
+                                              iconSize: 25.0,
                                               onPressed: null,
                                             ),
-                                            Stack(
-                                              children: [
-                                                Center(
-                                                    child: SizedBox(
-                                                  height: 65,
-                                                  width: 65,
-                                                  child:
-                                                      CircularProgressIndicator(
-                                                    valueColor:
-                                                        AlwaysStoppedAnimation<
-                                                                Color>(
-                                                            Theme.of(context)
-                                                                .accentColor),
-                                                  ),
-                                                )),
-                                                Center(
-                                                  child: Container(
-                                                    height: 65,
-                                                    width: 65,
-                                                    child: Center(
-                                                      child: SizedBox(
-                                                        height: 59,
-                                                        width: 59,
-                                                        child: playButton(),
-                                                      ),
-                                                    ),
-                                                  ),
+                                            if (!offline)
+                                              IconButton(
+                                                icon: Icon(
+                                                  Icons.favorite_border_rounded,
                                                 ),
-                                              ],
-                                            ),
-                                            IconButton(
-                                              icon:
-                                                  Icon(Icons.skip_next_rounded),
-                                              iconSize: 45.0,
-                                              onPressed: null,
-                                            ),
-                                            offline
-                                                ? IconButton(
-                                                    icon: Icon(
-                                                        Icons.repeat_rounded),
-                                                    onPressed: null,
-                                                  )
-                                                : IconButton(
-                                                    icon: Icon(
-                                                      Icons.save_alt,
-                                                    ),
-                                                    onPressed: null),
+                                                iconSize: 25.0,
+                                                onPressed: null,
+                                              ),
                                           ],
                                         ),
-                                      ),
-                                    ],
-                                  );
-                                }
-                              }),
-                        ] else ...[
-                          Container(
-                            height: MediaQuery.of(context).size.height * 0.0725,
-                            child: Row(
+                                        IconButton(
+                                          icon:
+                                              Icon(Icons.skip_previous_rounded),
+                                          iconSize: 45.0,
+                                          onPressed: null,
+                                        ),
+                                        Stack(
+                                          children: [
+                                            Center(
+                                                child: SizedBox(
+                                              height: 65,
+                                              width: 65,
+                                              child: CircularProgressIndicator(
+                                                valueColor:
+                                                    AlwaysStoppedAnimation<
+                                                            Color>(
+                                                        Theme.of(context)
+                                                            .accentColor),
+                                              ),
+                                            )),
+                                            Center(
+                                              child: Container(
+                                                height: 65,
+                                                width: 65,
+                                                child: Center(
+                                                  child: SizedBox(
+                                                    height: 59,
+                                                    width: 59,
+                                                    child: playButton(),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        IconButton(
+                                          icon: Icon(Icons.skip_next_rounded),
+                                          iconSize: 45.0,
+                                          onPressed: null,
+                                        ),
+                                        Column(
+                                          children: [
+                                            SizedBox(height: 6.0),
+                                            IconButton(
+                                              icon: Icon(Icons.repeat_rounded),
+                                              iconSize: 25.0,
+                                              onPressed: null,
+                                            ),
+                                            if (!offline)
+                                              IconButton(
+                                                  icon: Icon(Icons.save_alt),
+                                                  iconSize: 25.0,
+                                                  onPressed: null),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                );
+                              }
+                            }),
+                      ] else ...[
+                        Column(
+                          children: [
+                            Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 IconButton(
@@ -1113,113 +1059,99 @@ class _PlayScreenState extends State<PlayScreen> {
                                 )
                               ],
                             ),
-                          ),
-                          Container(
-                            height: MediaQuery.of(context).size.width * 0.925,
-                            child: Hero(
-                              tag: 'image',
-                              child: GestureDetector(
-                                onTap: () {
-                                  if (AudioService.playbackState.playing ==
-                                      true) {
-                                    AudioService.pause();
-                                  } else {
-                                    AudioService.play();
-                                  }
-                                },
-                                child: Card(
-                                  elevation: 10,
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(15)),
-                                  clipBehavior: Clip.antiAlias,
-                                  child: Stack(
-                                    children: [
-                                      Image(
-                                        fit: BoxFit.cover,
-                                        image: AssetImage('assets/cover.jpg'),
-                                        height:
-                                            MediaQuery.of(context).size.width *
-                                                0.925,
-                                      ),
-                                      StreamBuilder<QueueState>(
-                                          stream: _queueStateStream,
-                                          builder: (context, snapshot) {
-                                            final queueState = snapshot.data;
-                                            // final queue = queueState?.queue ?? [];
-                                            final mediaItem =
-                                                queueState?.mediaItem;
-                                            return (mediaItem == null)
-                                                ? Image(
-                                                    fit: BoxFit.cover,
-                                                    image: (globalQueue ==
-                                                                null ||
-                                                            globalQueue
-                                                                    .length ==
-                                                                0)
-                                                        ? (AssetImage(
-                                                            'assets/cover.jpg'))
-                                                        : offline
-                                                            ? FileImage(File(
-                                                                globalQueue[
-                                                                        globalIndex]
-                                                                    .artUri
-                                                                    .toFilePath(),
-                                                              ))
-                                                            : NetworkImage(
-                                                                globalQueue[
-                                                                        globalIndex]
-                                                                    .artUri
-                                                                    .toString()),
-                                                    height:
-                                                        MediaQuery.of(context)
-                                                                .size
-                                                                .width *
-                                                            0.925,
-                                                  )
-                                                : Image(
-                                                    fit: BoxFit.cover,
-                                                    image: offline
-                                                        ? FileImage(File(
-                                                            mediaItem.artUri
-                                                                .toFilePath()))
-                                                        : NetworkImage(mediaItem
-                                                            .artUri
-                                                            .toString()),
-                                                    height:
-                                                        MediaQuery.of(context)
-                                                                .size
-                                                                .width *
-                                                            0.925,
-                                                  );
-                                          }),
-                                    ],
-                                  ),
+                            GestureDetector(
+                              onTap: () {
+                                if (AudioService.playbackState.playing ==
+                                    true) {
+                                  AudioService.pause();
+                                } else {
+                                  AudioService.play();
+                                }
+                              },
+                              child: Card(
+                                elevation: 10,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(15)),
+                                clipBehavior: Clip.antiAlias,
+                                child: Stack(
+                                  children: [
+                                    Image(
+                                      fit: BoxFit.cover,
+                                      image: AssetImage('assets/cover.jpg'),
+                                      height:
+                                          MediaQuery.of(context).size.width *
+                                              0.9,
+                                    ),
+                                    StreamBuilder<QueueState>(
+                                        stream: _queueStateStream,
+                                        builder: (context, snapshot) {
+                                          final queueState = snapshot.data;
+                                          // final queue = queueState?.queue ?? [];
+                                          final mediaItem =
+                                              queueState?.mediaItem;
+                                          return (mediaItem == null)
+                                              ? Image(
+                                                  fit: BoxFit.cover,
+                                                  image: (globalQueue == null ||
+                                                          globalQueue.length ==
+                                                              0)
+                                                      ? (AssetImage(
+                                                          'assets/cover.jpg'))
+                                                      : offline
+                                                          ? FileImage(File(
+                                                              globalQueue[
+                                                                      globalIndex]
+                                                                  .artUri
+                                                                  .toFilePath(),
+                                                            ))
+                                                          : NetworkImage(
+                                                              globalQueue[
+                                                                      globalIndex]
+                                                                  .artUri
+                                                                  .toString()),
+                                                  height: MediaQuery.of(context)
+                                                          .size
+                                                          .width *
+                                                      0.9,
+                                                )
+                                              : Image(
+                                                  fit: BoxFit.cover,
+                                                  image: offline
+                                                      ? FileImage(File(mediaItem
+                                                          .artUri
+                                                          .toFilePath()))
+                                                      : NetworkImage(mediaItem
+                                                          .artUri
+                                                          .toString()),
+                                                  height: MediaQuery.of(context)
+                                                          .size
+                                                          .width *
+                                                      0.9,
+                                                );
+                                        }),
+                                  ],
                                 ),
                               ),
                             ),
-                          ),
+                          ],
+                        ),
 
-                          //Title and subtitle
+                        /// Title and subtitle
 
-                          Container(
-                            height: (MediaQuery.of(context).size.height * 0.9 -
-                                    MediaQuery.of(context).size.width * 0.925) /
-                                3,
-                            child: Padding(
-                              padding: const EdgeInsets.fromLTRB(15, 25, 15, 0),
-                              child: StreamBuilder<QueueState>(
-                                  stream: _queueStateStream,
-                                  builder: (context, snapshot) {
-                                    final queueState = snapshot.data;
-                                    final mediaItem = queueState?.mediaItem;
-                                    return Column(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        // Title container
-                                        Container(
-                                          height: (MediaQuery.of(context)
-                                                          .size
-                                                          .height *
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(15, 25, 15, 0),
+                          child: StreamBuilder<QueueState>(
+                              stream: _queueStateStream,
+                              builder: (context, snapshot) {
+                                final queueState = snapshot.data;
+                                final mediaItem = queueState?.mediaItem;
+                                return Column(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    /// Title container
+                                    Container(
+                                      height:
+                                          (MediaQuery.of(context).size.height *
                                                       0.9 -
                                                   MediaQuery.of(context)
                                                           .size
@@ -1227,29 +1159,28 @@ class _PlayScreenState extends State<PlayScreen> {
                                                       0.925) *
                                               2 /
                                               14.0,
-                                          child: FittedBox(
-                                              child: Text(
-                                            (mediaItem?.title != null)
-                                                ? (mediaItem.title)
-                                                : ((globalQueue == null ||
-                                                        globalQueue.length == 0)
-                                                    ? 'Title'
-                                                    : globalQueue[globalIndex]
-                                                        .title),
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                                fontSize: 50,
-                                                fontWeight: FontWeight.bold,
-                                                color: Theme.of(context)
-                                                    .accentColor),
-                                          )),
-                                        ),
+                                      child: FittedBox(
+                                          child: Text(
+                                        (mediaItem?.title != null)
+                                            ? (mediaItem.title)
+                                            : ((globalQueue == null ||
+                                                    globalQueue.length == 0)
+                                                ? 'Title'
+                                                : globalQueue[globalIndex]
+                                                    .title),
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                            fontSize: 50,
+                                            fontWeight: FontWeight.bold,
+                                            color:
+                                                Theme.of(context).accentColor),
+                                      )),
+                                    ),
 
-                                        //Subtitle container
-                                        Container(
-                                          height: (MediaQuery.of(context)
-                                                          .size
-                                                          .height *
+                                    /// Subtitle container
+                                    Container(
+                                      height:
+                                          (MediaQuery.of(context).size.height *
                                                       0.95 -
                                                   MediaQuery.of(context)
                                                           .size
@@ -1257,363 +1188,353 @@ class _PlayScreenState extends State<PlayScreen> {
                                                       0.925) *
                                               1 /
                                               16.0,
-                                          child: Text(
-                                            (mediaItem?.artist != null)
-                                                ? (mediaItem.artist)
-                                                : ((globalQueue == null ||
-                                                        globalQueue.length == 0)
-                                                    ? ''
-                                                    : globalQueue[globalIndex]
-                                                        .artist),
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.w500),
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                        ),
-                                      ],
-                                    );
-                                  }),
-                            ),
-                          ),
-                          //Seekbar starts from here
-                          Container(
-                            height: (MediaQuery.of(context).size.height * 0.9 -
-                                    MediaQuery.of(context).size.width * 0.925) /
-                                3.5,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                StreamBuilder<MediaState>(
-                                  stream: _mediaStateStream,
-                                  builder: (context, snapshot) {
-                                    final mediaState = snapshot.data;
-
-                                    return SeekBar(
-                                      duration:
-                                          mediaState?.mediaItem?.duration ??
-                                              Duration.zero,
-                                      position:
-                                          mediaState?.position ?? Duration.zero,
-                                      onChangeEnd: (newPosition) {
-                                        AudioService.seekTo(newPosition);
-                                      },
-                                    );
-                                  },
-                                ),
-                              ],
-                            ),
-                          ),
-
-                          // Final low starts from here
-
-                          Container(
-                            height: (MediaQuery.of(context).size.height * 0.9 -
-                                    MediaQuery.of(context).size.width * 0.925) /
-                                3,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                offline
-                                    ? IconButton(
-                                        icon: Icon(Icons.shuffle_rounded),
-                                        color: shuffle
-                                            ? Theme.of(context).accentColor
-                                            : null,
-                                        onPressed: () {
-                                          shuffle = !shuffle;
-                                          Hive.box('settings')
-                                              .put('shuffle', shuffle);
-                                          AudioService.customAction(
-                                              'shuffle', shuffle);
-                                          setState(() {});
-                                        },
-                                      )
-                                    : StreamBuilder<QueueState>(
-                                        stream: _queueStateStream,
-                                        builder: (context, snapshot) {
-                                          final queueState = snapshot.data;
-                                          bool liked = false;
-                                          // final queue = queueState?.queue ?? [];
-                                          final mediaItem =
-                                              queueState?.mediaItem;
-                                          try {
-                                            liked = checkPlaylist(
-                                                'Favorite Songs', mediaItem.id);
-                                          } catch (e) {}
-
-                                          return mediaItem == null
-                                              ? IconButton(
-                                                  icon: Icon(Icons
-                                                      .favorite_border_rounded),
-                                                  onPressed: null)
-                                              : IconButton(
-                                                  icon: Icon(
-                                                    liked
-                                                        ? Icons.favorite_rounded
-                                                        : Icons
-                                                            .favorite_border_rounded,
-                                                    color: liked
-                                                        ? Colors.redAccent
-                                                        : null,
-                                                  ),
-                                                  onPressed: () {
-                                                    liked
-                                                        ? removeLiked(
-                                                            mediaItem.id)
-                                                        : addPlaylist(
-                                                            'Favorite Songs',
-                                                            mediaItem);
-                                                    liked = !liked;
-                                                    ScaffoldMessenger.of(
-                                                            scaffoldContext)
-                                                        .showSnackBar(
-                                                      SnackBar(
-                                                        duration: Duration(
-                                                            seconds: 2),
-                                                        action: SnackBarAction(
-                                                            textColor: Theme.of(
-                                                                    context)
-                                                                .accentColor,
-                                                            label: 'Undo',
-                                                            onPressed: () {
-                                                              liked
-                                                                  ? removeLiked(
-                                                                      mediaItem
-                                                                          .id)
-                                                                  : addPlaylist(
-                                                                      'Favorite Songs',
-                                                                      mediaItem);
-                                                              liked = !liked;
-                                                            }),
-                                                        elevation: 6,
-                                                        backgroundColor:
-                                                            Colors.grey[900],
-                                                        behavior:
-                                                            SnackBarBehavior
-                                                                .floating,
-                                                        content: Text(
-                                                          liked
-                                                              ? 'Added to Favorites'
-                                                              : 'Removed from Favorites',
-                                                          style: TextStyle(
-                                                              color:
-                                                                  Colors.white),
-                                                        ),
-                                                      ),
-                                                    );
-                                                  });
-                                        },
-                                      ),
-                                StreamBuilder<QueueState>(
-                                    stream: _queueStateStream,
-                                    builder: (context, snapshot) {
-                                      final queueState = snapshot.data;
-                                      final queue = queueState?.queue ?? [];
-                                      final mediaItem = queueState?.mediaItem;
-                                      return (queue != null && queue.isNotEmpty)
-                                          ? IconButton(
-                                              icon: Icon(
-                                                  Icons.skip_previous_rounded),
-                                              iconSize: 45.0,
-                                              onPressed: (mediaItem ==
-                                                          queue.first ||
-                                                      mediaItem == null)
-                                                  ? null
-                                                  : AudioService.skipToPrevious,
-                                            )
-                                          : IconButton(
-                                              icon: Icon(
-                                                  Icons.skip_previous_rounded),
-                                              iconSize: 45.0,
-                                              onPressed: null);
-                                    }),
-                                Stack(
-                                  children: [
-                                    Center(
-                                      child:
-                                          StreamBuilder<AudioProcessingState>(
-                                        stream: AudioService.playbackStateStream
-                                            .map((state) =>
-                                                state.processingState)
-                                            .distinct(),
-                                        builder: (context, snapshot) {
-                                          final processingState =
-                                              snapshot.data ??
-                                                  AudioProcessingState.none;
-                                          return describeEnum(
-                                                      processingState) !=
-                                                  'ready'
-                                              ? SizedBox(
-                                                  height: 65,
-                                                  width: 65,
-                                                  child:
-                                                      CircularProgressIndicator(
-                                                    valueColor:
-                                                        AlwaysStoppedAnimation<
-                                                                Color>(
-                                                            Theme.of(context)
-                                                                .accentColor),
-                                                  ),
-                                                )
-                                              : SizedBox();
-                                        },
-                                      ),
-                                    ),
-                                    Center(
-                                      child: StreamBuilder<bool>(
-                                        stream: AudioService.playbackStateStream
-                                            .map((state) => state.playing)
-                                            .distinct(),
-                                        builder: (context, snapshot) {
-                                          final playing =
-                                              snapshot.data ?? false;
-                                          return Container(
-                                            height: 65,
-                                            width: 65,
-                                            child: Center(
-                                              child: SizedBox(
-                                                height: 59,
-                                                width: 59,
-                                                child: playing
-                                                    ? pauseButton()
-                                                    : playButton(),
-                                              ),
-                                            ),
-                                          );
-                                        },
+                                      child: Text(
+                                        (mediaItem?.artist != null)
+                                            ? (mediaItem.artist)
+                                            : ((globalQueue == null ||
+                                                    globalQueue.length == 0)
+                                                ? ''
+                                                : globalQueue[globalIndex]
+                                                    .artist),
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w500),
+                                        overflow: TextOverflow.ellipsis,
                                       ),
                                     ),
                                   ],
-                                ),
-                                // Queue display/controls.
-                                StreamBuilder<QueueState>(
-                                  stream: _queueStateStream,
-                                  builder: (context, snapshot) {
-                                    final queueState = snapshot.data;
-                                    final queue = queueState?.queue ?? [];
-                                    final mediaItem = queueState?.mediaItem;
-                                    return (queue != null && queue.isNotEmpty)
-                                        ? IconButton(
-                                            icon: Icon(Icons.skip_next_rounded),
-                                            iconSize: 45.0,
-                                            onPressed:
-                                                (mediaItem == queue.last ||
-                                                        mediaItem == null)
-                                                    ? null
-                                                    : AudioService.skipToNext,
-                                          )
-                                        : IconButton(
-                                            icon: Icon(Icons.skip_next_rounded),
-                                            iconSize: 45.0,
-                                            onPressed: null);
+                                );
+                              }),
+                        ),
+
+                        /// Seekbar starts from here
+                        StreamBuilder<MediaState>(
+                          stream: _mediaStateStream,
+                          builder: (context, snapshot) {
+                            final mediaState = snapshot.data;
+
+                            return SeekBar(
+                              duration: mediaState?.mediaItem?.duration ??
+                                  Duration.zero,
+                              position: mediaState?.position ?? Duration.zero,
+                              onChangeEnd: (newPosition) {
+                                AudioService.seekTo(newPosition);
+                              },
+                            );
+                          },
+                        ),
+
+                        /// Final row starts from here
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Column(
+                              children: [
+                                SizedBox(height: 6.0),
+                                IconButton(
+                                  icon: Icon(Icons.shuffle_rounded),
+                                  iconSize: 25.0,
+                                  color: shuffle
+                                      ? Theme.of(context).accentColor
+                                      : null,
+                                  onPressed: () {
+                                    shuffle = !shuffle;
+                                    Hive.box('settings')
+                                        .put('shuffle', shuffle);
+                                    AudioService.customAction(
+                                        'shuffle', shuffle);
+                                    setState(() {});
                                   },
                                 ),
-                                offline
-                                    ? IconButton(
-                                        icon: repeatMode == 'One'
-                                            ? Icon(Icons.repeat_one_rounded)
-                                            : Icon(Icons.repeat_rounded),
-                                        color: repeatMode == 'None'
-                                            ? null
-                                            : Theme.of(context).accentColor,
-                                        // Icons.repeat_one_rounded
-                                        onPressed: () {
-                                          repeatMode == 'None'
-                                              ? repeatMode = 'All'
-                                              : (repeatMode == 'All'
-                                                  ? repeatMode = 'One'
-                                                  : repeatMode = 'None');
-                                          Hive.box('settings')
-                                              .put('repeatMode', repeatMode);
-                                          AudioService.customAction(
-                                              'repeatMode', repeatMode);
-                                          setState(() {});
-                                        },
-                                      )
-                                    : StreamBuilder<QueueState>(
-                                        stream: _queueStateStream,
-                                        builder: (context, snapshot) {
-                                          final queueState = snapshot.data;
-                                          final queue = queueState?.queue ?? [];
-                                          final mediaItem =
-                                              queueState?.mediaItem;
-                                          return (mediaItem != null &&
-                                                  queue.isNotEmpty)
-                                              ? Stack(
-                                                  children: [
-                                                    Center(
-                                                      child: SizedBox(
-                                                        width: 50,
-                                                        child: (downloadedId ==
-                                                                mediaItem.id)
-                                                            ? Icon(
-                                                                Icons.save_alt,
-                                                                color: Theme.of(
-                                                                        context)
-                                                                    .accentColor,
-                                                              )
-                                                            : SizedBox(),
-                                                      ),
-                                                    ),
-                                                    Center(
-                                                        child:
-                                                            (downloadedId ==
-                                                                    mediaItem
-                                                                        .id)
-                                                                ? SizedBox()
-                                                                : SizedBox(
-                                                                    height: 50,
-                                                                    width: 50,
-                                                                    child:
-                                                                        Stack(
-                                                                      children: [
-                                                                        Center(
-                                                                          child: Text(_total != 0
-                                                                              ? '${(100 * _recieved ~/ _total)}%'
-                                                                              : ''),
-                                                                        ),
-                                                                        Center(
-                                                                          child: CircularProgressIndicator(
-                                                                              valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).accentColor),
-                                                                              value: _total != 0 ? _recieved / _total : 0),
-                                                                        ),
-                                                                      ],
-                                                                    ),
-                                                                  )),
-                                                    Center(
-                                                      child: (_total == 0 &&
-                                                              downloadedId !=
+                                if (!offline)
+                                  StreamBuilder<QueueState>(
+                                    stream: _queueStateStream,
+                                    builder: (context, snapshot) {
+                                      final queueState = snapshot.data;
+                                      bool liked = false;
+                                      final mediaItem = queueState?.mediaItem;
+                                      try {
+                                        liked = checkPlaylist(
+                                            'Favorite Songs', mediaItem.id);
+                                      } catch (e) {}
+
+                                      return mediaItem == null
+                                          ? IconButton(
+                                              icon: Icon(Icons
+                                                  .favorite_border_rounded),
+                                              iconSize: 25.0,
+                                              onPressed: null)
+                                          : IconButton(
+                                              icon: Icon(
+                                                liked
+                                                    ? Icons.favorite_rounded
+                                                    : Icons
+                                                        .favorite_border_rounded,
+                                                color: liked
+                                                    ? Colors.redAccent
+                                                    : null,
+                                              ),
+                                              iconSize: 25.0,
+                                              onPressed: () {
+                                                liked
+                                                    ? removeLiked(mediaItem.id)
+                                                    : addPlaylist(
+                                                        'Favorite Songs',
+                                                        mediaItem);
+                                                liked = !liked;
+                                                ScaffoldMessenger.of(
+                                                        scaffoldContext)
+                                                    .showSnackBar(
+                                                  SnackBar(
+                                                    duration:
+                                                        Duration(seconds: 2),
+                                                    action: SnackBarAction(
+                                                        textColor:
+                                                            Theme.of(context)
+                                                                .accentColor,
+                                                        label: 'Undo',
+                                                        onPressed: () {
+                                                          liked
+                                                              ? removeLiked(
                                                                   mediaItem.id)
-                                                          ? IconButton(
-                                                              icon: Icon(
-                                                                Icons.save_alt,
-                                                              ),
-                                                              onPressed: () {
-                                                                downloadSong(
-                                                                    mediaItem,
-                                                                    scaffoldContext);
-                                                              })
-                                                          : SizedBox(),
+                                                              : addPlaylist(
+                                                                  'Favorite Songs',
+                                                                  mediaItem);
+                                                          liked = !liked;
+                                                        }),
+                                                    elevation: 6,
+                                                    backgroundColor:
+                                                        Colors.grey[900],
+                                                    behavior: SnackBarBehavior
+                                                        .floating,
+                                                    content: Text(
+                                                      liked
+                                                          ? 'Added to Favorites'
+                                                          : 'Removed from Favorites',
+                                                      style: TextStyle(
+                                                          color: Colors.white),
                                                     ),
-                                                  ],
-                                                )
-                                              : IconButton(
-                                                  icon: Icon(
-                                                    Icons.save_alt,
                                                   ),
-                                                  onPressed: null);
-                                        }),
+                                                );
+                                              });
+                                    },
+                                  ),
                               ],
                             ),
-                          ),
-                        ],
+                            StreamBuilder<QueueState>(
+                                stream: _queueStateStream,
+                                builder: (context, snapshot) {
+                                  final queueState = snapshot.data;
+                                  final queue = queueState?.queue ?? [];
+                                  final mediaItem = queueState?.mediaItem;
+                                  return (queue != null && queue.isNotEmpty)
+                                      ? IconButton(
+                                          icon:
+                                              Icon(Icons.skip_previous_rounded),
+                                          iconSize: 45.0,
+                                          onPressed:
+                                              (mediaItem == queue.first ||
+                                                      mediaItem == null)
+                                                  ? null
+                                                  : AudioService.skipToPrevious,
+                                        )
+                                      : IconButton(
+                                          icon:
+                                              Icon(Icons.skip_previous_rounded),
+                                          iconSize: 45.0,
+                                          onPressed: null);
+                                }),
+
+                            /// Play button
+                            Stack(
+                              children: [
+                                Center(
+                                  child: StreamBuilder<AudioProcessingState>(
+                                    stream: AudioService.playbackStateStream
+                                        .map((state) => state.processingState)
+                                        .distinct(),
+                                    builder: (context, snapshot) {
+                                      final processingState = snapshot.data ??
+                                          AudioProcessingState.none;
+                                      return describeEnum(processingState) !=
+                                              'ready'
+                                          ? SizedBox(
+                                              height: 65,
+                                              width: 65,
+                                              child: CircularProgressIndicator(
+                                                valueColor:
+                                                    AlwaysStoppedAnimation<
+                                                            Color>(
+                                                        Theme.of(context)
+                                                            .accentColor),
+                                              ),
+                                            )
+                                          : SizedBox();
+                                    },
+                                  ),
+                                ),
+                                Center(
+                                  child: StreamBuilder<bool>(
+                                    stream: AudioService.playbackStateStream
+                                        .map((state) => state.playing)
+                                        .distinct(),
+                                    builder: (context, snapshot) {
+                                      final playing = snapshot.data ?? false;
+                                      return Container(
+                                        height: 65,
+                                        width: 65,
+                                        child: Center(
+                                          child: SizedBox(
+                                            height: 59,
+                                            width: 59,
+                                            child: playing
+                                                ? pauseButton()
+                                                : playButton(),
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+
+                            StreamBuilder<QueueState>(
+                              stream: _queueStateStream,
+                              builder: (context, snapshot) {
+                                final queueState = snapshot.data;
+                                final queue = queueState?.queue ?? [];
+                                final mediaItem = queueState?.mediaItem;
+                                return (queue != null && queue.isNotEmpty)
+                                    ? IconButton(
+                                        icon: Icon(Icons.skip_next_rounded),
+                                        iconSize: 45.0,
+                                        onPressed: (mediaItem == queue.last ||
+                                                mediaItem == null)
+                                            ? null
+                                            : AudioService.skipToNext,
+                                      )
+                                    : IconButton(
+                                        icon: Icon(Icons.skip_next_rounded),
+                                        iconSize: 45.0,
+                                        onPressed: null);
+                              },
+                            ),
+                            Column(
+                              children: [
+                                SizedBox(height: 6.0),
+                                IconButton(
+                                  icon: repeatMode == 'One'
+                                      ? Icon(Icons.repeat_one_rounded)
+                                      : Icon(Icons.repeat_rounded),
+                                  iconSize: 25.0,
+                                  color: repeatMode == 'None'
+                                      ? null
+                                      : Theme.of(context).accentColor,
+                                  // Icons.repeat_one_rounded
+                                  onPressed: () {
+                                    repeatMode == 'None'
+                                        ? repeatMode = 'All'
+                                        : (repeatMode == 'All'
+                                            ? repeatMode = 'One'
+                                            : repeatMode = 'None');
+                                    Hive.box('settings')
+                                        .put('repeatMode', repeatMode);
+                                    AudioService.customAction(
+                                        'repeatMode', repeatMode);
+                                    setState(() {});
+                                  },
+                                ),
+                                if (!offline)
+                                  StreamBuilder<QueueState>(
+                                      stream: _queueStateStream,
+                                      builder: (context, snapshot) {
+                                        final queueState = snapshot.data;
+                                        final queue = queueState?.queue ?? [];
+                                        final mediaItem = queueState?.mediaItem;
+                                        return (mediaItem != null &&
+                                                queue.isNotEmpty)
+                                            ? Stack(
+                                                children: [
+                                                  Center(
+                                                    child: SizedBox(
+                                                      width: 50,
+                                                      child: (downloadedId ==
+                                                              mediaItem.id)
+                                                          ? IconButton(
+                                                              icon: Icon(Icons
+                                                                  .save_alt),
+                                                              color: Theme.of(
+                                                                      context)
+                                                                  .accentColor,
+                                                              iconSize: 25.0,
+                                                              onPressed: () {},
+                                                            )
+                                                          : SizedBox(),
+                                                    ),
+                                                  ),
+                                                  Center(
+                                                      child:
+                                                          (downloadedId ==
+                                                                  mediaItem.id)
+                                                              ? SizedBox()
+                                                              : SizedBox(
+                                                                  height: 50,
+                                                                  width: 50,
+                                                                  child: Stack(
+                                                                    children: [
+                                                                      Center(
+                                                                        child: Text(_total !=
+                                                                                0
+                                                                            ? '${(100 * _recieved ~/ _total)}%'
+                                                                            : ''),
+                                                                      ),
+                                                                      Center(
+                                                                        child: CircularProgressIndicator(
+                                                                            valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context)
+                                                                                .accentColor),
+                                                                            value: _total != 0
+                                                                                ? _recieved / _total
+                                                                                : 0),
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                                )),
+                                                  Center(
+                                                    child: (_total == 0 &&
+                                                            downloadedId !=
+                                                                mediaItem.id)
+                                                        ? IconButton(
+                                                            icon: Icon(
+                                                              Icons.save_alt,
+                                                            ),
+                                                            iconSize: 25.0,
+                                                            onPressed: () {
+                                                              downloadSong(
+                                                                  mediaItem,
+                                                                  scaffoldContext);
+                                                            })
+                                                        : SizedBox(),
+                                                  ),
+                                                ],
+                                              )
+                                            : IconButton(
+                                                icon: Icon(
+                                                  Icons.save_alt,
+                                                ),
+                                                iconSize: 25.0,
+                                                onPressed: null);
+                                      }),
+                              ],
+                            ),
+                          ],
+                        ),
                       ],
-                    );
-                  }),
-            ),
+                    ],
+                  );
+                }),
           );
         }),
       ),
