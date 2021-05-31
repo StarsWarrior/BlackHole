@@ -29,6 +29,8 @@ class _SettingPageState extends State<SettingPage> {
   String downloadQuality = Hive.box('settings').get('downloadQuality');
   bool stopForegroundService =
       Hive.box('settings').get('stopForegroundService') ?? true;
+  bool stopServiceOnPause =
+      Hive.box('settings').get('stopServiceOnPause') ?? true;
   String region = Hive.box('settings').get('region') ?? 'India';
   String themeColor = Hive.box('settings').get('themeColor') ?? 'Teal';
   int colorHue = Hive.box('settings').get('colorHue') ?? 400;
@@ -368,6 +370,8 @@ class _SettingPageState extends State<SettingPage> {
                           var gender = box.get('gender');
                           return ListTile(
                             title: Text('Gender'),
+                            subtitle:
+                                Text(gender == 'female' ? "Female" : "Male"),
                             dense: true,
                             trailing: SizedBox(
                               width: 30,
@@ -584,9 +588,8 @@ class _SettingPageState extends State<SettingPage> {
                                                     updateUserDetails(
                                                         'colorHue', colorHue);
                                                     currentTheme.switchColor(
-                                                        colors[index]);
-                                                    currentTheme
-                                                        .switchHue(colorHue);
+                                                        colors[index],
+                                                        colorHue);
                                                     setState(() {});
                                                     Navigator.pop(context);
                                                   }),
@@ -663,7 +666,10 @@ class _SettingPageState extends State<SettingPage> {
                         trailing: SizedBox(
                           width: 150,
                           child: Text(
-                            preferredLanguage.join(", "),
+                            (preferredLanguage == null ||
+                                    preferredLanguage.length == 0)
+                                ? "None"
+                                : preferredLanguage.join(", "),
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                             textAlign: TextAlign.end,
@@ -793,6 +799,31 @@ class _SettingPageState extends State<SettingPage> {
                                                       preferredLanguage;
                                                   widget.callback();
                                                 });
+                                                if (preferredLanguage.length ==
+                                                    0)
+                                                  ScaffoldMessenger.of(context)
+                                                      .showSnackBar(
+                                                    SnackBar(
+                                                      elevation: 6,
+                                                      backgroundColor:
+                                                          Colors.grey[900],
+                                                      behavior: SnackBarBehavior
+                                                          .floating,
+                                                      content: Text(
+                                                        'No Music language selected. Select a language to see songs on Home Screen',
+                                                        style: TextStyle(
+                                                            color:
+                                                                Colors.white),
+                                                      ),
+                                                      action: SnackBarAction(
+                                                        textColor:
+                                                            Theme.of(context)
+                                                                .accentColor,
+                                                        label: 'Ok',
+                                                        onPressed: () {},
+                                                      ),
+                                                    ),
+                                                  );
                                               },
                                             ),
                                           ],
@@ -947,7 +978,9 @@ class _SettingPageState extends State<SettingPage> {
                       ),
                       SwitchListTile(
                           activeColor: Theme.of(context).accentColor,
-                          title: Text('Stop music on Exit'),
+                          title: Text('Stop music on App Close'),
+                          subtitle: Text(
+                              "If turned off, music won't stop even after app close until you press stop button\nDefault: On\n"),
                           dense: true,
                           value: stopForegroundService ?? true,
                           onChanged: (val) {
@@ -955,6 +988,20 @@ class _SettingPageState extends State<SettingPage> {
                                 .put('stopForegroundService', val);
                             stopForegroundService = val;
                             updateUserDetails('stopForegroundService', val);
+                            setState(() {});
+                          }),
+                      SwitchListTile(
+                          activeColor: Theme.of(context).accentColor,
+                          title: Text(
+                              'Remove Service from foreground when paused'),
+                          subtitle: Text(
+                              "If turned on, you can slide notification when paused to stop the service. But Service can also be stopped by android to release memory. If you don't want android to stop service while paused, turn it off\nDefault: On"),
+                          dense: true,
+                          value: stopServiceOnPause ?? true,
+                          onChanged: (val) {
+                            Hive.box('settings').put('stopServiceOnPause', val);
+                            stopServiceOnPause = val;
+                            updateUserDetails('stopServiceOnPause', val);
                             setState(() {});
                           }),
                       ListTile(

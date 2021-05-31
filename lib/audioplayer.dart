@@ -48,6 +48,8 @@ class _PlayScreenState extends State<PlayScreen> {
   String preferredDownloadQuality =
       Hive.box('settings').get('downloadQuality') ?? '320 kbps';
   String repeatMode = Hive.box('settings').get('repeatMode') ?? 'None';
+  bool stopServiceOnPause =
+      Hive.box('settings').get('stopServiceOnPause') ?? true;
   bool shuffle = Hive.box('settings').get('shuffle') ?? false;
   List<MediaItem> globalQueue = [];
   int globalIndex = 0;
@@ -1780,7 +1782,7 @@ class _PlayScreenState extends State<PlayScreen> {
       androidNotificationColor: 0xFF181818,
       androidNotificationIcon: 'drawable/ic_stat_music_note',
       androidEnableQueue: true,
-      androidStopForegroundOnPause: true,
+      androidStopForegroundOnPause: stopServiceOnPause,
     );
 
     await AudioService.updateQueue(globalQueue);

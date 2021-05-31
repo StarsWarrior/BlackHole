@@ -11,18 +11,14 @@ class MyTheme with ChangeNotifier {
 
   void switchTheme(val) {
     _isDark = val;
-    _isDark ? switchColor('Teal') : switchColor('Light Blue');
+    _isDark ? switchColor('Teal', 400) : switchColor('Light Blue', 400);
   }
 
-  void switchColor(val) {
-    Hive.box('settings').put('themeColor', val);
-    accentColor = val;
-    switchHue(400);
-  }
-
-  void switchHue(val) {
-    Hive.box('settings').put('colorHue', val);
-    colorHue = val;
+  void switchColor(color, hue) {
+    Hive.box('settings').put('themeColor', color);
+    accentColor = color;
+    Hive.box('settings').put('colorHue', hue);
+    colorHue = hue;
     notifyListeners();
   }
 
