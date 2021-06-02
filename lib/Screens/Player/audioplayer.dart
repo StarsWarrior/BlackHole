@@ -121,11 +121,12 @@ class _PlayScreenState extends State<PlayScreen> {
     }
     response = data['response'];
     globalIndex = data['index'];
-    offline = data['offline'];
-    if (offline == null) {
-      offline = AudioService.currentMediaItem.extras['url'].startsWith('http')
+    if (data['offline'] == null) {
+      offline = AudioService.currentMediaItem?.extras['url'].startsWith('http')
           ? false
           : true;
+    } else {
+      offline = data['offline'];
     }
 
     setTags(Map response, Directory tempDir) async {
