@@ -11,8 +11,10 @@ class SpotifyApi {
     'playlist-read-collaborative',
   ];
 
-  final String clientID = "08de4eaf71904d1b95254fab3015d711";
-  final String clientSecret = "5b75b31f62554721a524c6cf2cc50e35";
+  /// You can signup for spotify deveopler account and create your own account
+  /// to get clientID and clientSecret
+  final String clientID = "3700bda2626e4dfd8ff48dec5812e576";
+  final String clientSecret = "221b0159b0284fd8a8697eb65baffcc4";
   final String redirectUrl = "http://127.0.0.1:43019/redirect";
   final String spotifyApiBaseUrl = "https://accounts.spotify.com/api";
   final String spotifyPlaylistBaseUrl =
