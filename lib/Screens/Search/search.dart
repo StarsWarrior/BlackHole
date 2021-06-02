@@ -1,12 +1,11 @@
-import 'dart:convert';
 import 'dart:ui';
-import 'package:blackhole/audioplayer.dart';
-import 'package:blackhole/format.dart';
+import 'package:blackhole/Screens/Player/audioplayer.dart';
+import 'package:blackhole/CustomWidgets/GradientContainers.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
-import 'emptyScreen.dart';
-import 'miniplayer.dart';
+import 'package:blackhole/CustomWidgets/emptyScreen.dart';
+import 'package:blackhole/CustomWidgets/miniplayer.dart';
+import 'package:blackhole/APIs/api.dart';
 
 class SearchPage extends StatefulWidget {
   @override
@@ -19,47 +18,19 @@ class _SearchPageState extends State<SearchPage> {
   List searchedList = [];
   bool fetched = false;
 
-  Future<List> fetchResults(searchQuery) async {
-    status = true;
-    var searchUrl = Uri.https(
-      "www.jiosaavn.com",
-      "/api.php?p=1&q=" +
-          searchQuery +
-          "&_format=json&_marker=0&api_version=4&ctx=wap6dot0&n=10&__call=search.getResults",
-    );
-    var res = await get(searchUrl);
-    if (res.statusCode == 200) {
-      var getMain = json.decode(res.body);
-      List responseList = getMain["results"];
-      searchedList = await FormatResponse().formatResponse(responseList);
-    }
-    fetched = true;
-    return searchedList;
-  }
-
   @override
   Widget build(BuildContext context) {
     query = ModalRoute.of(context).settings.arguments;
     if (!status) {
-      fetchResults(query).then((value) => setState(() {}));
+      status = true;
+      Search().fetchSearchResults(query).then((value) {
+        setState(() {
+          searchedList = value;
+          fetched = true;
+        });
+      });
     }
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: Theme.of(context).brightness == Brightness.dark
-              ? [
-                  Colors.grey[850],
-                  Colors.grey[900],
-                  Colors.black,
-                ]
-              : [
-                  Colors.white,
-                  Theme.of(context).canvasColor,
-                ],
-        ),
-      ),
+    return GradientContainer(
       child: Column(
         children: [
           Expanded(
@@ -112,6 +83,9 @@ class _SearchPageState extends State<SearchPage> {
                                             BorderRadius.circular(7.0)),
                                     clipBehavior: Clip.antiAlias,
                                     child: CachedNetworkImage(
+                                      errorWidget: (context, _, __) => Image(
+                                        image: AssetImage('assets/cover.jpg'),
+                                      ),
                                       imageUrl:
                                           '${searchedList[index]["image"].replaceAll('http:', 'https:')}',
                                       placeholder: (context, url) => Image(

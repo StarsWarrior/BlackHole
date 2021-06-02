@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:blackhole/CustomWidgets/gradientContainers.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -46,7 +47,7 @@ class _AuthScreenState extends State<AuthScreen> {
     setState(() {});
   }
 
-  Future _sendAnalytics(name, gender) async {
+  Future _sendAnalytics(String name, String gender) async {
     DatabaseReference pushedPostRef = dbRef.push();
     String postId = pushedPostRef.key;
     pushedPostRef.set({
@@ -84,23 +85,7 @@ class _AuthScreenState extends State<AuthScreen> {
   @override
   Widget build(BuildContext context) {
     final controller = TextEditingController();
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: Theme.of(context).brightness == Brightness.dark
-              ? [
-                  Colors.grey[850],
-                  Colors.grey[900],
-                  Colors.black,
-                ]
-              : [
-                  Colors.white,
-                  Theme.of(context).canvasColor,
-                ],
-        ),
-      ),
+    return GradientContainer(
       child: Stack(
         children: [
           Positioned(
@@ -112,23 +97,9 @@ class _AuthScreenState extends State<AuthScreen> {
               ),
             ),
           ),
-          Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: Theme.of(context).brightness == Brightness.dark
-                    ? [
-                        Colors.grey[850].withOpacity(0.8),
-                        Colors.grey[900].withOpacity(0.9),
-                        Colors.black.withOpacity(1),
-                      ]
-                    : [
-                        Colors.white,
-                        Theme.of(context).canvasColor,
-                      ],
-              ),
-            ),
+          GradientContainer(
+            child: SizedBox(),
+            opacity: true,
           ),
           Scaffold(
             backgroundColor: Colors.transparent,
@@ -229,7 +200,6 @@ class _AuthScreenState extends State<AuthScreen> {
                           child: Container(
                             padding: EdgeInsets.only(
                                 top: 5, bottom: 5, left: 10, right: 10),
-                            // margin: EdgeInsets.zero,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(10.0),
                               color: Theme.of(context).cardColor,

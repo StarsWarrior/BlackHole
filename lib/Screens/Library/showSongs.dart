@@ -1,19 +1,23 @@
-import 'package:blackhole/audioplayer.dart';
-import 'package:blackhole/miniplayer.dart';
+import 'package:blackhole/Screens/Player/audioplayer.dart';
+import 'package:blackhole/CustomWidgets/GradientContainers.dart';
+import 'package:blackhole/CustomWidgets/miniplayer.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 
-class SongsOnlineList extends StatefulWidget {
+class SongsList extends StatefulWidget {
   final List data;
-  SongsOnlineList({Key key, @required this.data}) : super(key: key);
+  final bool offline;
+  SongsList({Key key, @required this.data, @required this.offline})
+      : super(key: key);
   @override
-  _SongsOnlineListState createState() => _SongsOnlineListState();
+  _SongsListState createState() => _SongsListState();
 }
 
-class _SongsOnlineListState extends State<SongsOnlineList> {
+class _SongsListState extends State<SongsList> {
   List _songs = [];
   List original = [];
+  bool offline;
   bool added = false;
   bool processStatus = false;
   int sortValue = Hive.box('settings').get('sortValue');
@@ -21,7 +25,8 @@ class _SongsOnlineListState extends State<SongsOnlineList> {
   void getSongs() async {
     added = true;
     _songs = widget.data;
-    original = List.from(_songs);
+    offline = widget.offline;
+    if (!offline) original = List.from(_songs);
     sortValue ??= 2;
     if (sortValue == 0) {
       _songs.sort((a, b) =>
@@ -32,7 +37,10 @@ class _SongsOnlineListState extends State<SongsOnlineList> {
           a["title"].toUpperCase().compareTo(b["title"].toUpperCase()));
     }
     if (sortValue == 2) {
-      _songs = List.from(original);
+      offline
+          ? _songs
+              .sort((b, a) => a["lastModified"].compareTo(b["lastModified"]))
+          : _songs = List.from(original);
     }
     if (sortValue == 3) {
       _songs.shuffle();
@@ -47,23 +55,7 @@ class _SongsOnlineListState extends State<SongsOnlineList> {
     if (!added) {
       getSongs();
     }
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: Theme.of(context).brightness == Brightness.dark
-              ? [
-                  Colors.grey[850],
-                  Colors.grey[900],
-                  Colors.black,
-                ]
-              : [
-                  Colors.white,
-                  Theme.of(context).canvasColor,
-                ],
-        ),
-      ),
+    return GradientContainer(
       child: Column(
         children: [
           Expanded(
@@ -90,7 +82,10 @@ class _SongsOnlineListState extends State<SongsOnlineList> {
                               .compareTo(b["title"].toUpperCase()));
                         }
                         if (sortValue == 2) {
-                          _songs = List.from(original);
+                          offline
+                              ? _songs.sort((b, a) => a["lastModified"]
+                                  .compareTo(b["lastModified"]))
+                              : _songs = List.from(original);
                         }
                         if (sortValue == 3) {
                           _songs.shuffle();
@@ -152,7 +147,8 @@ class _SongsOnlineListState extends State<SongsOnlineList> {
                                         )
                                       : SizedBox(),
                                   SizedBox(width: 10),
-                                  Text('Last Added'),
+                                  Text(
+                                      offline ? 'Last Modified' : 'Last Added'),
                                 ],
                               ),
                             ),
@@ -212,15 +208,37 @@ class _SongsOnlineListState extends State<SongsOnlineList> {
                                     borderRadius: BorderRadius.circular(7.0),
                                   ),
                                   clipBehavior: Clip.antiAlias,
-                                  child: CachedNetworkImage(
-                                    imageUrl: _songs[index]['image']
-                                        .replaceAll('http:', 'https:'),
-                                    placeholder: (context, url) => Image(
-                                      image: AssetImage('assets/cover.jpg'),
-                                    ),
-                                  ),
+                                  child: offline
+                                      ? Stack(
+                                          children: [
+                                            Image(
+                                              image: AssetImage(
+                                                  'assets/cover.jpg'),
+                                            ),
+                                            _songs[index]['image'] == null
+                                                ? SizedBox()
+                                                : Image(
+                                                    image: MemoryImage(
+                                                        _songs[index]['image']),
+                                                  )
+                                          ],
+                                        )
+                                      : CachedNetworkImage(
+                                          errorWidget: (context, _, __) =>
+                                              Image(
+                                            image:
+                                                AssetImage('assets/cover.jpg'),
+                                          ),
+                                          imageUrl: _songs[index]['image']
+                                              .replaceAll('http:', 'https:'),
+                                          placeholder: (context, url) => Image(
+                                            image:
+                                                AssetImage('assets/cover.jpg'),
+                                          ),
+                                        ),
                                 ),
                                 title: Text('${_songs[index]['title']}'),
+                                subtitle: Text('${_songs[index]['artist']}'),
                                 onTap: () {
                                   Navigator.of(context).push(
                                     PageRouteBuilder(
@@ -229,7 +247,7 @@ class _SongsOnlineListState extends State<SongsOnlineList> {
                                         data: {
                                           'response': _songs,
                                           'index': index,
-                                          'offline': false,
+                                          'offline': offline
                                         },
                                         fromMiniplayer: false,
                                       ),

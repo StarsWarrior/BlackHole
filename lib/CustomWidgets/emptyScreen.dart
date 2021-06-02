@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 class EmptyScreen {
-  Widget emptyScreen(BuildContext context, int turns, String t1, double s1,
-      String t2, double s2, String t3, double s3) {
+  Widget emptyScreen(BuildContext context, int turns, String text1,
+      double size1, String text2, double size2, String text3, double size3) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -12,10 +12,10 @@ class EmptyScreen {
             RotatedBox(
               quarterTurns: turns,
               child: Text(
-                t1,
+                text1,
                 textAlign: TextAlign.start,
                 style: TextStyle(
-                  fontSize: s1,
+                  fontSize: size1,
                   color: Theme.of(context).accentColor,
                   fontWeight: FontWeight.w600,
                 ),
@@ -24,17 +24,17 @@ class EmptyScreen {
             Column(
               children: [
                 Text(
-                  t2,
+                  text2,
                   style: TextStyle(
-                    fontSize: s2,
+                    fontSize: size2,
                     color: Theme.of(context).accentColor,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
                 Text(
-                  t3,
+                  text3,
                   style: TextStyle(
-                    fontSize: s3,
+                    fontSize: size3,
                     fontWeight: FontWeight.w600,
                   ),
                 ),

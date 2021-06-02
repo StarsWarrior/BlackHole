@@ -1,10 +1,11 @@
-import 'package:blackhole/audioplayer.dart';
-import 'package:blackhole/emptyScreen.dart';
-import 'package:blackhole/songsOnline.dart';
+import 'package:blackhole/Screens/Player/audioplayer.dart';
+import 'package:blackhole/CustomWidgets/GradientContainers.dart';
+import 'package:blackhole/CustomWidgets/emptyScreen.dart';
+import 'package:blackhole/Screens/Library/showSongs.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-import 'miniplayer.dart';
+import 'package:blackhole/CustomWidgets/miniplayer.dart';
 
 class LikedSongs extends StatefulWidget {
   final String playlistName;
@@ -49,7 +50,7 @@ class _LikedSongsState extends State<LikedSongs>
   }
 
   void setArtistAlbum() {
-    for (var element in _songs) {
+    for (Map element in _songs) {
       if (_albums.containsKey(element['album'])) {
         List tempAlbum = _albums[element['album']];
         tempAlbum.add(element);
@@ -147,23 +148,7 @@ class _LikedSongsState extends State<LikedSongs>
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: Theme.of(context).brightness == Brightness.dark
-              ? [
-                  Colors.grey[850],
-                  Colors.grey[900],
-                  Colors.black,
-                ]
-              : [
-                  Colors.white,
-                  Theme.of(context).canvasColor,
-                ],
-        ),
-      ),
+    return GradientContainer(
       child: Column(
         children: [
           Expanded(
@@ -502,6 +487,11 @@ class _LikedSongsState extends State<LikedSongs>
                                           ),
                                           clipBehavior: Clip.antiAlias,
                                           child: CachedNetworkImage(
+                                            errorWidget: (context, _, __) =>
+                                                Image(
+                                              image: AssetImage(
+                                                  'assets/cover.jpg'),
+                                            ),
                                             imageUrl: _songs[index]['image']
                                                 .replaceAll('http:', 'https:'),
                                             placeholder: (context, url) =>
@@ -613,6 +603,9 @@ class _LikedSongsState extends State<LikedSongs>
                   ),
                   clipBehavior: Clip.antiAlias,
                   child: CachedNetworkImage(
+                    errorWidget: (context, _, __) => Image(
+                      image: AssetImage('assets/cover.jpg'),
+                    ),
                     imageUrl: _albums[sortedAlbumKeysList[index]][0]['image']
                         .replaceAll('http:', 'https:'),
                     placeholder: (context, url) => Image(
@@ -630,8 +623,9 @@ class _LikedSongsState extends State<LikedSongs>
                   Navigator.of(context).push(
                     PageRouteBuilder(
                       opaque: false, // set to false
-                      pageBuilder: (_, __, ___) => SongsOnlineList(
+                      pageBuilder: (_, __, ___) => SongsList(
                         data: _albums[sortedAlbumKeysList[index]],
+                        offline: false,
                       ),
                     ),
                   );
@@ -658,6 +652,9 @@ class _LikedSongsState extends State<LikedSongs>
                   ),
                   clipBehavior: Clip.antiAlias,
                   child: CachedNetworkImage(
+                    errorWidget: (context, _, __) => Image(
+                      image: AssetImage('assets/cover.jpg'),
+                    ),
                     imageUrl: _artists[sortedArtistKeysList[index]][0]['image']
                         .replaceAll('http:', 'https:'),
                     placeholder: (context, url) => Image(
@@ -675,8 +672,9 @@ class _LikedSongsState extends State<LikedSongs>
                   Navigator.of(context).push(
                     PageRouteBuilder(
                       opaque: false, // set to false
-                      pageBuilder: (_, __, ___) => SongsOnlineList(
+                      pageBuilder: (_, __, ___) => SongsList(
                         data: _artists[sortedArtistKeysList[index]],
+                        offline: false,
                       ),
                     ),
                   );

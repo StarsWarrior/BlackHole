@@ -1,11 +1,9 @@
-import 'package:blackhole/audioplayer.dart';
-import 'package:blackhole/format.dart';
+import 'package:blackhole/Screens/Player/audioplayer.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-import 'package:http/http.dart';
-import 'dart:convert';
+import 'package:blackhole/APIs/api.dart';
 
 List playlists = [
   {
@@ -36,24 +34,7 @@ class TrendingPage extends StatefulWidget {
 }
 
 class _TrendingPageState extends State<TrendingPage> {
-  var recentList = Hive.box('recentlyPlayed').get('recentSongs');
-  var temp = Hive.box('cache').get('trendingList');
-
-  Future<Map> trendingSongs(index) async {
-    var playlistUrl = Uri.https("www.jiosaavn.com",
-        "/api.php?__call=webapi.get&token=${playlists[index]["id"]}&type=playlist&p=1&n=20&includeMetaTags=0&ctx=web6dot0&api_version=4&_format=json&_marker=0");
-    // print(playlistUrl);
-    var playlistJSON =
-        await get(playlistUrl, headers: {"Accept": "application/json"});
-    var playlist = json.decode(playlistJSON.body);
-    playlists[index]["title"] = playlist["title"];
-    playlists[index]["image"] = playlist["image"];
-    playlists[index]["songsList"] =
-        await FormatResponse().formatResponse(playlist["list"]);
-    Hive.box('cache').put(playlists[index]["id"], playlists[index]);
-    setState(() {});
-    return playlists[index];
-  }
+  List recentList = Hive.box('recentlyPlayed').get('recentSongs');
 
   getPlaylists() async {
     final dbRef = FirebaseDatabase.instance.reference().child("Playlists");
@@ -72,12 +53,13 @@ class _TrendingPageState extends State<TrendingPage> {
     await getPlaylists();
     for (int i = 1; i < playlists.length; i++) {
       try {
-        await trendingSongs(i);
+        playlists[i] = await Playlist().fetchPlaylistSongs(playlists[i]);
       } catch (e) {
         print("Error in Index $i in TrendingList: $e");
       }
     }
     setState(() {
+      cachedPlaylists = playlists;
       showCached = false;
     });
   }
@@ -156,6 +138,9 @@ class _TrendingPageState extends State<TrendingPage> {
                                       ),
                                       clipBehavior: Clip.antiAlias,
                                       child: CachedNetworkImage(
+                                        errorWidget: (context, _, __) => Image(
+                                          image: AssetImage('assets/cover.jpg'),
+                                        ),
                                         imageUrl: recentList[index]["image"]
                                             .replaceAll('http:', 'https:'),
                                         placeholder: (context, url) => Image(
@@ -185,17 +170,19 @@ class _TrendingPageState extends State<TrendingPage> {
                               ),
                               onTap: () {
                                 Navigator.push(
-                                    context,
-                                    PageRouteBuilder(
-                                        opaque: false,
-                                        pageBuilder: (_, __, ___) => PlayScreen(
-                                              data: {
-                                                'response': recentList,
-                                                'index': index,
-                                                'offline': false,
-                                              },
-                                              fromMiniplayer: false,
-                                            )));
+                                  context,
+                                  PageRouteBuilder(
+                                    opaque: false,
+                                    pageBuilder: (_, __, ___) => PlayScreen(
+                                      data: {
+                                        'response': recentList,
+                                        'index': index,
+                                        'offline': false,
+                                      },
+                                      fromMiniplayer: false,
+                                    ),
+                                  ),
+                                );
                               },
                             );
                           },
@@ -225,48 +212,49 @@ class _TrendingPageState extends State<TrendingPage> {
                   ? SizedBox(
                       height: 200,
                       child: ListView.builder(
-                          physics: BouncingScrollPhysics(),
-                          scrollDirection: Axis.horizontal,
-                          padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                          itemCount: 10,
-                          itemBuilder: (context, index) {
-                            return SizedBox(
-                              width: 150,
-                              child: Column(
-                                children: [
-                                  Card(
-                                    elevation: 5,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10.0),
-                                    ),
-                                    clipBehavior: Clip.antiAlias,
-                                    child: Image(
-                                      image: AssetImage('assets/cover.jpg'),
-                                    ),
+                        physics: BouncingScrollPhysics(),
+                        scrollDirection: Axis.horizontal,
+                        padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                        itemCount: 10,
+                        itemBuilder: (context, index) {
+                          return SizedBox(
+                            width: 150,
+                            child: Column(
+                              children: [
+                                Card(
+                                  elevation: 5,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
                                   ),
-                                  Text(
-                                    'Loading ...',
-                                    textAlign: TextAlign.center,
-                                    softWrap: false,
-                                    overflow: TextOverflow.ellipsis,
-                                    // style: TextStyle(
-                                    //     color: Theme.of(context).accentColor),
+                                  clipBehavior: Clip.antiAlias,
+                                  child: Image(
+                                    image: AssetImage('assets/cover.jpg'),
                                   ),
-                                  Text(
-                                    'Please Wait',
-                                    textAlign: TextAlign.center,
-                                    softWrap: false,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                        color: Theme.of(context)
-                                            .textTheme
-                                            .caption
-                                            .color),
-                                  ),
-                                ],
-                              ),
-                            );
-                          }),
+                                ),
+                                Text(
+                                  'Loading ...',
+                                  textAlign: TextAlign.center,
+                                  softWrap: false,
+                                  overflow: TextOverflow.ellipsis,
+                                  // style: TextStyle(
+                                  //     color: Theme.of(context).accentColor),
+                                ),
+                                Text(
+                                  'Please Wait',
+                                  textAlign: TextAlign.center,
+                                  softWrap: false,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                      color: Theme.of(context)
+                                          .textTheme
+                                          .caption
+                                          .color),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
                     )
                   : SizedBox(
                       height: 200,
@@ -288,6 +276,9 @@ class _TrendingPageState extends State<TrendingPage> {
                                     ),
                                     clipBehavior: Clip.antiAlias,
                                     child: CachedNetworkImage(
+                                      errorWidget: (context, _, __) => Image(
+                                        image: AssetImage('assets/cover.jpg'),
+                                      ),
                                       imageUrl: plst[idx]["songsList"][index]
                                               ["image"]
                                           .replaceAll('http:', 'https:'),

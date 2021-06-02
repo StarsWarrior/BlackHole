@@ -1,7 +1,8 @@
-import 'package:blackhole/downloaded.dart';
-import 'package:blackhole/liked.dart';
+import 'package:blackhole/Screens/Library/downloaded.dart';
+import 'package:blackhole/Screens/Library/liked.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class LibraryPage extends StatefulWidget {
   @override
@@ -92,7 +93,7 @@ class _LibraryPageState extends State<LibraryPage> {
         ListTile(
           title: Text('My Music'),
           leading: Icon(
-            Icons.music_note_rounded,
+            MdiIcons.folderMusic,
             color: Theme.of(context).brightness == Brightness.dark
                 ? null
                 : Colors.grey[700],

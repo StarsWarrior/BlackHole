@@ -1,8 +1,9 @@
 import 'dart:io';
 import 'package:audio_service/audio_service.dart';
-import 'package:blackhole/emptyScreen.dart';
+import 'package:blackhole/CustomWidgets/GradientContainers.dart';
+import 'package:blackhole/CustomWidgets/emptyScreen.dart';
 import 'package:flutter/material.dart';
-import 'miniplayer.dart';
+import 'package:blackhole/CustomWidgets/miniplayer.dart';
 
 class NowPlaying extends StatefulWidget {
   @override
@@ -12,23 +13,7 @@ class NowPlaying extends StatefulWidget {
 class _NowPlayingState extends State<NowPlaying> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: Theme.of(context).brightness == Brightness.dark
-              ? [
-                  Colors.grey[850],
-                  Colors.grey[900],
-                  Colors.black,
-                ]
-              : [
-                  Colors.white,
-                  Theme.of(context).canvasColor,
-                ],
-        ),
-      ),
+    return GradientContainer(
       child: Column(
         children: [
           Expanded(

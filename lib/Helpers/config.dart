@@ -9,12 +9,12 @@ class MyTheme with ChangeNotifier {
   String accentColor = Hive.box('settings').get('themeColor');
   int colorHue = Hive.box('settings').get('colorHue');
 
-  void switchTheme(val) {
+  void switchTheme(bool val) {
     _isDark = val;
     _isDark ? switchColor('Teal', 400) : switchColor('Light Blue', 400);
   }
 
-  void switchColor(color, hue) {
+  void switchColor(String color, int hue) {
     Hive.box('settings').put('themeColor', color);
     accentColor = color;
     Hive.box('settings').put('colorHue', hue);
@@ -30,7 +30,7 @@ class MyTheme with ChangeNotifier {
     return colorHue ?? 400;
   }
 
-  Color getColor(color, hue) {
+  Color getColor(String color, int hue) {
     switch (color) {
       case 'Red':
         return Colors.redAccent[hue];
@@ -112,4 +112,3 @@ class MyTheme with ChangeNotifier {
 }
 
 MyTheme currentTheme = MyTheme();
-// MyTheme currentColor = MyTheme();

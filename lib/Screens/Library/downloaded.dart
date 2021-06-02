@@ -1,14 +1,15 @@
 import 'package:audiotagger/models/tag.dart';
-import 'package:blackhole/emptyScreen.dart';
-import 'package:blackhole/miniplayer.dart';
+import 'package:blackhole/Screens/Player/audioplayer.dart';
+import 'package:blackhole/CustomWidgets/gradientContainers.dart';
+import 'package:blackhole/CustomWidgets/emptyScreen.dart';
+import 'package:blackhole/CustomWidgets/miniplayer.dart';
 import 'package:flutter/material.dart';
 import 'package:ext_storage/ext_storage.dart';
 import 'package:hive/hive.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:audiotagger/audiotagger.dart';
 import 'dart:io';
-import 'audioplayer.dart';
-import 'songs.dart';
+import 'showSongs.dart';
 
 class DownloadedSongs extends StatefulWidget {
   final String type;
@@ -49,7 +50,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
 
   void getDownloaded() async {
     final tagger = Audiotagger();
-    var status = await Permission.storage.status;
+    PermissionStatus status = await Permission.storage.status;
     if (status.isRestricted || status.isDenied) {
       Map<Permission, PermissionStatus> statuses = await [
         Permission.storage,
@@ -235,23 +236,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: Theme.of(context).brightness == Brightness.dark
-              ? [
-                  Colors.grey[850],
-                  Colors.grey[900],
-                  Colors.black,
-                ]
-              : [
-                  Colors.white,
-                  Theme.of(context).canvasColor,
-                ],
-        ),
-      ),
+    return GradientContainer(
       child: Column(
         children: [
           Expanded(
@@ -675,7 +660,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                           String fileName =
                               _songs[index]['id'].split('/').last.toString();
                           List temp = fileName.split('.');
-                          String ext = temp.removeLast();
+                          temp.removeLast();
                           String songName = temp.join('.');
                           final controller =
                               TextEditingController(text: songName);
@@ -1146,6 +1131,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                       opaque: false, // set to false
                       pageBuilder: (_, __, ___) => SongsList(
                         data: _albums[sortedAlbumKeysList[index]],
+                        offline: true,
                       ),
                     ),
                   );
@@ -1198,6 +1184,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                       opaque: false, // set to false
                       pageBuilder: (_, __, ___) => SongsList(
                         data: _artists[sortedArtistKeysList[index]],
+                        offline: true,
                       ),
                     ),
                   );
@@ -1249,7 +1236,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                           String fileName =
                               _videos[index]['id'].split('/').last.toString();
                           List temp = fileName.split('.');
-                          String ext = temp.removeLast();
+                          temp.removeLast();
                           String videoName = temp.join('.');
                           final controller =
                               TextEditingController(text: videoName);

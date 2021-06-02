@@ -1,7 +1,6 @@
 import 'dart:io';
-
 import 'package:audio_service/audio_service.dart';
-import 'package:blackhole/audioplayer.dart';
+import 'package:blackhole/Screens/Player/audioplayer.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:miniplayer/miniplayer.dart';

@@ -43,6 +43,7 @@ dependencies:
   firebase_database: ^6.1.2
   firebase_analytics: ^8.0.2
   web_scraper: ^0.1.4
+  webview_flutter: ^2.0.8
   # flutter_web_auth: ^0.3.0
   package_info: ^2.0.0
   device_info: ^2.0.1

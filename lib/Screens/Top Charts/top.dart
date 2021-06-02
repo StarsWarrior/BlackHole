@@ -1,4 +1,4 @@
-import 'package:blackhole/emptyScreen.dart';
+import 'package:blackhole/CustomWidgets/emptyScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:web_scraper/web_scraper.dart';
 
@@ -18,7 +18,7 @@ class TopPage extends StatefulWidget {
 class _TopPageState extends State<TopPage> {
   final webScraper = WebScraper("https://www.spotifycharts.com");
 
-  void getData(region) async {
+  void getData(String region) async {
     if (region != 'global') fetched = true;
     await webScraper.loadWebPage('/regional/' + region + '/daily/latest/');
     for (int i = 1; i <= 200; i++) {
@@ -42,9 +42,7 @@ class _TopPageState extends State<TopPage> {
             'image': ''
           });
         }
-      } catch (e) {
-        print("Error in Spotify Charts: $e");
-      }
+      } catch (e) {}
     }
     setState(() {});
   }

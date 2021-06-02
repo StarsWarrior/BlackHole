@@ -1,15 +1,13 @@
 import 'dart:async';
-import 'package:firebase_database/firebase_database.dart';
+import 'package:blackhole/CustomWidgets/gradientContainers.dart';
+import 'package:blackhole/Services/audioService.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart';
-import 'dart:math';
 import 'dart:convert';
 import 'package:audiotagger/models/tag.dart';
 import 'package:audio_service/audio_service.dart';
-import 'package:audio_session/audio_session.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:just_audio/just_audio.dart';
 import 'package:miniplayer/miniplayer.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:rxdart/rxdart.dart';
@@ -18,11 +16,9 @@ import 'package:audiotagger/audiotagger.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:ext_storage/ext_storage.dart';
 import 'package:hive/hive.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-// import 'package:audio_session/audio_session.dart';
 import 'package:flutter/services.dart' show rootBundle;
-
-import 'emptyScreen.dart';
+import 'package:blackhole/CustomWidgets/emptyScreen.dart';
+import 'package:blackhole/CustomWidgets/seekBar.dart';
 
 class PlayScreen extends StatefulWidget {
   final Map data;
@@ -56,8 +52,6 @@ class _PlayScreenState extends State<PlayScreen> {
   bool same = false;
   List response = [];
   bool fetched = false;
-  // Box likedBox;
-  // bool liked = false;
   bool offline = false;
   MediaItem playItem;
   // sleepTimer(0) cancels the timer
@@ -77,12 +71,7 @@ class _PlayScreenState extends State<PlayScreen> {
     main();
   }
 
-  // void checkLiked(key) async {
-  //   likedBox = Hive.box('Favorite Songs');
-  //   liked = likedBox.containsKey(key);
-  // }
-
-  bool checkPlaylist(name, key) {
+  bool checkPlaylist(String name, String key) {
     if (name != 'Favorite Songs') {
       Hive.openBox(name).then((value) {
         final playlistBox = Hive.box(name);
@@ -93,7 +82,7 @@ class _PlayScreenState extends State<PlayScreen> {
     return playlistBox.containsKey(key);
   }
 
-  void removeLiked(key) async {
+  void removeLiked(String key) async {
     Box likedBox = Hive.box('Favorite Songs');
     likedBox.delete(key);
     setState(() {});
@@ -139,8 +128,8 @@ class _PlayScreenState extends State<PlayScreen> {
           : true;
     }
 
-    setTags(response, tempDir) async {
-      var playTitle = response['title'];
+    setTags(Map response, Directory tempDir) async {
+      String playTitle = response['title'];
       playTitle == ''
           ? playTitle = response['id']
               .split('/')
@@ -148,7 +137,7 @@ class _PlayScreenState extends State<PlayScreen> {
               .replaceAll('.m4a', '')
               .replaceAll('.mp3', '')
           : playTitle = response['title'];
-      var playArtist = response['artist'];
+      String playArtist = response['artist'];
       playArtist == ''
           ? playArtist = response['id']
               .split('/')
@@ -157,9 +146,9 @@ class _PlayScreenState extends State<PlayScreen> {
               .replaceAll('.mp3', '')
           : playArtist = response['artist'];
 
-      var playAlbum = response['album'];
+      String playAlbum = response['album'];
       final playDuration = '180';
-      var file;
+      File file;
       if (response['image'] != null) {
         try {
           file = await File(
@@ -173,7 +162,7 @@ class _PlayScreenState extends State<PlayScreen> {
         file = null;
       }
 
-      var tempDict = MediaItem(
+      MediaItem tempDict = MediaItem(
           id: response['id'],
           album: playAlbum,
           duration: Duration(seconds: int.parse(playDuration)),
@@ -187,21 +176,24 @@ class _PlayScreenState extends State<PlayScreen> {
       setState(() {});
     }
 
-    setOffValues(response) {
+    setOffValues(List response) {
       getTemporaryDirectory().then((tempDir) async {
-        final byteData = await rootBundle.load('assets/cover.jpg');
-        final file = File('${(await getTemporaryDirectory()).path}/cover.jpg');
-        await file.writeAsBytes(byteData.buffer
-            .asUint8List(byteData.offsetInBytes, byteData.lengthInBytes));
+        final File file =
+            File('${(await getTemporaryDirectory()).path}/cover.jpg');
+        if (!await file.exists()) {
+          final byteData = await rootBundle.load('assets/cover.jpg');
+          await file.writeAsBytes(byteData.buffer
+              .asUint8List(byteData.offsetInBytes, byteData.lengthInBytes));
+        }
         for (int i = 0; i < response.length; i++) {
           await setTags(response[i], tempDir);
         }
       });
     }
 
-    setValues(response) {
+    setValues(List response) {
       for (int i = 0; i < response.length; i++) {
-        var tempDict = MediaItem(
+        MediaItem tempDict = MediaItem(
             id: response[i]['id'],
             album: response[i]['album'],
             duration:
@@ -242,23 +234,7 @@ class _PlayScreenState extends State<PlayScreen> {
         }
       }
     }
-    var container = Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: Theme.of(context).brightness == Brightness.dark
-              ? [
-                  Colors.grey[850],
-                  Colors.grey[900],
-                  Colors.black,
-                ]
-              : [
-                  Colors.white,
-                  Theme.of(context).canvasColor,
-                ],
-        ),
-      ),
+    Widget container = GradientContainer(
       child: Scaffold(
         backgroundColor: Colors.transparent,
         // appBar: AppBar(
@@ -546,53 +522,7 @@ class _PlayScreenState extends State<PlayScreen> {
 
                                                 return mediaItem == null
                                                     ? SizedBox()
-                                                    : Container(
-                                                        height: MediaQuery.of(
-                                                                    context)
-                                                                .size
-                                                                .height /
-                                                            2,
-                                                        margin:
-                                                            EdgeInsets.fromLTRB(
-                                                                25, 0, 25, 25),
-                                                        padding:
-                                                            EdgeInsets.fromLTRB(
-                                                                10, 15, 10, 15),
-                                                        decoration:
-                                                            BoxDecoration(
-                                                          borderRadius:
-                                                              BorderRadius.all(
-                                                                  Radius
-                                                                      .circular(
-                                                                          15.0)),
-                                                          gradient:
-                                                              LinearGradient(
-                                                            begin: Alignment
-                                                                .topLeft,
-                                                            end: Alignment
-                                                                .bottomRight,
-                                                            colors: Theme.of(
-                                                                            context)
-                                                                        .brightness ==
-                                                                    Brightness
-                                                                        .dark
-                                                                ? [
-                                                                    Colors.grey[
-                                                                        850],
-                                                                    Colors.grey[
-                                                                        900],
-                                                                    Colors
-                                                                        .black,
-                                                                  ]
-                                                                : [
-                                                                    Colors
-                                                                        .white,
-                                                                    Theme.of(
-                                                                            context)
-                                                                        .canvasColor,
-                                                                  ],
-                                                          ),
-                                                        ),
+                                                    : BottomGradientContainer(
                                                         child: Center(
                                                           child:
                                                               SingleChildScrollView(
@@ -612,19 +542,15 @@ class _PlayScreenState extends State<PlayScreen> {
                                                                         AsyncSnapshot
                                                                             snapshot) {
                                                                       if (snapshot
-                                                                              .connectionState !=
+                                                                              .connectionState ==
                                                                           ConnectionState
                                                                               .done) {
-                                                                        return CircularProgressIndicator(
-                                                                          valueColor:
-                                                                              AlwaysStoppedAnimation<Color>(Theme.of(context).accentColor),
-                                                                        );
-                                                                      } else {
                                                                         if (mediaItem.extras["has_lyrics"] ==
                                                                             "true") {
-                                                                          var lyricsEdited =
+                                                                          List
+                                                                              lyricsEdited =
                                                                               (snapshot.data.body).split("-->");
-                                                                          var fetchedLyrics =
+                                                                          final fetchedLyrics =
                                                                               json.decode(lyricsEdited[1]);
                                                                           lyrics = fetchedLyrics["lyrics"].toString().replaceAll(
                                                                               "<br>",
@@ -633,6 +559,12 @@ class _PlayScreenState extends State<PlayScreen> {
                                                                               lyrics);
                                                                         }
                                                                       }
+                                                                      return CircularProgressIndicator(
+                                                                        valueColor: AlwaysStoppedAnimation<
+                                                                            Color>(Theme.of(
+                                                                                context)
+                                                                            .accentColor),
+                                                                      );
                                                                     })
                                                                 : EmptyScreen()
                                                                     .emptyScreen(
@@ -777,35 +709,10 @@ class _PlayScreenState extends State<PlayScreen> {
                                           builder: (BuildContext context) {
                                             final settingsBox =
                                                 Hive.box('settings');
-                                            var playlistNames =
+                                            List playlistNames =
                                                 settingsBox.get('playlists');
 
-                                            return Container(
-                                              margin: EdgeInsets.fromLTRB(
-                                                  25, 0, 25, 25),
-                                              padding: EdgeInsets.fromLTRB(
-                                                  10, 15, 10, 15),
-                                              decoration: BoxDecoration(
-                                                borderRadius: BorderRadius.all(
-                                                    Radius.circular(15.0)),
-                                                gradient: LinearGradient(
-                                                  begin: Alignment.topLeft,
-                                                  end: Alignment.bottomRight,
-                                                  colors: Theme.of(context)
-                                                              .brightness ==
-                                                          Brightness.dark
-                                                      ? [
-                                                          Colors.grey[850],
-                                                          Colors.grey[900],
-                                                          Colors.black,
-                                                        ]
-                                                      : [
-                                                          Colors.white,
-                                                          Theme.of(context)
-                                                              .canvasColor,
-                                                        ],
-                                                ),
-                                              ),
+                                            return BottomGradientContainer(
                                               child: SingleChildScrollView(
                                                 child: Column(
                                                   mainAxisSize:
@@ -1570,7 +1477,7 @@ class _PlayScreenState extends State<PlayScreen> {
           AudioService.currentMediaItemStream,
           (queue, mediaItem) => QueueState(queue, mediaItem));
 
-  downloadSong(mediaItem, scaffoldContext) async {
+  downloadSong(MediaItem mediaItem, BuildContext scaffoldContext) async {
     PermissionStatus status = await Permission.storage.status;
     if (status.isPermanentlyDenied || status.isDenied) {
       // code of read or write file in external storage (SD card)
@@ -1586,7 +1493,7 @@ class _PlayScreenState extends State<PlayScreen> {
     if (status.isGranted) {
       print('permission granted');
     }
-    final filename = mediaItem.title.toString() +
+    final String filename = mediaItem.title.toString() +
         " - " +
         mediaItem.artist.toString() +
         ".m4a";
@@ -1656,7 +1563,8 @@ class _PlayScreenState extends State<PlayScreen> {
     }
   }
 
-  downSong(mediaItem, scaffoldContext, dlPath, filename) async {
+  downSong(MediaItem mediaItem, BuildContext scaffoldContext, String dlPath,
+      String filename) async {
     String filepath;
     String filepath2;
     List<int> _bytes = [];
@@ -1717,16 +1625,16 @@ class _PlayScreenState extends State<PlayScreen> {
       final file = File("${(filepath)}");
       await file.writeAsBytes(_bytes);
 
-      var request2 =
+      HttpClientRequest request2 =
           await HttpClient().getUrl(Uri.parse(mediaItem.artUri.toString()));
-      var response2 = await request2.close();
-      var bytes2 = await consolidateHttpClientResponseBytes(response2);
+      HttpClientResponse response2 = await request2.close();
+      final bytes2 = await consolidateHttpClientResponseBytes(response2);
       File file2 = File(filepath2);
 
       await file2.writeAsBytes(bytes2);
       debugPrint("Started tag editing");
 
-      final tag = Tag(
+      final Tag tag = Tag(
         title: mediaItem.title.toString(),
         artist: mediaItem.artist.toString(),
         artwork: filepath2.toString(),
@@ -1826,499 +1734,6 @@ class MediaState {
   MediaState(this.mediaItem, this.position);
 }
 
-class SeekBar extends StatefulWidget {
-  final Duration duration;
-  final Duration position;
-  final ValueChanged<Duration> onChanged;
-  final ValueChanged<Duration> onChangeEnd;
-
-  SeekBar({
-    @required this.duration,
-    @required this.position,
-    this.onChanged,
-    this.onChangeEnd,
-  });
-
-  @override
-  _SeekBarState createState() => _SeekBarState();
-}
-
-class _SeekBarState extends State<SeekBar> {
-  double _dragValue;
-  bool _dragging = false;
-
-  @override
-  Widget build(BuildContext context) {
-    final value = min(_dragValue ?? widget.position?.inMilliseconds?.toDouble(),
-        widget.duration.inMilliseconds.toDouble());
-    if (_dragValue != null && !_dragging) {
-      _dragValue = null;
-    }
-    return Column(
-      children: [
-        Slider(
-          min: 0.0,
-          max: widget.duration.inMilliseconds.toDouble(),
-          value: value,
-          activeColor: Theme.of(context).accentColor,
-          inactiveColor: Theme.of(context).accentColor.withOpacity(0.3),
-          onChanged: (value) {
-            if (!_dragging) {
-              _dragging = true;
-            }
-            setState(() {
-              _dragValue = value;
-            });
-            if (widget.onChanged != null) {
-              widget.onChanged(Duration(milliseconds: value.round()));
-            }
-          },
-          onChangeEnd: (value) {
-            if (widget.onChangeEnd != null) {
-              widget.onChangeEnd(Duration(milliseconds: value.round()));
-            }
-            _dragging = false;
-          },
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 20.0),
-              child: Text(
-                RegExp(r'((^0*[1-9]\d*:)?\d{2}:\d{2})\.\d+$')
-                        .firstMatch("$_position")
-                        ?.group(1) ??
-                    '$_position',
-                // style: Theme.of(context).textTheme.caption,
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(right: 20.0),
-              child: Text(
-                RegExp(r'((^0*[1-9]\d*:)?\d{2}:\d{2})\.\d+$')
-                        .firstMatch("$_duration")
-                        ?.group(1) ??
-                    '$_duration',
-                // style: Theme.of(context).textTheme.caption,
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  // Duration get _remaining => widget.duration - widget.position;
-  Duration get _position => widget.position;
-  Duration get _duration => widget.duration;
-}
-
 void _audioPlayerTaskEntrypoint() async {
   AudioServiceBackground.run(() => AudioPlayerTask());
-}
-
-class AudioPlayerTask extends BackgroundAudioTask {
-  AudioPlayer _player = AudioPlayer(
-    handleInterruptions: true,
-    androidApplyAudioAttributes: true,
-    handleAudioSessionActivation: true,
-  );
-  Seeker _seeker;
-  Timer _sleepTimer;
-  StreamSubscription<PlaybackEvent> _eventSubscription;
-  String preferredQuality;
-  List<MediaItem> queue = [];
-  String repeatMode = 'None';
-  bool shuffle = false;
-  List<MediaItem> defaultQueue = [];
-
-  int index;
-  bool offline;
-  // int get index => _player.currentIndex == null ? 0 : _player.currentIndex;
-  MediaItem get mediaItem => index == null ? queue[0] : queue[index];
-
-  Future<File> getImageFileFromAssets() async {
-    final byteData = await rootBundle.load('assets/cover.jpg');
-    final file = File('${(await getTemporaryDirectory()).path}/cover.jpg');
-    await file.writeAsBytes(byteData.buffer
-        .asUint8List(byteData.offsetInBytes, byteData.lengthInBytes));
-    return file;
-  }
-
-  Future<void> onTaskRemoved() async {
-    bool stopForegroundService =
-        Hive.box('settings').get('stopForegroundService') ?? true;
-    if (stopForegroundService) {
-      await onStop();
-    }
-  }
-
-  initiateBox() async {
-    try {
-      await Hive.initFlutter();
-    } catch (e) {}
-    try {
-      await Hive.openBox('settings');
-    } catch (e) {
-      print('Failed to open Settings Box');
-      print("Error: $e");
-      var dir = await getApplicationDocumentsDirectory();
-      String dirPath = dir.path;
-      String boxName = "settings";
-      File dbFile = File('$dirPath/$boxName.hive');
-      File lockFile = File('$dirPath/$boxName.lock');
-      await dbFile.delete();
-      await lockFile.delete();
-      await Hive.openBox("settings");
-    }
-    try {
-      await Hive.openBox('recentlyPlayed');
-    } catch (e) {
-      print('Failed to open Recent Box');
-      print("Error: $e");
-      var dir = await getApplicationDocumentsDirectory();
-      String dirPath = dir.path;
-      String boxName = "recentlyPlayed";
-      File dbFile = File('$dirPath/$boxName.hive');
-      File lockFile = File('$dirPath/$boxName.lock');
-      await dbFile.delete();
-      await lockFile.delete();
-      await Hive.openBox("recentlyPlayed");
-    }
-  }
-
-  addRecentlyPlayed(mediaitem) async {
-    List recentList;
-    try {
-      recentList = await Hive.box('recentlyPlayed').get('recentSongs').toList();
-    } catch (e) {
-      recentList = null;
-    }
-
-    Map item = {
-      'id': mediaItem.id.toString(),
-      'artist': mediaItem.artist.toString(),
-      'album': mediaItem.album.toString(),
-      'image': mediaItem.artUri.toString(),
-      'duration': mediaItem.duration.inSeconds.toString(),
-      'title': mediaItem.title.toString(),
-      'url': mediaItem.extras['url'].toString(),
-      "year": mediaItem.extras["year"].toString(),
-      "language": mediaItem.extras["language"].toString(),
-      "genre": mediaItem.genre.toString(),
-      "320kbps": mediaItem.extras["320kbps"],
-      "has_lyrics": mediaItem.extras["has_lyrics"],
-      "release_date": mediaItem.extras["release_date"],
-      "album_id": mediaItem.extras["album_id"],
-      "subtitle": mediaItem.extras["subtitle"]
-    };
-    recentList == null ? recentList = [item] : recentList.insert(0, item);
-
-    final jsonList = recentList.map((item) => jsonEncode(item)).toList();
-    final uniqueJsonList = jsonList.toSet().toList();
-    recentList = uniqueJsonList.map((item) => jsonDecode(item)).toList();
-
-    if (recentList.length > 30) {
-      recentList = recentList.sublist(0, 30);
-    }
-    Hive.box('recentlyPlayed').put('recentSongs', recentList);
-    final userID = Hive.box('settings').get('userID');
-    final dbRef = FirebaseDatabase.instance.reference().child("Users");
-    dbRef.child(userID).update({"recentlyPlayed": recentList});
-  }
-
-  @override
-  Future<void> onStart(Map<String, dynamic> params) async {
-    index = params['index'];
-    offline = params['offline'];
-    preferredQuality = params['quality'];
-    await initiateBox();
-
-    final session = await AudioSession.instance;
-    await session.configure(AudioSessionConfiguration.speech());
-    _eventSubscription = _player.playbackEventStream.listen((event) {
-      _broadcastState();
-    });
-    _player.processingStateStream.listen((state) {
-      switch (state) {
-        case ProcessingState.completed:
-          if (queue[index] != queue.last) {
-            if (repeatMode != 'One') {
-              AudioService.skipToNext();
-            } else {
-              AudioService.skipToQueueItem(queue[index].id);
-            }
-          } else {
-            if (repeatMode == 'None') {
-              AudioService.stop();
-            } else {
-              if (repeatMode == 'One') {
-                AudioService.skipToQueueItem(queue[index].id);
-              } else {
-                AudioService.skipToQueueItem(queue[0].id);
-              }
-            }
-          }
-
-          break;
-        case ProcessingState.ready:
-          break;
-        default:
-          break;
-      }
-    });
-  }
-
-  @override
-  Future<void> onSkipToQueueItem(String mediaId) async {
-    final newIndex = queue.indexWhere((item) => item.id == mediaId);
-    index = newIndex;
-    if (newIndex == -1) return;
-    // _player.pause();
-    if (offline) {
-      await _player.setFilePath(queue[newIndex].extras['url']);
-    } else {
-      await _player.setUrl(queue[newIndex]
-          .extras['url']
-          .replaceAll("_96.", "_${preferredQuality.replaceAll(' kbps', '')}."));
-      addRecentlyPlayed(queue[newIndex]);
-    }
-
-    if (queue[index].duration == Duration(seconds: 180)) {
-      var duration = await _player.durationFuture;
-      if (duration != null) {
-        await AudioServiceBackground.setMediaItem(
-            queue[index].copyWith(duration: duration));
-      } else {
-        await AudioServiceBackground.setMediaItem(queue[index]);
-      }
-    } else {
-      await AudioServiceBackground.setMediaItem(queue[index]);
-    }
-  }
-
-  @override
-  Future<void> onUpdateQueue(List<MediaItem> _queue) {
-    queue = _queue;
-    AudioServiceBackground.setQueue(_queue);
-    return super.onUpdateQueue(_queue);
-  }
-
-  @override
-  Future<void> onPlay() async {
-    try {
-      if (queue[index].artUri == null) {
-        File f = await getImageFileFromAssets();
-        queue[index] = queue[index].copyWith(artUri: Uri.file('${f.path}'));
-      }
-      if (AudioServiceBackground.mediaItem != queue[index]) {
-        if (offline) {
-          await _player.setFilePath(queue[index].extras['url']);
-        } else {
-          await _player.setUrl(queue[index].extras['url'].replaceAll(
-              "_96.", "_${preferredQuality.replaceAll(' kbps', '')}."));
-          addRecentlyPlayed(queue[index]);
-        }
-        _player.play();
-        if (queue[index].duration == Duration(seconds: 180)) {
-          var duration = await _player.durationFuture;
-          if (duration != null) {
-            await AudioServiceBackground.setMediaItem(
-                queue[index].copyWith(duration: duration));
-          }
-        } else {
-          await AudioServiceBackground.setMediaItem(queue[index]);
-        }
-      } else {
-        _player.play();
-      }
-    } catch (e) {
-      print('Error in onPlay: $e');
-    }
-  }
-
-  @override
-  Future<dynamic> onCustomAction(String myFunction, dynamic myVariable) {
-    if (myFunction == 'sleepTimer') {
-      _sleepTimer?.cancel();
-      if (myVariable.runtimeType == int &&
-          myVariable != null &&
-          myVariable > 0) {
-        _sleepTimer = Timer(Duration(minutes: myVariable), () {
-          onStop();
-        });
-      }
-    }
-
-    if (myFunction == 'repeatMode') {
-      repeatMode = myVariable;
-    }
-    if (myFunction == 'shuffle') {
-      shuffle = myVariable;
-      if (shuffle) {
-        defaultQueue = queue.toList();
-        queue.shuffle();
-        AudioService.updateQueue(queue);
-      } else {
-        queue = defaultQueue;
-        AudioService.updateQueue(queue);
-      }
-    }
-    return Future.value(true);
-  }
-
-  @override
-  Future<void> onPause() => _player.pause();
-
-  @override
-  Future<void> onSeekTo(Duration position) => _player.seek(position);
-
-  @override
-  Future<void> onFastForward() => _seekRelative(fastForwardInterval);
-
-  @override
-  Future<void> onRewind() => _seekRelative(-rewindInterval);
-
-  @override
-  Future<void> onSeekForward(bool begin) async => _seekContinuously(begin, 1);
-
-  @override
-  Future<void> onSeekBackward(bool begin) async => _seekContinuously(begin, -1);
-
-  @override
-  Future<void> onStop() async {
-    await _player.dispose();
-    _eventSubscription.cancel();
-    // It is important to wait for this state to be broadcast before we shut
-    // down the task. If we don't, the background task will be destroyed before
-    // the message gets sent to the UI.
-    await _broadcastState();
-    // Shut down this task
-    await super.onStop();
-  }
-
-  /// Jumps away from the current position by [offset].
-  Future<void> _seekRelative(Duration offset) async {
-    var newPosition = _player.position + offset;
-    // Make sure we don't jump out of bounds.
-    if (newPosition < Duration.zero) newPosition = Duration.zero;
-    if (newPosition > mediaItem.duration) newPosition = mediaItem.duration;
-    // Perform the jump via a seek.
-    await _player.seek(newPosition);
-  }
-
-  /// Begins or stops a continuous seek in [direction]. After it begins it will
-  /// continue seeking forward or backward by 10 seconds within the audio, at
-  /// intervals of 1 second in app time.
-  void _seekContinuously(bool begin, int direction) {
-    _seeker?.stop();
-    if (begin) {
-      _seeker = Seeker(_player, Duration(seconds: 10 * direction),
-          Duration(seconds: 1), mediaItem)
-        ..start();
-    }
-  }
-
-  /// Broadcasts the current state to all clients.
-  Future<void> _broadcastState() async {
-    await AudioServiceBackground.setState(
-      controls: [
-        MediaControl.skipToPrevious,
-        if (_player.playing) MediaControl.pause else MediaControl.play,
-        MediaControl.stop,
-        MediaControl.skipToNext,
-      ],
-      systemActions: [
-        MediaAction.seekTo,
-        MediaAction.seekForward,
-        MediaAction.seekBackward,
-      ],
-      androidCompactActions: [0, 1, 3],
-      processingState: _getProcessingState(),
-      playing: _player.playing,
-      position: _player.position,
-      bufferedPosition: _player.bufferedPosition,
-      speed: _player.speed,
-    );
-  }
-
-  /// Maps just_audio's processing state into into audio_service's playing
-  /// state. If we are in the middle of a skip, we use [_skipState] instead.
-  AudioProcessingState _getProcessingState() {
-    switch (_player.processingState) {
-      case ProcessingState.idle:
-        return AudioProcessingState.stopped;
-      case ProcessingState.loading:
-        return AudioProcessingState.connecting;
-      case ProcessingState.buffering:
-        return AudioProcessingState.buffering;
-      case ProcessingState.ready:
-        return AudioProcessingState.ready;
-      case ProcessingState.completed:
-        return AudioProcessingState.completed;
-      default:
-        throw Exception("Invalid state: ${_player.processingState}");
-    }
-  }
-}
-
-/// An object that performs interruptable sleep.
-class Sleeper {
-  Completer _blockingCompleter;
-
-  /// Sleep for a duration. If sleep is interrupted, a
-  /// [SleeperInterruptedException] will be thrown.
-  Future<void> sleep([Duration duration]) async {
-    _blockingCompleter = Completer();
-    if (duration != null) {
-      await Future.any([Future.delayed(duration), _blockingCompleter.future]);
-    } else {
-      await _blockingCompleter.future;
-    }
-    final interrupted = _blockingCompleter.isCompleted;
-    _blockingCompleter = null;
-    if (interrupted) {
-      throw SleeperInterruptedException();
-    }
-  }
-
-  /// Interrupt any sleep that's underway.
-  void interrupt() {
-    if (_blockingCompleter?.isCompleted == false) {
-      _blockingCompleter.complete();
-    }
-  }
-}
-
-class SleeperInterruptedException {}
-
-class Seeker {
-  final AudioPlayer player;
-  final Duration positionInterval;
-  final Duration stepInterval;
-  final MediaItem mediaItem;
-  bool _running = false;
-
-  Seeker(
-    this.player,
-    this.positionInterval,
-    this.stepInterval,
-    this.mediaItem,
-  );
-
-  start() async {
-    _running = true;
-    while (_running) {
-      Duration newPosition = player.position + positionInterval;
-      if (newPosition < Duration.zero) newPosition = Duration.zero;
-      if (newPosition > mediaItem.duration) newPosition = mediaItem.duration;
-      player.seek(newPosition);
-      await Future.delayed(stepInterval);
-    }
-  }
-
-  stop() {
-    _running = false;
-  }
 }

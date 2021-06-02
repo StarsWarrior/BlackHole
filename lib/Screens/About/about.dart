@@ -1,3 +1,4 @@
+import 'package:blackhole/CustomWidgets/gradientContainers.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info/package_info.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -23,30 +24,15 @@ class _AboutScreenState extends State<AboutScreen> {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     List temp = packageInfo.version.split('.');
     temp.removeLast();
-    appVersion = double.parse(temp.join('.'));
-    setState(() {});
+    setState(() {
+      appVersion = double.parse(temp.join('.'));
+    });
   }
 
 >>>>>>> b843d55 (final wrap-ups for v1.6)
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: Theme.of(context).brightness == Brightness.dark
-              ? [
-                  Colors.grey[850],
-                  Colors.grey[900],
-                  Colors.black,
-                ]
-              : [
-                  Colors.white,
-                  Theme.of(context).canvasColor,
-                ],
-        ),
-      ),
+    return GradientContainer(
       child: Stack(
         children: [
           Positioned(
@@ -62,23 +48,9 @@ class _AboutScreenState extends State<AboutScreen> {
               ),
             ),
           ),
-          Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: Theme.of(context).brightness == Brightness.dark
-                    ? [
-                        Colors.grey[850].withOpacity(0.8),
-                        Colors.grey[900].withOpacity(0.9),
-                        Colors.black.withOpacity(1),
-                      ]
-                    : [
-                        Colors.white,
-                        Theme.of(context).canvasColor,
-                      ],
-              ),
-            ),
+          GradientContainer(
+            child: SizedBox(),
+            opacity: true,
           ),
           Scaffold(
             appBar: AppBar(

@@ -1,8 +1,9 @@
-import 'package:blackhole/emptyScreen.dart';
+import 'package:blackhole/CustomWidgets/GradientContainers.dart';
+import 'package:blackhole/CustomWidgets/emptyScreen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:blackhole/audioplayer.dart';
-import 'package:blackhole/miniplayer.dart';
+import 'package:blackhole/Screens/Player/audioplayer.dart';
+import 'package:blackhole/CustomWidgets/miniplayer.dart';
 import 'package:hive/hive.dart';
 
 class RecentlyPlayed extends StatefulWidget {
@@ -27,23 +28,7 @@ class _RecentlyPlayedState extends State<RecentlyPlayed> {
       getSongs();
     }
 
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: Theme.of(context).brightness == Brightness.dark
-              ? [
-                  Colors.grey[850],
-                  Colors.grey[900],
-                  Colors.black,
-                ]
-              : [
-                  Colors.white,
-                  Theme.of(context).canvasColor,
-                ],
-        ),
-      ),
+    return GradientContainer(
       child: Column(
         children: [
           Expanded(
@@ -76,6 +61,9 @@ class _RecentlyPlayedState extends State<RecentlyPlayed> {
                                   ),
                                   clipBehavior: Clip.antiAlias,
                                   child: CachedNetworkImage(
+                                    errorWidget: (context, _, __) => Image(
+                                      image: AssetImage('assets/cover.jpg'),
+                                    ),
                                     imageUrl: _songs[index]["image"]
                                         .replaceAll('http:', 'https:'),
                                     placeholder: (context, url) => Image(

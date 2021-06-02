@@ -1,20 +1,20 @@
-import 'package:blackhole/countrycodes.dart';
-import 'package:blackhole/downloaded.dart';
-import 'package:blackhole/library.dart';
-import 'package:blackhole/setting.dart';
+import 'package:blackhole/Helpers/countrycodes.dart';
+import 'package:blackhole/CustomWidgets/gradientContainers.dart';
+import 'package:blackhole/Screens/Library/downloaded.dart';
+import 'package:blackhole/Screens/Library/library.dart';
+import 'package:blackhole/Screens/Settings/setting.dart';
 import 'package:device_info/device_info.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
-import 'package:blackhole/miniplayer.dart';
-// import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:blackhole/CustomWidgets/miniplayer.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'top.dart';
+import 'package:blackhole/Screens/Top Charts/top.dart';
 import 'dart:math';
 import 'trending.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'miniplayer.dart';
 import 'package:package_info/package_info.dart';
 
 class HomePage extends StatefulWidget {
@@ -33,8 +33,8 @@ class _HomePageState extends State<HomePage> {
   bool checked = false;
   bool update = false;
   bool status = false;
-  // final FirebaseAnalytics _analytics = FirebaseAnalytics();
-  String capitalize(msg) {
+
+  String capitalize(String msg) {
     return "${msg[0].toUpperCase()}${msg.substring(1)}";
   }
 
@@ -50,7 +50,7 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  updateUserDetails(key, value) {
+  updateUserDetails(String key, dynamic value) {
     final userID = Hive.box('settings').get('userID');
     final dbRef = FirebaseDatabase.instance.reference().child("Users");
     dbRef.child(userID).update({"$key": "$value"});
@@ -60,7 +60,7 @@ class _HomePageState extends State<HomePage> {
     if (!checked && Theme.of(context).platform == TargetPlatform.android) {
       print('checking for update..');
       checked = true;
-      var now = DateTime.now();
+      DateTime now = DateTime.now();
       updateUserDetails('lastLogin',
           '${now.toUtc().add(Duration(hours: 5, minutes: 30)).toString().split('.').first} IST');
       updateUserDetails('timeZone',
@@ -93,7 +93,6 @@ class _HomePageState extends State<HomePage> {
       });
 
       dbRef.once().then((DataSnapshot snapshot) {
-        print('Data : ${snapshot.value}');
         if (double.parse(snapshot.value) > appVersion) {
           print('UPDATE IS AVAILABLE');
           return showDialog(
@@ -101,7 +100,6 @@ class _HomePageState extends State<HomePage> {
             builder: (BuildContext context) {
               return AlertDialog(
                 title: Text('Update Available',
-                    // textAlign: TextAlign.center,
                     style: TextStyle(
                         color: Theme.of(context).accentColor,
                         fontWeight: FontWeight.w600)),
@@ -160,7 +158,7 @@ class _HomePageState extends State<HomePage> {
   ScrollController _scrollController;
   double _size = 0.0;
 
-  _scrollListener() {
+  void _scrollListener() {
     setState(() {
       _size = _scrollController.offset;
     });
@@ -183,44 +181,11 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: Theme.of(context).brightness == Brightness.dark
-              ? [
-                  Colors.grey[850],
-                  Colors.grey[900],
-                  Colors.black,
-                ]
-              : [
-                  Colors.white,
-                  Theme.of(context).canvasColor,
-                ],
-        ),
-      ),
+    return GradientContainer(
       child: Scaffold(
           backgroundColor: Colors.transparent,
           drawer: Drawer(
-            child: Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  // stops: [0, 0.2, 0.8, 1],
-                  colors: Theme.of(context).brightness == Brightness.dark
-                      ? [
-                          Colors.grey[850],
-                          Colors.grey[900],
-                          Colors.black,
-                        ]
-                      : [
-                          Colors.white,
-                          Theme.of(context).canvasColor,
-                        ],
-                ),
-              ),
+            child: GradientContainer(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -248,7 +213,6 @@ class _HomePageState extends State<HomePage> {
                                                 TextEditingController(
                                                     text: box.get('email'));
                                             return AlertDialog(
-                                              // title: Text('Name'),
                                               content: Column(
                                                 mainAxisSize: MainAxisSize.min,
                                                 children: [
@@ -317,14 +281,6 @@ class _HomePageState extends State<HomePage> {
                                                         updateUserDetails(
                                                             'email',
                                                             value.trim());
-                                                        // _analytics.logEvent(
-                                                        //   name: 'Changed_Name_Email',
-                                                        //   parameters: <String,
-                                                        //       dynamic>{
-                                                        //     'Name': controller.text,
-                                                        //     'Email': value,
-                                                        //   },
-                                                        // );
                                                       }),
                                                 ],
                                               ),
@@ -373,13 +329,6 @@ class _HomePageState extends State<HomePage> {
                                                         'email',
                                                         _controller2.text
                                                             .trim());
-                                                    // _analytics.logEvent(
-                                                    //   name: 'Changed_Name_Email',
-                                                    //   parameters: <String, dynamic>{
-                                                    //     'Name': controller.text,
-                                                    //     'Email': controller2.text,
-                                                    //   },
-                                                    // );
                                                   },
                                                 ),
                                                 SizedBox(
@@ -436,7 +385,6 @@ class _HomePageState extends State<HomePage> {
                                   ),
                                   child: CircleAvatar(
                                     backgroundColor: Colors.transparent,
-                                    // backgroundImage: AssetImage('assets/cover.jpg'),
                                     child: Text(
                                         (box.get('name') == null ||
                                                 box.get('name') == '')
@@ -462,8 +410,6 @@ class _HomePageState extends State<HomePage> {
                             Icons.home_rounded,
                             color: Theme.of(context).accentColor,
                           ),
-                          // selectedTileColor: Theme.of(context).accentColor,
-                          // tileColor: Theme.of(context).accentColor,
                           selected: true,
                           onTap: () {
                             Navigator.pop(context);
@@ -472,7 +418,7 @@ class _HomePageState extends State<HomePage> {
                         ListTile(
                           title: Text('My Music'),
                           leading: Icon(
-                            Icons.my_library_music_rounded,
+                            MdiIcons.folderMusic,
                             color: Theme.of(context).iconTheme.color,
                           ),
                           onTap: () {
@@ -498,7 +444,6 @@ class _HomePageState extends State<HomePage> {
                                 MaterialPageRoute(
                                     builder: (context) =>
                                         SettingPage(callback: callback)));
-                            // Navigator.pushNamed(context, '/setting');
                           },
                         ),
                         ListTile(
@@ -653,10 +598,8 @@ class _HomePageState extends State<HomePage> {
                                                 _size,
                                             MediaQuery.of(context).size.width -
                                                 75),
-                                        // margin: EdgeInsets.zero,
 
                                         duration: Duration(milliseconds: 300),
-                                        // margin: EdgeInsets.only(top: 5),
                                         padding:
                                             EdgeInsets.only(top: 3, bottom: 1),
                                         // margin: EdgeInsets.zero,
@@ -669,8 +612,8 @@ class _HomePageState extends State<HomePage> {
                                               color: Colors.black26,
                                               blurRadius: 5.0,
                                               spreadRadius: 0.0,
-                                              offset: Offset(0.0,
-                                                  3.0), // shadow direction: bottom right
+                                              offset: Offset(0.0, 3.0),
+                                              // shadow direction: bottom right
                                             )
                                           ],
                                         ),
@@ -792,12 +735,6 @@ class _HomePageState extends State<HomePage> {
               ],
             ),
           ),
-          // floatingActionButton: FloatingActionButton(
-          //   onPressed: () {},
-          //   child: Icon(Icons.add),
-          //   backgroundColor: Colors.red,
-          // ),
-          // floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
           bottomNavigationBar: ValueListenableBuilder(
               valueListenable: playerExpandProgress,
               builder: (BuildContext context, double value, Widget child) {
