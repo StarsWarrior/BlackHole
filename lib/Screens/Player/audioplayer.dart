@@ -710,8 +710,8 @@ class _PlayScreenState extends State<PlayScreen> {
                                           builder: (BuildContext context) {
                                             final settingsBox =
                                                 Hive.box('settings');
-                                            List playlistNames =
-                                                settingsBox.get('playlists');
+                                            List playlistNames = settingsBox
+                                                .get('playlistNames');
 
                                             return BottomGradientContainer(
                                               child: SingleChildScrollView(
@@ -776,7 +776,7 @@ class _PlayScreenState extends State<PlayScreen> {
                                                                               ]
                                                                             : playlistNames.add(value);
                                                                         settingsBox.put(
-                                                                            'playlists',
+                                                                            'playlistNames',
                                                                             playlistNames);
                                                                         Navigator.pop(
                                                                             context);
@@ -842,7 +842,7 @@ class _PlayScreenState extends State<PlayScreen> {
                                                                             .add(controller.text);
 
                                                                     settingsBox.put(
-                                                                        'playlists',
+                                                                        'playlistNames',
                                                                         playlistNames);
                                                                     Navigator.pop(
                                                                         context);

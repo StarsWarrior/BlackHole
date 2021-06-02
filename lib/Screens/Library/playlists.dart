@@ -20,7 +20,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
   @override
   Widget build(BuildContext context) {
     try {
-      playlistNames = settingsBox.get('playlists').toList();
+      playlistNames = settingsBox.get('playlistNames').toList();
     } catch (e) {
       playlistNames = null;
     }
@@ -92,7 +92,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                                             ? playlistNames = [value]
                                             : playlistNames.add(value);
                                         settingsBox.put(
-                                            'playlists', playlistNames);
+                                            'playlistNames', playlistNames);
                                         Navigator.pop(context);
                                         setState(() {});
                                       }),
@@ -133,7 +133,8 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                                     playlistNames == null
                                         ? playlistNames = [_controller.text]
                                         : playlistNames.add(_controller.text);
-                                    settingsBox.put('playlists', playlistNames);
+                                    settingsBox.put(
+                                        'playlistNames', playlistNames);
                                     Navigator.pop(context);
                                     setState(() {});
                                   },
@@ -215,7 +216,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                                         .deleteFromDisk();
                                     await playlistNames.removeAt(index);
                                     await settingsBox.put(
-                                        'playlists', playlistNames);
+                                        'playlistNames', playlistNames);
                                     setState(() {});
                                   },
                                   itemBuilder: (context) => [
@@ -324,7 +325,7 @@ fetchPlaylists(code, context, playlistNames, settingsBox) async {
       playlistNames == null
           ? playlistNames = [playName]
           : playlistNames.add(playName);
-      settingsBox.put('playlists', playlistNames);
+      settingsBox.put('playlistNames', playlistNames);
 
       for (Map track in tracks) {
         String trackArtist;
