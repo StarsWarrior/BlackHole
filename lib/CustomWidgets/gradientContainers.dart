@@ -14,8 +14,8 @@ class _GradientContainerState extends State<GradientContainer> {
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
           colors: Theme.of(context).brightness == Brightness.dark
               ? ((widget.opacity == true)
                   ? [

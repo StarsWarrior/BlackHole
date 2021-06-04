@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:blackhole/CustomWidgets/downloadButton.dart';
 import 'package:blackhole/Screens/Player/audioplayer.dart';
 import 'package:blackhole/CustomWidgets/GradientContainers.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -70,10 +71,13 @@ class _SearchPageState extends State<SearchPage> {
                             return Padding(
                               padding: const EdgeInsets.fromLTRB(0, 7, 7, 5),
                               child: ListTile(
+                                contentPadding: EdgeInsets.only(left: 15.0),
                                 title: Text(
                                   '${searchedList[index]["title"].split("(")[0]}',
                                   style: TextStyle(fontWeight: FontWeight.w500),
                                 ),
+                                subtitle:
+                                    Text('${searchedList[index]["subtitle"]}'),
                                 leading: Hero(
                                   tag: index,
                                   child: Card(
@@ -94,8 +98,10 @@ class _SearchPageState extends State<SearchPage> {
                                     ),
                                   ),
                                 ),
-                                subtitle:
-                                    Text('${searchedList[index]["subtitle"]}'),
+                                trailing: DownloadButton(
+                                  data: searchedList[index],
+                                  icon: 'download',
+                                ),
                                 onTap: () {
                                   Navigator.push(
                                     context,

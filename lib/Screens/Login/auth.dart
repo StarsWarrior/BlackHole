@@ -98,7 +98,7 @@ class _AuthScreenState extends State<AuthScreen> {
             ),
           ),
           GradientContainer(
-            child: SizedBox(),
+            child: null,
             opacity: true,
           ),
           Scaffold(

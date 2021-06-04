@@ -1,10 +1,10 @@
 import 'dart:async';
+import 'package:blackhole/CustomWidgets/downloadButton.dart';
 import 'package:blackhole/CustomWidgets/gradientContainers.dart';
 import 'package:blackhole/Services/audioService.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart';
 import 'dart:convert';
-import 'package:audiotagger/models/tag.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -12,9 +12,6 @@ import 'package:miniplayer/miniplayer.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:rxdart/rxdart.dart';
 import 'dart:io';
-import 'package:audiotagger/audiotagger.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:ext_storage/ext_storage.dart';
 import 'package:hive/hive.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:blackhole/CustomWidgets/emptyScreen.dart';
@@ -1366,70 +1363,39 @@ class _PlayScreenState extends State<PlayScreen> {
                                         final mediaItem = queueState?.mediaItem;
                                         return (mediaItem != null &&
                                                 queue.isNotEmpty)
-                                            ? Stack(
-                                                children: [
-                                                  Center(
-                                                    child: SizedBox(
-                                                      width: 50,
-                                                      child: (downloadedId ==
-                                                              mediaItem.id)
-                                                          ? IconButton(
-                                                              icon: Icon(Icons
-                                                                  .save_alt),
-                                                              color: Theme.of(
-                                                                      context)
-                                                                  .accentColor,
-                                                              iconSize: 25.0,
-                                                              onPressed: () {},
-                                                            )
-                                                          : SizedBox(),
-                                                    ),
-                                                  ),
-                                                  Center(
-                                                      child:
-                                                          (downloadedId ==
-                                                                  mediaItem.id)
-                                                              ? SizedBox()
-                                                              : SizedBox(
-                                                                  height: 50,
-                                                                  width: 50,
-                                                                  child: Stack(
-                                                                    children: [
-                                                                      Center(
-                                                                        child: Text(_total !=
-                                                                                0
-                                                                            ? '${(100 * _recieved ~/ _total)}%'
-                                                                            : ''),
-                                                                      ),
-                                                                      Center(
-                                                                        child: CircularProgressIndicator(
-                                                                            valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context)
-                                                                                .accentColor),
-                                                                            value: _total != 0
-                                                                                ? _recieved / _total
-                                                                                : 0),
-                                                                      ),
-                                                                    ],
-                                                                  ),
-                                                                )),
-                                                  Center(
-                                                    child: (_total == 0 &&
-                                                            downloadedId !=
-                                                                mediaItem.id)
-                                                        ? IconButton(
-                                                            icon: Icon(
-                                                              Icons.save_alt,
-                                                            ),
-                                                            iconSize: 25.0,
-                                                            onPressed: () {
-                                                              downloadSong(
-                                                                  mediaItem,
-                                                                  scaffoldContext);
-                                                            })
-                                                        : SizedBox(),
-                                                  ),
-                                                ],
-                                              )
+                                            ? DownloadButton(data: {
+                                                'id': mediaItem.id.toString(),
+                                                'artist':
+                                                    mediaItem.artist.toString(),
+                                                'album':
+                                                    mediaItem.album.toString(),
+                                                'image':
+                                                    mediaItem.artUri.toString(),
+                                                'duration': mediaItem
+                                                    .duration.inSeconds
+                                                    .toString(),
+                                                'title':
+                                                    mediaItem.title.toString(),
+                                                'url': mediaItem.extras['url']
+                                                    .toString(),
+                                                "year": mediaItem.extras["year"]
+                                                    .toString(),
+                                                "language": mediaItem
+                                                    .extras["language"]
+                                                    .toString(),
+                                                "genre":
+                                                    mediaItem.genre.toString(),
+                                                "320kbps":
+                                                    mediaItem.extras["320kbps"],
+                                                "has_lyrics": mediaItem
+                                                    .extras["has_lyrics"],
+                                                "release_date": mediaItem
+                                                    .extras["release_date"],
+                                                "album_id": mediaItem
+                                                    .extras["album_id"],
+                                                "subtitle":
+                                                    mediaItem.extras["subtitle"]
+                                              })
                                             : IconButton(
                                                 icon: Icon(
                                                   Icons.save_alt,
@@ -1477,207 +1443,6 @@ class _PlayScreenState extends State<PlayScreen> {
           AudioService.queueStream,
           AudioService.currentMediaItemStream,
           (queue, mediaItem) => QueueState(queue, mediaItem));
-
-  downloadSong(MediaItem mediaItem, BuildContext scaffoldContext) async {
-    PermissionStatus status = await Permission.storage.status;
-    if (status.isPermanentlyDenied || status.isDenied) {
-      // code of read or write file in external storage (SD card)
-      // You can request multiple permissions at once.
-      Map<Permission, PermissionStatus> statuses = await [
-        Permission.storage,
-        Permission.accessMediaLocation,
-        Permission.mediaLibrary,
-      ].request();
-      debugPrint(statuses[Permission.storage].toString());
-    }
-    status = await Permission.storage.status;
-    if (status.isGranted) {
-      print('permission granted');
-    }
-    final String filename = mediaItem.title.toString() +
-        " - " +
-        mediaItem.artist.toString() +
-        ".m4a";
-    String dlPath = await ExtStorage.getExternalStoragePublicDirectory(
-        ExtStorage.DIRECTORY_MUSIC);
-    bool exists = await File(dlPath + "/" + filename).exists();
-    if (exists) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text(
-              "Already Exists",
-              style: TextStyle(color: Theme.of(context).accentColor),
-            ),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
-                  children: [
-                    Text(
-                      'Do you want to download it again?',
-                      // style: TextStyle(color: Theme.of(context).accentColor),
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-              ],
-            ),
-            actions: [
-              TextButton(
-                style: TextButton.styleFrom(
-                  primary: Theme.of(context).brightness == Brightness.dark
-                      ? Colors.white
-                      : Colors.grey[700],
-                ),
-                child: Text("Yes"),
-                onPressed: () {
-                  Navigator.pop(context);
-                  downSong(mediaItem, scaffoldContext, dlPath, filename);
-                },
-              ),
-              TextButton(
-                style: TextButton.styleFrom(
-                  primary: Theme.of(context).accentColor,
-                  backgroundColor: Theme.of(context).accentColor,
-                ),
-                child: Text(
-                  "No",
-                  style: TextStyle(color: Colors.white),
-                ),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              ),
-              SizedBox(
-                width: 5,
-              ),
-            ],
-          );
-        },
-      );
-    } else {
-      downSong(mediaItem, scaffoldContext, dlPath, filename);
-    }
-  }
-
-  downSong(MediaItem mediaItem, BuildContext scaffoldContext, String dlPath,
-      String filename) async {
-    String filepath;
-    String filepath2;
-    List<int> _bytes = [];
-    final artname = mediaItem.title.toString() + "artwork.jpg";
-    Directory appDir = await getApplicationDocumentsDirectory();
-    String appPath = appDir.path;
-    try {
-      await File(dlPath + "/" + filename)
-          .create(recursive: true)
-          .then((value) => filepath = value.path);
-      print("created audio file");
-      await File(appPath + "/" + artname)
-          .create(recursive: true)
-          .then((value) => filepath2 = value.path);
-    } catch (e) {
-      await [
-        Permission.manageExternalStorage,
-      ].request();
-      await File(dlPath + "/" + filename)
-          .create(recursive: true)
-          .then((value) => filepath = value.path);
-      print("created audio file");
-      await File(appPath + "/" + artname)
-          .create(recursive: true)
-          .then((value) => filepath2 = value.path);
-    }
-    debugPrint('Audio path $filepath');
-    debugPrint('Image path $filepath2');
-    ScaffoldMessenger.of(scaffoldContext).showSnackBar(
-      SnackBar(
-        elevation: 6,
-        backgroundColor: Colors.grey[900],
-        behavior: SnackBarBehavior.floating,
-        content: Text(
-          'Downloading your song in $preferredDownloadQuality',
-          style: TextStyle(color: Colors.white),
-        ),
-        action: SnackBarAction(
-          textColor: Theme.of(context).accentColor,
-          label: 'Ok',
-          onPressed: () {},
-        ),
-      ),
-    );
-    String kUrl = mediaItem.extras["url"].replaceAll(
-        "_96.", "_${preferredDownloadQuality.replaceAll(' kbps', '')}.");
-    final response = await Client().send(Request('GET', Uri.parse(kUrl)));
-    _total = response.contentLength;
-    _recieved = 0;
-    response.stream.listen((value) {
-      _bytes.addAll(value);
-      try {
-        setState(() {
-          _recieved += value.length;
-        });
-      } catch (e) {}
-    }).onDone(() async {
-      final file = File("${(filepath)}");
-      await file.writeAsBytes(_bytes);
-
-      HttpClientRequest request2 =
-          await HttpClient().getUrl(Uri.parse(mediaItem.artUri.toString()));
-      HttpClientResponse response2 = await request2.close();
-      final bytes2 = await consolidateHttpClientResponseBytes(response2);
-      File file2 = File(filepath2);
-
-      await file2.writeAsBytes(bytes2);
-      debugPrint("Started tag editing");
-
-      final Tag tag = Tag(
-        title: mediaItem.title.toString(),
-        artist: mediaItem.artist.toString(),
-        artwork: filepath2.toString(),
-        album: mediaItem.album.toString(),
-        genre: mediaItem.genre.toString(),
-        year: mediaItem.extras["year"].toString(),
-        comment: 'BlackHole',
-      );
-
-      final tagger = Audiotagger();
-      await tagger.writeTags(
-        path: filepath,
-        tag: tag,
-      );
-      await Future.delayed(const Duration(seconds: 1), () {});
-      if (await file2.exists()) {
-        await file2.delete();
-      }
-      debugPrint("Done");
-      downloadedId = mediaItem.id.toString();
-
-      ScaffoldMessenger.of(scaffoldContext).showSnackBar(SnackBar(
-        elevation: 6,
-        backgroundColor: Colors.grey[900],
-        behavior: SnackBarBehavior.floating,
-        content: Text(
-          '"${mediaItem.title.toString()}" has been downloaded',
-          style: TextStyle(color: Colors.white),
-        ),
-        action: SnackBarAction(
-          textColor: Theme.of(context).accentColor,
-          label: 'Ok',
-          onPressed: () {},
-        ),
-      ));
-      try {
-        _total = 0;
-        _recieved = 0;
-        setState(() {});
-      } catch (e) {}
-    });
-  }
 
   audioPlayerButton() async {
     await AudioService.start(
