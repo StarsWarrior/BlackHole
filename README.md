@@ -8,6 +8,7 @@ Awesome Music Player made with Flutter
 [![GitHub stars](https://img.shields.io/github/stars/Sangwan5688/BlackHole.svg?style=social&label=Star)](https://github.com//Sangwan5688/BlackHole) ![GitHub forks](https://img.shields.io/github/forks/Sangwan5688/BlackHole.svg?style=social&label=Forks) ![GitHub followers](https://img.shields.io/github/followers/Sangwan5688.svg?style=social&label=Follow)
 
 
+<<<<<<< HEAD
 <h3>Features</h3>
 <p>Music Search<br>
 Top Playlists<br>
@@ -20,6 +21,32 @@ Play Online as well as Offline Songs<br>
 
 
   <h3 align="center">Screenshots</h3>
+=======
+## Features
+
+* Best Streaming Quality (320kbps)
+* Music Search
+* Trending Songs
+* Support 15+ music languages
+* Local and Global Top Spotify songs
+* Add Songs to Favorite
+* Playlists support
+* Import Playlists from Spotify
+* Sleep timer
+* Lyrics Support
+* Listening history record
+* Dark mode / accent color
+* Download for offline play (320kbps with ID3 tags)
+* Play Online as well as Offline Songs
+* Auto Update Check
+* Cache support
+* No Subscription
+* No Ads
+
+More to come...
+
+  <h3 align="center">Preview</h3>
+>>>>>>> 5a44d32 (Update README.md)
   
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -72,6 +99,7 @@ You can join our [Telegram Group](https://t.me/joinchat/fHDC1AWnOhw0ZmI9) if you
 <h3><a href="https://github.com/Sangwan5688/BlackHole/releases" rel="GitHub Releases">Download Latest Version</h3>
 
 # What's New
+<<<<<<< HEAD
 ## v1.3
 ### Fixed:
 Song not downloading in Android 11.<br>
@@ -85,6 +113,18 @@ Added Sleep Timer.<br>
 Added support for different music languages.<br>
 Added Shuffle and Repeat in Offline Mode.<br>
 Minor changes
+=======
+## v1.7
+### Changes:
+* Import Playlists from Spotify.
+* Added Cache support.
+* Added shuffle and repeat in online mode too.
+* Removed need for app restart after country and language change.
+* Increased search results from 5 to 10.
+* Some UI Fixes.
+* Minor Bug fixes.
+* Minor UI changes.
+>>>>>>> 5a44d32 (Update README.md)
 
 ## v1.2
 ### Fixed:
