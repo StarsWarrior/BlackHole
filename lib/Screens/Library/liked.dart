@@ -21,12 +21,12 @@ class _LikedSongsState extends State<LikedSongs>
   List _songs = [];
   Map<String, List<Map>> _albums = {};
   Map<String, List<Map>> _artists = {};
-  List sortedAlbumKeysList;
-  List sortedArtistKeysList;
+  List sortedAlbumKeysList = [];
+  List sortedArtistKeysList = [];
   TabController _tcontroller;
   int currentIndex = 0;
-  int sortValue = Hive.box('settings').get('playlistSortValue');
-  int albumSortValue = Hive.box('settings').get('albumSortValue');
+  int sortValue = Hive.box('settings').get('playlistSortValue') ?? 2;
+  int albumSortValue = Hive.box('settings').get('albumSortValue') ?? 2;
 
   @override
   void initState() {
@@ -44,8 +44,7 @@ class _LikedSongsState extends State<LikedSongs>
 
   void getLiked() {
     likedBox = Hive.box(widget.playlistName);
-    _songs = likedBox?.values?.toList();
-    _songs ??= [];
+    _songs = likedBox?.values?.toList() ?? [];
     setArtistAlbum();
   }
 
@@ -72,7 +71,6 @@ class _LikedSongsState extends State<LikedSongs>
       }
     }
 
-    sortValue ??= 2;
     if (sortValue == 0) {
       _songs.sort((a, b) =>
           a["title"].toUpperCase().compareTo(b["title"].toUpperCase()));
@@ -87,7 +85,7 @@ class _LikedSongsState extends State<LikedSongs>
     if (sortValue == 3) {
       _songs.shuffle();
     }
-    albumSortValue ??= 2;
+
     if (albumSortValue == 0) {
       sortedAlbumKeysList = _albums.keys.toList();
       sortedArtistKeysList = _artists.keys.toList();
@@ -635,7 +633,7 @@ class _LikedSongsState extends State<LikedSongs>
   }
 
   artistsTab() {
-    return (sortedArtistKeysList == null || sortedArtistKeysList.length == 0)
+    return (sortedArtistKeysList.isEmpty)
         ? EmptyScreen().emptyScreen(context, 3, "Nothing to ", 15.0,
             "Show Here", 45, "Download Something", 23.0)
         : ListView.builder(

@@ -14,6 +14,10 @@ class FormatResponse {
     return searchedList;
   }
 
+  String capitalize(String msg) {
+    return "${msg[0].toUpperCase()}${msg.substring(1)}";
+  }
+
   Future<Map> formatSingleResponse(Map response) async {
     try {
       List artistNames = [];
@@ -55,7 +59,7 @@ class FormatResponse {
             .trim(),
         "year": response["year"],
         "duration": response["more_info"]["duration"],
-        "language": response["language"],
+        "language": capitalize(response["language"].toString()),
         "320kbps": response["more_info"]["320kbps"],
         "has_lyrics": response["more_info"]["has_lyrics"],
         "lyrics_snippet": response["more_info"]["lyrics_snippet"]
@@ -69,7 +73,8 @@ class FormatResponse {
             .toString()
             .replaceAll("&amp;", "&")
             .replaceAll("&#039;", "'")
-            .replaceAll("&quot;", "\""),
+            .replaceAll("&quot;", "\"")
+            .trim(),
         "title": response['title']
             .toString()
             .replaceAll("&amp;", "&")

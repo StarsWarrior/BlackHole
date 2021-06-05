@@ -17,7 +17,7 @@ class _RecentlyPlayedState extends State<RecentlyPlayed> {
 
   void getSongs() async {
     await Hive.openBox('recentlyPlayed');
-    _songs = Hive.box('recentlyPlayed').get('recentSongs');
+    _songs = Hive.box('recentlyPlayed')?.get('recentSongs') ?? [];
     added = true;
     setState(() {});
   }
@@ -42,7 +42,7 @@ class _RecentlyPlayedState extends State<RecentlyPlayed> {
                     : Theme.of(context).accentColor,
                 elevation: 0,
               ),
-              body: (_songs == null || _songs.length == 0)
+              body: _songs.isEmpty
                   ? EmptyScreen().emptyScreen(context, 3, "Nothing to ", 15,
                       "Show Here", 50.0, "Go and Play Something", 23.0)
                   : ListView.builder(

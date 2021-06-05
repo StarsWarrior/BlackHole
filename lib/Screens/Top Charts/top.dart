@@ -1,9 +1,13 @@
 import 'package:blackhole/CustomWidgets/emptyScreen.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:web_scraper/web_scraper.dart';
 
-List<Map> items = [];
-List<Map> globalItems = [];
+List items = [];
+List globalItems = [];
+List cachedItems = [];
+List cachedGlobalItems = [];
 bool fetched = false;
 
 class TopPage extends StatefulWidget {
@@ -15,35 +19,53 @@ class TopPage extends StatefulWidget {
   _TopPageState createState() => _TopPageState();
 }
 
-class _TopPageState extends State<TopPage> {
+Future<List> scrapData(String region) async {
   final webScraper = WebScraper("https://www.spotifycharts.com");
+  print('starting expensive operation');
+  List temp = [];
+  await webScraper.loadWebPage('/regional/' + region + '/daily/latest/');
+  for (int i = 1; i <= 200; i++) {
+    final title = webScraper.getElement(
+        "#content > div > div > div > span > table > tbody > tr:nth-child($i) > td.chart-table-track > strong",
+        []);
+    final artist = webScraper.getElement(
+        "#content > div > div > div > span > table > tbody > tr:nth-child($i) > td.chart-table-track > span",
+        []);
+    try {
+      temp.add({
+        'title': title[0]['title'],
+        'artist': artist[0]['title'].replaceFirst('by ', ''),
+        'image': ''
+      });
+    } catch (e) {}
+  }
+  print('finished expensive operation');
+  return temp;
+}
 
+class _TopPageState extends State<TopPage> {
   void getData(String region) async {
     if (region != 'global') fetched = true;
-    await webScraper.loadWebPage('/regional/' + region + '/daily/latest/');
-    for (int i = 1; i <= 200; i++) {
-      final title = webScraper.getElement(
-          "#content > div > div > div > span > table > tbody > tr:nth-child($i) > td.chart-table-track > strong",
-          []);
-      final artist = webScraper.getElement(
-          "#content > div > div > div > span > table > tbody > tr:nth-child($i) > td.chart-table-track > span",
-          []);
-      try {
-        if (region == 'global') {
-          globalItems.add({
-            'title': title[0]['title'],
-            'artist': artist[0]['title'].replaceFirst('by ', ''),
-            'image': ''
-          });
-        } else {
-          items.add({
-            'title': title[0]['title'],
-            'artist': artist[0]['title'].replaceFirst('by ', ''),
-            'image': ''
-          });
-        }
-      } catch (e) {}
-    }
+    List temp = await compute(scrapData, region);
+    setState(() {
+      if (region == 'global') {
+        globalItems = temp;
+        cachedGlobalItems = globalItems;
+        Hive.box('cache').put(region, globalItems);
+      } else {
+        items = temp;
+        cachedItems = items;
+        Hive.box('cache').put(region, items);
+      }
+    });
+  }
+
+  getCachedData(String region) async {
+    if (region != 'global') fetched = true;
+    if (region != 'global')
+      cachedItems = await Hive.box('cache').get(region) ?? [];
+    if (region == 'global')
+      cachedGlobalItems = await Hive.box('cache').get(region) ?? [];
     setState(() {});
   }
 
@@ -51,9 +73,11 @@ class _TopPageState extends State<TopPage> {
   void initState() {
     super.initState();
     if (widget.region == 'global' && globalItems.length == 0) {
+      getCachedData(widget.region);
       getData(widget.region);
     } else {
       if (items.length == 0) {
+        getCachedData(widget.region);
         getData(widget.region);
       }
     }
@@ -61,8 +85,12 @@ class _TopPageState extends State<TopPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (!fetched) getData(widget.region);
-    List<Map> showList = (widget.region == 'global' ? globalItems : items);
+    if (!fetched) {
+      getCachedData(widget.region);
+      getData(widget.region);
+    }
+    List showList =
+        (widget.region == 'global' ? cachedGlobalItems : cachedItems);
     return Column(
       children: [
         AppBar(

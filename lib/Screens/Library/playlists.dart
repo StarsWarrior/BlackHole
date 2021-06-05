@@ -16,14 +16,10 @@ class PlaylistScreen extends StatefulWidget {
 
 class _PlaylistScreenState extends State<PlaylistScreen> {
   Box settingsBox = Hive.box('settings');
-  List playlistNames;
+  List playlistNames = [];
   @override
   Widget build(BuildContext context) {
-    try {
-      playlistNames = settingsBox.get('playlistNames').toList();
-    } catch (e) {
-      playlistNames = null;
-    }
+    playlistNames = settingsBox.get('playlistNames')?.toList() ?? [];
 
     return GradientContainer(
       child: Column(
@@ -80,17 +76,14 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                                   TextField(
                                       controller: _controller,
                                       autofocus: true,
-                                      onSubmitted: (value) {
-                                        if (value == null ||
-                                            value.trim() == '') {
-                                          playlistNames == null
-                                              ? value = 'Playlist 0'
-                                              : value =
-                                                  'Playlist ${playlistNames.length}';
-                                        }
-                                        playlistNames == null
-                                            ? playlistNames = [value]
-                                            : playlistNames.add(value);
+                                      onSubmitted: (String value) {
+                                        if (value.trim() == '')
+                                          value =
+                                              'Playlist ${playlistNames.length}';
+
+                                        if (playlistNames.contains(value))
+                                          value = value + ' (1)';
+                                        playlistNames.add(value);
                                         settingsBox.put(
                                             'playlistNames', playlistNames);
                                         Navigator.pop(context);
@@ -123,16 +116,15 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                                     style: TextStyle(color: Colors.white),
                                   ),
                                   onPressed: () {
-                                    if (_controller.text == null ||
-                                        _controller.text.trim() == '') {
-                                      playlistNames == null
-                                          ? _controller.text = 'Playlist 0'
-                                          : _controller.text =
-                                              'Playlist ${playlistNames.length}';
-                                    }
-                                    playlistNames == null
-                                        ? playlistNames = [_controller.text]
-                                        : playlistNames.add(_controller.text);
+                                    if (_controller.text.trim() == '')
+                                      _controller.text =
+                                          'Playlist ${playlistNames.length}';
+
+                                    if (playlistNames
+                                        .contains(_controller.text))
+                                      _controller.text =
+                                          _controller.text + ' (1)';
+                                    playlistNames.add(_controller.text);
                                     settingsBox.put(
                                         'playlistNames', playlistNames);
                                     Navigator.pop(context);
@@ -172,7 +164,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                             });
                           }
                         }),
-                    playlistNames == null
+                    playlistNames.isEmpty
                         ? SizedBox()
                         : ListView.builder(
                             physics: NeverScrollableScrollPhysics(),
@@ -322,9 +314,7 @@ fetchPlaylists(code, context, playlistNames, settingsBox) async {
 
         tracks.addAll(temp);
       }
-      playlistNames == null
-          ? playlistNames = [playName]
-          : playlistNames.add(playName);
+      playlistNames.add(playName);
       settingsBox.put('playlistNames', playlistNames);
 
       for (Map track in tracks) {

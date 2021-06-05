@@ -20,14 +20,14 @@ class _SongsListState extends State<SongsList> {
   bool offline;
   bool added = false;
   bool processStatus = false;
-  int sortValue = Hive.box('settings').get('sortValue');
+  int sortValue = Hive.box('settings').get('sortValue') ?? 2;
 
   void getSongs() async {
     added = true;
     _songs = widget.data;
     offline = widget.offline;
     if (!offline) original = List.from(_songs);
-    sortValue ??= 2;
+
     if (sortValue == 0) {
       _songs.sort((a, b) =>
           a["title"].toUpperCase().compareTo(b["title"].toUpperCase()));

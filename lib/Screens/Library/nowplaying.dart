@@ -56,7 +56,7 @@ class _NowPlayingState extends State<NowPlaying> {
                                             builder: (context, snapshot) {
                                               final mediaItem = snapshot.data;
                                               return (mediaItem == null ||
-                                                      queue.length == 0)
+                                                      queue.isEmpty)
                                                   ? SizedBox()
                                                   : ListTileTheme(
                                                       selectedColor:

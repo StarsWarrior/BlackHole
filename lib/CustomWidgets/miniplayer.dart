@@ -324,12 +324,6 @@ class _MiniPlayerState extends State<MiniPlayer> {
         });
   }
 
-  Stream<MediaState> get _mediaStateStream =>
-      Rx.combineLatest2<MediaItem, Duration, MediaState>(
-          AudioService.currentMediaItemStream,
-          AudioService.positionStream,
-          (mediaItem, position) => MediaState(mediaItem, position));
-
   Stream<QueueState> get _queueStateStream =>
       Rx.combineLatest2<List<MediaItem>, MediaItem, QueueState>(
           AudioService.queueStream,

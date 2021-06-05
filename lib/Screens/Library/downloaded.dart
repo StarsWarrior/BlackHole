@@ -28,8 +28,8 @@ class _DownloadedSongsState extends State<DownloadedSongs>
   List _songs = [];
   List _videos = [];
   bool added = false;
-  int sortValue = Hive.box('settings').get('sortValue');
-  int albumSortValue = Hive.box('settings').get('albumSortValue');
+  int sortValue = Hive.box('settings').get('sortValue') ?? 2;
+  int albumSortValue = Hive.box('settings').get('albumSortValue') ?? 2;
   TabController _tcontroller;
   int currentIndex = 0;
 
@@ -157,7 +157,6 @@ class _DownloadedSongsState extends State<DownloadedSongs>
       }
     }
 
-    sortValue ??= 2;
     if (sortValue == 0) {
       _songs.sort((a, b) => a["id"]
           .split('/')
@@ -190,7 +189,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
       _songs.shuffle();
       _videos.shuffle();
     }
-    albumSortValue ??= 2;
+
     if (albumSortValue == 0) {
       sortedAlbumKeysList = _albums.keys.toList();
       sortedArtistKeysList = _artists.keys.toList();
@@ -282,7 +281,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                             borderRadius:
                                 BorderRadius.all(Radius.circular(7.0))),
                         onSelected: (currentIndex == 0 || currentIndex == 3)
-                            ? (value) {
+                            ? (int value) {
                                 sortValue = value;
                                 Hive.box('settings').put('sortValue', value);
                                 if (sortValue == 0) {
@@ -333,7 +332,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                                 }
                                 setState(() {});
                               }
-                            : (value) {
+                            : (int value) {
                                 albumSortValue = value;
                                 Hive.box('settings')
                                     .put('albumSortValue', value);
@@ -841,56 +840,103 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                               text: _songs[index]['album']);
                           final _artistcontroller = TextEditingController(
                               text: _songs[index]['artist']);
+                          final _genrecontroller = TextEditingController(
+                              text: _songs[index]['genre']);
+                          final _yearcontroller = TextEditingController(
+                              text: _songs[index]['year']);
                           return AlertDialog(
-                            content: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Row(
+                            content: Container(
+                              height: 400,
+                              width: 300,
+                              child: SingleChildScrollView(
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    Text(
-                                      'Title',
-                                      style: TextStyle(
-                                          color: Theme.of(context).accentColor),
+                                    Row(
+                                      children: [
+                                        Text(
+                                          'Title',
+                                          style: TextStyle(
+                                              color: Theme.of(context)
+                                                  .accentColor),
+                                        ),
+                                      ],
                                     ),
+                                    TextField(
+                                        autofocus: true,
+                                        controller: _titlecontroller,
+                                        onSubmitted: (value) {}),
+                                    SizedBox(
+                                      height: 30,
+                                    ),
+                                    Row(
+                                      children: [
+                                        Text(
+                                          'Artist',
+                                          style: TextStyle(
+                                              color: Theme.of(context)
+                                                  .accentColor),
+                                        ),
+                                      ],
+                                    ),
+                                    TextField(
+                                        autofocus: true,
+                                        controller: _artistcontroller,
+                                        onSubmitted: (value) {}),
+                                    SizedBox(
+                                      height: 30,
+                                    ),
+                                    Row(
+                                      children: [
+                                        Text(
+                                          'Album',
+                                          style: TextStyle(
+                                              color: Theme.of(context)
+                                                  .accentColor),
+                                        ),
+                                      ],
+                                    ),
+                                    TextField(
+                                        autofocus: true,
+                                        controller: _albumcontroller,
+                                        onSubmitted: (value) {}),
+                                    SizedBox(
+                                      height: 30,
+                                    ),
+                                    Row(
+                                      children: [
+                                        Text(
+                                          'Genre',
+                                          style: TextStyle(
+                                              color: Theme.of(context)
+                                                  .accentColor),
+                                        ),
+                                      ],
+                                    ),
+                                    TextField(
+                                        autofocus: true,
+                                        controller: _genrecontroller,
+                                        onSubmitted: (value) {}),
+                                    SizedBox(
+                                      height: 30,
+                                    ),
+                                    Row(
+                                      children: [
+                                        Text(
+                                          'Year',
+                                          style: TextStyle(
+                                              color: Theme.of(context)
+                                                  .accentColor),
+                                        ),
+                                      ],
+                                    ),
+                                    TextField(
+                                        autofocus: true,
+                                        controller: _yearcontroller,
+                                        onSubmitted: (value) {}),
                                   ],
                                 ),
-                                TextField(
-                                    autofocus: true,
-                                    controller: _titlecontroller,
-                                    onSubmitted: (value) {}),
-                                SizedBox(
-                                  height: 30,
-                                ),
-                                Row(
-                                  children: [
-                                    Text(
-                                      'Artist',
-                                      style: TextStyle(
-                                          color: Theme.of(context).accentColor),
-                                    ),
-                                  ],
-                                ),
-                                TextField(
-                                    autofocus: true,
-                                    controller: _artistcontroller,
-                                    onSubmitted: (value) {}),
-                                SizedBox(
-                                  height: 30,
-                                ),
-                                Row(
-                                  children: [
-                                    Text(
-                                      'Album',
-                                      style: TextStyle(
-                                          color: Theme.of(context).accentColor),
-                                    ),
-                                  ],
-                                ),
-                                TextField(
-                                    autofocus: true,
-                                    controller: _albumcontroller,
-                                    onSubmitted: (value) {}),
-                              ],
+                              ),
                             ),
                             actions: [
                               TextButton(
@@ -924,10 +970,16 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                                         _albumcontroller.text;
                                     _songs[index]['artist'] =
                                         _artistcontroller.text;
+                                    _songs[index]['genre'] =
+                                        _genrecontroller.text;
+                                    _songs[index]['year'] =
+                                        _yearcontroller.text;
                                     final tag = Tag(
                                       title: _titlecontroller.text,
                                       artist: _artistcontroller.text,
                                       album: _albumcontroller.text,
+                                      genre: _genrecontroller.text,
+                                      year: _yearcontroller.text,
                                     );
 
                                     final tagger = Audiotagger();

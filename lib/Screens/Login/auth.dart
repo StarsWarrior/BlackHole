@@ -226,8 +226,8 @@ class _AuthScreenState extends State<AuthScreen> {
                                   border: InputBorder.none,
                                   hintText: "Your Name",
                                 ),
-                                onSubmitted: (value) {
-                                  if (value == null || value == '') {
+                                onSubmitted: (String value) {
+                                  if (value == '') {
                                     Hive.box('settings').put('name', 'Guest');
                                     _sendAnalytics('Guest', gender);
                                   } else {

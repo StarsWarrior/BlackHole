@@ -34,7 +34,7 @@ class TrendingPage extends StatefulWidget {
 }
 
 class _TrendingPageState extends State<TrendingPage> {
-  List recentList = Hive.box('recentlyPlayed').get('recentSongs');
+  List recentList = Hive.box('recentlyPlayed').get('recentSongs') ?? [];
 
   getPlaylists() async {
     final dbRef = FirebaseDatabase.instance.reference().child("Playlists");
@@ -98,7 +98,7 @@ class _TrendingPageState extends State<TrendingPage> {
         itemCount: plst.length,
         itemBuilder: (context, idx) {
           if (idx == 0) {
-            return (recentList == null)
+            return (recentList.isEmpty)
                 ? SizedBox()
                 : Column(
                     children: [

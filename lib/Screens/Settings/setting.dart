@@ -554,8 +554,7 @@ class _SettingPageState extends State<SettingPage> {
                       trailing: SizedBox(
                         width: 150,
                         child: Text(
-                          (preferredLanguage == null ||
-                                  preferredLanguage.length == 0)
+                          preferredLanguage.isEmpty
                               ? "None"
                               : preferredLanguage.join(", "),
                           maxLines: 2,

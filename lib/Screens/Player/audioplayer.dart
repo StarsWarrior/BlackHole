@@ -33,9 +33,6 @@ class PlayScreen extends StatefulWidget {
 
 class _PlayScreenState extends State<PlayScreen> {
   bool fromMiniplayer = false;
-  int _total = 0;
-  int _recieved = 0;
-  String downloadedId = '';
   String preferredQuality =
       Hive.box('settings').get('streamingQuality') ?? '96 kbps';
   String preferredDownloadQuality =
@@ -708,7 +705,8 @@ class _PlayScreenState extends State<PlayScreen> {
                                             final settingsBox =
                                                 Hive.box('settings');
                                             List playlistNames = settingsBox
-                                                .get('playlistNames');
+                                                    .get('playlistNames') ??
+                                                [];
 
                                             return BottomGradientContainer(
                                               child: SingleChildScrollView(
@@ -756,22 +754,19 @@ class _PlayScreenState extends State<PlayScreen> {
                                                                       autofocus:
                                                                           true,
                                                                       onSubmitted:
-                                                                          (value) {
-                                                                        if (value ==
-                                                                                null ||
-                                                                            value.trim() ==
-                                                                                '') {
-                                                                          playlistNames == null
-                                                                              ? value = 'Playlist 0'
-                                                                              : value = 'Playlist ${playlistNames.length}';
+                                                                          (String
+                                                                              value) {
+                                                                        if (value.trim() ==
+                                                                            '') {
+                                                                          value =
+                                                                              'Playlist ${playlistNames.length}';
                                                                         }
-                                                                        playlistNames ==
-                                                                                null
-                                                                            ? playlistNames =
-                                                                                [
-                                                                                value
-                                                                              ]
-                                                                            : playlistNames.add(value);
+                                                                        if (playlistNames
+                                                                            .contains(value))
+                                                                          value =
+                                                                              value + ' (1)';
+                                                                        playlistNames
+                                                                            .add(value);
                                                                         settingsBox.put(
                                                                             'playlistNames',
                                                                             playlistNames);
@@ -818,25 +813,24 @@ class _PlayScreenState extends State<PlayScreen> {
                                                                   ),
                                                                   onPressed:
                                                                       () {
-                                                                    if (controller.text ==
-                                                                            null ||
-                                                                        controller.text.trim() ==
-                                                                            '') {
-                                                                      playlistNames ==
-                                                                              null
-                                                                          ? controller.text =
-                                                                              'Playlist 0'
-                                                                          : controller.text =
-                                                                              'Playlist ${playlistNames.length}';
+                                                                    if (controller
+                                                                            .text
+                                                                            .trim() ==
+                                                                        '') {
+                                                                      controller
+                                                                              .text =
+                                                                          'Playlist ${playlistNames.length}';
                                                                     }
-                                                                    playlistNames ==
-                                                                            null
-                                                                        ? playlistNames =
-                                                                            [
-                                                                            controller.text
-                                                                          ]
-                                                                        : playlistNames
-                                                                            .add(controller.text);
+                                                                    if (playlistNames
+                                                                        .contains(
+                                                                            controller.text))
+                                                                      controller
+                                                                          .text = controller
+                                                                              .text +
+                                                                          ' (1)';
+                                                                    playlistNames.add(
+                                                                        controller
+                                                                            .text);
 
                                                                     settingsBox.put(
                                                                         'playlistNames',
@@ -854,7 +848,7 @@ class _PlayScreenState extends State<PlayScreen> {
                                                         );
                                                       },
                                                     ),
-                                                    playlistNames == null
+                                                    playlistNames.isEmpty
                                                         ? SizedBox()
                                                         : StreamBuilder<
                                                                 QueueState>(
