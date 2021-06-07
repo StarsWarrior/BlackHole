@@ -60,6 +60,7 @@ class FormatResponse {
         "year": response["year"],
         "duration": response["more_info"]["duration"],
         "language": capitalize(response["language"].toString()),
+        "genre": capitalize(response["language"].toString()),
         "320kbps": response["more_info"]["320kbps"],
         "has_lyrics": response["more_info"]["has_lyrics"],
         "lyrics_snippet": response["more_info"]["lyrics_snippet"]

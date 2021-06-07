@@ -3,6 +3,7 @@ import 'package:blackhole/Screens/Player/audioplayer.dart';
 import 'package:blackhole/CustomWidgets/gradientContainers.dart';
 import 'package:blackhole/CustomWidgets/emptyScreen.dart';
 import 'package:blackhole/CustomWidgets/miniplayer.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:ext_storage/ext_storage.dart';
 import 'package:hive/hive.dart';
@@ -23,8 +24,10 @@ class _DownloadedSongsState extends State<DownloadedSongs>
   List<FileSystemEntity> _files;
   Map<String, List<Map>> _albums = {};
   Map<String, List<Map>> _artists = {};
+  Map<String, List<Map>> _genres = {};
   List sortedAlbumKeysList;
   List sortedArtistKeysList;
+  List sortedGenreKeysList;
   List _songs = [];
   List _videos = [];
   bool added = false;
@@ -36,7 +39,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
   @override
   void initState() {
     _tcontroller =
-        TabController(length: widget.type == 'all' ? 4 : 3, vsync: this);
+        TabController(length: widget.type == 'all' ? 5 : 4, vsync: this);
     _tcontroller.addListener(changeTitle);
     getDownloaded();
     super.initState();
@@ -89,13 +92,13 @@ class _DownloadedSongsState extends State<DownloadedSongs>
 
             String albumTag = tags.album;
             String artistTag = tags.artist;
-            (artistTag == null || artistTag.trim() == '')
-                ? artistTag = 'Unknown'
-                : artistTag = artistTag;
+            String genreTag = tags.genre;
+            if (artistTag.trim() == '') artistTag = 'Unknown';
 
-            (albumTag == null || albumTag.trim() == '')
-                ? albumTag = 'Unknown'
-                : albumTag = albumTag;
+            if (albumTag.trim() == '') albumTag = 'Unknown';
+
+            if (genreTag.trim() == '') genreTag = 'Unknown';
+
             Map data = {
               'id': entity.path,
               'image': await tagger.readArtwork(path: entity.path),
@@ -103,7 +106,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
               'artist': artistTag,
               'album': albumTag,
               'lastModified': stats.modified,
-              'genre': tags.genre,
+              'genre': genreTag,
               'year': tags.year,
             };
             _songs.add(data);
@@ -125,6 +128,16 @@ class _DownloadedSongsState extends State<DownloadedSongs>
             } else {
               _artists.addEntries([
                 MapEntry(artistTag, [data])
+              ]);
+            }
+
+            if (_genres.containsKey(genreTag)) {
+              List tempGenre = _genres[genreTag];
+              tempGenre.add(data);
+              _genres.addEntries([MapEntry(genreTag, tempGenre)]);
+            } else {
+              _genres.addEntries([
+                MapEntry(genreTag, [data])
               ]);
             }
           }
@@ -190,43 +203,46 @@ class _DownloadedSongsState extends State<DownloadedSongs>
       _videos.shuffle();
     }
 
+    sortedAlbumKeysList = _albums.keys.toList();
+    sortedArtistKeysList = _artists.keys.toList();
+    sortedGenreKeysList = _genres.keys.toList();
+
     if (albumSortValue == 0) {
-      sortedAlbumKeysList = _albums.keys.toList();
-      sortedArtistKeysList = _artists.keys.toList();
       sortedAlbumKeysList.sort(
           (a, b) => a.toString().toUpperCase().compareTo(b.toUpperCase()));
       sortedArtistKeysList.sort(
           (a, b) => a.toString().toUpperCase().compareTo(b.toUpperCase()));
+      sortedGenreKeysList.sort(
+          (a, b) => a.toString().toUpperCase().compareTo(b.toUpperCase()));
     }
     if (albumSortValue == 1) {
-      sortedAlbumKeysList = _albums.keys.toList();
-      sortedArtistKeysList = _artists.keys.toList();
       sortedAlbumKeysList.sort((b, a) =>
           a.toString().toUpperCase().compareTo(b.toString().toUpperCase()));
       sortedArtistKeysList.sort((b, a) =>
           a.toString().toUpperCase().compareTo(b.toString().toUpperCase()));
+      sortedGenreKeysList.sort((b, a) =>
+          a.toString().toUpperCase().compareTo(b.toString().toUpperCase()));
     }
     if (albumSortValue == 2) {
-      sortedAlbumKeysList = _albums.keys.toList();
-      sortedArtistKeysList = _artists.keys.toList();
       sortedAlbumKeysList
           .sort((b, a) => _albums[a].length.compareTo(_albums[b].length));
       sortedArtistKeysList
           .sort((b, a) => _artists[a].length.compareTo(_artists[b].length));
+      sortedGenreKeysList
+          .sort((b, a) => _genres[a].length.compareTo(_genres[b].length));
     }
     if (albumSortValue == 3) {
-      sortedAlbumKeysList = _albums.keys.toList();
-      sortedArtistKeysList = _artists.keys.toList();
       sortedAlbumKeysList
           .sort((a, b) => _albums[a].length.compareTo(_albums[b].length));
       sortedArtistKeysList
           .sort((a, b) => _artists[a].length.compareTo(_artists[b].length));
+      sortedGenreKeysList
+          .sort((a, b) => _genres[a].length.compareTo(_genres[b].length));
     }
     if (albumSortValue == 4) {
-      sortedAlbumKeysList = _albums.keys.toList();
-      sortedArtistKeysList = _artists.keys.toList();
       sortedAlbumKeysList.shuffle();
       sortedArtistKeysList.shuffle();
+      sortedGenreKeysList.shuffle();
     }
 
     added = true;
@@ -240,7 +256,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
         children: [
           Expanded(
             child: DefaultTabController(
-              length: widget.type == 'all' ? 4 : 3,
+              length: widget.type == 'all' ? 5 : 4,
               child: Scaffold(
                 backgroundColor: Colors.transparent,
                 appBar: AppBar(
@@ -259,6 +275,9 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                               text: 'Artists',
                             ),
                             Tab(
+                              text: 'Genres',
+                            ),
+                            Tab(
                               text: 'Videos',
                             )
                           ]
@@ -272,6 +291,9 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                             Tab(
                               text: 'Artists',
                             ),
+                            Tab(
+                              text: 'Genres',
+                            ),
                           ],
                   ),
                   actions: [
@@ -280,7 +302,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                         shape: RoundedRectangleBorder(
                             borderRadius:
                                 BorderRadius.all(Radius.circular(7.0))),
-                        onSelected: (currentIndex == 0 || currentIndex == 3)
+                        onSelected: (currentIndex == 0 || currentIndex == 4)
                             ? (int value) {
                                 sortValue = value;
                                 Hive.box('settings').put('sortValue', value);
@@ -345,6 +367,10 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                                       .toString()
                                       .toUpperCase()
                                       .compareTo(b.toUpperCase()));
+                                  sortedGenreKeysList.sort((a, b) => a
+                                      .toString()
+                                      .toUpperCase()
+                                      .compareTo(b.toUpperCase()));
                                 }
                                 if (albumSortValue == 1) {
                                   sortedAlbumKeysList.sort((b, a) => a
@@ -352,6 +378,10 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                                       .toUpperCase()
                                       .compareTo(b.toString().toUpperCase()));
                                   sortedArtistKeysList.sort((b, a) => a
+                                      .toString()
+                                      .toUpperCase()
+                                      .compareTo(b.toString().toUpperCase()));
+                                  sortedGenreKeysList.sort((b, a) => a
                                       .toString()
                                       .toUpperCase()
                                       .compareTo(b.toString().toUpperCase()));
@@ -364,6 +394,9 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                                       _artists[a]
                                           .length
                                           .compareTo(_artists[b].length));
+                                  sortedGenreKeysList.sort((b, a) => _genres[a]
+                                      .length
+                                      .compareTo(_genres[b].length));
                                 }
                                 if (albumSortValue == 3) {
                                   sortedAlbumKeysList.sort((a, b) => _albums[a]
@@ -373,14 +406,19 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                                       _artists[a]
                                           .length
                                           .compareTo(_artists[b].length));
+
+                                  sortedGenreKeysList.sort((a, b) => _genres[a]
+                                      .length
+                                      .compareTo(_genres[b].length));
                                 }
                                 if (albumSortValue == 4) {
                                   sortedAlbumKeysList.shuffle();
                                   sortedArtistKeysList.shuffle();
+                                  sortedGenreKeysList.shuffle();
                                 }
                                 setState(() {});
                               },
-                        itemBuilder: (currentIndex == 0 || currentIndex == 3)
+                        itemBuilder: (currentIndex == 0 || currentIndex == 4)
                             ? (context) => [
                                   PopupMenuItem(
                                     value: 0,
@@ -600,12 +638,14 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                                 songsTab(),
                                 albumsTab(),
                                 artistsTab(),
+                                genresTab(),
                                 videosTab(),
                               ]
                             : [
                                 songsTab(),
                                 albumsTab(),
                                 artistsTab(),
+                                genresTab(),
                               ]),
               ),
             ),
@@ -1052,16 +1092,18 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                             ),
                           ),
                         );
-                        if (_albums[_songs[index]['album']].length == 1) {
+                        if (_albums[_songs[index]['album']].length == 1)
                           sortedAlbumKeysList.remove(_songs[index]['album']);
-                        }
-
                         _albums[_songs[index]['album']].remove(_songs[index]);
-                        if (_artists[_songs[index]['artist']].length == 1) {
-                          sortedArtistKeysList.remove(_songs[index]['artist']);
-                        }
 
+                        if (_artists[_songs[index]['artist']].length == 1)
+                          sortedArtistKeysList.remove(_songs[index]['artist']);
                         _artists[_songs[index]['artist']].remove(_songs[index]);
+
+                        if (_genres[_songs[index]['genre']].length == 1)
+                          sortedGenreKeysList.remove(_songs[index]['genre']);
+                        _genres[_songs[index]['genre']].remove(_songs[index]);
+
                         _songs.remove(_songs[index]);
                       } catch (e) {
                         ScaffoldMessenger.of(context).showSnackBar(
@@ -1100,7 +1142,9 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                       value: 1,
                       child: Row(
                         children: [
-                          Icon(Icons.tag_rounded),
+                          Icon(CupertinoIcons.tag
+                              // Icons.tag_rounded
+                              ),
                           Spacer(),
                           Text('Edit Tags'),
                           Spacer(),
@@ -1236,6 +1280,59 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                       opaque: false, // set to false
                       pageBuilder: (_, __, ___) => SongsList(
                         data: _artists[sortedArtistKeysList[index]],
+                        offline: true,
+                      ),
+                    ),
+                  );
+                },
+              );
+            });
+  }
+
+  genresTab() {
+    return sortedGenreKeysList.length == 0
+        ? EmptyScreen().emptyScreen(context, 3, "Nothing to ", 15.0,
+            "Show Here", 45, "Download Something", 23.0)
+        : ListView.builder(
+            physics: BouncingScrollPhysics(),
+            padding: EdgeInsets.only(top: 20, bottom: 10),
+            shrinkWrap: true,
+            itemCount: sortedGenreKeysList.length,
+            itemBuilder: (context, index) {
+              return ListTile(
+                leading: Card(
+                  elevation: 5,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(7.0),
+                  ),
+                  clipBehavior: Clip.antiAlias,
+                  child: Stack(
+                    children: [
+                      Image(
+                        image: AssetImage('assets/artist.png'),
+                      ),
+                      _genres[sortedGenreKeysList[index]][0]['image'] == null
+                          ? SizedBox()
+                          : Image(
+                              image: MemoryImage(
+                                  _genres[sortedGenreKeysList[index]][0]
+                                      ['image']),
+                            )
+                    ],
+                  ),
+                ),
+                title: Text('${sortedGenreKeysList[index]}'),
+                subtitle: Text(
+                  _genres[sortedGenreKeysList[index]].length == 1
+                      ? '${_genres[sortedGenreKeysList[index]].length} Song'
+                      : '${_genres[sortedGenreKeysList[index]].length} Songs',
+                ),
+                onTap: () {
+                  Navigator.of(context).push(
+                    PageRouteBuilder(
+                      opaque: false, // set to false
+                      pageBuilder: (_, __, ___) => SongsList(
+                        data: _genres[sortedGenreKeysList[index]],
                         offline: true,
                       ),
                     ),

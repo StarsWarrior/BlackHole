@@ -3,6 +3,7 @@ import 'package:audio_service/audio_service.dart';
 import 'package:blackhole/Screens/Player/audioplayer.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:miniplayer/miniplayer.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -41,7 +42,7 @@ class _MiniPlayerState extends State<MiniPlayer> {
                         },
                         minHeight: 76,
                         backgroundColor: Colors.grey[900],
-                        maxHeight: MediaQuery.of(context).size.height,
+                        maxHeight: MediaQuery.of(context).size.height - 20.0,
                         builder: (height, percentage) {
                           return percentage * 100 > 0
                               ? Opacity(

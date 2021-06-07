@@ -43,93 +43,92 @@ class _NowPlayingState extends State<NowPlaying> {
                               final queue = snapshot.data;
                               return queue == null
                                   ? SizedBox()
-                                  : ListView.builder(
-                                      physics: BouncingScrollPhysics(),
-                                      padding:
-                                          EdgeInsets.only(top: 10, bottom: 10),
-                                      shrinkWrap: true,
-                                      itemCount: queue.length,
-                                      itemBuilder: (context, index) {
-                                        return StreamBuilder<MediaItem>(
-                                            stream: AudioService
-                                                .currentMediaItemStream,
-                                            builder: (context, snapshot) {
-                                              final mediaItem = snapshot.data;
-                                              return (mediaItem == null ||
-                                                      queue.isEmpty)
-                                                  ? SizedBox()
-                                                  : ListTileTheme(
-                                                      selectedColor:
-                                                          Theme.of(context)
-                                                              .accentColor,
-                                                      child: ListTile(
-                                                        selected:
-                                                            queue[index] ==
-                                                                mediaItem,
-                                                        trailing: queue[
-                                                                    index] ==
-                                                                mediaItem
-                                                            ? Icon(Icons
-                                                                .bar_chart_rounded)
-                                                            : SizedBox(),
-                                                        leading: Card(
-                                                          elevation: 5,
-                                                          shape:
-                                                              RoundedRectangleBorder(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        7.0),
-                                                          ),
-                                                          clipBehavior:
-                                                              Clip.antiAlias,
-                                                          child: Stack(
-                                                            children: [
-                                                              Image(
-                                                                image: AssetImage(
-                                                                    'assets/cover.jpg'),
-                                                              ),
-                                                              queue[index].artUri ==
-                                                                      null
-                                                                  ? SizedBox()
-                                                                  : Image(
-                                                                      image: queue[index]
-                                                                              .artUri
-                                                                              .toString()
-                                                                              .startsWith(
-                                                                                  'file:')
-                                                                          ? FileImage(File(queue[index]
-                                                                              .artUri
-                                                                              .toFilePath()))
-                                                                          : NetworkImage(queue[index]
-                                                                              .artUri
-                                                                              .toString()))
-                                                            ],
-                                                          ),
+                                  : StreamBuilder<MediaItem>(
+                                      stream:
+                                          AudioService.currentMediaItemStream,
+                                      builder: (context, snapshot) {
+                                        final mediaItem = snapshot.data;
+                                        return (mediaItem == null ||
+                                                queue.isEmpty)
+                                            ? SizedBox()
+                                            : ListView.builder(
+                                                physics:
+                                                    BouncingScrollPhysics(),
+                                                padding: EdgeInsets.only(
+                                                    top: 10, bottom: 10),
+                                                shrinkWrap: true,
+                                                itemCount: queue.length,
+                                                itemBuilder: (context, index) {
+                                                  return ListTileTheme(
+                                                    selectedColor:
+                                                        Theme.of(context)
+                                                            .accentColor,
+                                                    child: ListTile(
+                                                      selected: queue[index] ==
+                                                          mediaItem,
+                                                      trailing: queue[index] ==
+                                                              mediaItem
+                                                          ? Icon(Icons
+                                                              .bar_chart_rounded)
+                                                          : SizedBox(),
+                                                      leading: Card(
+                                                        elevation: 5,
+                                                        shape:
+                                                            RoundedRectangleBorder(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(
+                                                                      7.0),
                                                         ),
-                                                        title: Text(
-                                                          '${queue[index].title}',
-                                                          style: TextStyle(
-                                                              fontWeight: queue[
-                                                                          index] ==
-                                                                      mediaItem
-                                                                  ? FontWeight
-                                                                      .w600
-                                                                  : FontWeight
-                                                                      .normal),
+                                                        clipBehavior:
+                                                            Clip.antiAlias,
+                                                        child: Stack(
+                                                          children: [
+                                                            Image(
+                                                              image: AssetImage(
+                                                                  'assets/cover.jpg'),
+                                                            ),
+                                                            queue[index].artUri ==
+                                                                    null
+                                                                ? SizedBox()
+                                                                : Image(
+                                                                    image: queue[index]
+                                                                            .artUri
+                                                                            .toString()
+                                                                            .startsWith(
+                                                                                'file:')
+                                                                        ? FileImage(File(queue[index]
+                                                                            .artUri
+                                                                            .toFilePath()))
+                                                                        : NetworkImage(queue[index]
+                                                                            .artUri
+                                                                            .toString()))
+                                                          ],
                                                         ),
-                                                        subtitle: Text(
-                                                          '${queue[index].artist}',
-                                                        ),
-                                                        onTap: () {
-                                                          AudioService
-                                                              .skipToQueueItem(
-                                                                  queue[index]
-                                                                      .id);
-                                                        },
                                                       ),
-                                                    );
-                                            });
+                                                      title: Text(
+                                                        '${queue[index].title}',
+                                                        style: TextStyle(
+                                                            fontWeight: queue[
+                                                                        index] ==
+                                                                    mediaItem
+                                                                ? FontWeight
+                                                                    .w600
+                                                                : FontWeight
+                                                                    .normal),
+                                                      ),
+                                                      subtitle: Text(
+                                                        '${queue[index].artist}',
+                                                      ),
+                                                      onTap: () {
+                                                        AudioService
+                                                            .skipToQueueItem(
+                                                                queue[index]
+                                                                    .id);
+                                                      },
+                                                    ),
+                                                  );
+                                                });
                                       },
                                     );
                             },

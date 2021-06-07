@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:hive/hive.dart';
 import 'package:http/http.dart';
 import 'package:blackhole/Helpers/format.dart';
 
@@ -52,7 +51,6 @@ class Playlist {
       item["image"] = playlist["image"];
       item["songsList"] =
           await FormatResponse().formatResponse(playlist["list"]);
-      Hive.box('cache').put(item["id"], item);
     }
     return item;
   }

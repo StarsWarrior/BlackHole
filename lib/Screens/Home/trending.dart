@@ -54,6 +54,9 @@ class _TrendingPageState extends State<TrendingPage> {
     for (int i = 1; i < playlists.length; i++) {
       try {
         playlists[i] = await Playlist().fetchPlaylistSongs(playlists[i]);
+        if (playlists[i]["songsList"].isNotEmpty) {
+          Hive.box('cache').put(playlists[i]["id"], playlists[i]);
+        }
       } catch (e) {
         print("Error in Index $i in TrendingList: $e");
       }

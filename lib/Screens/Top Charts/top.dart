@@ -21,7 +21,6 @@ class TopPage extends StatefulWidget {
 
 Future<List> scrapData(String region) async {
   final webScraper = WebScraper("https://www.spotifycharts.com");
-  print('starting expensive operation');
   List temp = [];
   await webScraper.loadWebPage('/regional/' + region + '/daily/latest/');
   for (int i = 1; i <= 200; i++) {
@@ -39,7 +38,6 @@ Future<List> scrapData(String region) async {
       });
     } catch (e) {}
   }
-  print('finished expensive operation');
   return temp;
 }
 

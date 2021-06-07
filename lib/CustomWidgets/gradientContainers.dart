@@ -41,7 +41,11 @@ class _GradientContainerState extends State<GradientContainer> {
 
 class BottomGradientContainer extends StatefulWidget {
   final Widget child;
-  BottomGradientContainer({@required this.child});
+  final EdgeInsetsGeometry margin;
+  final EdgeInsetsGeometry padding;
+  final BorderRadiusGeometry borderRadius;
+  BottomGradientContainer(
+      {@required this.child, this.margin, this.padding, this.borderRadius});
   @override
   _BottomGradientContainerState createState() =>
       _BottomGradientContainerState();
@@ -51,10 +55,11 @@ class _BottomGradientContainerState extends State<BottomGradientContainer> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.fromLTRB(25, 0, 25, 25),
-      padding: EdgeInsets.fromLTRB(10, 15, 10, 15),
+      margin: widget.margin ?? EdgeInsets.fromLTRB(25, 0, 25, 25),
+      padding: widget.padding ?? EdgeInsets.fromLTRB(10, 15, 10, 15),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(15.0)),
+        borderRadius:
+            widget.borderRadius ?? BorderRadius.all(Radius.circular(15.0)),
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,

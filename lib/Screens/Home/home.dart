@@ -5,6 +5,7 @@ import 'package:blackhole/Screens/Library/library.dart';
 import 'package:blackhole/Screens/Settings/setting.dart';
 import 'package:device_info/device_info.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
@@ -46,7 +47,7 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       _selectedIndex = index;
       pageController.animateToPage(index,
-          duration: Duration(milliseconds: 450), curve: Curves.linear);
+          duration: Duration(milliseconds: 400), curve: Curves.ease);
     });
   }
 
@@ -630,7 +631,7 @@ class _HomePageState extends State<HomePage> {
                                             fillColor:
                                                 Theme.of(context).accentColor,
                                             prefixIcon: Icon(
-                                              Icons.search_rounded,
+                                              CupertinoIcons.search,
                                               color:
                                                   Theme.of(context).accentColor,
                                             ),

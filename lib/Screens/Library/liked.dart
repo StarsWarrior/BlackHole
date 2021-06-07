@@ -21,8 +21,10 @@ class _LikedSongsState extends State<LikedSongs>
   List _songs = [];
   Map<String, List<Map>> _albums = {};
   Map<String, List<Map>> _artists = {};
+  Map<String, List<Map>> _genres = {};
   List sortedAlbumKeysList = [];
   List sortedArtistKeysList = [];
+  List sortedGenreKeysList = [];
   TabController _tcontroller;
   int currentIndex = 0;
   int sortValue = Hive.box('settings').get('playlistSortValue') ?? 2;
@@ -30,7 +32,7 @@ class _LikedSongsState extends State<LikedSongs>
 
   @override
   void initState() {
-    _tcontroller = TabController(length: 3, vsync: this);
+    _tcontroller = TabController(length: 4, vsync: this);
     _tcontroller.addListener(changeTitle);
     getLiked();
     super.initState();
@@ -69,6 +71,16 @@ class _LikedSongsState extends State<LikedSongs>
           MapEntry(element['artist'], [element])
         ]);
       }
+
+      if (_genres.containsKey(element['genre'])) {
+        List tempGenre = _genres[element['genre']];
+        tempGenre.add(element);
+        _genres.addEntries([MapEntry(element['genre'], tempGenre)]);
+      } else {
+        _genres.addEntries([
+          MapEntry(element['genre'], [element])
+        ]);
+      }
     }
 
     if (sortValue == 0) {
@@ -86,43 +98,46 @@ class _LikedSongsState extends State<LikedSongs>
       _songs.shuffle();
     }
 
+    sortedAlbumKeysList = _albums.keys.toList();
+    sortedArtistKeysList = _artists.keys.toList();
+    sortedGenreKeysList = _genres.keys.toList();
+
     if (albumSortValue == 0) {
-      sortedAlbumKeysList = _albums.keys.toList();
-      sortedArtistKeysList = _artists.keys.toList();
       sortedAlbumKeysList.sort(
           (a, b) => a.toString().toUpperCase().compareTo(b.toUpperCase()));
       sortedArtistKeysList.sort(
           (a, b) => a.toString().toUpperCase().compareTo(b.toUpperCase()));
+      sortedGenreKeysList.sort(
+          (a, b) => a.toString().toUpperCase().compareTo(b.toUpperCase()));
     }
     if (albumSortValue == 1) {
-      sortedAlbumKeysList = _albums.keys.toList();
-      sortedArtistKeysList = _artists.keys.toList();
       sortedAlbumKeysList.sort((b, a) =>
           a.toString().toUpperCase().compareTo(b.toString().toUpperCase()));
       sortedArtistKeysList.sort((b, a) =>
           a.toString().toUpperCase().compareTo(b.toString().toUpperCase()));
+      sortedGenreKeysList.sort((b, a) =>
+          a.toString().toUpperCase().compareTo(b.toString().toUpperCase()));
     }
     if (albumSortValue == 2) {
-      sortedAlbumKeysList = _albums.keys.toList();
-      sortedArtistKeysList = _artists.keys.toList();
       sortedAlbumKeysList
           .sort((b, a) => _albums[a].length.compareTo(_albums[b].length));
       sortedArtistKeysList
           .sort((b, a) => _artists[a].length.compareTo(_artists[b].length));
+      sortedGenreKeysList
+          .sort((b, a) => _genres[a].length.compareTo(_genres[b].length));
     }
     if (albumSortValue == 3) {
-      sortedAlbumKeysList = _albums.keys.toList();
-      sortedArtistKeysList = _artists.keys.toList();
       sortedAlbumKeysList
           .sort((a, b) => _albums[a].length.compareTo(_albums[b].length));
       sortedArtistKeysList
           .sort((a, b) => _artists[a].length.compareTo(_artists[b].length));
+      sortedGenreKeysList
+          .sort((a, b) => _genres[a].length.compareTo(_genres[b].length));
     }
     if (albumSortValue == 4) {
-      sortedAlbumKeysList = _albums.keys.toList();
-      sortedArtistKeysList = _artists.keys.toList();
       sortedAlbumKeysList.shuffle();
       sortedArtistKeysList.shuffle();
+      sortedGenreKeysList.shuffle();
     }
 
     added = true;
@@ -131,16 +146,18 @@ class _LikedSongsState extends State<LikedSongs>
 
   void deleteLiked(index) {
     likedBox.deleteAt(index);
-    if (_albums[_songs[index]['album']].length == 1) {
+    if (_albums[_songs[index]['album']].length == 1)
       sortedAlbumKeysList.remove(_songs[index]['album']);
-    }
-
     _albums[_songs[index]['album']].remove(_songs[index]);
-    if (_artists[_songs[index]['artist']].length == 1) {
-      sortedArtistKeysList.remove(_songs[index]['artist']);
-    }
 
+    if (_artists[_songs[index]['artist']].length == 1)
+      sortedArtistKeysList.remove(_songs[index]['artist']);
     _artists[_songs[index]['artist']].remove(_songs[index]);
+
+    if (_genres[_songs[index]['genre']].length == 1)
+      sortedGenreKeysList.remove(_songs[index]['genre']);
+    _genres[_songs[index]['genre']].remove(_songs[index]);
+
     _songs.remove(_songs[index]);
   }
 
@@ -151,7 +168,7 @@ class _LikedSongsState extends State<LikedSongs>
         children: [
           Expanded(
             child: DefaultTabController(
-              length: 3,
+              length: 4,
               child: Scaffold(
                 backgroundColor: Colors.transparent,
                 appBar: AppBar(
@@ -173,6 +190,9 @@ class _LikedSongsState extends State<LikedSongs>
                     Tab(
                       text: 'Artists',
                     ),
+                    Tab(
+                      text: 'Genres',
+                    ),
                   ]),
                   actions: [
                     PopupMenuButton(
@@ -180,7 +200,7 @@ class _LikedSongsState extends State<LikedSongs>
                         shape: RoundedRectangleBorder(
                             borderRadius:
                                 BorderRadius.all(Radius.circular(7.0))),
-                        onSelected: (currentIndex == 0 || currentIndex == 3)
+                        onSelected: (currentIndex == 0)
                             ? (value) {
                                 sortValue = value;
                                 Hive.box('settings').put('sortValue', value);
@@ -215,6 +235,10 @@ class _LikedSongsState extends State<LikedSongs>
                                       .toString()
                                       .toUpperCase()
                                       .compareTo(b.toUpperCase()));
+                                  sortedGenreKeysList.sort((a, b) => a
+                                      .toString()
+                                      .toUpperCase()
+                                      .compareTo(b.toUpperCase()));
                                 }
                                 if (albumSortValue == 1) {
                                   sortedAlbumKeysList.sort((b, a) => a
@@ -222,6 +246,10 @@ class _LikedSongsState extends State<LikedSongs>
                                       .toUpperCase()
                                       .compareTo(b.toString().toUpperCase()));
                                   sortedArtistKeysList.sort((b, a) => a
+                                      .toString()
+                                      .toUpperCase()
+                                      .compareTo(b.toString().toUpperCase()));
+                                  sortedGenreKeysList.sort((b, a) => a
                                       .toString()
                                       .toUpperCase()
                                       .compareTo(b.toString().toUpperCase()));
@@ -234,6 +262,9 @@ class _LikedSongsState extends State<LikedSongs>
                                       _artists[a]
                                           .length
                                           .compareTo(_artists[b].length));
+                                  sortedGenreKeysList.sort((b, a) => _genres[a]
+                                      .length
+                                      .compareTo(_genres[b].length));
                                 }
                                 if (albumSortValue == 3) {
                                   sortedAlbumKeysList.sort((a, b) => _albums[a]
@@ -243,14 +274,18 @@ class _LikedSongsState extends State<LikedSongs>
                                       _artists[a]
                                           .length
                                           .compareTo(_artists[b].length));
+                                  sortedGenreKeysList.sort((a, b) => _genres[a]
+                                      .length
+                                      .compareTo(_genres[b].length));
                                 }
                                 if (albumSortValue == 4) {
                                   sortedAlbumKeysList.shuffle();
                                   sortedArtistKeysList.shuffle();
+                                  sortedGenreKeysList.shuffle();
                                 }
                                 setState(() {});
                               },
-                        itemBuilder: (currentIndex == 0 || currentIndex == 3)
+                        itemBuilder: (currentIndex == 0)
                             ? (context) => [
                                   PopupMenuItem(
                                     value: 0,
@@ -571,7 +606,8 @@ class _LikedSongsState extends State<LikedSongs>
                                             }));
                                   }),
                           albumsTab(),
-                          artistsTab()
+                          artistsTab(),
+                          genresTab()
                         ],
                       ),
               ),
@@ -586,7 +622,7 @@ class _LikedSongsState extends State<LikedSongs>
   albumsTab() {
     return sortedAlbumKeysList.length == 0
         ? EmptyScreen().emptyScreen(context, 3, "Nothing to ", 15.0,
-            "Show Here", 45, "Download Something", 23.0)
+            "Show Here", 50, "Go and Add Something", 23.0)
         : ListView.builder(
             physics: BouncingScrollPhysics(),
             padding: EdgeInsets.only(top: 20, bottom: 10),
@@ -635,7 +671,7 @@ class _LikedSongsState extends State<LikedSongs>
   artistsTab() {
     return (sortedArtistKeysList.isEmpty)
         ? EmptyScreen().emptyScreen(context, 3, "Nothing to ", 15.0,
-            "Show Here", 45, "Download Something", 23.0)
+            "Show Here", 50, "Go and Add Something", 23.0)
         : ListView.builder(
             physics: BouncingScrollPhysics(),
             padding: EdgeInsets.only(top: 20, bottom: 10),
@@ -672,6 +708,55 @@ class _LikedSongsState extends State<LikedSongs>
                       opaque: false, // set to false
                       pageBuilder: (_, __, ___) => SongsList(
                         data: _artists[sortedArtistKeysList[index]],
+                        offline: false,
+                      ),
+                    ),
+                  );
+                },
+              );
+            });
+  }
+
+  genresTab() {
+    return (sortedGenreKeysList.isEmpty)
+        ? EmptyScreen().emptyScreen(context, 3, "Nothing to ", 15.0,
+            "Show Here", 50, "Go and Add Something", 23.0)
+        : ListView.builder(
+            physics: BouncingScrollPhysics(),
+            padding: EdgeInsets.only(top: 20, bottom: 10),
+            shrinkWrap: true,
+            itemCount: sortedGenreKeysList.length,
+            itemBuilder: (context, index) {
+              return ListTile(
+                leading: Card(
+                  elevation: 5,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(7.0),
+                  ),
+                  clipBehavior: Clip.antiAlias,
+                  child: CachedNetworkImage(
+                    errorWidget: (context, _, __) => Image(
+                      image: AssetImage('assets/cover.jpg'),
+                    ),
+                    imageUrl: _genres[sortedGenreKeysList[index]][0]['image']
+                        .replaceAll('http:', 'https:'),
+                    placeholder: (context, url) => Image(
+                      image: AssetImage('assets/cover.jpg'),
+                    ),
+                  ),
+                ),
+                title: Text('${sortedGenreKeysList[index]}'),
+                subtitle: Text(
+                  _genres[sortedGenreKeysList[index]].length == 1
+                      ? '${_genres[sortedGenreKeysList[index]].length} Song'
+                      : '${_genres[sortedGenreKeysList[index]].length} Songs',
+                ),
+                onTap: () {
+                  Navigator.of(context).push(
+                    PageRouteBuilder(
+                      opaque: false, // set to false
+                      pageBuilder: (_, __, ___) => SongsList(
+                        data: _genres[sortedGenreKeysList[index]],
                         offline: false,
                       ),
                     ),

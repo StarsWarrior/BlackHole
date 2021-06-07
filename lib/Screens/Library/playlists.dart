@@ -173,7 +173,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                             itemBuilder: (context, index) {
                               return ListTile(
                                 leading: Icon(
-                                  Icons.music_note_rounded,
+                                  Icons.queue_music_rounded,
                                   color: Theme.of(context).brightness ==
                                           Brightness.dark
                                       ? null
