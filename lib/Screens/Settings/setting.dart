@@ -1,16 +1,23 @@
+import 'dart:io';
+
 import 'package:blackhole/Helpers/countrycodes.dart';
 import 'package:blackhole/CustomWidgets/GradientContainers.dart';
 import 'package:blackhole/Screens/Top Charts/top.dart' as topScreen;
 import 'package:blackhole/Screens/Home/trending.dart' as trendingScreen;
+import 'package:ext_storage/ext_storage.dart';
+import 'package:filesystem_picker/filesystem_picker.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:blackhole/Helpers/config.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:share/share.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:package_info/package_info.dart';
+import 'package:file_picker/file_picker.dart';
 
 class SettingPage extends StatefulWidget {
   final Function callback;
@@ -21,16 +28,21 @@ class SettingPage extends StatefulWidget {
 
 class _SettingPageState extends State<SettingPage> {
   double appVersion;
-  String downloadPath = '/storage/emulated/0/Music/';
-  String streamingQuality = Hive.box('settings').get('streamingQuality');
-  String downloadQuality = Hive.box('settings').get('downloadQuality');
+  String downloadPath = Hive.box('settings')
+      .get('downloadPath', defaultValue: '/storage/emulated/0/Music/');
+  List dirPaths = Hive.box('settings').get('searchPaths', defaultValue: []);
+  String streamingQuality =
+      Hive.box('settings').get('streamingQuality', defaultValue: '96 kbps');
+  String downloadQuality =
+      Hive.box('settings').get('downloadQuality', defaultValue: '320 kbps');
   bool stopForegroundService =
-      Hive.box('settings').get('stopForegroundService') ?? true;
+      Hive.box('settings').get('stopForegroundService', defaultValue: true);
   bool stopServiceOnPause =
-      Hive.box('settings').get('stopServiceOnPause') ?? true;
-  String region = Hive.box('settings').get('region') ?? 'India';
-  String themeColor = Hive.box('settings').get('themeColor') ?? 'Teal';
-  int colorHue = Hive.box('settings').get('colorHue') ?? 400;
+      Hive.box('settings').get('stopServiceOnPause', defaultValue: true);
+  String region = Hive.box('settings').get('region', defaultValue: 'India');
+  String themeColor =
+      Hive.box('settings').get('themeColor', defaultValue: 'Teal');
+  int colorHue = Hive.box('settings').get('colorHue', defaultValue: 400);
   bool synced = false;
   List languages = [
     "Hindi",
@@ -50,8 +62,8 @@ class _SettingPageState extends State<SettingPage> {
     "Odia",
     "Assamese"
   ];
-  List preferredLanguage =
-      Hive.box('settings').get('preferredLanguage')?.toList() ?? ['Hindi'];
+  List preferredLanguage = Hive.box('settings')
+      .get('preferredLanguage', defaultValue: ['Hindi'])?.toList();
 
   @override
   void initState() {
@@ -71,6 +83,32 @@ class _SettingPageState extends State<SettingPage> {
     final userID = Hive.box('settings').get('userID');
     final dbRef = FirebaseDatabase.instance.reference().child("Users");
     dbRef.child(userID).update({"$key": "$value"});
+  }
+
+  Future<String> selectFolder() async {
+    PermissionStatus status = await Permission.storage.status;
+    if (status.isRestricted || status.isDenied) {
+      Map<Permission, PermissionStatus> statuses = await [
+        Permission.storage,
+      ].request();
+      debugPrint(statuses[Permission.storage].toString());
+    }
+    status = await Permission.storage.status;
+    if (status.isGranted) {
+      String path = await ExtStorage.getExternalStorageDirectory();
+      Directory rootPath = Directory(path);
+      String temp = await FilesystemPicker.open(
+            title: 'Select folder',
+            context: context,
+            rootDirectory: rootPath,
+            fsType: FilesystemType.folder,
+            pickText: 'Select this folder',
+            folderIconColor: Theme.of(context).accentColor,
+          ) ??
+          '';
+      return temp;
+    }
+    return '';
   }
 
   @override
@@ -549,7 +587,7 @@ class _SettingPageState extends State<SettingPage> {
                 child: Column(
                   children: [
                     ListTile(
-                      title: Text("Music Language"),
+                      title: Text("\nMusic Language"),
                       subtitle: Text('To display songs on Home Screen'),
                       trailing: SizedBox(
                         width: 150,
@@ -816,7 +854,7 @@ class _SettingPageState extends State<SettingPage> {
                     ),
                     SwitchListTile(
                         activeColor: Theme.of(context).accentColor,
-                        title: Text('Stop music on App Close'),
+                        title: Text('\nStop music on App Close'),
                         subtitle: Text(
                             "If turned off, music won't stop even after app close until you press stop button\nDefault: On\n"),
                         dense: true,
@@ -845,9 +883,117 @@ class _SettingPageState extends State<SettingPage> {
                     ListTile(
                       title: Text('Download Location'),
                       subtitle: Text('$downloadPath'),
-                      onTap: () {},
+                      onTap: () async {
+                        String temp = await selectFolder();
+                        if (temp.trim() != '') {
+                          downloadPath = temp;
+                          Hive.box('settings').put('downloadPath', temp);
+                          setState(() {});
+                        }
+                      },
                       dense: true,
                     ),
+                    ListTile(
+                        title: Text('Search Location'),
+                        subtitle: Text('Locations to search for local music'),
+                        dense: true,
+                        onTap: () {
+                          final GlobalKey<AnimatedListState> _listKey =
+                              GlobalKey<AnimatedListState>();
+                          showModalBottomSheet(
+                              isDismissible: true,
+                              backgroundColor: Colors.transparent,
+                              context: context,
+                              builder: (BuildContext context) {
+                                return BottomGradientContainer(
+                                  child: AnimatedList(
+                                    physics: BouncingScrollPhysics(),
+                                    shrinkWrap: true,
+                                    padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+                                    key: _listKey,
+                                    scrollDirection: Axis.vertical,
+                                    initialItemCount: dirPaths.length + 1,
+                                    itemBuilder: (cntxt, idx, animation) {
+                                      return (idx == 0)
+                                          ? ListTile(
+                                              title: Text('Add Location'),
+                                              leading: Icon(CupertinoIcons.add),
+                                              onTap: () async {
+                                                String temp =
+                                                    await selectFolder();
+
+                                                // String temp = await FilePicker
+                                                //         .platform
+                                                //         .getDirectoryPath() ??
+                                                //     '/';
+                                                if (temp.trim() != '' &&
+                                                    !dirPaths.contains(temp)) {
+                                                  dirPaths.add(temp);
+                                                  Hive.box('settings').put(
+                                                      'searchPaths', dirPaths);
+                                                  _listKey.currentState
+                                                      .insertItem(
+                                                          dirPaths.length);
+                                                } else {
+                                                  if (temp.trim() == '')
+                                                    Navigator.pop(context);
+                                                  ScaffoldMessenger.of(context)
+                                                      .showSnackBar(
+                                                    SnackBar(
+                                                      elevation: 6,
+                                                      backgroundColor:
+                                                          Colors.grey[900],
+                                                      behavior: SnackBarBehavior
+                                                          .floating,
+                                                      content: Text(
+                                                        temp.trim() == ''
+                                                            ? 'No folder selected'
+                                                            : 'Already added',
+                                                        style: TextStyle(
+                                                            color:
+                                                                Colors.white),
+                                                      ),
+                                                      action: SnackBarAction(
+                                                        textColor:
+                                                            Theme.of(context)
+                                                                .accentColor,
+                                                        label: 'Ok',
+                                                        onPressed: () {},
+                                                      ),
+                                                    ),
+                                                  );
+                                                }
+                                              },
+                                            )
+                                          : SizeTransition(
+                                              sizeFactor: animation,
+                                              child: ListTile(
+                                                leading:
+                                                    Icon(CupertinoIcons.folder),
+                                                title: Text(dirPaths[idx - 1]),
+                                                trailing: IconButton(
+                                                  icon: Icon(
+                                                    CupertinoIcons.clear,
+                                                    size: 15.0,
+                                                  ),
+                                                  onPressed: () {
+                                                    dirPaths.removeAt(idx - 1);
+                                                    _listKey.currentState
+                                                        .removeItem(
+                                                            idx,
+                                                            (context,
+                                                                    animation) =>
+                                                                Container());
+                                                    // setStt(() {});
+                                                  },
+                                                ),
+                                              ),
+                                            );
+                                    },
+                                  ),
+                                );
+                              });
+                        })
                   ],
                 ),
               ),

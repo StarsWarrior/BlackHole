@@ -234,7 +234,7 @@ class _PlayScreenState extends State<PlayScreen> {
           backgroundColor: Colors.transparent,
           appBar: AppBar(
             // title: Text('Now Playing'),
-            // toolbarHeight: 40.0,
+            toolbarHeight: 40.0,
             elevation: 0,
             backgroundColor: Colors.transparent,
             centerTitle: true,
@@ -570,7 +570,7 @@ class _PlayScreenState extends State<PlayScreen> {
                                                 itemBuilder: (context, index) {
                                                   return ListTile(
                                                       leading: Icon(Icons
-                                                          .music_note_rounded),
+                                                          .queue_music_rounded),
                                                       title: Text(
                                                           '${playlistNames[index]}'),
                                                       onTap: () {

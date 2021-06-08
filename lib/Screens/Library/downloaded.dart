@@ -21,7 +21,8 @@ class DownloadedSongs extends StatefulWidget {
 
 class _DownloadedSongsState extends State<DownloadedSongs>
     with SingleTickerProviderStateMixin {
-  List<FileSystemEntity> _files;
+  List<FileSystemEntity> _files = [];
+  List dirPaths = Hive.box('settings').get('searchPaths', defaultValue: []);
   Map<String, List<Map>> _albums = {};
   Map<String, List<Map>> _artists = {};
   Map<String, List<Map>> _genres = {};
@@ -66,15 +67,24 @@ class _DownloadedSongsState extends State<DownloadedSongs>
     } else {
       print('permission NOT granted');
     }
-    try {
-      String temp = await ExtStorage.getExternalStorageDirectory();
-      Directory dir = Directory('$temp');
-      _files = dir.listSync(recursive: true, followLinks: false);
-    } catch (e) {
-      String temp2 = await ExtStorage.getExternalStoragePublicDirectory(
+    print(dirPaths);
+    if (dirPaths.isEmpty) {
+      String path = await ExtStorage.getExternalStoragePublicDirectory(
           ExtStorage.DIRECTORY_MUSIC);
-      Directory dir = Directory('$temp2');
-      _files = dir.listSync(recursive: true, followLinks: false);
+      dirPaths.add(path);
+      String path2 = await ExtStorage.getExternalStoragePublicDirectory(
+          ExtStorage.DIRECTORY_DOWNLOADS);
+      dirPaths.add(path2);
+      Hive.box('settings').put('searchPaths', dirPaths);
+    }
+    for (String path in dirPaths) {
+      try {
+        print('inside $path');
+        Directory dir = Directory(path);
+        _files.addAll(dir.listSync(recursive: true, followLinks: false));
+      } catch (e) {
+        print('failed');
+      }
     }
 
     for (FileSystemEntity entity in _files) {
@@ -1309,7 +1319,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                   child: Stack(
                     children: [
                       Image(
-                        image: AssetImage('assets/artist.png'),
+                        image: AssetImage('assets/album.png'),
                       ),
                       _genres[sortedGenreKeysList[index]][0]['image'] == null
                           ? SizedBox()

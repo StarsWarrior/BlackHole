@@ -16,6 +16,7 @@ class Download with ChangeNotifier {
   double progress = 0.0;
   String currentDownloadId = '';
   String lastDownloadId = '';
+  String dlPath = Hive.box('settings').get('downloadPath', defaultValue: '');
 
   prepareDownload(BuildContext context, Map data) async {
     PermissionStatus status = await Permission.storage.status;
@@ -32,8 +33,10 @@ class Download with ChangeNotifier {
       print('permission granted');
     }
     final String filename = data['title'] + " - " + data['artist'] + ".m4a";
-    String dlPath = await ExtStorage.getExternalStoragePublicDirectory(
-        ExtStorage.DIRECTORY_MUSIC);
+    if (dlPath == '')
+      dlPath = await ExtStorage.getExternalStoragePublicDirectory(
+          ExtStorage.DIRECTORY_MUSIC);
+
     bool exists = await File(dlPath + "/" + filename).exists();
     if (exists) {
       showDialog(

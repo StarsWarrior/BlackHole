@@ -47,6 +47,9 @@ dependencies:
   # flutter_web_auth: ^0.3.0
   package_info: ^2.0.0
   device_info: ^2.0.1
+  file_picker: ^3.0.2+2
+  filesystem_picker: ^1.0.3
+  # path_provider_ex: ^1.0.1
   miniplayer:
     git:
       url: https://github.com/Sangwan5688/miniplayer.git

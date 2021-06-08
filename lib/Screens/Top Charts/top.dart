@@ -10,6 +10,75 @@ List cachedItems = [];
 List cachedGlobalItems = [];
 bool fetched = false;
 
+class TopCharts extends StatefulWidget {
+  final String region;
+  final status;
+  const TopCharts({Key key, @required this.region, @required this.status})
+      : super(key: key);
+
+  @override
+  _TopChartsState createState() => _TopChartsState();
+}
+
+class _TopChartsState extends State<TopCharts> {
+  @override
+  Widget build(BuildContext cntxt) {
+    return DefaultTabController(
+        length: 2,
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          appBar: AppBar(
+            bottom: TabBar(
+              tabs: [
+                Tab(
+                  child: Text('Local'),
+                ),
+                Tab(
+                  child: Text('Global'),
+                ),
+              ],
+            ),
+            title: Text(
+              'Spotify Top Charts',
+              style: TextStyle(fontSize: 18),
+            ),
+            centerTitle: true,
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            leading: Builder(
+              builder: (BuildContext context) {
+                return Transform.rotate(
+                  angle: 22 / 7 * 2,
+                  child: IconButton(
+                    color: Theme.of(context).iconTheme.color,
+                    icon: const Icon(Icons
+                        .horizontal_split_rounded), // line_weight_rounded),
+                    onPressed: () {
+                      Scaffold.of(cntxt).openDrawer();
+                    },
+                    tooltip:
+                        MaterialLocalizations.of(cntxt).openAppDrawerTooltip,
+                  ),
+                );
+              },
+            ),
+          ),
+          body: TabBarView(
+            children: [
+              TopPage(
+                region: widget.region,
+                status: widget.status,
+              ),
+              TopPage(
+                region: 'global',
+                status: widget.status,
+              ),
+            ],
+          ),
+        ));
+  }
+}
+
 class TopPage extends StatefulWidget {
   final region;
   final status;
@@ -21,6 +90,7 @@ class TopPage extends StatefulWidget {
 
 Future<List> scrapData(String region) async {
   final webScraper = WebScraper("https://www.spotifycharts.com");
+  print('starting expensive operation');
   List temp = [];
   await webScraper.loadWebPage('/regional/' + region + '/daily/latest/');
   for (int i = 1; i <= 200; i++) {
@@ -38,6 +108,7 @@ Future<List> scrapData(String region) async {
       });
     } catch (e) {}
   }
+  print('finished expensive operation');
   return temp;
 }
 
@@ -91,32 +162,6 @@ class _TopPageState extends State<TopPage> {
         (widget.region == 'global' ? cachedGlobalItems : cachedItems);
     return Column(
       children: [
-        AppBar(
-          title: Text(
-            'Spotify Top Chart',
-            style: TextStyle(fontSize: 18),
-          ),
-          centerTitle: true,
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          leading: Builder(
-            builder: (BuildContext context) {
-              return Transform.rotate(
-                angle: 22 / 7 * 2,
-                child: IconButton(
-                  color: Theme.of(context).iconTheme.color,
-                  icon: const Icon(
-                      Icons.horizontal_split_rounded), // line_weight_rounded),
-                  onPressed: () {
-                    Scaffold.of(context).openDrawer();
-                  },
-                  tooltip:
-                      MaterialLocalizations.of(context).openAppDrawerTooltip,
-                ),
-              );
-            },
-          ),
-        ),
         showList.length <= 50
             ? Expanded(
                 child: Column(
@@ -135,8 +180,18 @@ class _TopPageState extends State<TopPage> {
                 ),
               )
             : Expanded(
-                child: widget.status
-                    ? ListView.builder(
+                child: !widget.status
+                    ? EmptyScreen().emptyScreen(
+                        context,
+                        0,
+                        ":( ",
+                        100,
+                        "ERROR",
+                        60,
+                        "Service Unavailable",
+                        20,
+                      )
+                    : ListView.builder(
                         physics: BouncingScrollPhysics(),
                         itemCount: showList.length,
                         itemBuilder: (context, index) {
@@ -172,18 +227,7 @@ class _TopPageState extends State<TopPage> {
                             },
                           );
                         },
-                      )
-                    : EmptyScreen().emptyScreen(
-                        context,
-                        0,
-                        ":( ",
-                        100,
-                        "ERROR",
-                        60,
-                        "Service Unavailable",
-                        20,
-                      ),
-              ),
+                      )),
       ],
     );
   }

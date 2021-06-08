@@ -3,6 +3,7 @@ import 'package:blackhole/CustomWidgets/gradientContainers.dart';
 import 'package:blackhole/Screens/Library/downloaded.dart';
 import 'package:blackhole/Screens/Library/library.dart';
 import 'package:blackhole/Screens/Settings/setting.dart';
+import 'package:blackhole/Screens/YouTube/youTube.dart';
 import 'package:device_info/device_info.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
@@ -721,15 +722,12 @@ class _HomePageState extends State<HomePage> {
                           ),
                         ],
                       ),
-                      TopPage(
+                      TopCharts(
                         region: CountryCodes().countryCodes[
                             Hive.box('settings').get('region') ?? 'India'],
                         status: status,
                       ),
-                      TopPage(
-                        region: 'global',
-                        status: status,
-                      ),
+                      YouTube(),
                       LibraryPage(),
                     ],
                   ),
@@ -761,12 +759,12 @@ class _HomePageState extends State<HomePage> {
 
                       SalomonBottomBarItem(
                         icon: Icon(Icons.trending_up_rounded),
-                        title: Text("Local Top Chart"),
+                        title: Text("Spotify Top Charts"),
                         selectedColor: Theme.of(context).accentColor,
                       ),
                       SalomonBottomBarItem(
-                        icon: Icon(Icons.bar_chart_rounded),
-                        title: Text("Global Top Chart"),
+                        icon: Icon(MdiIcons.youtube),
+                        title: Text("YouTube"),
                         selectedColor: Theme.of(context).accentColor,
                       ),
                       SalomonBottomBarItem(
