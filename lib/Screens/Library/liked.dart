@@ -27,8 +27,10 @@ class _LikedSongsState extends State<LikedSongs>
   List sortedGenreKeysList = [];
   TabController _tcontroller;
   int currentIndex = 0;
-  int sortValue = Hive.box('settings').get('playlistSortValue') ?? 2;
-  int albumSortValue = Hive.box('settings').get('albumSortValue') ?? 2;
+  int sortValue =
+      Hive.box('settings').get('playlistSortValue', defaultValue: 2);
+  int albumSortValue =
+      Hive.box('settings').get('albumSortValue', defaultValue: 2);
 
   @override
   void initState() {
@@ -83,13 +85,30 @@ class _LikedSongsState extends State<LikedSongs>
       }
     }
 
+    sortSongs();
+
+    sortedAlbumKeysList = _albums.keys.toList();
+    sortedArtistKeysList = _artists.keys.toList();
+    sortedGenreKeysList = _genres.keys.toList();
+
+    sortAlbums();
+
+    added = true;
+    setState(() {});
+  }
+
+  sortSongs() {
     if (sortValue == 0) {
-      _songs.sort((a, b) =>
-          a["title"].toUpperCase().compareTo(b["title"].toUpperCase()));
+      _songs.sort((a, b) => a["title"]
+          .toString()
+          .toUpperCase()
+          .compareTo(b["title"].toString().toUpperCase()));
     }
     if (sortValue == 1) {
-      _songs.sort((b, a) =>
-          a["title"].toUpperCase().compareTo(b["title"].toUpperCase()));
+      _songs.sort((b, a) => a["title"]
+          .toString()
+          .toUpperCase()
+          .compareTo(b["title"].toString().toUpperCase()));
     }
     if (sortValue == 2) {
       _songs = likedBox.values.toList();
@@ -97,18 +116,16 @@ class _LikedSongsState extends State<LikedSongs>
     if (sortValue == 3) {
       _songs.shuffle();
     }
+  }
 
-    sortedAlbumKeysList = _albums.keys.toList();
-    sortedArtistKeysList = _artists.keys.toList();
-    sortedGenreKeysList = _genres.keys.toList();
-
+  sortAlbums() {
     if (albumSortValue == 0) {
-      sortedAlbumKeysList.sort(
-          (a, b) => a.toString().toUpperCase().compareTo(b.toUpperCase()));
-      sortedArtistKeysList.sort(
-          (a, b) => a.toString().toUpperCase().compareTo(b.toUpperCase()));
-      sortedGenreKeysList.sort(
-          (a, b) => a.toString().toUpperCase().compareTo(b.toUpperCase()));
+      sortedAlbumKeysList.sort((a, b) =>
+          a.toString().toUpperCase().compareTo(b.toString().toUpperCase()));
+      sortedArtistKeysList.sort((a, b) =>
+          a.toString().toUpperCase().compareTo(b.toString().toUpperCase()));
+      sortedGenreKeysList.sort((a, b) =>
+          a.toString().toUpperCase().compareTo(b.toString().toUpperCase()));
     }
     if (albumSortValue == 1) {
       sortedAlbumKeysList.sort((b, a) =>
@@ -139,9 +156,6 @@ class _LikedSongsState extends State<LikedSongs>
       sortedArtistKeysList.shuffle();
       sortedGenreKeysList.shuffle();
     }
-
-    added = true;
-    setState(() {});
   }
 
   void deleteLiked(index) {
@@ -204,85 +218,14 @@ class _LikedSongsState extends State<LikedSongs>
                             ? (value) {
                                 sortValue = value;
                                 Hive.box('settings').put('sortValue', value);
-                                if (sortValue == 0) {
-                                  _songs.sort((a, b) => a["title"]
-                                      .toUpperCase()
-                                      .compareTo(b["title"].toUpperCase()));
-                                }
-                                if (sortValue == 1) {
-                                  _songs.sort((b, a) => a["title"]
-                                      .toUpperCase()
-                                      .compareTo(b["title"].toUpperCase()));
-                                }
-                                if (sortValue == 2) {
-                                  _songs = likedBox.values.toList();
-                                }
-                                if (sortValue == 3) {
-                                  _songs.shuffle();
-                                }
+                                sortSongs();
                                 setState(() {});
                               }
                             : (value) {
                                 albumSortValue = value;
                                 Hive.box('settings')
                                     .put('albumSortValue', value);
-                                if (albumSortValue == 0) {
-                                  sortedAlbumKeysList.sort((a, b) => a
-                                      .toString()
-                                      .toUpperCase()
-                                      .compareTo(b.toUpperCase()));
-                                  sortedArtistKeysList.sort((a, b) => a
-                                      .toString()
-                                      .toUpperCase()
-                                      .compareTo(b.toUpperCase()));
-                                  sortedGenreKeysList.sort((a, b) => a
-                                      .toString()
-                                      .toUpperCase()
-                                      .compareTo(b.toUpperCase()));
-                                }
-                                if (albumSortValue == 1) {
-                                  sortedAlbumKeysList.sort((b, a) => a
-                                      .toString()
-                                      .toUpperCase()
-                                      .compareTo(b.toString().toUpperCase()));
-                                  sortedArtistKeysList.sort((b, a) => a
-                                      .toString()
-                                      .toUpperCase()
-                                      .compareTo(b.toString().toUpperCase()));
-                                  sortedGenreKeysList.sort((b, a) => a
-                                      .toString()
-                                      .toUpperCase()
-                                      .compareTo(b.toString().toUpperCase()));
-                                }
-                                if (albumSortValue == 2) {
-                                  sortedAlbumKeysList.sort((b, a) => _albums[a]
-                                      .length
-                                      .compareTo(_albums[b].length));
-                                  sortedArtistKeysList.sort((b, a) =>
-                                      _artists[a]
-                                          .length
-                                          .compareTo(_artists[b].length));
-                                  sortedGenreKeysList.sort((b, a) => _genres[a]
-                                      .length
-                                      .compareTo(_genres[b].length));
-                                }
-                                if (albumSortValue == 3) {
-                                  sortedAlbumKeysList.sort((a, b) => _albums[a]
-                                      .length
-                                      .compareTo(_albums[b].length));
-                                  sortedArtistKeysList.sort((a, b) =>
-                                      _artists[a]
-                                          .length
-                                          .compareTo(_artists[b].length));
-                                  sortedGenreKeysList.sort((a, b) => _genres[a]
-                                      .length
-                                      .compareTo(_genres[b].length));
-                                }
-                                if (albumSortValue == 4) {
-                                  sortedAlbumKeysList.shuffle();
-                                  sortedArtistKeysList.shuffle();
-                                  sortedGenreKeysList.shuffle();
-                                }
+                                sortAlbums();
                                 setState(() {});
                               },
                         itemBuilder: (currentIndex == 0)

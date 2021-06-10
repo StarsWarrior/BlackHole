@@ -28,6 +28,13 @@ class _SongsListState extends State<SongsList> {
     offline = widget.offline;
     if (!offline) original = List.from(_songs);
 
+    sortSongs();
+
+    processStatus = true;
+    setState(() {});
+  }
+
+  sortSongs() {
     if (sortValue == 0) {
       _songs.sort((a, b) =>
           a["title"].toUpperCase().compareTo(b["title"].toUpperCase()));
@@ -45,9 +52,6 @@ class _SongsListState extends State<SongsList> {
     if (sortValue == 3) {
       _songs.shuffle();
     }
-
-    processStatus = true;
-    setState(() {});
   }
 
   @override
@@ -71,25 +75,7 @@ class _SongsListState extends State<SongsList> {
                       onSelected: (value) {
                         sortValue = value;
                         Hive.box('settings').put('sortValue', value);
-                        if (sortValue == 0) {
-                          _songs.sort((a, b) => a["title"]
-                              .toUpperCase()
-                              .compareTo(b["title"].toUpperCase()));
-                        }
-                        if (sortValue == 1) {
-                          _songs.sort((b, a) => a["title"]
-                              .toUpperCase()
-                              .compareTo(b["title"].toUpperCase()));
-                        }
-                        if (sortValue == 2) {
-                          offline
-                              ? _songs.sort((b, a) => a["lastModified"]
-                                  .compareTo(b["lastModified"]))
-                              : _songs = List.from(original);
-                        }
-                        if (sortValue == 3) {
-                          _songs.shuffle();
-                        }
+                        sortSongs();
                         setState(() {});
                       },
                       itemBuilder: (context) => [

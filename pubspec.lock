@@ -28,7 +28,7 @@ packages:
       name: audio_session
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.1.2"
+    version: "0.1.3"
   audiotagger:
     dependency: "direct main"
     description:
@@ -148,20 +148,15 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "6.1.1"
-  file_picker:
-    dependency: "direct main"
-    description:
-      name: file_picker
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "3.0.2+2"
   filesystem_picker:
     dependency: "direct main"
     description:
-      name: filesystem_picker
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.4"
+      path: package
+      ref: HEAD
+      resolved-ref: "22d68925b61dd3e4148c626aed801eef7a3bee52"
+      url: "https://github.com/Sangwan5688/filesystem_picker.git"
+    source: git
+    version: "2.0.0-nullsafety.0"
   firebase:
     dependency: transitive
     description:
@@ -244,13 +239,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.0"
-  flutter_plugin_android_lifecycle:
-    dependency: transitive
-    description:
-      name: flutter_plugin_android_lifecycle
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.0.2"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -645,7 +633,7 @@ packages:
       name: win32
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.1.4"
+    version: "2.1.5"
   xdg_directories:
     dependency: transitive
     description:

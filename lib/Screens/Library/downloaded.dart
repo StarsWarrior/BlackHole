@@ -1,9 +1,11 @@
+import 'package:audiotagger/models/audiofile.dart';
 import 'package:audiotagger/models/tag.dart';
 import 'package:blackhole/Screens/Player/audioplayer.dart';
 import 'package:blackhole/CustomWidgets/gradientContainers.dart';
 import 'package:blackhole/CustomWidgets/emptyScreen.dart';
 import 'package:blackhole/CustomWidgets/miniplayer.dart';
 import 'package:flutter/cupertino.dart';
+// import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:ext_storage/ext_storage.dart';
 import 'package:hive/hive.dart';
@@ -21,19 +23,21 @@ class DownloadedSongs extends StatefulWidget {
 
 class _DownloadedSongsState extends State<DownloadedSongs>
     with SingleTickerProviderStateMixin {
-  List<FileSystemEntity> _files = [];
-  List dirPaths = Hive.box('settings').get('searchPaths', defaultValue: []);
-  Map<String, List<Map>> _albums = {};
-  Map<String, List<Map>> _artists = {};
-  Map<String, List<Map>> _genres = {};
-  List sortedAlbumKeysList;
-  List sortedArtistKeysList;
-  List sortedGenreKeysList;
-  List _songs = [];
-  List _videos = [];
+  Map _cachedAlbums = {};
+  Map _cachedArtists = {};
+  Map _cachedGenres = {};
+
+  List sortedCachedAlbumKeysList = [];
+  List sortedCachedArtistKeysList = [];
+  List sortedCachedGenreKeysList = [];
+
+  List _cachedSongs = [];
+  List _cachedVideos = [];
   bool added = false;
-  int sortValue = Hive.box('settings').get('sortValue') ?? 2;
-  int albumSortValue = Hive.box('settings').get('albumSortValue') ?? 2;
+  int sortValue = Hive.box('settings').get('sortValue', defaultValue: 2);
+  int albumSortValue =
+      Hive.box('settings').get('albumSortValue', defaultValue: 2);
+  List dirPaths = Hive.box('settings').get('searchPaths', defaultValue: []);
   TabController _tcontroller;
   int currentIndex = 0;
 
@@ -42,6 +46,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
     _tcontroller =
         TabController(length: widget.type == 'all' ? 5 : 4, vsync: this);
     _tcontroller.addListener(changeTitle);
+    getCached();
     getDownloaded();
     super.initState();
   }
@@ -52,34 +57,135 @@ class _DownloadedSongsState extends State<DownloadedSongs>
     });
   }
 
-  void getDownloaded() async {
-    final tagger = Audiotagger();
-    PermissionStatus status = await Permission.storage.status;
-    if (status.isRestricted || status.isDenied) {
-      Map<Permission, PermissionStatus> statuses = await [
-        Permission.storage,
-      ].request();
-      debugPrint(statuses[Permission.storage].toString());
-    }
-    status = await Permission.storage.status;
-    if (status.isGranted) {
-      print('permission granted');
+  void getCached() async {
+    if (widget.type == 'all') {
+      _cachedSongs = Hive.box('cache').get('cachedSongs', defaultValue: []);
+      _cachedVideos = Hive.box('cache').get('cachedVideos', defaultValue: []);
+      _cachedAlbums = Hive.box('cache').get('cachedAlbums', defaultValue: {});
+      _cachedArtists = Hive.box('cache').get('cachedArtists', defaultValue: {});
+      _cachedGenres = Hive.box('cache').get('cachedGenres', defaultValue: {});
     } else {
-      print('permission NOT granted');
+      _cachedSongs =
+          Hive.box('cache').get('cachedDownloadedSongs', defaultValue: []);
+      _cachedAlbums =
+          Hive.box('cache').get('cachedDownloadedAlbums', defaultValue: {});
+      _cachedArtists =
+          Hive.box('cache').get('cachedDownloadedArtists', defaultValue: {});
+      _cachedGenres =
+          Hive.box('cache').get('cachedDownloadedGenres', defaultValue: {});
     }
-    print(dirPaths);
-    if (dirPaths.isEmpty) {
-      String path = await ExtStorage.getExternalStoragePublicDirectory(
-          ExtStorage.DIRECTORY_MUSIC);
-      dirPaths.add(path);
-      String path2 = await ExtStorage.getExternalStoragePublicDirectory(
-          ExtStorage.DIRECTORY_DOWNLOADS);
-      dirPaths.add(path2);
-      Hive.box('settings').put('searchPaths', dirPaths);
+    if (_cachedSongs.isEmpty) return;
+    sortSongs(_cachedSongs, _cachedVideos);
+    sortedCachedAlbumKeysList = _cachedAlbums.keys.toList();
+    sortedCachedArtistKeysList = _cachedArtists.keys.toList();
+    sortedCachedGenreKeysList = _cachedGenres.keys.toList();
+    sortAlbums(
+        sortedCachedAlbumKeysList,
+        sortedCachedArtistKeysList,
+        sortedCachedGenreKeysList,
+        _cachedAlbums,
+        _cachedArtists,
+        _cachedGenres);
+    added = true;
+    setState(() {});
+  }
+
+  void sortSongs(List songs, List videos) {
+    if (sortValue == 0) {
+      songs.sort((a, b) => a["id"]
+          .split('/')
+          .last
+          .toString()
+          .toUpperCase()
+          .compareTo(b["id"].split('/').last.toString().toUpperCase()));
+      videos.sort((a, b) => a["id"]
+          .split('/')
+          .last
+          .toString()
+          .toUpperCase()
+          .compareTo(b["id"].split('/').last.toString().toUpperCase()));
     }
+    if (sortValue == 1) {
+      songs.sort((b, a) => a["id"]
+          .split('/')
+          .last
+          .toString()
+          .toUpperCase()
+          .compareTo(b["id"].split('/').last.toString().toUpperCase()));
+      videos.sort((b, a) => a["id"]
+          .split('/')
+          .last
+          .toString()
+          .toUpperCase()
+          .compareTo(b["id"].split('/').last.toString().toUpperCase()));
+    }
+    if (sortValue == 2) {
+      songs.sort((b, a) =>
+          a["lastModified"].toString().compareTo(b["lastModified"].toString()));
+      videos.sort((b, a) =>
+          a["lastModified"].toString().compareTo(b["lastModified"].toString()));
+    }
+    if (sortValue == 3) {
+      songs.shuffle();
+      videos.shuffle();
+    }
+  }
+
+  void sortAlbums(List _sortedAlbumKeysList, List _sortedArtistKeysList,
+      List _sortedGenreKeysList, Map albums, Map artists, Map genres) {
+    if (albumSortValue == 0) {
+      _sortedAlbumKeysList.sort((a, b) =>
+          a.toString().toUpperCase().compareTo(b.toString().toUpperCase()));
+      _sortedArtistKeysList.sort((a, b) =>
+          a.toString().toUpperCase().compareTo(b.toString().toUpperCase()));
+      _sortedGenreKeysList.sort((a, b) =>
+          a.toString().toUpperCase().compareTo(b.toString().toUpperCase()));
+    }
+    if (albumSortValue == 1) {
+      _sortedAlbumKeysList.sort((b, a) =>
+          a.toString().toUpperCase().compareTo(b.toString().toUpperCase()));
+      _sortedArtistKeysList.sort((b, a) =>
+          a.toString().toUpperCase().compareTo(b.toString().toUpperCase()));
+      _sortedGenreKeysList.sort((b, a) =>
+          a.toString().toUpperCase().compareTo(b.toString().toUpperCase()));
+    }
+    if (albumSortValue == 2) {
+      _sortedAlbumKeysList
+          .sort((b, a) => albums[a].length.compareTo(albums[b].length));
+      _sortedArtistKeysList
+          .sort((b, a) => artists[a].length.compareTo(artists[b].length));
+      _sortedGenreKeysList
+          .sort((b, a) => genres[a].length.compareTo(genres[b].length));
+    }
+    if (albumSortValue == 3) {
+      _sortedAlbumKeysList
+          .sort((a, b) => albums[a].length.compareTo(albums[b].length));
+      _sortedArtistKeysList
+          .sort((a, b) => artists[a].length.compareTo(artists[b].length));
+      _sortedGenreKeysList
+          .sort((a, b) => genres[a].length.compareTo(genres[b].length));
+    }
+    if (albumSortValue == 4) {
+      _sortedAlbumKeysList.shuffle();
+      _sortedArtistKeysList.shuffle();
+      _sortedGenreKeysList.shuffle();
+    }
+  }
+
+  Future<void> fetchDownloaded() async {
+    List _songs = [];
+    List _videos = [];
+    List sortedAlbumKeysList = [];
+    List sortedArtistKeysList = [];
+    List sortedGenreKeysList = [];
+    List<FileSystemEntity> _files = [];
+    Map<String, List<Map>> _albums = {};
+    Map<String, List<Map>> _artists = {};
+    Map<String, List<Map>> _genres = {};
+    Audiotagger tagger = Audiotagger();
+
     for (String path in dirPaths) {
       try {
-        print('inside $path');
         Directory dir = Directory(path);
         _files.addAll(dir.listSync(recursive: true, followLinks: false));
       } catch (e) {
@@ -90,7 +196,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
     for (FileSystemEntity entity in _files) {
       if (entity.path.endsWith('.mp3') || entity.path.endsWith('.m4a')) {
         try {
-          final tags = await tagger.readTags(path: entity.path);
+          final Tag tags = await tagger.readTags(path: entity.path);
           FileStat stats = await entity.stat();
           if (stats.size < 1048576) {
             print("Size of mediaItem found less than 1 MB");
@@ -99,7 +205,8 @@ class _DownloadedSongsState extends State<DownloadedSongs>
             if (widget.type != 'all' && tags.comment != 'BlackHole') {
               continue;
             }
-
+            final AudioFile audioFile =
+                await tagger.readAudioFile(path: entity.path);
             String albumTag = tags.album;
             String artistTag = tags.artist;
             String genreTag = tags.genre;
@@ -118,6 +225,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
               'lastModified': stats.modified,
               'genre': genreTag,
               'year': tags.year,
+              'duration': audioFile.length,
             };
             _songs.add(data);
 
@@ -179,81 +287,60 @@ class _DownloadedSongsState extends State<DownloadedSongs>
         } catch (e) {}
       }
     }
-
-    if (sortValue == 0) {
-      _songs.sort((a, b) => a["id"]
-          .split('/')
-          .last
-          .toUpperCase()
-          .compareTo(b["id"].split('/').last.toString().toUpperCase()));
-      _videos.sort((a, b) => a["id"]
-          .split('/')
-          .last
-          .toUpperCase()
-          .compareTo(b["id"].split('/').last.toString().toUpperCase()));
-    }
-    if (sortValue == 1) {
-      _songs.sort((b, a) => a["id"]
-          .split('/')
-          .last
-          .toUpperCase()
-          .compareTo(b["id"].split('/').last.toString().toUpperCase()));
-      _videos.sort((b, a) => a["id"]
-          .split('/')
-          .last
-          .toUpperCase()
-          .compareTo(b["id"].split('/').last.toString().toUpperCase()));
-    }
-    if (sortValue == 2) {
-      _songs.sort((b, a) => a["lastModified"].compareTo(b["lastModified"]));
-      _videos.sort((b, a) => a["lastModified"].compareTo(b["lastModified"]));
-    }
-    if (sortValue == 3) {
-      _songs.shuffle();
-      _videos.shuffle();
-    }
+    sortSongs(_songs, _videos);
 
     sortedAlbumKeysList = _albums.keys.toList();
     sortedArtistKeysList = _artists.keys.toList();
     sortedGenreKeysList = _genres.keys.toList();
 
-    if (albumSortValue == 0) {
-      sortedAlbumKeysList.sort(
-          (a, b) => a.toString().toUpperCase().compareTo(b.toUpperCase()));
-      sortedArtistKeysList.sort(
-          (a, b) => a.toString().toUpperCase().compareTo(b.toUpperCase()));
-      sortedGenreKeysList.sort(
-          (a, b) => a.toString().toUpperCase().compareTo(b.toUpperCase()));
+    sortAlbums(sortedAlbumKeysList, sortedArtistKeysList, sortedGenreKeysList,
+        _albums, _artists, _genres);
+
+    if (widget.type == 'all') {
+      Hive.box('cache').put('cachedSongs', _songs);
+      Hive.box('cache').put('cachedVideos', _videos);
+      Hive.box('cache').put('cachedAlbums', _albums);
+      Hive.box('cache').put('cachedArtists', _artists);
+      Hive.box('cache').put('cachedGenres', _genres);
+    } else {
+      Hive.box('cache').put('cachedDownloadedSongs', _songs);
+      Hive.box('cache').put('cachedDownloadedAlbums', _albums);
+      Hive.box('cache').put('cachedDownloadedArtists', _artists);
+      Hive.box('cache').put('cachedDownloadedGenres', _genres);
     }
-    if (albumSortValue == 1) {
-      sortedAlbumKeysList.sort((b, a) =>
-          a.toString().toUpperCase().compareTo(b.toString().toUpperCase()));
-      sortedArtistKeysList.sort((b, a) =>
-          a.toString().toUpperCase().compareTo(b.toString().toUpperCase()));
-      sortedGenreKeysList.sort((b, a) =>
-          a.toString().toUpperCase().compareTo(b.toString().toUpperCase()));
+
+    _cachedSongs = _songs;
+    _cachedVideos = _videos;
+    _cachedAlbums = _albums;
+    _cachedGenres = _genres;
+    _cachedArtists = _artists;
+    sortedCachedAlbumKeysList = sortedAlbumKeysList;
+    sortedCachedArtistKeysList = sortedArtistKeysList;
+    sortedCachedGenreKeysList = sortedGenreKeysList;
+  }
+
+  void getDownloaded() async {
+    PermissionStatus status = await Permission.storage.status;
+    if (status.isRestricted || status.isDenied) {
+      Map<Permission, PermissionStatus> statuses = await [
+        Permission.storage,
+      ].request();
+      debugPrint(statuses[Permission.storage].toString());
     }
-    if (albumSortValue == 2) {
-      sortedAlbumKeysList
-          .sort((b, a) => _albums[a].length.compareTo(_albums[b].length));
-      sortedArtistKeysList
-          .sort((b, a) => _artists[a].length.compareTo(_artists[b].length));
-      sortedGenreKeysList
-          .sort((b, a) => _genres[a].length.compareTo(_genres[b].length));
+    status = await Permission.storage.status;
+    if (status.isDenied || status.isPermanentlyDenied) {
+      return;
     }
-    if (albumSortValue == 3) {
-      sortedAlbumKeysList
-          .sort((a, b) => _albums[a].length.compareTo(_albums[b].length));
-      sortedArtistKeysList
-          .sort((a, b) => _artists[a].length.compareTo(_artists[b].length));
-      sortedGenreKeysList
-          .sort((a, b) => _genres[a].length.compareTo(_genres[b].length));
+    if (dirPaths.isEmpty) {
+      String path = await ExtStorage.getExternalStoragePublicDirectory(
+          ExtStorage.DIRECTORY_MUSIC);
+      dirPaths.add(path);
+      String path2 = await ExtStorage.getExternalStoragePublicDirectory(
+          ExtStorage.DIRECTORY_DOWNLOADS);
+      dirPaths.add(path2);
+      Hive.box('settings').put('searchPaths', dirPaths);
     }
-    if (albumSortValue == 4) {
-      sortedAlbumKeysList.shuffle();
-      sortedArtistKeysList.shuffle();
-      sortedGenreKeysList.shuffle();
-    }
+    await fetchDownloaded();
 
     added = true;
     setState(() {});
@@ -316,116 +403,20 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                             ? (int value) {
                                 sortValue = value;
                                 Hive.box('settings').put('sortValue', value);
-                                if (sortValue == 0) {
-                                  _songs.sort((a, b) => a["id"]
-                                      .split('/')
-                                      .last
-                                      .toUpperCase()
-                                      .compareTo(b["id"]
-                                          .split('/')
-                                          .last
-                                          .toUpperCase()));
-                                  _videos.sort((a, b) => a["id"]
-                                      .split('/')
-                                      .last
-                                      .toUpperCase()
-                                      .compareTo(b["id"]
-                                          .split('/')
-                                          .last
-                                          .toUpperCase()));
-                                }
-                                if (sortValue == 1) {
-                                  _songs.sort((b, a) => a["id"]
-                                      .split('/')
-                                      .last
-                                      .toUpperCase()
-                                      .compareTo(b["id"]
-                                          .split('/')
-                                          .last
-                                          .toUpperCase()));
-                                  _videos.sort((b, a) => a["id"]
-                                      .split('/')
-                                      .last
-                                      .toUpperCase()
-                                      .compareTo(b["id"]
-                                          .split('/')
-                                          .last
-                                          .toUpperCase()));
-                                }
-                                if (sortValue == 2) {
-                                  _songs.sort((b, a) => a["lastModified"]
-                                      .compareTo(b["lastModified"]));
-                                  _videos.sort((b, a) => a["lastModified"]
-                                      .compareTo(b["lastModified"]));
-                                }
-                                if (sortValue == 3) {
-                                  _songs.shuffle();
-                                  _videos.shuffle();
-                                }
+                                sortSongs(_cachedSongs, _cachedVideos);
                                 setState(() {});
                               }
                             : (int value) {
                                 albumSortValue = value;
                                 Hive.box('settings')
                                     .put('albumSortValue', value);
-                                if (albumSortValue == 0) {
-                                  sortedAlbumKeysList.sort((a, b) => a
-                                      .toString()
-                                      .toUpperCase()
-                                      .compareTo(b.toUpperCase()));
-                                  sortedArtistKeysList.sort((a, b) => a
-                                      .toString()
-                                      .toUpperCase()
-                                      .compareTo(b.toUpperCase()));
-                                  sortedGenreKeysList.sort((a, b) => a
-                                      .toString()
-                                      .toUpperCase()
-                                      .compareTo(b.toUpperCase()));
-                                }
-                                if (albumSortValue == 1) {
-                                  sortedAlbumKeysList.sort((b, a) => a
-                                      .toString()
-                                      .toUpperCase()
-                                      .compareTo(b.toString().toUpperCase()));
-                                  sortedArtistKeysList.sort((b, a) => a
-                                      .toString()
-                                      .toUpperCase()
-                                      .compareTo(b.toString().toUpperCase()));
-                                  sortedGenreKeysList.sort((b, a) => a
-                                      .toString()
-                                      .toUpperCase()
-                                      .compareTo(b.toString().toUpperCase()));
-                                }
-                                if (albumSortValue == 2) {
-                                  sortedAlbumKeysList.sort((b, a) => _albums[a]
-                                      .length
-                                      .compareTo(_albums[b].length));
-                                  sortedArtistKeysList.sort((b, a) =>
-                                      _artists[a]
-                                          .length
-                                          .compareTo(_artists[b].length));
-                                  sortedGenreKeysList.sort((b, a) => _genres[a]
-                                      .length
-                                      .compareTo(_genres[b].length));
-                                }
-                                if (albumSortValue == 3) {
-                                  sortedAlbumKeysList.sort((a, b) => _albums[a]
-                                      .length
-                                      .compareTo(_albums[b].length));
-                                  sortedArtistKeysList.sort((a, b) =>
-                                      _artists[a]
-                                          .length
-                                          .compareTo(_artists[b].length));
-
-                                  sortedGenreKeysList.sort((a, b) => _genres[a]
-                                      .length
-                                      .compareTo(_genres[b].length));
-                                }
-                                if (albumSortValue == 4) {
-                                  sortedAlbumKeysList.shuffle();
-                                  sortedArtistKeysList.shuffle();
-                                  sortedGenreKeysList.shuffle();
-                                }
+                                sortAlbums(
+                                    sortedCachedAlbumKeysList,
+                                    sortedCachedArtistKeysList,
+                                    sortedCachedGenreKeysList,
+                                    _cachedAlbums,
+                                    _cachedArtists,
+                                    _cachedGenres);
                                 setState(() {});
                               },
                         itemBuilder: (currentIndex == 0 || currentIndex == 4)
@@ -667,14 +658,14 @@ class _DownloadedSongsState extends State<DownloadedSongs>
   }
 
   songsTab() {
-    return _songs.length == 0
+    return _cachedSongs.length == 0
         ? EmptyScreen().emptyScreen(context, 3, "Nothing to ", 15.0,
             "Show Here", 45, "Download Something", 23.0)
         : ListView.builder(
             physics: BouncingScrollPhysics(),
             padding: EdgeInsets.only(top: 20, bottom: 10),
             shrinkWrap: true,
-            itemCount: _songs.length,
+            itemCount: _cachedSongs.length,
             itemBuilder: (context, index) {
               return ListTile(
                 leading: Card(
@@ -688,15 +679,15 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                       Image(
                         image: AssetImage('assets/cover.jpg'),
                       ),
-                      _songs[index]['image'] == null
+                      _cachedSongs[index]['image'] == null
                           ? SizedBox()
                           : Image(
-                              image: MemoryImage(_songs[index]['image']),
+                              image: MemoryImage(_cachedSongs[index]['image']),
                             )
                     ],
                   ),
                 ),
-                title: Text('${_songs[index]['id'].split('/').last}'),
+                title: Text('${_cachedSongs[index]['id'].split('/').last}'),
                 trailing: PopupMenuButton(
                   icon: Icon(Icons.more_vert_rounded),
                   shape: RoundedRectangleBorder(
@@ -706,8 +697,10 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                       showDialog(
                         context: context,
                         builder: (BuildContext context) {
-                          String fileName =
-                              _songs[index]['id'].split('/').last.toString();
+                          String fileName = _cachedSongs[index]['id']
+                              .split('/')
+                              .last
+                              .toString();
                           List temp = fileName.split('.');
                           temp.removeLast();
                           String songName = temp.join('.');
@@ -735,7 +728,8 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                                     onSubmitted: (value) async {
                                       try {
                                         Navigator.pop(context);
-                                        String newName = _songs[index]['id']
+                                        String newName = _cachedSongs[index]
+                                                ['id']
                                             .toString()
                                             .replaceFirst(songName, value);
 
@@ -744,9 +738,9 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                                               value, value + ' (1)');
                                         }
 
-                                        File(_songs[index]['id'])
+                                        File(_cachedSongs[index]['id'])
                                             .rename(newName);
-                                        _songs[index]['id'] = newName;
+                                        _cachedSongs[index]['id'] = newName;
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(
                                           SnackBar(
@@ -754,7 +748,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                                             backgroundColor: Colors.grey[900],
                                             behavior: SnackBarBehavior.floating,
                                             content: Text(
-                                              'Renamed to ${_songs[index]['id'].split('/').last}',
+                                              'Renamed to ${_cachedSongs[index]['id'].split('/').last}',
                                               style: TextStyle(
                                                   color: Colors.white),
                                             ),
@@ -774,7 +768,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                                             backgroundColor: Colors.grey[900],
                                             behavior: SnackBarBehavior.floating,
                                             content: Text(
-                                              'Failed to Rename ${_songs[index]['id'].split('/').last}',
+                                              'Failed to Rename ${_cachedSongs[index]['id'].split('/').last}',
                                               style: TextStyle(
                                                   color: Colors.white),
                                             ),
@@ -820,7 +814,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                                 onPressed: () async {
                                   try {
                                     Navigator.pop(context);
-                                    String newName = _songs[index]['id']
+                                    String newName = _cachedSongs[index]['id']
                                         .toString()
                                         .replaceFirst(
                                             songName, controller.text);
@@ -831,15 +825,16 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                                           controller.text + ' (1)');
                                     }
 
-                                    File(_songs[index]['id']).rename(newName);
-                                    _songs[index]['id'] = newName;
+                                    File(_cachedSongs[index]['id'])
+                                        .rename(newName);
+                                    _cachedSongs[index]['id'] = newName;
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
                                         elevation: 6,
                                         backgroundColor: Colors.grey[900],
                                         behavior: SnackBarBehavior.floating,
                                         content: Text(
-                                          'Renamed to ${_songs[index]['id'].split('/').last}',
+                                          'Renamed to ${_cachedSongs[index]['id'].split('/').last}',
                                           style: TextStyle(color: Colors.white),
                                         ),
                                         action: SnackBarAction(
@@ -857,7 +852,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                                         backgroundColor: Colors.grey[900],
                                         behavior: SnackBarBehavior.floating,
                                         content: Text(
-                                          'Failed to Rename ${_songs[index]['id'].split('/').last}',
+                                          'Failed to Rename ${_cachedSongs[index]['id'].split('/').last}',
                                           style: TextStyle(color: Colors.white),
                                         ),
                                         action: SnackBarAction(
@@ -885,15 +880,15 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                         context: context,
                         builder: (BuildContext context) {
                           final _titlecontroller = TextEditingController(
-                              text: _songs[index]['title']);
+                              text: _cachedSongs[index]['title']);
                           final _albumcontroller = TextEditingController(
-                              text: _songs[index]['album']);
+                              text: _cachedSongs[index]['album']);
                           final _artistcontroller = TextEditingController(
-                              text: _songs[index]['artist']);
+                              text: _cachedSongs[index]['artist']);
                           final _genrecontroller = TextEditingController(
-                              text: _songs[index]['genre']);
+                              text: _cachedSongs[index]['genre']);
                           final _yearcontroller = TextEditingController(
-                              text: _songs[index]['year']);
+                              text: _cachedSongs[index]['year']);
                           return AlertDialog(
                             content: Container(
                               height: 400,
@@ -1014,15 +1009,15 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                                 onPressed: () async {
                                   try {
                                     Navigator.pop(context);
-                                    _songs[index]['title'] =
+                                    _cachedSongs[index]['title'] =
                                         _titlecontroller.text;
-                                    _songs[index]['album'] =
+                                    _cachedSongs[index]['album'] =
                                         _albumcontroller.text;
-                                    _songs[index]['artist'] =
+                                    _cachedSongs[index]['artist'] =
                                         _artistcontroller.text;
-                                    _songs[index]['genre'] =
+                                    _cachedSongs[index]['genre'] =
                                         _genrecontroller.text;
-                                    _songs[index]['year'] =
+                                    _cachedSongs[index]['year'] =
                                         _yearcontroller.text;
                                     final tag = Tag(
                                       title: _titlecontroller.text,
@@ -1034,7 +1029,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
 
                                     final tagger = Audiotagger();
                                     await tagger.writeTags(
-                                      path: _songs[index]['id'],
+                                      path: _cachedSongs[index]['id'],
                                       tag: tag,
                                     );
                                     ScaffoldMessenger.of(context).showSnackBar(
@@ -1085,14 +1080,14 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                     }
                     if (value == 2) {
                       try {
-                        File(_songs[index]['id']).delete();
+                        File(_cachedSongs[index]['id']).delete();
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             elevation: 6,
                             backgroundColor: Colors.grey[900],
                             behavior: SnackBarBehavior.floating,
                             content: Text(
-                              'Deleted ${_songs[index]['id'].split('/').last}',
+                              'Deleted ${_cachedSongs[index]['id'].split('/').last}',
                               style: TextStyle(color: Colors.white),
                             ),
                             action: SnackBarAction(
@@ -1102,19 +1097,31 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                             ),
                           ),
                         );
-                        if (_albums[_songs[index]['album']].length == 1)
-                          sortedAlbumKeysList.remove(_songs[index]['album']);
-                        _albums[_songs[index]['album']].remove(_songs[index]);
+                        if (_cachedAlbums[_cachedSongs[index]['album']]
+                                .length ==
+                            1)
+                          sortedCachedAlbumKeysList
+                              .remove(_cachedSongs[index]['album']);
+                        _cachedAlbums[_cachedSongs[index]['album']]
+                            .remove(_cachedSongs[index]);
 
-                        if (_artists[_songs[index]['artist']].length == 1)
-                          sortedArtistKeysList.remove(_songs[index]['artist']);
-                        _artists[_songs[index]['artist']].remove(_songs[index]);
+                        if (_cachedArtists[_cachedSongs[index]['artist']]
+                                .length ==
+                            1)
+                          sortedCachedArtistKeysList
+                              .remove(_cachedSongs[index]['artist']);
+                        _cachedArtists[_cachedSongs[index]['artist']]
+                            .remove(_cachedSongs[index]);
 
-                        if (_genres[_songs[index]['genre']].length == 1)
-                          sortedGenreKeysList.remove(_songs[index]['genre']);
-                        _genres[_songs[index]['genre']].remove(_songs[index]);
+                        if (_cachedGenres[_cachedSongs[index]['genre']]
+                                .length ==
+                            1)
+                          sortedCachedGenreKeysList
+                              .remove(_cachedSongs[index]['genre']);
+                        _cachedGenres[_cachedSongs[index]['genre']]
+                            .remove(_cachedSongs[index]);
 
-                        _songs.remove(_songs[index]);
+                        _cachedSongs.remove(_cachedSongs[index]);
                       } catch (e) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
@@ -1122,7 +1129,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                             backgroundColor: Colors.grey[900],
                             behavior: SnackBarBehavior.floating,
                             content: Text(
-                              'Failed to delete ${_songs[index]['id']}',
+                              'Failed to delete ${_cachedSongs[index]['id']}',
                               style: TextStyle(color: Colors.white),
                             ),
                             action: SnackBarAction(
@@ -1180,7 +1187,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                       opaque: false, // set to false
                       pageBuilder: (_, __, ___) => PlayScreen(
                         data: {
-                          'response': _songs,
+                          'response': _cachedSongs,
                           'index': index,
                           'offline': true
                         },
@@ -1194,14 +1201,14 @@ class _DownloadedSongsState extends State<DownloadedSongs>
   }
 
   albumsTab() {
-    return sortedAlbumKeysList.length == 0
+    return sortedCachedAlbumKeysList.isEmpty
         ? EmptyScreen().emptyScreen(context, 3, "Nothing to ", 15.0,
             "Show Here", 45, "Download Something", 23.0)
         : ListView.builder(
             physics: BouncingScrollPhysics(),
             padding: EdgeInsets.only(top: 20, bottom: 10),
             shrinkWrap: true,
-            itemCount: sortedAlbumKeysList.length,
+            itemCount: sortedCachedAlbumKeysList.length,
             itemBuilder: (context, index) {
               return ListTile(
                 leading: Card(
@@ -1215,28 +1222,30 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                       Image(
                         image: AssetImage('assets/album.png'),
                       ),
-                      _albums[sortedAlbumKeysList[index]][0]['image'] == null
+                      _cachedAlbums[sortedCachedAlbumKeysList[index]][0]
+                                  ['image'] ==
+                              null
                           ? SizedBox()
                           : Image(
-                              image: MemoryImage(
-                                  _albums[sortedAlbumKeysList[index]][0]
-                                      ['image']),
+                              image: MemoryImage(_cachedAlbums[
+                                      sortedCachedAlbumKeysList[index]][0]
+                                  ['image']),
                             )
                     ],
                   ),
                 ),
-                title: Text('${sortedAlbumKeysList[index]}'),
+                title: Text('${sortedCachedAlbumKeysList[index]}'),
                 subtitle: Text(
-                  _albums[sortedAlbumKeysList[index]].length == 1
-                      ? '${_albums[sortedAlbumKeysList[index]].length} Song'
-                      : '${_albums[sortedAlbumKeysList[index]].length} Songs',
+                  _cachedAlbums[sortedCachedAlbumKeysList[index]].length == 1
+                      ? '${_cachedAlbums[sortedCachedAlbumKeysList[index]].length} Song'
+                      : '${_cachedAlbums[sortedCachedAlbumKeysList[index]].length} Songs',
                 ),
                 onTap: () {
                   Navigator.of(context).push(
                     PageRouteBuilder(
                       opaque: false, // set to false
                       pageBuilder: (_, __, ___) => SongsList(
-                        data: _albums[sortedAlbumKeysList[index]],
+                        data: _cachedAlbums[sortedCachedAlbumKeysList[index]],
                         offline: true,
                       ),
                     ),
@@ -1247,14 +1256,14 @@ class _DownloadedSongsState extends State<DownloadedSongs>
   }
 
   artistsTab() {
-    return sortedArtistKeysList.length == 0
+    return sortedCachedArtistKeysList.isEmpty
         ? EmptyScreen().emptyScreen(context, 3, "Nothing to ", 15.0,
             "Show Here", 45, "Download Something", 23.0)
         : ListView.builder(
             physics: BouncingScrollPhysics(),
             padding: EdgeInsets.only(top: 20, bottom: 10),
             shrinkWrap: true,
-            itemCount: sortedArtistKeysList.length,
+            itemCount: sortedCachedArtistKeysList.length,
             itemBuilder: (context, index) {
               return ListTile(
                 leading: Card(
@@ -1268,28 +1277,30 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                       Image(
                         image: AssetImage('assets/artist.png'),
                       ),
-                      _artists[sortedArtistKeysList[index]][0]['image'] == null
+                      _cachedArtists[sortedCachedArtistKeysList[index]][0]
+                                  ['image'] ==
+                              null
                           ? SizedBox()
                           : Image(
-                              image: MemoryImage(
-                                  _artists[sortedArtistKeysList[index]][0]
-                                      ['image']),
+                              image: MemoryImage(_cachedArtists[
+                                      sortedCachedArtistKeysList[index]][0]
+                                  ['image']),
                             )
                     ],
                   ),
                 ),
-                title: Text('${sortedArtistKeysList[index]}'),
+                title: Text('${sortedCachedArtistKeysList[index]}'),
                 subtitle: Text(
-                  _artists[sortedArtistKeysList[index]].length == 1
-                      ? '${_artists[sortedArtistKeysList[index]].length} Song'
-                      : '${_artists[sortedArtistKeysList[index]].length} Songs',
+                  _cachedArtists[sortedCachedArtistKeysList[index]].length == 1
+                      ? '${_cachedArtists[sortedCachedArtistKeysList[index]].length} Song'
+                      : '${_cachedArtists[sortedCachedArtistKeysList[index]].length} Songs',
                 ),
                 onTap: () {
                   Navigator.of(context).push(
                     PageRouteBuilder(
                       opaque: false, // set to false
                       pageBuilder: (_, __, ___) => SongsList(
-                        data: _artists[sortedArtistKeysList[index]],
+                        data: _cachedArtists[sortedCachedArtistKeysList[index]],
                         offline: true,
                       ),
                     ),
@@ -1300,14 +1311,14 @@ class _DownloadedSongsState extends State<DownloadedSongs>
   }
 
   genresTab() {
-    return sortedGenreKeysList.length == 0
+    return sortedCachedGenreKeysList.isEmpty
         ? EmptyScreen().emptyScreen(context, 3, "Nothing to ", 15.0,
             "Show Here", 45, "Download Something", 23.0)
         : ListView.builder(
             physics: BouncingScrollPhysics(),
             padding: EdgeInsets.only(top: 20, bottom: 10),
             shrinkWrap: true,
-            itemCount: sortedGenreKeysList.length,
+            itemCount: sortedCachedGenreKeysList.length,
             itemBuilder: (context, index) {
               return ListTile(
                 leading: Card(
@@ -1321,28 +1332,30 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                       Image(
                         image: AssetImage('assets/album.png'),
                       ),
-                      _genres[sortedGenreKeysList[index]][0]['image'] == null
+                      _cachedGenres[sortedCachedGenreKeysList[index]][0]
+                                  ['image'] ==
+                              null
                           ? SizedBox()
                           : Image(
-                              image: MemoryImage(
-                                  _genres[sortedGenreKeysList[index]][0]
-                                      ['image']),
+                              image: MemoryImage(_cachedGenres[
+                                      sortedCachedGenreKeysList[index]][0]
+                                  ['image']),
                             )
                     ],
                   ),
                 ),
-                title: Text('${sortedGenreKeysList[index]}'),
+                title: Text('${sortedCachedGenreKeysList[index]}'),
                 subtitle: Text(
-                  _genres[sortedGenreKeysList[index]].length == 1
-                      ? '${_genres[sortedGenreKeysList[index]].length} Song'
-                      : '${_genres[sortedGenreKeysList[index]].length} Songs',
+                  _cachedGenres[sortedCachedGenreKeysList[index]].length == 1
+                      ? '${_cachedGenres[sortedCachedGenreKeysList[index]].length} Song'
+                      : '${_cachedGenres[sortedCachedGenreKeysList[index]].length} Songs',
                 ),
                 onTap: () {
                   Navigator.of(context).push(
                     PageRouteBuilder(
                       opaque: false, // set to false
                       pageBuilder: (_, __, ___) => SongsList(
-                        data: _genres[sortedGenreKeysList[index]],
+                        data: _cachedGenres[sortedCachedGenreKeysList[index]],
                         offline: true,
                       ),
                     ),
@@ -1353,14 +1366,14 @@ class _DownloadedSongsState extends State<DownloadedSongs>
   }
 
   videosTab() {
-    return _videos.length == 0
+    return _cachedVideos.length == 0
         ? EmptyScreen().emptyScreen(context, 3, "Nothing to ", 15.0,
             "Show Here", 45, "Download Something", 23.0)
         : ListView.builder(
             physics: BouncingScrollPhysics(),
             padding: EdgeInsets.only(top: 20, bottom: 10),
             shrinkWrap: true,
-            itemCount: _videos.length,
+            itemCount: _cachedVideos.length,
             itemBuilder: (context, index) {
               return ListTile(
                 leading: Card(
@@ -1374,15 +1387,15 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                       Image(
                         image: AssetImage('assets/cover.jpg'),
                       ),
-                      _videos[index]['image'] == null
+                      _cachedVideos[index]['image'] == null
                           ? SizedBox()
                           : Image(
-                              image: MemoryImage(_videos[index]['image']),
+                              image: MemoryImage(_cachedVideos[index]['image']),
                             )
                     ],
                   ),
                 ),
-                title: Text('${_videos[index]['id'].split('/').last}'),
+                title: Text('${_cachedVideos[index]['id'].split('/').last}'),
                 trailing: PopupMenuButton(
                   icon: Icon(Icons.more_vert_rounded),
                   shape: RoundedRectangleBorder(
@@ -1392,8 +1405,10 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                       showDialog(
                         context: context,
                         builder: (BuildContext context) {
-                          String fileName =
-                              _videos[index]['id'].split('/').last.toString();
+                          String fileName = _cachedVideos[index]['id']
+                              .split('/')
+                              .last
+                              .toString();
                           List temp = fileName.split('.');
                           temp.removeLast();
                           String videoName = temp.join('.');
@@ -1421,7 +1436,8 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                                     onSubmitted: (value) async {
                                       try {
                                         Navigator.pop(context);
-                                        String newName = _videos[index]['id']
+                                        String newName = _cachedVideos[index]
+                                                ['id']
                                             .toString()
                                             .replaceFirst(videoName, value);
 
@@ -1430,9 +1446,9 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                                               value, value + ' (1)');
                                         }
 
-                                        File(_videos[index]['id'])
+                                        File(_cachedVideos[index]['id'])
                                             .rename(newName);
-                                        _videos[index]['id'] = newName;
+                                        _cachedVideos[index]['id'] = newName;
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(
                                           SnackBar(
@@ -1440,7 +1456,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                                             backgroundColor: Colors.grey[900],
                                             behavior: SnackBarBehavior.floating,
                                             content: Text(
-                                              'Renamed to ${_videos[index]['id'].split('/').last}',
+                                              'Renamed to ${_cachedVideos[index]['id'].split('/').last}',
                                               style: TextStyle(
                                                   color: Colors.white),
                                             ),
@@ -1460,7 +1476,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                                             backgroundColor: Colors.grey[900],
                                             behavior: SnackBarBehavior.floating,
                                             content: Text(
-                                              'Failed to Rename ${_videos[index]['id'].split('/').last}',
+                                              'Failed to Rename ${_cachedVideos[index]['id'].split('/').last}',
                                               style: TextStyle(
                                                   color: Colors.white),
                                             ),
@@ -1506,7 +1522,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                                 onPressed: () async {
                                   try {
                                     Navigator.pop(context);
-                                    String newName = _videos[index]['id']
+                                    String newName = _cachedVideos[index]['id']
                                         .toString()
                                         .replaceFirst(
                                             videoName, controller.text);
@@ -1517,15 +1533,16 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                                           controller.text + ' (1)');
                                     }
 
-                                    File(_videos[index]['id']).rename(newName);
-                                    _videos[index]['id'] = newName;
+                                    File(_cachedVideos[index]['id'])
+                                        .rename(newName);
+                                    _cachedVideos[index]['id'] = newName;
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
                                         elevation: 6,
                                         backgroundColor: Colors.grey[900],
                                         behavior: SnackBarBehavior.floating,
                                         content: Text(
-                                          'Renamed to ${_videos[index]['id'].split('/').last}',
+                                          'Renamed to ${_cachedVideos[index]['id'].split('/').last}',
                                           style: TextStyle(color: Colors.white),
                                         ),
                                         action: SnackBarAction(
@@ -1543,7 +1560,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                                         backgroundColor: Colors.grey[900],
                                         behavior: SnackBarBehavior.floating,
                                         content: Text(
-                                          'Failed to Rename ${_videos[index]['id'].split('/').last}',
+                                          'Failed to Rename ${_cachedVideos[index]['id'].split('/').last}',
                                           style: TextStyle(color: Colors.white),
                                         ),
                                         action: SnackBarAction(
@@ -1568,14 +1585,14 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                     }
                     if (value == 1) {
                       try {
-                        File(_videos[index]['id']).delete();
+                        File(_cachedVideos[index]['id']).delete();
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             elevation: 6,
                             backgroundColor: Colors.grey[900],
                             behavior: SnackBarBehavior.floating,
                             content: Text(
-                              'Deleted ${_videos[index]['id'].split('/').last}',
+                              'Deleted ${_cachedVideos[index]['id'].split('/').last}',
                               style: TextStyle(color: Colors.white),
                             ),
                             action: SnackBarAction(
@@ -1585,7 +1602,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                             ),
                           ),
                         );
-                        _videos.remove(_videos[index]);
+                        _cachedVideos.remove(_cachedVideos[index]);
                       } catch (e) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
@@ -1593,7 +1610,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                             backgroundColor: Colors.grey[900],
                             behavior: SnackBarBehavior.floating,
                             content: Text(
-                              'Failed to delete ${_videos[index]['id']}',
+                              'Failed to delete ${_cachedVideos[index]['id']}',
                               style: TextStyle(color: Colors.white),
                             ),
                             action: SnackBarAction(
@@ -1638,7 +1655,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                       opaque: false, // set to false
                       pageBuilder: (_, __, ___) => PlayScreen(
                         data: {
-                          'response': _videos,
+                          'response': _cachedVideos,
                           'index': index,
                           'offline': true
                         },

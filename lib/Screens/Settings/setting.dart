@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:blackhole/Helpers/countrycodes.dart';
 import 'package:blackhole/CustomWidgets/GradientContainers.dart';
 import 'package:blackhole/Screens/Top Charts/top.dart' as topScreen;
@@ -17,7 +16,6 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:package_info/package_info.dart';
-import 'package:file_picker/file_picker.dart';
 
 class SettingPage extends StatefulWidget {
   final Function callback;
@@ -884,12 +882,31 @@ class _SettingPageState extends State<SettingPage> {
                       title: Text('Download Location'),
                       subtitle: Text('$downloadPath'),
                       onTap: () async {
-                        String temp = await selectFolder();
-                        if (temp.trim() != '') {
-                          downloadPath = temp;
-                          Hive.box('settings').put('downloadPath', temp);
-                          setState(() {});
-                        }
+                        /// If you want you can uncomment the code below to let user select download location
+
+                        // String temp = await selectFolder();
+                        // if (temp.trim() != '') {
+                        //   downloadPath = temp;
+                        //   Hive.box('settings').put('downloadPath', temp);
+                        //   setState(() {});
+                        // } else {
+                        //   ScaffoldMessenger.of(context).showSnackBar(
+                        //     SnackBar(
+                        //       elevation: 6,
+                        //       backgroundColor: Colors.grey[900],
+                        //       behavior: SnackBarBehavior.floating,
+                        //       content: Text(
+                        //         'No folder selected',
+                        //         style: TextStyle(color: Colors.white),
+                        //       ),
+                        //       action: SnackBarAction(
+                        //         textColor: Theme.of(context).accentColor,
+                        //         label: 'Ok',
+                        //         onPressed: () {},
+                        //       ),
+                        //     ),
+                        //   );
+                        // }
                       },
                       dense: true,
                     ),
@@ -1022,103 +1039,48 @@ class _SettingPageState extends State<SettingPage> {
                             .child("LatestVersion");
                         dbRef.once().then((DataSnapshot snapshot) {
                           if (double.parse(snapshot.value) > appVersion) {
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  title: Text(
-                                    'Update Available',
-                                    // textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      color: Theme.of(context).accentColor,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                  content: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      SizedBox(
-                                        height: 10,
-                                      ),
-                                      Text(
-                                        'A new update is available. Would you like to update now?',
-                                        // textAlign: TextAlign.center,
-                                      ),
-                                    ],
-                                  ),
-                                  actions: [
-                                    TextButton(
-                                        style: TextButton.styleFrom(
-                                          primary: Colors.white,
-                                        ),
-                                        onPressed: () {
-                                          Navigator.pop(context);
-                                        },
-                                        child: Text('Maybe later')),
-                                    TextButton(
-                                        style: TextButton.styleFrom(
-                                          primary: Colors.white,
-                                          backgroundColor:
-                                              Theme.of(context).accentColor,
-                                        ),
-                                        onPressed: () {
-                                          Navigator.pop(context);
-                                          final dLink = FirebaseDatabase
-                                              .instance
-                                              .reference()
-                                              .child("LatestLink");
-                                          dLink.once().then(
-                                              (DataSnapshot linkSnapshot) {
-                                            launch(linkSnapshot.value);
-                                          });
-                                        },
-                                        child: Text('Update')),
-                                    SizedBox(
-                                      width: 5,
-                                    ),
-                                  ],
-                                );
-                              },
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                elevation: 6,
+                                backgroundColor: Colors.grey[900],
+                                behavior: SnackBarBehavior.floating,
+                                content: Text(
+                                  'Update Available!',
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                                action: SnackBarAction(
+                                  textColor: Theme.of(context).accentColor,
+                                  label: 'Update',
+                                  onPressed: () {
+                                    final dLink = FirebaseDatabase.instance
+                                        .reference()
+                                        .child("LatestLink");
+                                    dLink
+                                        .once()
+                                        .then((DataSnapshot linkSnapshot) {
+                                      launch(linkSnapshot.value);
+                                    });
+                                  },
+                                ),
+                              ),
                             );
                           } else {
-                            showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return AlertDialog(
-                                      title: Text(
-                                        'Update',
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.w600,
-                                          color: Theme.of(context).accentColor,
-                                        ),
-                                      ),
-                                      content: Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          SizedBox(
-                                            height: 10,
-                                          ),
-                                          Text(
-                                            'The app is already up to date',
-                                          ),
-                                        ],
-                                      ),
-                                      actions: [
-                                        TextButton(
-                                            style: TextButton.styleFrom(
-                                              primary: Colors.white,
-                                              backgroundColor:
-                                                  Theme.of(context).accentColor,
-                                            ),
-                                            onPressed: () {
-                                              Navigator.pop(context);
-                                            },
-                                            child: Text('Ok')),
-                                        SizedBox(
-                                          width: 5,
-                                        )
-                                      ]);
-                                });
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                elevation: 6,
+                                backgroundColor: Colors.grey[900],
+                                behavior: SnackBarBehavior.floating,
+                                content: Text(
+                                  'Congrats! You are using the latest version :)',
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                                action: SnackBarAction(
+                                  textColor: Theme.of(context).accentColor,
+                                  label: 'Ok',
+                                  onPressed: () {},
+                                ),
+                              ),
+                            );
                           }
                         });
                       },

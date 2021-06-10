@@ -79,15 +79,6 @@ class _TopChartsState extends State<TopCharts> {
   }
 }
 
-class TopPage extends StatefulWidget {
-  final region;
-  final status;
-  TopPage({Key key, @required this.region, @required this.status})
-      : super(key: key);
-  @override
-  _TopPageState createState() => _TopPageState();
-}
-
 Future<List> scrapData(String region) async {
   final webScraper = WebScraper("https://www.spotifycharts.com");
   print('starting expensive operation');
@@ -110,6 +101,15 @@ Future<List> scrapData(String region) async {
   }
   print('finished expensive operation');
   return temp;
+}
+
+class TopPage extends StatefulWidget {
+  final region;
+  final status;
+  TopPage({Key key, @required this.region, @required this.status})
+      : super(key: key);
+  @override
+  _TopPageState createState() => _TopPageState();
 }
 
 class _TopPageState extends State<TopPage> {
@@ -181,16 +181,8 @@ class _TopPageState extends State<TopPage> {
               )
             : Expanded(
                 child: !widget.status
-                    ? EmptyScreen().emptyScreen(
-                        context,
-                        0,
-                        ":( ",
-                        100,
-                        "ERROR",
-                        60,
-                        "Service Unavailable",
-                        20,
-                      )
+                    ? EmptyScreen().emptyScreen(context, 0, ":( ", 100, "ERROR",
+                        60, "Service Unavailable", 20)
                     : ListView.builder(
                         physics: BouncingScrollPhysics(),
                         itemCount: showList.length,

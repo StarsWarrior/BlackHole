@@ -125,7 +125,7 @@ class _PlayScreenState extends State<PlayScreen> {
         : playArtist = response['artist'];
 
     String playAlbum = response['album'];
-    final playDuration = '180';
+    final playDuration = response['duration'] ?? 180;
     File file;
     if (response['image'] != null) {
       try {
@@ -143,7 +143,7 @@ class _PlayScreenState extends State<PlayScreen> {
     MediaItem tempDict = MediaItem(
         id: response['id'],
         album: playAlbum,
-        duration: Duration(seconds: int.parse(playDuration)),
+        duration: Duration(seconds: playDuration),
         title: playTitle != null ? playTitle.split("(")[0] : 'Unknown',
         artist: playArtist ?? 'Unknown',
         artUri: file == null
@@ -175,7 +175,7 @@ class _PlayScreenState extends State<PlayScreen> {
           id: response[i]['id'],
           album: response[i]['album'],
           duration:
-              Duration(seconds: int.parse(response[i]['duration'] ?? '180')),
+              Duration(seconds: int.parse(response[i]['duration'] ?? 180)),
           title: response[i]['title'],
           artist: response[i]["artist"],
           artUri: Uri.parse(response[i]['image']),
@@ -906,8 +906,8 @@ class _PlayScreenState extends State<PlayScreen> {
                                                       image: (globalQueue ==
                                                                   null ||
                                                               globalQueue
-                                                                      .length ==
-                                                                  0)
+                                                                      .length <=
+                                                                  globalIndex)
                                                           ? (AssetImage(
                                                               'assets/cover.jpg'))
                                                           : offline
@@ -980,8 +980,8 @@ class _PlayScreenState extends State<PlayScreen> {
                                                     ? (mediaItem.title)
                                                     : ((globalQueue == null ||
                                                             globalQueue
-                                                                    .length ==
-                                                                0)
+                                                                    .length <=
+                                                                globalIndex)
                                                         ? 'Title'
                                                         : globalQueue[
                                                                 globalIndex]
