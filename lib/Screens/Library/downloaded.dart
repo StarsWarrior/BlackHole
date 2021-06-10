@@ -1,11 +1,11 @@
 import 'package:audiotagger/models/audiofile.dart';
 import 'package:audiotagger/models/tag.dart';
+import 'package:blackhole/CustomWidgets/collage.dart';
 import 'package:blackhole/Screens/Player/audioplayer.dart';
 import 'package:blackhole/CustomWidgets/gradientContainers.dart';
 import 'package:blackhole/CustomWidgets/emptyScreen.dart';
 import 'package:blackhole/CustomWidgets/miniplayer.dart';
 import 'package:flutter/cupertino.dart';
-// import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:ext_storage/ext_storage.dart';
 import 'package:hive/hive.dart';
@@ -221,6 +221,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
               'image': await tagger.readArtwork(path: entity.path),
               'title': tags.title,
               'artist': artistTag,
+              'albumArtist': tags.albumArtist,
               'album': albumTag,
               'lastModified': stats.modified,
               'genre': genreTag,
@@ -277,6 +278,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
               'image': null,
               'title': entity.path.split('/').last.toString(),
               'artist': '',
+              'albumArtist': '',
               'album': '',
               'lastModified': stats.modified,
               'year': '',
@@ -885,6 +887,8 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                               text: _cachedSongs[index]['album']);
                           final _artistcontroller = TextEditingController(
                               text: _cachedSongs[index]['artist']);
+                          final _albumArtistController = TextEditingController(
+                              text: _cachedSongs[index]['albumArtist']);
                           final _genrecontroller = TextEditingController(
                               text: _cachedSongs[index]['genre']);
                           final _yearcontroller = TextEditingController(
@@ -894,6 +898,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                               height: 400,
                               width: 300,
                               child: SingleChildScrollView(
+                                physics: BouncingScrollPhysics(),
                                 child: Column(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
@@ -927,6 +932,23 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                                     TextField(
                                         autofocus: true,
                                         controller: _artistcontroller,
+                                        onSubmitted: (value) {}),
+                                    SizedBox(
+                                      height: 30,
+                                    ),
+                                    Row(
+                                      children: [
+                                        Text(
+                                          'Album Artist',
+                                          style: TextStyle(
+                                              color: Theme.of(context)
+                                                  .accentColor),
+                                        ),
+                                      ],
+                                    ),
+                                    TextField(
+                                        autofocus: true,
+                                        controller: _albumArtistController,
                                         onSubmitted: (value) {}),
                                     SizedBox(
                                       height: 30,
@@ -1015,6 +1037,8 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                                         _albumcontroller.text;
                                     _cachedSongs[index]['artist'] =
                                         _artistcontroller.text;
+                                    _cachedSongs[index]['albumArtist'] =
+                                        _albumArtistController.text;
                                     _cachedSongs[index]['genre'] =
                                         _genrecontroller.text;
                                     _cachedSongs[index]['year'] =
@@ -1025,6 +1049,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                                       album: _albumcontroller.text,
                                       genre: _genrecontroller.text,
                                       year: _yearcontroller.text,
+                                      albumArtist: _albumArtistController.text,
                                     );
 
                                     final tagger = Audiotagger();
@@ -1211,28 +1236,17 @@ class _DownloadedSongsState extends State<DownloadedSongs>
             itemCount: sortedCachedAlbumKeysList.length,
             itemBuilder: (context, index) {
               return ListTile(
-                leading: Card(
-                  elevation: 5,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(7.0),
-                  ),
-                  clipBehavior: Clip.antiAlias,
-                  child: Stack(
-                    children: [
-                      Image(
-                        image: AssetImage('assets/album.png'),
-                      ),
-                      _cachedAlbums[sortedCachedAlbumKeysList[index]][0]
-                                  ['image'] ==
-                              null
-                          ? SizedBox()
-                          : Image(
-                              image: MemoryImage(_cachedAlbums[
-                                      sortedCachedAlbumKeysList[index]][0]
-                                  ['image']),
-                            )
-                    ],
-                  ),
+                leading: OfflineCollage(
+                  imageList: _cachedAlbums[sortedCachedAlbumKeysList[index]]
+                              .length >=
+                          4
+                      ? _cachedAlbums[sortedCachedAlbumKeysList[index]]
+                          .sublist(0, 4)
+                      : _cachedAlbums[sortedCachedAlbumKeysList[index]].sublist(
+                          0,
+                          _cachedAlbums[sortedCachedAlbumKeysList[index]]
+                              .length),
+                  placeholderImage: 'assets/album.png',
                 ),
                 title: Text('${sortedCachedAlbumKeysList[index]}'),
                 subtitle: Text(
@@ -1266,28 +1280,19 @@ class _DownloadedSongsState extends State<DownloadedSongs>
             itemCount: sortedCachedArtistKeysList.length,
             itemBuilder: (context, index) {
               return ListTile(
-                leading: Card(
-                  elevation: 5,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(7.0),
-                  ),
-                  clipBehavior: Clip.antiAlias,
-                  child: Stack(
-                    children: [
-                      Image(
-                        image: AssetImage('assets/artist.png'),
-                      ),
-                      _cachedArtists[sortedCachedArtistKeysList[index]][0]
-                                  ['image'] ==
-                              null
-                          ? SizedBox()
-                          : Image(
-                              image: MemoryImage(_cachedArtists[
-                                      sortedCachedArtistKeysList[index]][0]
-                                  ['image']),
-                            )
-                    ],
-                  ),
+                leading: OfflineCollage(
+                  imageList: _cachedArtists[sortedCachedArtistKeysList[index]]
+                              .length >=
+                          4
+                      ? _cachedArtists[sortedCachedArtistKeysList[index]]
+                          .sublist(0, 4)
+                      : _cachedArtists[
+                              sortedCachedArtistKeysList[index]]
+                          .sublist(
+                              0,
+                              _cachedArtists[sortedCachedArtistKeysList[index]]
+                                  .length),
+                  placeholderImage: 'assets/artist.png',
                 ),
                 title: Text('${sortedCachedArtistKeysList[index]}'),
                 subtitle: Text(
@@ -1321,28 +1326,17 @@ class _DownloadedSongsState extends State<DownloadedSongs>
             itemCount: sortedCachedGenreKeysList.length,
             itemBuilder: (context, index) {
               return ListTile(
-                leading: Card(
-                  elevation: 5,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(7.0),
-                  ),
-                  clipBehavior: Clip.antiAlias,
-                  child: Stack(
-                    children: [
-                      Image(
-                        image: AssetImage('assets/album.png'),
-                      ),
-                      _cachedGenres[sortedCachedGenreKeysList[index]][0]
-                                  ['image'] ==
-                              null
-                          ? SizedBox()
-                          : Image(
-                              image: MemoryImage(_cachedGenres[
-                                      sortedCachedGenreKeysList[index]][0]
-                                  ['image']),
-                            )
-                    ],
-                  ),
+                leading: OfflineCollage(
+                  imageList: _cachedGenres[sortedCachedGenreKeysList[index]]
+                              .length >=
+                          4
+                      ? _cachedGenres[sortedCachedGenreKeysList[index]]
+                          .sublist(0, 4)
+                      : _cachedGenres[sortedCachedGenreKeysList[index]].sublist(
+                          0,
+                          _cachedGenres[sortedCachedGenreKeysList[index]]
+                              .length),
+                  placeholderImage: 'assets/album.png',
                 ),
                 title: Text('${sortedCachedGenreKeysList[index]}'),
                 subtitle: Text(

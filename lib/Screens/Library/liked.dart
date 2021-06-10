@@ -1,11 +1,14 @@
-import 'package:blackhole/Screens/Player/audioplayer.dart';
-import 'package:blackhole/CustomWidgets/GradientContainers.dart';
+import 'package:blackhole/CustomWidgets/collage.dart';
 import 'package:blackhole/CustomWidgets/emptyScreen.dart';
+import 'package:blackhole/CustomWidgets/GradientContainers.dart';
+import 'package:blackhole/CustomWidgets/miniplayer.dart';
 import 'package:blackhole/Screens/Library/showSongs.dart';
+import 'package:blackhole/Screens/Player/audioplayer.dart';
+import 'package:blackhole/Helpers/songs_count.dart';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-import 'package:blackhole/CustomWidgets/miniplayer.dart';
 
 class LikedSongs extends StatefulWidget {
   final String playlistName;
@@ -49,6 +52,13 @@ class _LikedSongsState extends State<LikedSongs>
   void getLiked() {
     likedBox = Hive.box(widget.playlistName);
     _songs = likedBox?.values?.toList() ?? [];
+    AddSongsCount().addSong(
+      widget.playlistName,
+      _songs.length,
+      _songs.length >= 4
+          ? _songs.sublist(0, 4)
+          : _songs.sublist(0, _songs.length),
+    );
     setArtistAlbum();
   }
 
@@ -173,6 +183,13 @@ class _LikedSongsState extends State<LikedSongs>
     _genres[_songs[index]['genre']].remove(_songs[index]);
 
     _songs.remove(_songs[index]);
+    AddSongsCount().addSong(
+      widget.playlistName,
+      _songs.length,
+      _songs.length >= 4
+          ? _songs.sublist(0, 4)
+          : _songs.sublist(0, _songs.length),
+    );
   }
 
   @override
@@ -573,22 +590,12 @@ class _LikedSongsState extends State<LikedSongs>
             itemCount: sortedAlbumKeysList.length,
             itemBuilder: (context, index) {
               return ListTile(
-                leading: Card(
-                  elevation: 5,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(7.0),
-                  ),
-                  clipBehavior: Clip.antiAlias,
-                  child: CachedNetworkImage(
-                    errorWidget: (context, _, __) => Image(
-                      image: AssetImage('assets/cover.jpg'),
-                    ),
-                    imageUrl: _albums[sortedAlbumKeysList[index]][0]['image']
-                        .replaceAll('http:', 'https:'),
-                    placeholder: (context, url) => Image(
-                      image: AssetImage('assets/cover.jpg'),
-                    ),
-                  ),
+                leading: Collage(
+                  imageList: _albums[sortedAlbumKeysList[index]].length >= 4
+                      ? _albums[sortedAlbumKeysList[index]].sublist(0, 4)
+                      : _albums[sortedAlbumKeysList[index]].sublist(
+                          0, _albums[sortedAlbumKeysList[index]].length),
+                  placeholderImage: 'assets/album.png',
                 ),
                 title: Text('${sortedAlbumKeysList[index]}'),
                 subtitle: Text(
@@ -622,22 +629,12 @@ class _LikedSongsState extends State<LikedSongs>
             itemCount: sortedArtistKeysList.length,
             itemBuilder: (context, index) {
               return ListTile(
-                leading: Card(
-                  elevation: 5,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(7.0),
-                  ),
-                  clipBehavior: Clip.antiAlias,
-                  child: CachedNetworkImage(
-                    errorWidget: (context, _, __) => Image(
-                      image: AssetImage('assets/cover.jpg'),
-                    ),
-                    imageUrl: _artists[sortedArtistKeysList[index]][0]['image']
-                        .replaceAll('http:', 'https:'),
-                    placeholder: (context, url) => Image(
-                      image: AssetImage('assets/cover.jpg'),
-                    ),
-                  ),
+                leading: Collage(
+                  imageList: _artists[sortedArtistKeysList[index]].length >= 4
+                      ? _artists[sortedArtistKeysList[index]].sublist(0, 4)
+                      : _artists[sortedArtistKeysList[index]].sublist(
+                          0, _artists[sortedArtistKeysList[index]].length),
+                  placeholderImage: 'assets/artist.png',
                 ),
                 title: Text('${sortedArtistKeysList[index]}'),
                 subtitle: Text(
@@ -671,22 +668,12 @@ class _LikedSongsState extends State<LikedSongs>
             itemCount: sortedGenreKeysList.length,
             itemBuilder: (context, index) {
               return ListTile(
-                leading: Card(
-                  elevation: 5,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(7.0),
-                  ),
-                  clipBehavior: Clip.antiAlias,
-                  child: CachedNetworkImage(
-                    errorWidget: (context, _, __) => Image(
-                      image: AssetImage('assets/cover.jpg'),
-                    ),
-                    imageUrl: _genres[sortedGenreKeysList[index]][0]['image']
-                        .replaceAll('http:', 'https:'),
-                    placeholder: (context, url) => Image(
-                      image: AssetImage('assets/cover.jpg'),
-                    ),
-                  ),
+                leading: Collage(
+                  imageList: _genres[sortedGenreKeysList[index]].length >= 4
+                      ? _genres[sortedGenreKeysList[index]].sublist(0, 4)
+                      : _genres[sortedGenreKeysList[index]].sublist(
+                          0, _genres[sortedGenreKeysList[index]].length),
+                  placeholderImage: 'assets/album.png',
                 ),
                 title: Text('${sortedGenreKeysList[index]}'),
                 subtitle: Text(

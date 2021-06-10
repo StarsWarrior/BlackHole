@@ -1,5 +1,6 @@
 import 'package:blackhole/APIs/api.dart';
 import 'package:blackhole/CustomWidgets/GradientContainers.dart';
+import 'package:blackhole/CustomWidgets/collage.dart';
 import 'package:blackhole/Helpers/webView.dart';
 import 'package:blackhole/Screens/Library/liked.dart';
 import 'package:blackhole/CustomWidgets/miniplayer.dart';
@@ -17,9 +18,11 @@ class PlaylistScreen extends StatefulWidget {
 class _PlaylistScreenState extends State<PlaylistScreen> {
   Box settingsBox = Hive.box('settings');
   List playlistNames = [];
+  Map playlistDetails = {};
   @override
   Widget build(BuildContext context) {
     playlistNames = settingsBox.get('playlistNames')?.toList() ?? [];
+    playlistDetails = settingsBox.get('playlistDetails', defaultValue: {});
 
     return GradientContainer(
       child: Column(
@@ -45,11 +48,22 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                     SizedBox(height: 5),
                     ListTile(
                       title: Text('Create Playlist'),
-                      leading: Icon(
-                        Icons.add_rounded,
-                        color: Theme.of(context).brightness == Brightness.dark
-                            ? null
-                            : Colors.grey[700],
+                      leading: Card(
+                        elevation: 0,
+                        color: Colors.transparent,
+                        child: SizedBox(
+                          width: 50,
+                          height: 50,
+                          child: Center(
+                            child: Icon(
+                              Icons.add_rounded,
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? null
+                                  : Colors.grey[700],
+                            ),
+                          ),
+                        ),
                       ),
                       onTap: () {
                         showDialog(
@@ -142,11 +156,22 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                     ),
                     ListTile(
                         title: Text('Import from Spotify'),
-                        leading: Icon(
-                          MdiIcons.spotify,
-                          color: Theme.of(context).brightness == Brightness.dark
-                              ? null
-                              : Colors.grey[700],
+                        leading: Card(
+                          elevation: 0,
+                          color: Colors.transparent,
+                          child: SizedBox(
+                            width: 50,
+                            height: 50,
+                            child: Center(
+                              child: Icon(
+                                MdiIcons.spotify,
+                                color: Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? null
+                                    : Colors.grey[700],
+                              ),
+                            ),
+                          ),
                         ),
                         onTap: () async {
                           // String code = await SpotifyApi().authenticate();
@@ -172,14 +197,35 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                             itemCount: playlistNames.length,
                             itemBuilder: (context, index) {
                               return ListTile(
-                                leading: Icon(
-                                  Icons.queue_music_rounded,
-                                  color: Theme.of(context).brightness ==
-                                          Brightness.dark
-                                      ? null
-                                      : Colors.grey[700],
-                                ),
+                                leading: playlistDetails[
+                                                playlistNames[index]] ==
+                                            null ||
+                                        playlistDetails[playlistNames[index]]
+                                                ['imagesList'] ==
+                                            null
+                                    ? Card(
+                                        elevation: 0,
+                                        color: Colors.transparent,
+                                        child: SizedBox(
+                                            height: 50,
+                                            width: 50,
+                                            child: Center(
+                                                child: Icon(Icons
+                                                    .queue_music_rounded))),
+                                      )
+                                    : Collage(
+                                        imageList: playlistDetails[
+                                            playlistNames[index]]['imagesList'],
+                                        placeholderImage: 'assets/cover.jpg'),
                                 title: Text('${playlistNames[index]}'),
+                                subtitle: Text(playlistDetails[
+                                                playlistNames[index]] ==
+                                            null ||
+                                        playlistDetails[playlistNames[index]]
+                                                ['count'] ==
+                                            0
+                                    ? ''
+                                    : '${playlistDetails[playlistNames[index]]['count']} Songs'),
                                 trailing: PopupMenuButton(
                                   icon: Icon(Icons.more_vert_rounded),
                                   shape: RoundedRectangleBorder(
@@ -203,6 +249,10 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                                         ),
                                       ),
                                     );
+                                    playlistDetails
+                                        .remove(playlistNames[index]);
+                                    await settingsBox.put(
+                                        'playlistDetails', playlistDetails);
                                     await Hive.openBox(playlistNames[index]);
                                     await Hive.box(playlistNames[index])
                                         .deleteFromDisk();

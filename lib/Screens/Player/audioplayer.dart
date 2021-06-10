@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:blackhole/CustomWidgets/downloadButton.dart';
 import 'package:blackhole/CustomWidgets/gradientContainers.dart';
+import 'package:blackhole/Helpers/songs_count.dart';
 import 'package:blackhole/Services/audioService.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart';
@@ -102,6 +103,14 @@ class _PlayScreenState extends State<PlayScreen> {
       "album_id": mediaItem.extras["album_id"],
       "subtitle": mediaItem.extras["subtitle"]
     };
+    List _songs = playlistBox.values;
+    AddSongsCount().addSong(
+      name,
+      playlistBox.values.length + 1,
+      _songs.length >= 4
+          ? _songs.sublist(0, 4)
+          : _songs.sublist(0, _songs.length),
+    );
     playlistBox.put(mediaItem.id.toString(), info);
     setState(() {});
   }

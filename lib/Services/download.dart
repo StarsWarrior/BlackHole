@@ -178,6 +178,7 @@ class Download with ChangeNotifier {
       final Tag tag = Tag(
         title: data['title'],
         artist: data['artist'],
+        albumArtist: data['artist'].toString()?.split(', ')[0],
         artwork: filepath2.toString(),
         album: data['album'],
         genre: data['language'],
