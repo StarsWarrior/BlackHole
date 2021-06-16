@@ -30,7 +30,7 @@ class _DownloadButtonState extends State<DownloadButton> {
           child: (down.lastDownloadId == widget.data['id'])
               ? IconButton(
                   icon: Icon(widget.icon == 'download'
-                      ? Icons.download_rounded
+                      ? Icons.download_done_rounded
                       : Icons.save_alt),
                   color: Theme.of(context).accentColor,
                   iconSize: 25.0,

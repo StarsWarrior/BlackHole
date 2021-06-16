@@ -1184,9 +1184,9 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                       value: 1,
                       child: Row(
                         children: [
-                          Icon(CupertinoIcons.tag
-                              // Icons.tag_rounded
-                              ),
+                          Icon(
+                              // CupertinoIcons.tag
+                              Icons.local_offer_rounded),
                           Spacer(),
                           Text('Edit Tags'),
                           Spacer(),
@@ -1197,7 +1197,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                       value: 2,
                       child: Row(
                         children: [
-                          Icon(Icons.delete),
+                          Icon(Icons.delete_rounded),
                           Spacer(),
                           Text('Delete'),
                           Spacer(),
@@ -1634,7 +1634,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                       value: 1,
                       child: Row(
                         children: [
-                          Icon(Icons.delete),
+                          Icon(Icons.delete_rounded),
                           Spacer(),
                           Text('Delete'),
                           Spacer(),

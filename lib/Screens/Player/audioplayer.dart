@@ -1,7 +1,8 @@
 import 'dart:async';
 import 'package:blackhole/CustomWidgets/downloadButton.dart';
 import 'package:blackhole/CustomWidgets/gradientContainers.dart';
-import 'package:blackhole/Helpers/songs_count.dart';
+import 'package:blackhole/CustomWidgets/like_button.dart';
+import 'package:blackhole/Helpers/playlist.dart';
 import 'package:blackhole/Services/audioService.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart';
@@ -64,55 +65,6 @@ class _PlayScreenState extends State<PlayScreen> {
   void initState() {
     super.initState();
     main();
-  }
-
-  bool checkPlaylist(String name, String key) {
-    if (name != 'Favorite Songs') {
-      Hive.openBox(name).then((value) {
-        final playlistBox = Hive.box(name);
-        return playlistBox.containsKey(key);
-      });
-    }
-    final playlistBox = Hive.box(name);
-    return playlistBox.containsKey(key);
-  }
-
-  void removeLiked(String key) async {
-    Box likedBox = Hive.box('Favorite Songs');
-    likedBox.delete(key);
-    setState(() {});
-  }
-
-  void addPlaylist(String name, MediaItem mediaItem) async {
-    if (name != 'Favorite Songs') await Hive.openBox(name);
-    Box playlistBox = Hive.box(name);
-    Map info = {
-      'id': mediaItem.id.toString(),
-      'artist': mediaItem.artist.toString(),
-      'album': mediaItem.album.toString(),
-      'image': mediaItem.artUri.toString(),
-      'duration': mediaItem.duration.inSeconds.toString(),
-      'title': mediaItem.title.toString(),
-      'url': mediaItem.extras['url'].toString(),
-      "year": mediaItem.extras["year"].toString(),
-      "language": mediaItem.extras["language"].toString(),
-      "genre": mediaItem.genre.toString(),
-      "320kbps": mediaItem.extras["320kbps"],
-      "has_lyrics": mediaItem.extras["has_lyrics"],
-      "release_date": mediaItem.extras["release_date"],
-      "album_id": mediaItem.extras["album_id"],
-      "subtitle": mediaItem.extras["subtitle"]
-    };
-    List _songs = playlistBox.values;
-    AddSongsCount().addSong(
-      name,
-      playlistBox.values.length + 1,
-      _songs.length >= 4
-          ? _songs.sublist(0, 4)
-          : _songs.sublist(0, _songs.length),
-    );
-    playlistBox.put(mediaItem.id.toString(), info);
-    setState(() {});
   }
 
   setTags(Map response, Directory tempDir) async {
@@ -591,6 +543,7 @@ class _PlayScreenState extends State<PlayScreen> {
                                                             playlistNames[
                                                                 index],
                                                             mediaItem);
+                                                        setState(() {});
                                                         ScaffoldMessenger.of(
                                                                 scaffoldContext)
                                                             .showSnackBar(
@@ -1088,83 +1041,17 @@ class _PlayScreenState extends State<PlayScreen> {
                                             stream: _queueStateStream,
                                             builder: (context, snapshot) {
                                               final queueState = snapshot.data;
-                                              bool liked = false;
                                               final mediaItem =
                                                   queueState?.mediaItem;
-                                              try {
-                                                liked = checkPlaylist(
-                                                    'Favorite Songs',
-                                                    mediaItem.id);
-                                              } catch (e) {}
-
                                               return mediaItem == null
                                                   ? IconButton(
                                                       icon: Icon(Icons
                                                           .favorite_border_rounded),
                                                       iconSize: 25.0,
                                                       onPressed: null)
-                                                  : IconButton(
-                                                      icon: Icon(
-                                                        liked
-                                                            ? Icons
-                                                                .favorite_rounded
-                                                            : Icons
-                                                                .favorite_border_rounded,
-                                                        color: liked
-                                                            ? Colors.redAccent
-                                                            : null,
-                                                      ),
-                                                      iconSize: 25.0,
-                                                      onPressed: () {
-                                                        liked
-                                                            ? removeLiked(
-                                                                mediaItem.id)
-                                                            : addPlaylist(
-                                                                'Favorite Songs',
-                                                                mediaItem);
-                                                        liked = !liked;
-                                                        ScaffoldMessenger.of(
-                                                                scaffoldContext)
-                                                            .showSnackBar(
-                                                          SnackBar(
-                                                            duration: Duration(
-                                                                seconds: 2),
-                                                            action:
-                                                                SnackBarAction(
-                                                                    textColor: Theme.of(
-                                                                            context)
-                                                                        .accentColor,
-                                                                    label:
-                                                                        'Undo',
-                                                                    onPressed:
-                                                                        () {
-                                                                      liked
-                                                                          ? removeLiked(mediaItem
-                                                                              .id)
-                                                                          : addPlaylist(
-                                                                              'Favorite Songs',
-                                                                              mediaItem);
-                                                                      liked =
-                                                                          !liked;
-                                                                    }),
-                                                            elevation: 6,
-                                                            backgroundColor:
-                                                                Colors
-                                                                    .grey[900],
-                                                            behavior:
-                                                                SnackBarBehavior
-                                                                    .floating,
-                                                            content: Text(
-                                                              liked
-                                                                  ? 'Added to Favorites'
-                                                                  : 'Removed from Favorites',
-                                                              style: TextStyle(
-                                                                  color: Colors
-                                                                      .white),
-                                                            ),
-                                                          ),
-                                                        );
-                                                      });
+                                                  : LikeButton(
+                                                      mediaItem: mediaItem,
+                                                      size: 25.0);
                                             },
                                           ),
                                       ],
@@ -1410,52 +1297,133 @@ class _PlayScreenState extends State<PlayScreen> {
                                                                     null ||
                                                                 queue.isEmpty)
                                                             ? SizedBox()
-                                                            : ListView.builder(
-                                                                controller:
-                                                                    scrollController,
-                                                                physics:
-                                                                    BouncingScrollPhysics(),
-                                                                padding: EdgeInsets
-                                                                    .only(
-                                                                        top: 10,
+                                                            : ReorderableListView
+                                                                .builder(
+                                                                    header:
+                                                                        SizedBox(
+                                                                      key: Key(
+                                                                          'head'),
+                                                                      height:
+                                                                          50,
+                                                                      child:
+                                                                          Center(
+                                                                        child:
+                                                                            Text(
+                                                                          'Now Playing',
+                                                                          textAlign:
+                                                                              TextAlign.center,
+                                                                          style:
+                                                                              TextStyle(
+                                                                            fontWeight:
+                                                                                FontWeight.w600,
+                                                                            fontSize:
+                                                                                18,
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                    scrollController:
+                                                                        scrollController,
+                                                                    onReorder: (int
+                                                                            oldIndex,
+                                                                        int
+                                                                            newIndex) {
+                                                                      setState(
+                                                                          () {
+                                                                        if (newIndex >
+                                                                            oldIndex) {
+                                                                          newIndex -=
+                                                                              1;
+                                                                        }
+                                                                        final items =
+                                                                            queue.removeAt(oldIndex);
+                                                                        queue.insert(
+                                                                            newIndex,
+                                                                            items);
+                                                                        AudioService.updateQueue(
+                                                                            queue);
+                                                                        AudioService.customAction(
+                                                                            'changeIndex',
+                                                                            newIndex);
+                                                                      });
+                                                                    },
+                                                                    physics:
+                                                                        BouncingScrollPhysics(),
+                                                                    padding: EdgeInsets.only(
+                                                                        top: 0,
                                                                         bottom:
                                                                             10),
-                                                                shrinkWrap:
-                                                                    true,
-                                                                itemCount: queue
-                                                                        .length +
-                                                                    1,
-                                                                itemBuilder:
-                                                                    (context,
-                                                                        index) {
-                                                                  return index ==
-                                                                          0
-                                                                      ? SizedBox(
-                                                                          height:
-                                                                              40,
-                                                                          child:
-                                                                              Center(
-                                                                            child:
-                                                                                Text(
-                                                                              'Now Playing',
-                                                                              textAlign: TextAlign.center,
-                                                                              style: TextStyle(
-                                                                                fontWeight: FontWeight.w600,
-                                                                                fontSize: 18,
-                                                                              ),
-                                                                            ),
-                                                                          ),
-                                                                        )
-                                                                      : ListTileTheme(
+                                                                    shrinkWrap:
+                                                                        true,
+                                                                    itemCount: queue
+                                                                        .length,
+                                                                    itemBuilder:
+                                                                        (context,
+                                                                            index) {
+                                                                      return Dismissible(
+                                                                        key: Key(
+                                                                            queue[index].id),
+                                                                        direction: queue[index] ==
+                                                                                mediaItem
+                                                                            ? DismissDirection.none
+                                                                            : DismissDirection.horizontal,
+                                                                        onDismissed:
+                                                                            (dir) {
+                                                                          setState(
+                                                                              () {
+                                                                            queue.remove(queue[index]);
+                                                                            AudioService.updateQueue(queue);
+                                                                            int newIndex = queue.indexWhere((element) =>
+                                                                                element ==
+                                                                                mediaItem);
+                                                                            AudioService.customAction('changeIndex',
+                                                                                newIndex);
+                                                                          });
+                                                                        },
+                                                                        child:
+                                                                            ListTileTheme(
                                                                           selectedColor:
                                                                               Theme.of(context).accentColor,
                                                                           child:
                                                                               ListTile(
+                                                                            contentPadding:
+                                                                                EdgeInsets.only(left: 16.0, right: 10.0),
                                                                             selected:
-                                                                                queue[index - 1] == mediaItem,
-                                                                            trailing: queue[index - 1] == mediaItem
-                                                                                ? Icon(Icons.bar_chart_rounded)
-                                                                                : SizedBox(),
+                                                                                queue[index] == mediaItem,
+                                                                            trailing: queue[index] == mediaItem
+                                                                                ? IconButton(
+                                                                                    icon: Icon(
+                                                                                      Icons.bar_chart_rounded,
+                                                                                    ),
+                                                                                    onPressed: () {},
+                                                                                  )
+                                                                                : offline
+                                                                                    ? SizedBox()
+                                                                                    : Row(
+                                                                                        mainAxisSize: MainAxisSize.min,
+                                                                                        children: [
+                                                                                          LikeButton(
+                                                                                            mediaItem: queue[index],
+                                                                                          ),
+                                                                                          DownloadButton(icon: 'download', data: {
+                                                                                            'id': queue[index].id.toString(),
+                                                                                            'artist': queue[index].artist.toString(),
+                                                                                            'album': queue[index].album.toString(),
+                                                                                            'image': queue[index].artUri.toString(),
+                                                                                            'duration': queue[index].duration.inSeconds.toString(),
+                                                                                            'title': queue[index].title.toString(),
+                                                                                            'url': queue[index].extras['url'].toString(),
+                                                                                            "year": queue[index].extras["year"].toString(),
+                                                                                            "language": queue[index].extras["language"].toString(),
+                                                                                            "genre": queue[index].genre.toString(),
+                                                                                            "320kbps": queue[index].extras["320kbps"],
+                                                                                            "has_lyrics": queue[index].extras["has_lyrics"],
+                                                                                            "release_date": queue[index].extras["release_date"],
+                                                                                            "album_id": queue[index].extras["album_id"],
+                                                                                            "subtitle": queue[index].extras["subtitle"]
+                                                                                          })
+                                                                                        ],
+                                                                                      ),
                                                                             leading:
                                                                                 Card(
                                                                               elevation: 5,
@@ -1468,26 +1436,27 @@ class _PlayScreenState extends State<PlayScreen> {
                                                                                   Image(
                                                                                     image: AssetImage('assets/cover.jpg'),
                                                                                   ),
-                                                                                  queue[index - 1].artUri == null ? SizedBox() : Image(image: queue[index - 1].artUri.toString().startsWith('file:') ? FileImage(File(queue[index - 1].artUri.toFilePath())) : NetworkImage(queue[index - 1].artUri.toString()))
+                                                                                  queue[index].artUri == null ? SizedBox() : Image(image: queue[index].artUri.toString().startsWith('file:') ? FileImage(File(queue[index].artUri.toFilePath())) : NetworkImage(queue[index].artUri.toString()))
                                                                                 ],
                                                                               ),
                                                                             ),
                                                                             title:
                                                                                 Text(
-                                                                              '${queue[index - 1].title}',
-                                                                              style: TextStyle(fontWeight: queue[index - 1] == mediaItem ? FontWeight.w600 : FontWeight.normal),
+                                                                              '${queue[index].title}',
+                                                                              style: TextStyle(fontWeight: queue[index] == mediaItem ? FontWeight.w600 : FontWeight.normal),
                                                                             ),
                                                                             subtitle:
                                                                                 Text(
-                                                                              '${queue[index - 1].artist}',
+                                                                              '${queue[index].artist}',
                                                                             ),
                                                                             onTap:
                                                                                 () {
-                                                                              AudioService.skipToQueueItem(queue[index - 1].id);
+                                                                              AudioService.skipToQueueItem(queue[index].id);
                                                                             },
                                                                           ),
-                                                                        );
-                                                                });
+                                                                        ),
+                                                                      );
+                                                                    });
                                                       },
                                                     );
                                             },

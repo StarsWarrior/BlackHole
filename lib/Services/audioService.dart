@@ -241,6 +241,10 @@ class AudioPlayerTask extends BackgroundAudioTask {
       }
     }
 
+    if (myFunction == 'changeIndex') {
+      index = myVariable;
+    }
+
     if (myFunction == 'repeatMode') {
       repeatMode = myVariable;
     }

@@ -266,7 +266,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                                       value: 0,
                                       child: Row(
                                         children: [
-                                          Icon(Icons.delete),
+                                          Icon(Icons.delete_rounded),
                                           Spacer(),
                                           Text('Delete playlist'),
                                           Spacer(),
