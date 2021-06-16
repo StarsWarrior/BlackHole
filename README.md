@@ -38,6 +38,7 @@ Play Online as well as Offline Songs<br>
 * Dark mode / accent color
 * Download for offline play (320kbps with ID3 tags)
 * Play Online as well as Offline Songs
+* Queue Management
 * Auto Update Check
 * Cache support
 * No Subscription
@@ -63,7 +64,9 @@ More to come...
 
 ## License
 
-BlackHole is licensed under the [GPL v3.0](https://github.com/Sangwan5688/BlackHole/blob/main/LICENSE) license.
+BlackHole is licensed under the [GPL v3.0](https://github.com/Sangwan5688/BlackHole/blob/main/LICENSE) license. You can redistribute and/or modify the project under the terms of GNU General Public License v3.0 as published by Free Software Foundation, Inc.</br>
+Copyright © 2021 Ankit Sangwan
+
 
 ## Build
 
