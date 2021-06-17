@@ -1,0 +1,22 @@
+Features:
+
+- Best Streaming Quality (320kbps)
+- Music Search
+- Trending Songs
+- Support 15+ music languages
+- Local and Global Top Spotify songs
+- Add Songs to Favorite
+- Playlists support
+- Import Playlists from Spotify
+- Sleep timer
+- Lyrics Support
+- Listening history record
+- Dark mode / accent color
+- Download for offline play (320kbps with ID3 tags)
+- Play Online as well as Offline Songs
+- Queue Management
+- Auto Update Check
+- Cache support
+- No Subscription
+- No Ads
+More to come...

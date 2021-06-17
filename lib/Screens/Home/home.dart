@@ -95,7 +95,7 @@ class _HomePageState extends State<HomePage> {
       });
 
       dbRef.once().then((DataSnapshot snapshot) {
-        if (double.parse(snapshot.value) >= appVersion) {
+        if (double.parse(snapshot.value) > appVersion) {
           print('UPDATE IS AVAILABLE');
           return ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
