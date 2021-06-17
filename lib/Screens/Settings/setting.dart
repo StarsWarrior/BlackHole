@@ -1,15 +1,12 @@
-import 'dart:io';
 import 'package:blackhole/Helpers/countrycodes.dart';
 import 'package:blackhole/CustomWidgets/GradientContainers.dart';
+import 'package:blackhole/Helpers/picker.dart';
 import 'package:blackhole/Screens/Top Charts/top.dart' as topScreen;
 import 'package:blackhole/Screens/Home/trending.dart' as trendingScreen;
-import 'package:ext_storage/ext_storage.dart';
-import 'package:filesystem_picker/filesystem_picker.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:blackhole/Helpers/config.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:share/share.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -81,32 +78,6 @@ class _SettingPageState extends State<SettingPage> {
     final userID = Hive.box('settings').get('userID');
     final dbRef = FirebaseDatabase.instance.reference().child("Users");
     dbRef.child(userID).update({"$key": "$value"});
-  }
-
-  Future<String> selectFolder() async {
-    PermissionStatus status = await Permission.storage.status;
-    if (status.isRestricted || status.isDenied) {
-      Map<Permission, PermissionStatus> statuses = await [
-        Permission.storage,
-      ].request();
-      debugPrint(statuses[Permission.storage].toString());
-    }
-    status = await Permission.storage.status;
-    if (status.isGranted) {
-      String path = await ExtStorage.getExternalStorageDirectory();
-      Directory rootPath = Directory(path);
-      String temp = await FilesystemPicker.open(
-            title: 'Select folder',
-            context: context,
-            rootDirectory: rootPath,
-            fsType: FilesystemType.folder,
-            pickText: 'Select this folder',
-            folderIconColor: Theme.of(context).accentColor,
-          ) ??
-          '';
-      return temp;
-    }
-    return '';
   }
 
   @override
@@ -884,7 +855,7 @@ class _SettingPageState extends State<SettingPage> {
                       onTap: () async {
                         /// If you want you can uncomment the code below to let user select download location
 
-                        // String temp = await selectFolder();
+                        // String temp = await selectFolder(context);
                         // if (temp.trim() != '') {
                         //   downloadPath = temp;
                         //   Hive.box('settings').put('downloadPath', temp);
@@ -936,13 +907,8 @@ class _SettingPageState extends State<SettingPage> {
                                               title: Text('Add Location'),
                                               leading: Icon(CupertinoIcons.add),
                                               onTap: () async {
-                                                String temp =
-                                                    await selectFolder();
-
-                                                // String temp = await FilePicker
-                                                //         .platform
-                                                //         .getDirectoryPath() ??
-                                                //     '/';
+                                                String temp = await Picker()
+                                                    .selectFolder(context);
                                                 if (temp.trim() != '' &&
                                                     !dirPaths.contains(temp)) {
                                                   dirPaths.add(temp);

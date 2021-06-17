@@ -1,6 +1,7 @@
 import 'package:blackhole/APIs/api.dart';
 import 'package:blackhole/CustomWidgets/GradientContainers.dart';
 import 'package:blackhole/CustomWidgets/collage.dart';
+import 'package:blackhole/Helpers/import_export_playlist.dart';
 import 'package:blackhole/Helpers/webView.dart';
 import 'package:blackhole/Screens/Library/liked.dart';
 import 'package:blackhole/CustomWidgets/miniplayer.dart';
@@ -94,7 +95,6 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                                         if (value.trim() == '')
                                           value =
                                               'Playlist ${playlistNames.length}';
-
                                         if (playlistNames.contains(value))
                                           value = value + ' (1)';
                                         playlistNames.add(value);
@@ -154,6 +154,31 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                         );
                       },
                     ),
+                    ListTile(
+                        title: Text('Import from File'),
+                        leading: Card(
+                          elevation: 0,
+                          color: Colors.transparent,
+                          child: SizedBox(
+                            width: 50,
+                            height: 50,
+                            child: Center(
+                              child: Icon(
+                                MdiIcons.import,
+                                color: Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? null
+                                    : Colors.grey[700],
+                              ),
+                            ),
+                          ),
+                        ),
+                        onTap: () async {
+                          playlistNames = await ImportPlaylist()
+                              .importPlaylist(context, playlistNames);
+                          settingsBox.put('playlistNames', playlistNames);
+                          setState(() {});
+                        }),
                     ListTile(
                         title: Text('Import from Spotify'),
                         leading: Card(
@@ -232,34 +257,42 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                                       borderRadius: BorderRadius.all(
                                           Radius.circular(7.0))),
                                   onSelected: (value) async {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        elevation: 6,
-                                        backgroundColor: Colors.grey[900],
-                                        behavior: SnackBarBehavior.floating,
-                                        content: Text(
-                                          'Deleted ${playlistNames[index]}',
-                                          style: TextStyle(color: Colors.white),
+                                    if (value == 1) {
+                                      ExportPlaylist().exportPlaylist(
+                                          context, playlistNames[index]);
+                                    }
+                                    if (value == 0) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackBar(
+                                          elevation: 6,
+                                          backgroundColor: Colors.grey[900],
+                                          behavior: SnackBarBehavior.floating,
+                                          content: Text(
+                                            'Deleted ${playlistNames[index]}',
+                                            style:
+                                                TextStyle(color: Colors.white),
+                                          ),
+                                          action: SnackBarAction(
+                                            textColor:
+                                                Theme.of(context).accentColor,
+                                            label: 'Ok',
+                                            onPressed: () {},
+                                          ),
                                         ),
-                                        action: SnackBarAction(
-                                          textColor:
-                                              Theme.of(context).accentColor,
-                                          label: 'Ok',
-                                          onPressed: () {},
-                                        ),
-                                      ),
-                                    );
-                                    playlistDetails
-                                        .remove(playlistNames[index]);
-                                    await settingsBox.put(
-                                        'playlistDetails', playlistDetails);
-                                    await Hive.openBox(playlistNames[index]);
-                                    await Hive.box(playlistNames[index])
-                                        .deleteFromDisk();
-                                    await playlistNames.removeAt(index);
-                                    await settingsBox.put(
-                                        'playlistNames', playlistNames);
-                                    setState(() {});
+                                      );
+                                      playlistDetails
+                                          .remove(playlistNames[index]);
+                                      await settingsBox.put(
+                                          'playlistDetails', playlistDetails);
+                                      await Hive.openBox(playlistNames[index]);
+                                      await Hive.box(playlistNames[index])
+                                          .deleteFromDisk();
+                                      await playlistNames.removeAt(index);
+                                      await settingsBox.put(
+                                          'playlistNames', playlistNames);
+                                      setState(() {});
+                                    }
                                   },
                                   itemBuilder: (context) => [
                                     PopupMenuItem(
@@ -268,7 +301,18 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                                         children: [
                                           Icon(Icons.delete_rounded),
                                           Spacer(),
-                                          Text('Delete playlist'),
+                                          Text('Delete'),
+                                          Spacer(),
+                                        ],
+                                      ),
+                                    ),
+                                    PopupMenuItem(
+                                      value: 1,
+                                      child: Row(
+                                        children: [
+                                          Icon(MdiIcons.export),
+                                          Spacer(),
+                                          Text('Export'),
                                           Spacer(),
                                         ],
                                       ),
