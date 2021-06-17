@@ -95,58 +95,32 @@ class _HomePageState extends State<HomePage> {
       });
 
       dbRef.once().then((DataSnapshot snapshot) {
-        if (double.parse(snapshot.value) > appVersion) {
+        if (double.parse(snapshot.value) >= appVersion) {
           print('UPDATE IS AVAILABLE');
-          return showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                title: Text('Update Available',
-                    style: TextStyle(
-                        color: Theme.of(context).accentColor,
-                        fontWeight: FontWeight.w600)),
-                content: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Text(
-                      'A new update is available. Would you like to update now?',
-                      // textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
-                actions: [
-                  TextButton(
-                      style: TextButton.styleFrom(
-                        primary: Colors.white,
-                      ),
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      child: Text('Maybe later')),
-                  TextButton(
-                      style: TextButton.styleFrom(
-                        primary: Colors.white,
-                        backgroundColor: Theme.of(context).accentColor,
-                      ),
-                      onPressed: () {
-                        Navigator.pop(context);
-                        final dLink = FirebaseDatabase.instance
-                            .reference()
-                            .child("LatestLink");
-                        dLink.once().then((DataSnapshot linkSnapshot) {
-                          launch(linkSnapshot.value);
-                        });
-                      },
-                      child: Text('Update')),
-                  SizedBox(
-                    width: 5,
-                  ),
-                ],
-              );
-            },
+          return ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              duration: Duration(seconds: 15),
+              margin: EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 5.0),
+              elevation: 6,
+              backgroundColor: Colors.grey[900],
+              behavior: SnackBarBehavior.floating,
+              content: Text(
+                'Update Available!',
+                style: TextStyle(color: Colors.white),
+              ),
+              action: SnackBarAction(
+                textColor: Theme.of(context).accentColor,
+                label: 'Update',
+                onPressed: () {
+                  Navigator.pop(context);
+                  final dLink =
+                      FirebaseDatabase.instance.reference().child("LatestLink");
+                  dLink.once().then((DataSnapshot linkSnapshot) {
+                    launch(linkSnapshot.value);
+                  });
+                },
+              ),
+            ),
           );
         }
       });

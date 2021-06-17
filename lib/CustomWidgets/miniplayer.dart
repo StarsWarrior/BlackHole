@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:audio_service/audio_service.dart';
 import 'package:blackhole/Screens/Player/audioplayer.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -118,20 +119,36 @@ class _MiniPlayerState extends State<MiniPlayer> {
                                                         Image(
                                                             image: AssetImage(
                                                                 'assets/cover.jpg')),
-                                                        Image(
-                                                            image: mediaItem
+                                                        mediaItem.artUri
+                                                                .toString()
+                                                                .startsWith(
+                                                                    'file:')
+                                                            ? Image(
+                                                                image: FileImage(
+                                                                    File(mediaItem
+                                                                        .artUri
+                                                                        .toFilePath())))
+                                                            : CachedNetworkImage(
+                                                                errorWidget:
+                                                                    (BuildContext
+                                                                                context,
+                                                                            _,
+                                                                            __) =>
+                                                                        Image(
+                                                                          image:
+                                                                              AssetImage('assets/cover.jpg'),
+                                                                        ),
+                                                                placeholder:
+                                                                    (BuildContext
+                                                                                context,
+                                                                            _) =>
+                                                                        Image(
+                                                                          image:
+                                                                              AssetImage('assets/cover.jpg'),
+                                                                        ),
+                                                                imageUrl: mediaItem
                                                                     .artUri
-                                                                    .toString()
-                                                                    .startsWith(
-                                                                        'file:')
-                                                                ? FileImage(File(
-                                                                    mediaItem
-                                                                        .artUri
-                                                                        .toFilePath()))
-                                                                : NetworkImage(
-                                                                    mediaItem
-                                                                        .artUri
-                                                                        .toString()))
+                                                                    .toString())
                                                       ],
                                                     )),
                                               ),

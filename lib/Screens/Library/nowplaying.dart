@@ -4,6 +4,7 @@ import 'package:blackhole/CustomWidgets/GradientContainers.dart';
 import 'package:blackhole/CustomWidgets/downloadButton.dart';
 import 'package:blackhole/CustomWidgets/emptyScreen.dart';
 import 'package:blackhole/CustomWidgets/like_button.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:blackhole/CustomWidgets/miniplayer.dart';
 
@@ -66,9 +67,13 @@ class _NowPlayingState extends State<NowPlaying> {
                                                         newIndex, items);
                                                     AudioService.updateQueue(
                                                         queue);
+                                                    int newMediaIndex = queue
+                                                        .indexWhere((element) =>
+                                                            element ==
+                                                            mediaItem);
                                                     AudioService.customAction(
                                                         'changeIndex',
-                                                        newIndex);
+                                                        newMediaIndex);
                                                   });
                                                 },
                                                 physics:
@@ -197,18 +202,27 @@ class _NowPlayingState extends State<NowPlaying> {
                                                               queue[index].artUri ==
                                                                       null
                                                                   ? SizedBox()
-                                                                  : Image(
-                                                                      image: queue[index]
+                                                                  : queue[index]
+                                                                          .artUri
+                                                                          .toString()
+                                                                          .startsWith(
+                                                                              'file:')
+                                                                      ? Image(
+                                                                          image: FileImage(File(queue[index]
                                                                               .artUri
-                                                                              .toString()
-                                                                              .startsWith(
-                                                                                  'file:')
-                                                                          ? FileImage(File(queue[index]
+                                                                              .toFilePath())))
+                                                                      : CachedNetworkImage(
+                                                                          errorWidget: (BuildContext context, _, __) =>
+                                                                              Image(
+                                                                                image: AssetImage('assets/cover.jpg'),
+                                                                              ),
+                                                                          placeholder: (BuildContext context, _) =>
+                                                                              Image(
+                                                                                image: AssetImage('assets/cover.jpg'),
+                                                                              ),
+                                                                          imageUrl: queue[index]
                                                                               .artUri
-                                                                              .toFilePath()))
-                                                                          : NetworkImage(queue[index]
-                                                                              .artUri
-                                                                              .toString()))
+                                                                              .toString())
                                                             ],
                                                           ),
                                                         ),
