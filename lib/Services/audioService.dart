@@ -126,7 +126,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
     await initiateBox();
 
     final session = await AudioSession.instance;
-    await session.configure(AudioSessionConfiguration.speech());
+    await session.configure(AudioSessionConfiguration.music());
     _eventSubscription = _player.playbackEventStream.listen((event) {
       _broadcastState();
     });
@@ -283,15 +283,15 @@ class AudioPlayerTask extends BackgroundAudioTask {
       controls: [
         MediaControl.skipToPrevious,
         if (_player.playing) MediaControl.pause else MediaControl.play,
-        MediaControl.stop,
         MediaControl.skipToNext,
+        MediaControl.stop,
       ],
       systemActions: [
         MediaAction.seekTo,
         MediaAction.seekForward,
         MediaAction.seekBackward,
       ],
-      androidCompactActions: [0, 1, 3],
+      androidCompactActions: [0, 1, 2],
       processingState: _getProcessingState(),
       playing: _player.playing,
       position: _player.position,

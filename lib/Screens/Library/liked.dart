@@ -1,4 +1,5 @@
 import 'package:blackhole/CustomWidgets/collage.dart';
+import 'package:blackhole/CustomWidgets/downloadButton.dart';
 import 'package:blackhole/CustomWidgets/emptyScreen.dart';
 import 'package:blackhole/CustomWidgets/GradientContainers.dart';
 import 'package:blackhole/CustomWidgets/miniplayer.dart';
@@ -226,6 +227,9 @@ class _LikedSongsState extends State<LikedSongs>
                     ),
                   ]),
                   actions: [
+                    MultiDownloadButton(
+                      data: _songs,
+                    ),
                     PopupMenuButton(
                         icon: Icon(Icons.sort_rounded),
                         shape: RoundedRectangleBorder(
@@ -516,54 +520,68 @@ class _LikedSongsState extends State<LikedSongs>
                                         subtitle: Text(
                                           '${_songs[index]['artist'] ?? 'Artist name'}',
                                         ),
-                                        trailing: PopupMenuButton(
-                                            icon: Icon(Icons.more_vert_rounded),
-                                            shape: RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.all(
-                                                    Radius.circular(7.0))),
-                                            itemBuilder: (context) => [
-                                                  PopupMenuItem(
-                                                    value: 0,
-                                                    child: Row(
-                                                      children: [
-                                                        Icon(Icons
-                                                            .delete_rounded),
-                                                        Spacer(),
-                                                        Text('Remove'),
-                                                        Spacer(),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ],
-                                            onSelected: (value) async {
-                                              if (value == 0) {
-                                                ScaffoldMessenger.of(context)
-                                                    .showSnackBar(
-                                                  SnackBar(
-                                                    elevation: 6,
-                                                    backgroundColor:
-                                                        Colors.grey[900],
-                                                    behavior: SnackBarBehavior
-                                                        .floating,
-                                                    content: Text(
-                                                      'Removed ${_songs[index]["title"]} from ${widget.playlistName}',
-                                                      style: TextStyle(
-                                                          color: Colors.white),
-                                                    ),
-                                                    action: SnackBarAction(
-                                                      textColor:
-                                                          Theme.of(context)
-                                                              .accentColor,
-                                                      label: 'Ok',
-                                                      onPressed: () {},
-                                                    ),
-                                                  ),
-                                                );
-                                                setState(() {
-                                                  deleteLiked(index);
-                                                });
-                                              }
-                                            }));
+                                        trailing: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            DownloadButton(
+                                                data: _songs[index],
+                                                icon: 'download'),
+                                            PopupMenuButton(
+                                                icon: Icon(
+                                                    Icons.more_vert_rounded),
+                                                shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.all(
+                                                            Radius.circular(
+                                                                7.0))),
+                                                itemBuilder: (context) => [
+                                                      PopupMenuItem(
+                                                        value: 0,
+                                                        child: Row(
+                                                          children: [
+                                                            Icon(Icons
+                                                                .delete_rounded),
+                                                            Spacer(),
+                                                            Text('Remove'),
+                                                            Spacer(),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ],
+                                                onSelected: (value) async {
+                                                  if (value == 0) {
+                                                    ScaffoldMessenger.of(
+                                                            context)
+                                                        .showSnackBar(
+                                                      SnackBar(
+                                                        elevation: 6,
+                                                        backgroundColor:
+                                                            Colors.grey[900],
+                                                        behavior:
+                                                            SnackBarBehavior
+                                                                .floating,
+                                                        content: Text(
+                                                          'Removed ${_songs[index]["title"]} from ${widget.playlistName}',
+                                                          style: TextStyle(
+                                                              color:
+                                                                  Colors.white),
+                                                        ),
+                                                        action: SnackBarAction(
+                                                          textColor:
+                                                              Theme.of(context)
+                                                                  .accentColor,
+                                                          label: 'Ok',
+                                                          onPressed: () {},
+                                                        ),
+                                                      ),
+                                                    );
+                                                    setState(() {
+                                                      deleteLiked(index);
+                                                    });
+                                                  }
+                                                }),
+                                          ],
+                                        ));
                                   }),
                           albumsTab(),
                           artistsTab(),

@@ -3,6 +3,7 @@ import 'package:blackhole/CustomWidgets/GradientContainers.dart';
 import 'package:blackhole/Helpers/picker.dart';
 import 'package:blackhole/Screens/Top Charts/top.dart' as topScreen;
 import 'package:blackhole/Screens/Home/trending.dart' as trendingScreen;
+import 'package:ext_storage/ext_storage.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -24,7 +25,7 @@ class SettingPage extends StatefulWidget {
 class _SettingPageState extends State<SettingPage> {
   double appVersion;
   String downloadPath = Hive.box('settings')
-      .get('downloadPath', defaultValue: '/storage/emulated/0/Music/');
+      .get('downloadPath', defaultValue: '/storage/emulated/0/Music');
   List dirPaths = Hive.box('settings').get('searchPaths', defaultValue: []);
   String streamingQuality =
       Hive.box('settings').get('streamingQuality', defaultValue: '96 kbps');
@@ -852,32 +853,49 @@ class _SettingPageState extends State<SettingPage> {
                     ListTile(
                       title: Text('Download Location'),
                       subtitle: Text('$downloadPath'),
+                      trailing: TextButton(
+                        child: Text('Reset'),
+                        style: TextButton.styleFrom(
+                          primary:
+                              Theme.of(context).brightness == Brightness.dark
+                                  ? Colors.white
+                                  : Colors.grey[700],
+                          //       backgroundColor: Theme.of(context).accentColor,
+                        ),
+                        onPressed: () async {
+                          downloadPath = await ExtStorage
+                              .getExternalStoragePublicDirectory(
+                                  ExtStorage.DIRECTORY_MUSIC);
+                          Hive.box('settings')
+                              .put('downloadPath', downloadPath);
+                          setState(() {});
+                        },
+                      ),
                       onTap: () async {
-                        /// If you want you can uncomment the code below to let user select download location
-
-                        // String temp = await selectFolder(context);
-                        // if (temp.trim() != '') {
-                        //   downloadPath = temp;
-                        //   Hive.box('settings').put('downloadPath', temp);
-                        //   setState(() {});
-                        // } else {
-                        //   ScaffoldMessenger.of(context).showSnackBar(
-                        //     SnackBar(
-                        //       elevation: 6,
-                        //       backgroundColor: Colors.grey[900],
-                        //       behavior: SnackBarBehavior.floating,
-                        //       content: Text(
-                        //         'No folder selected',
-                        //         style: TextStyle(color: Colors.white),
-                        //       ),
-                        //       action: SnackBarAction(
-                        //         textColor: Theme.of(context).accentColor,
-                        //         label: 'Ok',
-                        //         onPressed: () {},
-                        //       ),
-                        //     ),
-                        //   );
-                        // }
+                        String temp = await Picker()
+                            .selectFolder(context, 'Select Download Location');
+                        if (temp.trim() != '') {
+                          downloadPath = temp;
+                          Hive.box('settings').put('downloadPath', temp);
+                          setState(() {});
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              elevation: 6,
+                              backgroundColor: Colors.grey[900],
+                              behavior: SnackBarBehavior.floating,
+                              content: Text(
+                                'No folder selected',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                              action: SnackBarAction(
+                                textColor: Theme.of(context).accentColor,
+                                label: 'Ok',
+                                onPressed: () {},
+                              ),
+                            ),
+                          );
+                        }
                       },
                       dense: true,
                     ),
@@ -908,7 +926,8 @@ class _SettingPageState extends State<SettingPage> {
                                               leading: Icon(CupertinoIcons.add),
                                               onTap: () async {
                                                 String temp = await Picker()
-                                                    .selectFolder(context);
+                                                    .selectFolder(context,
+                                                        'Select Folder');
                                                 if (temp.trim() != '' &&
                                                     !dirPaths.contains(temp)) {
                                                   dirPaths.add(temp);
@@ -961,6 +980,9 @@ class _SettingPageState extends State<SettingPage> {
                                                   ),
                                                   onPressed: () {
                                                     dirPaths.removeAt(idx - 1);
+                                                    Hive.box('settings').put(
+                                                        'searchPaths',
+                                                        dirPaths);
                                                     _listKey.currentState
                                                         .removeItem(
                                                             idx,

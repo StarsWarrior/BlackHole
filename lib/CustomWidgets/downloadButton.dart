@@ -1,5 +1,6 @@
 import 'package:blackhole/Services/download.dart';
 import 'package:flutter/material.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class DownloadButton extends StatefulWidget {
   final Map data;
@@ -58,6 +59,99 @@ class _DownloadButtonState extends State<DownloadButton> {
                             valueColor: AlwaysStoppedAnimation<Color>(
                                 Theme.of(context).accentColor),
                             value: down.progress == 1 ? null : down.progress,
+                          ),
+                        ),
+                      ],
+                    )),
+    );
+  }
+}
+
+class MultiDownloadButton extends StatefulWidget {
+  final List data;
+  MultiDownloadButton({Key key, @required this.data}) : super(key: key);
+
+  @override
+  _MultiDownloadButtonState createState() => _MultiDownloadButtonState();
+}
+
+class _MultiDownloadButtonState extends State<MultiDownloadButton> {
+  Download down = Download();
+  int done = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    down.addListener(() {
+      setState(() {});
+    });
+  }
+
+  Future<void> _waitUntilDone(String id) async {
+    while (down.lastDownloadId != id) {
+      await Future.delayed(Duration(seconds: 1));
+    }
+    return;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 50,
+      height: 50,
+      child: Center(
+          child: (down.lastDownloadId == widget.data.last['id'])
+              ? IconButton(
+                  icon: Icon(
+                    Icons.download_done_rounded,
+                  ),
+                  color: Theme.of(context).accentColor,
+                  iconSize: 25.0,
+                  onPressed: () {},
+                )
+              : down.progress == 0
+                  ? Center(
+                      child: IconButton(
+                          icon: Icon(
+                            Icons.save_alt_rounded,
+                          ),
+                          iconSize: 25.0,
+                          onPressed: () async {
+                            for (Map items in widget.data) {
+                              down.prepareDownload(context, items);
+                              await _waitUntilDone(items['id']);
+                              setState(() {
+                                done++;
+                              });
+                            }
+                          }))
+                  : Stack(
+                      children: [
+                        Center(
+                          child: Text(down.progress == null
+                              ? '0%'
+                              : '${(100 * down.progress).round()}%'),
+                        ),
+                        Center(
+                          child: SizedBox(
+                            height: 35,
+                            width: 35,
+                            child: CircularProgressIndicator(
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                  Theme.of(context).accentColor),
+                              value: down.progress == 1 ? null : down.progress,
+                            ),
+                          ),
+                        ),
+                        Center(
+                          child: SizedBox(
+                            height: 30,
+                            width: 30,
+                            child: CircularProgressIndicator(
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                  Theme.of(context).accentColor),
+                              value: done / widget.data.length,
+                            ),
                           ),
                         ),
                       ],

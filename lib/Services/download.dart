@@ -18,7 +18,7 @@ class Download with ChangeNotifier {
   String lastDownloadId = '';
   String dlPath = Hive.box('settings').get('downloadPath', defaultValue: '');
 
-  prepareDownload(BuildContext context, Map data) async {
+  Future<void> prepareDownload(BuildContext context, Map data) async {
     PermissionStatus status = await Permission.storage.status;
     if (status.isPermanentlyDenied || status.isDenied) {
       Map<Permission, PermissionStatus> statuses = await [
@@ -53,7 +53,8 @@ class Download with ChangeNotifier {
                 Row(
                   children: [
                     Text(
-                      'Do you want to download it again?',
+                      '"${data['title']}" already exists.\nDo you want to download it again?',
+                      softWrap: true,
                       // style: TextStyle(color: Theme.of(context).accentColor),
                     ),
                   ],
@@ -86,6 +87,7 @@ class Download with ChangeNotifier {
                   style: TextStyle(color: Colors.white),
                 ),
                 onPressed: () {
+                  lastDownloadId = data['id'];
                   Navigator.pop(context);
                 },
               ),
@@ -101,8 +103,9 @@ class Download with ChangeNotifier {
     }
   }
 
-  downloadSong(
+  Future<void> downloadSong(
       BuildContext context, String dlPath, String filename, Map data) async {
+    ScaffoldMessengerState scaffoldMessenger = ScaffoldMessenger.of(context);
     progress = null;
     notifyListeners();
     String filepath;
@@ -133,22 +136,24 @@ class Download with ChangeNotifier {
     }
     debugPrint('Audio path $filepath');
     debugPrint('Image path $filepath2');
-    // ScaffoldMessenger.of(context).showSnackBar(
-    //   SnackBar(
-    //     elevation: 6,
-    //     backgroundColor: Colors.grey[900],
-    //     behavior: SnackBarBehavior.floating,
-    //     content: Text(
-    //       'Downloading your song in $preferredDownloadQuality',
-    //       style: TextStyle(color: Colors.white),
-    //     ),
-    //     action: SnackBarAction(
-    //       textColor: Theme.of(context).accentColor,
-    //       label: 'Ok',
-    //       onPressed: () {},
-    //     ),
-    //   ),
-    // );
+
+    scaffoldMessenger.showSnackBar(
+      SnackBar(
+        elevation: 6,
+        backgroundColor: Colors.grey[900],
+        behavior: SnackBarBehavior.floating,
+        content: Text(
+          'Downloading "${data['title'].toString()}" in $preferredDownloadQuality',
+          style: TextStyle(color: Colors.white),
+        ),
+        action: SnackBarAction(
+          textColor: Theme.of(context).accentColor,
+          label: 'Ok',
+          onPressed: () {},
+        ),
+      ),
+    );
+
     String kUrl = data['url'].replaceAll(
         "_96.", "_${preferredDownloadQuality.replaceAll(' kbps', '')}.");
     final response = await Client().send(Request('GET', Uri.parse(kUrl)));
@@ -200,20 +205,20 @@ class Download with ChangeNotifier {
       progress = 0.0;
       notifyListeners();
 
-      // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      //   elevation: 6,
-      //   backgroundColor: Colors.grey[900],
-      //   behavior: SnackBarBehavior.floating,
-      //   content: Text(
-      //     '"${mediaItem.title.toString()}" has been downloaded',
-      //     style: TextStyle(color: Colors.white),
-      //   ),
-      //   action: SnackBarAction(
-      //     textColor: Theme.of(context).accentColor,
-      //     label: 'Ok',
-      //     onPressed: () {},
-      //   ),
-      // ));
+      scaffoldMessenger.showSnackBar(SnackBar(
+        elevation: 6,
+        backgroundColor: Colors.grey[900],
+        behavior: SnackBarBehavior.floating,
+        content: Text(
+          '"${data['title'].toString()}" has been downloaded',
+          style: TextStyle(color: Colors.white),
+        ),
+        action: SnackBarAction(
+          textColor: Theme.of(context).accentColor,
+          label: 'Ok',
+          onPressed: () {},
+        ),
+      ));
     });
   }
 }

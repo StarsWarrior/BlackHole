@@ -7,8 +7,27 @@ import 'package:hive/hive.dart';
 
 class ExportPlaylist {
   void exportPlaylist(BuildContext context, String playlistName) async {
-    String temp = await Picker().selectFolder(context);
-    if (temp == '') return;
+    String temp =
+        await Picker().selectFolder(context, 'Select Export Location');
+    if (temp == '') {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          elevation: 6,
+          backgroundColor: Colors.grey[900],
+          behavior: SnackBarBehavior.floating,
+          content: Text(
+            'Failed to Export "$playlistName"',
+            style: TextStyle(color: Colors.white),
+          ),
+          action: SnackBarAction(
+            textColor: Theme.of(context).accentColor,
+            label: 'Ok',
+            onPressed: () {},
+          ),
+        ),
+      );
+      return;
+    }
     await Hive.openBox(playlistName);
     Box playlistBox = Hive.box(playlistName);
     Map _songsMap = playlistBox?.toMap();
@@ -16,14 +35,49 @@ class ExportPlaylist {
     File file =
         await File(temp + "/" + playlistName + '.json').create(recursive: true);
     await file.writeAsString(_songs.toString());
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        elevation: 6,
+        backgroundColor: Colors.grey[900],
+        behavior: SnackBarBehavior.floating,
+        content: Text(
+          'Exported "$playlistName"',
+          style: TextStyle(color: Colors.white),
+        ),
+        action: SnackBarAction(
+          textColor: Theme.of(context).accentColor,
+          label: 'Ok',
+          onPressed: () {},
+        ),
+      ),
+    );
   }
 }
 
 class ImportPlaylist {
   Future<List> importPlaylist(BuildContext context, List playlistNames) async {
     try {
-      String temp = await Picker().selectFile(context, ['.json']);
-      if (temp == '') return playlistNames;
+      String temp = await Picker()
+          .selectFile(context, ['.json'], 'Select json file to import');
+      if (temp == '') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            elevation: 6,
+            backgroundColor: Colors.grey[900],
+            behavior: SnackBarBehavior.floating,
+            content: Text(
+              'Failed to import playlist',
+              style: TextStyle(color: Colors.white),
+            ),
+            action: SnackBarAction(
+              textColor: Theme.of(context).accentColor,
+              label: 'Ok',
+              onPressed: () {},
+            ),
+          ),
+        );
+        return playlistNames;
+      }
 
       String playlistName = temp.split('/').last.split('.json').first;
       File file = File(temp);
@@ -50,8 +104,40 @@ class ImportPlaylist {
             ? _songs.sublist(0, 4)
             : _songs.sublist(0, _songs.length),
       );
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          elevation: 6,
+          backgroundColor: Colors.grey[900],
+          behavior: SnackBarBehavior.floating,
+          content: Text(
+            'Successfully Imported "$playlistName"',
+            style: TextStyle(color: Colors.white),
+          ),
+          action: SnackBarAction(
+            textColor: Theme.of(context).accentColor,
+            label: 'Ok',
+            onPressed: () {},
+          ),
+        ),
+      );
       return playlistNames;
     } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          elevation: 6,
+          backgroundColor: Colors.grey[900],
+          behavior: SnackBarBehavior.floating,
+          content: Text(
+            'Failed to import playlist',
+            style: TextStyle(color: Colors.white),
+          ),
+          action: SnackBarAction(
+            textColor: Theme.of(context).accentColor,
+            label: 'Ok',
+            onPressed: () {},
+          ),
+        ),
+      );
       print("Error in Import: $e");
     }
     return playlistNames;

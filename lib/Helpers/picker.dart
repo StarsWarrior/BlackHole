@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class Picker {
-  Future<String> selectFolder(BuildContext context) async {
+  Future<String> selectFolder(BuildContext context, String message) async {
     PermissionStatus status = await Permission.storage.status;
     if (status.isRestricted || status.isDenied) {
       Map<Permission, PermissionStatus> statuses = await [
@@ -19,7 +19,7 @@ class Picker {
       String path = await ExtStorage.getExternalStorageDirectory();
       Directory rootPath = Directory(path);
       String temp = await FilesystemPicker.open(
-            title: 'Select folder',
+            title: message ?? 'Select folder',
             context: context,
             rootDirectory: rootPath,
             fsType: FilesystemType.folder,
@@ -32,7 +32,8 @@ class Picker {
     return '';
   }
 
-  Future<String> selectFile(BuildContext context, List<String> ext) async {
+  Future<String> selectFile(
+      BuildContext context, List<String> ext, String message) async {
     PermissionStatus status = await Permission.storage.status;
     if (status.isRestricted || status.isDenied) {
       Map<Permission, PermissionStatus> statuses = await [
@@ -45,7 +46,7 @@ class Picker {
       String path = await ExtStorage.getExternalStorageDirectory();
       Directory rootPath = Directory(path);
       String temp = await FilesystemPicker.open(
-            title: 'Select folder',
+            title: message ?? 'Select File',
             context: context,
             rootDirectory: rootPath,
             allowedExtensions: ext,
