@@ -65,15 +65,16 @@ class _NowPlayingState extends State<NowPlaying> {
                                                         .removeAt(oldIndex);
                                                     queue.insert(
                                                         newIndex, items);
-                                                    AudioService.updateQueue(
-                                                        queue);
                                                     int newMediaIndex = queue
                                                         .indexWhere((element) =>
                                                             element ==
                                                             mediaItem);
                                                     AudioService.customAction(
-                                                        'changeIndex',
-                                                        newMediaIndex);
+                                                        'reorder', [
+                                                      oldIndex,
+                                                      newIndex,
+                                                      newMediaIndex
+                                                    ]);
                                                   });
                                                 },
                                                 physics:
@@ -92,19 +93,11 @@ class _NowPlayingState extends State<NowPlaying> {
                                                             .horizontal,
                                                     onDismissed: (dir) {
                                                       setState(() {
+                                                        AudioService
+                                                            .removeQueueItem(
+                                                                queue[index]);
                                                         queue.remove(
                                                             queue[index]);
-                                                        AudioService
-                                                            .updateQueue(queue);
-                                                        int newIndex = queue
-                                                            .indexWhere(
-                                                                (element) =>
-                                                                    element ==
-                                                                    mediaItem);
-                                                        AudioService
-                                                            .customAction(
-                                                                'changeIndex',
-                                                                newIndex);
                                                       });
                                                     },
                                                     child: ListTileTheme(

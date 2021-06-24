@@ -5,6 +5,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:hive/hive.dart';
 import 'package:miniplayer/miniplayer.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -35,6 +36,7 @@ class _MiniPlayerState extends State<MiniPlayer> {
                 final mediaItem = queueState?.mediaItem;
                 return (running && mediaItem != null && queue.isNotEmpty)
                     ? Miniplayer(
+                        elevation: 15,
                         controller: controller,
                         valueNotifier: playerExpandProgress,
                         duration: Duration(milliseconds: 300),
@@ -156,17 +158,26 @@ class _MiniPlayerState extends State<MiniPlayer> {
                                                 mainAxisSize: MainAxisSize.min,
                                                 children: [
                                                   IconButton(
-                                                    icon: Icon(Icons
-                                                        .skip_previous_rounded),
-                                                    color: Theme.of(context)
-                                                        .iconTheme
-                                                        .color,
-                                                    onPressed:
-                                                        mediaItem == queue.first
-                                                            ? null
-                                                            : AudioService
-                                                                .skipToPrevious,
-                                                  ),
+                                                      icon: Icon(Icons
+                                                          .skip_previous_rounded),
+                                                      color: Theme.of(context)
+                                                          .iconTheme
+                                                          .color,
+                                                      onPressed: (mediaItem !=
+                                                              queue.first)
+                                                          ? AudioService
+                                                              .skipToPrevious
+                                                          : (Hive.box('settings')
+                                                                      .get(
+                                                                          'repeatMode') !=
+                                                                  'All')
+                                                              ? null
+                                                              : () {
+                                                                  AudioService
+                                                                      .skipToQueueItem(queue
+                                                                          .last
+                                                                          .id);
+                                                                }),
                                                   Stack(
                                                     children: [
                                                       Center(
@@ -252,17 +263,26 @@ class _MiniPlayerState extends State<MiniPlayer> {
                                                     ],
                                                   ),
                                                   IconButton(
-                                                    icon: Icon(Icons
-                                                        .skip_next_rounded),
-                                                    color: Theme.of(context)
-                                                        .iconTheme
-                                                        .color,
-                                                    onPressed:
-                                                        mediaItem == queue.last
-                                                            ? null
-                                                            : AudioService
-                                                                .skipToNext,
-                                                  ),
+                                                      icon: Icon(Icons
+                                                          .skip_next_rounded),
+                                                      color: Theme.of(context)
+                                                          .iconTheme
+                                                          .color,
+                                                      onPressed: (mediaItem !=
+                                                              queue.last)
+                                                          ? AudioService
+                                                              .skipToNext
+                                                          : (Hive.box('settings')
+                                                                      .get(
+                                                                          'repeatMode') !=
+                                                                  'All')
+                                                              ? null
+                                                              : () {
+                                                                  AudioService
+                                                                      .skipToQueueItem(queue
+                                                                          .first
+                                                                          .id);
+                                                                }),
                                                 ],
                                               ),
                                             ),

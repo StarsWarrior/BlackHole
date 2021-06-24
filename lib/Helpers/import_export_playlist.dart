@@ -4,12 +4,14 @@ import 'package:blackhole/Helpers/picker.dart';
 import 'package:blackhole/Helpers/songs_count.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 
 class ExportPlaylist {
   void exportPlaylist(BuildContext context, String playlistName) async {
-    String temp =
+    String dirPath =
         await Picker().selectFolder(context, 'Select Export Location');
-    if (temp == '') {
+    if (dirPath == '') {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           elevation: 6,
@@ -32,8 +34,8 @@ class ExportPlaylist {
     Box playlistBox = Hive.box(playlistName);
     Map _songsMap = playlistBox?.toMap();
     String _songs = json.encode(_songsMap);
-    File file =
-        await File(temp + "/" + playlistName + '.json').create(recursive: true);
+    File file = await File(dirPath + "/" + playlistName + '.json')
+        .create(recursive: true);
     await file.writeAsString(_songs.toString());
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -51,6 +53,25 @@ class ExportPlaylist {
         ),
       ),
     );
+  }
+
+  void sharePlaylist(BuildContext context, String playlistName) async {
+    Directory appDir = await getApplicationDocumentsDirectory();
+    String temp = appDir.path;
+
+    await Hive.openBox(playlistName);
+    Box playlistBox = Hive.box(playlistName);
+    Map _songsMap = playlistBox?.toMap();
+    String _songs = json.encode(_songsMap);
+    File file =
+        await File(temp + "/" + playlistName + '.json').create(recursive: true);
+    await file.writeAsString(_songs.toString());
+
+    await Share.shareFiles([file.path], text: 'Have a look at my playlist!');
+    await Future.delayed(const Duration(seconds: 10), () {});
+    if (await file.exists()) {
+      await file.delete();
+    }
   }
 }
 

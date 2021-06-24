@@ -8,7 +8,8 @@ import 'package:hive/hive.dart';
 class SongsList extends StatefulWidget {
   final List data;
   final bool offline;
-  SongsList({Key key, @required this.data, @required this.offline})
+  final String title;
+  SongsList({Key key, @required this.data, @required this.offline, this.title})
       : super(key: key);
   @override
   _SongsListState createState() => _SongsListState();
@@ -66,7 +67,7 @@ class _SongsListState extends State<SongsList> {
             child: Scaffold(
               backgroundColor: Colors.transparent,
               appBar: AppBar(
-                title: Text('Songs'),
+                title: Text(widget.title ?? 'Songs'),
                 actions: [
                   PopupMenuButton(
                       icon: Icon(Icons.sort_rounded),

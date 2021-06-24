@@ -59,6 +59,7 @@ class _TrendingPageState extends State<TrendingPage> {
         }
       } catch (e) {
         print("Error in Index $i in TrendingList: $e");
+        playlists[i] = cachedPlaylists[i];
       }
     }
     setState(() {

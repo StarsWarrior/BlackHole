@@ -266,7 +266,8 @@ class _DownloadedSongsState extends State<DownloadedSongs>
       if (widget.type == 'all' &&
           (entity.path.endsWith('.mp4') ||
               entity.path.endsWith('.mkv') ||
-              entity.path.endsWith('.webm'))) {
+              entity.path.endsWith('.webm') ||
+              entity.path.endsWith('.opus'))) {
         try {
           FileStat stats = await entity.stat();
           if (stats.size < 1048576) {

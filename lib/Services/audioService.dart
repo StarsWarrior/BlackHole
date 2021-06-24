@@ -7,7 +7,7 @@ import 'package:just_audio/just_audio.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:audio_session/audio_session.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:flutter/services.dart' show rootBundle;
+// import 'package:flutter/services.dart' show rootBundle;
 import 'package:path_provider/path_provider.dart';
 
 class AudioPlayerTask extends BackgroundAudioTask {
@@ -20,21 +20,13 @@ class AudioPlayerTask extends BackgroundAudioTask {
   StreamSubscription<PlaybackEvent> _eventSubscription;
   String preferredQuality;
   List<MediaItem> queue = [];
-  String repeatMode = 'None';
   bool shuffle = false;
   List<MediaItem> defaultQueue = [];
+  ConcatenatingAudioSource concatenatingAudioSource;
 
   int index;
   bool offline;
   MediaItem get mediaItem => index == null ? queue[0] : queue[index];
-
-  Future<File> getImageFileFromAssets() async {
-    final byteData = await rootBundle.load('assets/cover.jpg');
-    final file = File('${(await getTemporaryDirectory()).path}/cover.jpg');
-    await file.writeAsBytes(byteData.buffer
-        .asUint8List(byteData.offsetInBytes, byteData.lengthInBytes));
-    return file;
-  }
 
   Future<void> onTaskRemoved() async {
     bool stopForegroundService =
@@ -127,35 +119,22 @@ class AudioPlayerTask extends BackgroundAudioTask {
 
     final session = await AudioSession.instance;
     await session.configure(AudioSessionConfiguration.music());
+
+    _player.currentIndexStream.listen((idx) {
+      if (idx != null && queue.isNotEmpty) {
+        index = idx;
+        AudioServiceBackground.setMediaItem(queue[idx]);
+        AudioServiceBackground.sendCustomEvent(idx);
+      }
+    });
+
     _eventSubscription = _player.playbackEventStream.listen((event) {
       _broadcastState();
     });
-    _player.processingStateStream.listen((state) {
-      switch (state) {
-        case ProcessingState.completed:
-          if (queue[index] != queue.last) {
-            if (repeatMode != 'One') {
-              AudioService.skipToNext();
-            } else {
-              AudioService.skipToQueueItem(queue[index].id);
-            }
-          } else {
-            if (repeatMode == 'None') {
-              AudioService.stop();
-            } else {
-              if (repeatMode == 'One') {
-                AudioService.skipToQueueItem(queue[index].id);
-              } else {
-                AudioService.skipToQueueItem(queue[0].id);
-              }
-            }
-          }
 
-          break;
-        case ProcessingState.ready:
-          break;
-        default:
-          break;
+    _player.processingStateStream.listen((state) {
+      if (state == ProcessingState.completed) {
+        AudioService.stop();
       }
     });
   }
@@ -165,67 +144,99 @@ class AudioPlayerTask extends BackgroundAudioTask {
     final newIndex = queue.indexWhere((item) => item.id == mediaId);
     index = newIndex;
     if (newIndex == -1) return;
-    // _player.pause();
-    if (offline) {
-      await _player.setFilePath(queue[newIndex].extras['url']);
-    } else {
-      await _player.setUrl(queue[newIndex]
-          .extras['url']
-          .replaceAll("_96.", "_${preferredQuality.replaceAll(' kbps', '')}."));
-      addRecentlyPlayed(queue[newIndex]);
-    }
+    _player.seek(Duration.zero, index: newIndex);
+    if (!offline) addRecentlyPlayed(queue[newIndex]);
+  }
 
-    if (queue[index].duration == Duration(seconds: 180)) {
-      Duration duration = await _player.durationFuture;
-      if (duration != null) {
-        await AudioServiceBackground.setMediaItem(
-            queue[index].copyWith(duration: duration));
-      } else {
-        await AudioServiceBackground.setMediaItem(queue[index]);
-      }
+  @override
+  Future<void> onUpdateQueue(List<MediaItem> _queue) async {
+    await AudioServiceBackground.setQueue(_queue);
+    await AudioServiceBackground.setMediaItem(_queue[index]);
+    concatenatingAudioSource = ConcatenatingAudioSource(
+      children: _queue
+          .map((item) => AudioSource.uri(offline
+              ? Uri.file(item.extras['url'])
+              : Uri.parse(item.extras['url'].replaceAll(
+                  "_96.", "_${preferredQuality.replaceAll(' kbps', '')}."))))
+          .toList(),
+    );
+    await _player.setAudioSource(concatenatingAudioSource);
+    _player.seek(Duration.zero, index: index);
+    queue = _queue;
+  }
+
+  @override
+  Future<void> onAddQueueItemAt(MediaItem mediaItem, int addIndex) async {
+    final playerIndex = _player.currentIndex;
+    final pos = _player.position;
+
+    await concatenatingAudioSource.insert(
+        addIndex,
+        AudioSource.uri(offline
+            ? Uri.file(mediaItem.extras['url'])
+            : Uri.parse(mediaItem.extras['url'].replaceAll(
+                "_96.", "_${preferredQuality.replaceAll(' kbps', '')}."))));
+    queue.insert(addIndex, mediaItem);
+    await AudioServiceBackground.setQueue(queue);
+
+    if (addIndex > playerIndex) {
+      await _player.setAudioSource(concatenatingAudioSource,
+          initialIndex: playerIndex, initialPosition: pos);
+      await AudioServiceBackground.setMediaItem(queue[playerIndex]);
     } else {
-      await AudioServiceBackground.setMediaItem(queue[index]);
+      await _player.setAudioSource(concatenatingAudioSource,
+          initialIndex: playerIndex + 1, initialPosition: pos);
+      await AudioServiceBackground.setMediaItem(queue[playerIndex + 1]);
     }
   }
 
   @override
-  Future<void> onUpdateQueue(List<MediaItem> _queue) {
-    queue = _queue;
-    AudioServiceBackground.setQueue(_queue);
-    return super.onUpdateQueue(_queue);
+  Future<void> onRemoveQueueItem(MediaItem mediaItem) async {
+    final removeIndex = queue.indexWhere((item) => item == mediaItem);
+    final playerIndex = _player.currentIndex;
+    final pos = _player.position;
+
+    await concatenatingAudioSource.removeAt(removeIndex);
+    queue.removeAt(removeIndex);
+    await AudioServiceBackground.setQueue(queue);
+    if (removeIndex > playerIndex) {
+      await _player.setAudioSource(concatenatingAudioSource,
+          initialIndex: playerIndex, initialPosition: pos);
+      await AudioServiceBackground.setMediaItem(queue[playerIndex]);
+    } else {
+      await _player.setAudioSource(concatenatingAudioSource,
+          initialIndex: playerIndex - 1, initialPosition: pos);
+      await AudioServiceBackground.setMediaItem(queue[playerIndex - 1]);
+    }
+  }
+
+  Future<void> onReorderQueue(
+      int oldIndex, int newIndex, int newMediaIndex) async {
+    // int playerIndex = _player.currentIndex;
+    // final playerMediaItem = queue[playerIndex];
+    final pos = _player.position;
+
+    final items = queue.removeAt(oldIndex);
+    queue.insert(newIndex, items);
+    await AudioServiceBackground.setQueue(queue);
+    await AudioServiceBackground.setMediaItem(queue[newMediaIndex]);
+    await concatenatingAudioSource.removeAt(oldIndex);
+    await concatenatingAudioSource.insert(
+        newIndex,
+        AudioSource.uri(offline
+            ? Uri.file(items.extras['url'])
+            : Uri.parse(items.extras['url'].replaceAll(
+                "_96.", "_${preferredQuality.replaceAll(' kbps', '')}."))));
+
+    // playerIndex = queue.indexWhere((element) => element == playerMediaItem);
+    await _player.setAudioSource(concatenatingAudioSource,
+        initialIndex: newMediaIndex, initialPosition: pos);
   }
 
   @override
   Future<void> onPlay() async {
-    try {
-      if (queue[index].artUri == null) {
-        File f = await getImageFileFromAssets();
-        queue[index] = queue[index].copyWith(artUri: Uri.file('${f.path}'));
-      }
-      if (AudioServiceBackground.mediaItem != queue[index]) {
-        if (offline) {
-          await _player.setFilePath(queue[index].extras['url']);
-        } else {
-          await _player.setUrl(queue[index].extras['url'].replaceAll(
-              "_96.", "_${preferredQuality.replaceAll(' kbps', '')}."));
-          addRecentlyPlayed(queue[index]);
-        }
-        _player.play();
-        if (queue[index].duration == Duration(seconds: 180)) {
-          Duration duration = await _player.durationFuture;
-          if (duration != null) {
-            await AudioServiceBackground.setMediaItem(
-                queue[index].copyWith(duration: duration));
-          }
-        } else {
-          await AudioServiceBackground.setMediaItem(queue[index]);
-        }
-      } else {
-        _player.play();
-      }
-    } catch (e) {
-      print('Error in onPlay: $e');
-    }
+    if (!offline) addRecentlyPlayed(queue[index]);
+    _player.play();
   }
 
   @override
@@ -241,25 +252,74 @@ class AudioPlayerTask extends BackgroundAudioTask {
       }
     }
 
-    if (myFunction == 'changeIndex') {
-      index = myVariable;
+    if (myFunction == 'reorder') {
+      onReorderQueue(myVariable[0], myVariable[1], myVariable[2]);
     }
 
-    if (myFunction == 'repeatMode') {
-      repeatMode = myVariable;
+    return Future.value(true);
+  }
+
+  @override
+  Future<void> onSetRepeatMode(AudioServiceRepeatMode repeatMode) {
+    switch (repeatMode) {
+      case AudioServiceRepeatMode.all:
+        _player.setLoopMode(LoopMode.all);
+        break;
+
+      case AudioServiceRepeatMode.one:
+        _player.setLoopMode(LoopMode.one);
+        break;
+      default:
+        _player.setLoopMode(LoopMode.off);
+        break;
     }
-    if (myFunction == 'shuffle') {
-      shuffle = myVariable;
-      if (shuffle) {
+
+    return super.onSetRepeatMode(repeatMode);
+  }
+
+  @override
+  Future<void> onSetShuffleMode(AudioServiceShuffleMode shuffleMode) async {
+    int playerIndex = _player.currentIndex;
+    final playerMediaItem = queue[playerIndex];
+    final pos = _player.position;
+
+    switch (shuffleMode) {
+      case AudioServiceShuffleMode.none:
+        queue = defaultQueue.toList();
+        concatenatingAudioSource = ConcatenatingAudioSource(
+          children: queue
+              .map((item) => AudioSource.uri(offline
+                  ? Uri.file(item.extras['url'])
+                  : Uri.parse(item.extras['url'].replaceAll("_96.",
+                      "_${preferredQuality.replaceAll(' kbps', '')}."))))
+              .toList(),
+        );
+        await AudioServiceBackground.setQueue(queue);
+        playerIndex = queue.indexWhere((element) => element == playerMediaItem);
+        await AudioServiceBackground.setMediaItem(queue[playerIndex]);
+        await _player.setAudioSource(concatenatingAudioSource,
+            initialIndex: playerIndex, initialPosition: pos);
+        break;
+      case AudioServiceShuffleMode.group:
+        break;
+      case AudioServiceShuffleMode.all:
         defaultQueue = queue.toList();
         queue.shuffle();
-        AudioService.updateQueue(queue);
-      } else {
-        queue = defaultQueue;
-        AudioService.updateQueue(queue);
-      }
+        concatenatingAudioSource = ConcatenatingAudioSource(
+          children: queue
+              .map((item) => AudioSource.uri(offline
+                  ? Uri.file(item.extras['url'])
+                  : Uri.parse(item.extras['url'].replaceAll("_96.",
+                      "_${preferredQuality.replaceAll(' kbps', '')}."))))
+              .toList(),
+        );
+        await AudioServiceBackground.setQueue(queue);
+        playerIndex = queue.indexWhere((element) => element == playerMediaItem);
+        await AudioServiceBackground.setMediaItem(queue[playerIndex]);
+        await _player.setAudioSource(concatenatingAudioSource,
+            initialIndex: playerIndex, initialPosition: pos);
+        break;
     }
-    return Future.value(true);
   }
 
   @override

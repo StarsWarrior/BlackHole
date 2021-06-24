@@ -20,6 +20,38 @@ class Search {
     return searchedList;
   }
 
+  Future<List> fetchAlbumSearchResults(String searchQuery) async {
+    List searchedAlbumList = [];
+    Uri searchUrl = Uri.https("www.jiosaavn.com",
+        "api.php?__call=autocomplete.get&_format=json&_marker=0&cc=in&includeMetaTags=1&query=$searchQuery");
+    final res = await get(searchUrl);
+    if (res.statusCode == 200) {
+      final getMain = json.decode(res.body);
+      List responseList = getMain["albums"]["data"];
+      searchedAlbumList =
+          await FormatResponse().formatAlbumResponse(responseList);
+    }
+    return searchedAlbumList;
+  }
+
+  Future<List> fetchAlbumSongs(String albumId) async {
+    List searchedList = [];
+    Uri searchUrl = Uri.https(
+      "www.jiosaavn.com",
+      "/api.php?__call=content.getAlbumDetails&_format=json&cc=in&_marker=0%3F_marker=0&albumid=$albumId",
+    );
+    final res = await get(searchUrl);
+    if (res.statusCode == 200) {
+      final getMain = json.decode(res.body);
+      List responseList = getMain["songs"];
+      print("response list is");
+      print(responseList);
+      searchedList =
+          await FormatResponse().formatAlbumSongsResponse(responseList);
+    }
+    return searchedList;
+  }
+
   Future<List> fetchTopSearchResult(String searchQuery) async {
     List searchedList = [];
     Uri searchUrl = Uri.https(

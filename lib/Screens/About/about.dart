@@ -1,5 +1,6 @@
 import 'package:blackhole/CustomWidgets/gradientContainers.dart';
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:package_info/package_info.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -121,6 +122,10 @@ class _AboutScreenState extends State<AboutScreen> {
                 Column(
                   children: [
                     TextButton(
+                      style: TextButton.styleFrom(
+                        backgroundColor: Colors.transparent,
+                        primary: Colors.transparent,
+                      ),
                       child: Container(
                         child: Image(
                           image: AssetImage('assets/black-button.png'),
@@ -129,6 +134,38 @@ class _AboutScreenState extends State<AboutScreen> {
                       ),
                       onPressed: () {
                         launch("https://www.buymeacoffee.com/ankitsangwan");
+                      },
+                    ),
+                    Text(
+                      "OR",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 12),
+                    ),
+                    TextButton(
+                      style: TextButton.styleFrom(
+                        padding: EdgeInsets.zero,
+                        backgroundColor: Colors.transparent,
+                        primary: Colors.transparent,
+                      ),
+                      child: Container(
+                        child: Image(
+                          image: AssetImage(
+                              Theme.of(context).brightness == Brightness.dark
+                                  ? 'assets/gpay-white.png'
+                                  : 'assets/gpay-white.png'),
+                        ),
+                        width: MediaQuery.of(context).size.width / 2,
+                      ),
+                      onPressed: () {
+                        final userID = Hive.box('settings').get('userID');
+                        final pa = 'ankit.sangwan.5688@oksbi';
+                        final pn = 'Ankit Sangwan';
+                        final tr = 'BlackHoleDonation';
+                        final tn = userID;
+                        final cu = 'INR';
+                        String upiUrl =
+                            'upi://pay?pa=$pa&pn=$pn&tr=$tr&cu=$cu&tn=$tn';
+                        launch(upiUrl);
                       },
                     ),
                     Text(

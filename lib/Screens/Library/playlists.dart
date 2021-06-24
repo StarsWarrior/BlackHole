@@ -261,6 +261,10 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                                       ExportPlaylist().exportPlaylist(
                                           context, playlistNames[index]);
                                     }
+                                    if (value == 2) {
+                                      ExportPlaylist().sharePlaylist(
+                                          context, playlistNames[index]);
+                                    }
                                     if (value == 0) {
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(
@@ -313,6 +317,17 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                                           Icon(MdiIcons.export),
                                           Spacer(),
                                           Text('Export'),
+                                          Spacer(),
+                                        ],
+                                      ),
+                                    ),
+                                    PopupMenuItem(
+                                      value: 2,
+                                      child: Row(
+                                        children: [
+                                          Icon(MdiIcons.share),
+                                          Spacer(),
+                                          Text('Share'),
                                           Spacer(),
                                         ],
                                       ),

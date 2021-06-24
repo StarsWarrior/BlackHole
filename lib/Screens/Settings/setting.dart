@@ -8,7 +8,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:blackhole/Helpers/config.dart';
-import 'package:share/share.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -1092,14 +1092,7 @@ class _SettingPageState extends State<SettingPage> {
                       },
                       dense: true,
                     ),
-                    ListTile(
-                      title: Text('Join us on Telegram'),
-                      subtitle: Text('Stay updated with the project'),
-                      onTap: () {
-                        launch("https://t.me/joinchat/fHDC1AWnOhw0ZmI9");
-                      },
-                      dense: true,
-                    ),
+
                     ListTile(
                       title: Text('Contact Us'),
                       subtitle: Text('Feedbacks appreciated'),
@@ -1183,6 +1176,38 @@ class _SettingPageState extends State<SettingPage> {
                               );
                             });
                       },
+                    ),
+                    ListTile(
+                      title: Text('Liked my work?'),
+                      subtitle: Text('Buy me a coffee'),
+                      dense: true,
+                      onTap: () {
+                        launch("https://www.buymeacoffee.com/ankitsangwan");
+                      },
+                    ),
+                    ListTile(
+                        title: Text('Donate with GPay'),
+                        subtitle: Text('Even ₹1 makes me smile :)'),
+                        dense: true,
+                        onTap: () {
+                          final userID = Hive.box('settings').get('userID');
+                          final pa = 'ankit.sangwan.5688@oksbi';
+                          final pn = 'Ankit Sangwan';
+                          final tr = 'BlackHoleDonation';
+                          final tn = userID;
+                          final cu = 'INR';
+                          String upiUrl =
+                              'upi://pay?pa=$pa&pn=$pn&tr=$tr&cu=$cu&tn=$tn';
+                          launch(upiUrl);
+                        }),
+                    ListTile(
+                      title: Text('Join us on Telegram'),
+                      // subtitle: Text(
+                      //     'Stay updated with the project, test beta versions, and much more :)'),
+                      onTap: () {
+                        launch("https://t.me/joinchat/fHDC1AWnOhw0ZmI9");
+                      },
+                      dense: true,
                     ),
                     ListTile(
                       title: Text('More info'),

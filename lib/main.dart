@@ -147,7 +147,6 @@ class _MyAppState extends State<MyApp> {
         // '/play': (context) => PlayScreen(),
         '/about': (context) => AboutScreen(),
         '/playlists': (context) => PlaylistScreen(),
-        // '/mymusic': (context) => MyMusicScreen(),
         '/nowplaying': (context) => NowPlaying(),
         '/recent': (context) => RecentlyPlayed(),
       },
