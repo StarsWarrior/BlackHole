@@ -161,16 +161,16 @@ class _AuthScreenState extends State<AuthScreen> {
                       children: [
                         Padding(
                           padding: const EdgeInsets.only(left: 20, right: 20),
-                          child: Row(
-                            children: [
-                              Text("I'm a",
-                                  style: TextStyle(
-                                      fontSize: 28,
-                                      fontWeight: FontWeight.bold)),
-                              SizedBox(
-                                width: 40,
-                                height: 40,
-                                child: GestureDetector(
+                          child: GestureDetector(
+                            child: Row(
+                              children: [
+                                Text("I'm a",
+                                    style: TextStyle(
+                                        fontSize: 28,
+                                        fontWeight: FontWeight.bold)),
+                                SizedBox(
+                                  width: 40,
+                                  height: 40,
                                   child: ColorFiltered(
                                     colorFilter: ColorFilter.mode(
                                         Colors.tealAccent[400],
@@ -180,16 +180,21 @@ class _AuthScreenState extends State<AuthScreen> {
                                             ? 'assets/female.png'
                                             : 'assets/male.png')),
                                   ),
-                                  onTap: () {
-                                    gender == 'female'
-                                        ? gender = 'male'
-                                        : gender = 'female';
-                                    Hive.box('settings').put('gender', gender);
-                                    setState(() {});
-                                  },
                                 ),
-                              ),
-                            ],
+                                Text(gender == 'female' ? "Female" : "Male",
+                                    style: TextStyle(
+                                        fontSize: 28,
+                                        color: Theme.of(context).accentColor,
+                                        fontWeight: FontWeight.bold)),
+                              ],
+                            ),
+                            onTap: () {
+                              gender == 'female'
+                                  ? gender = 'male'
+                                  : gender = 'female';
+                              Hive.box('settings').put('gender', gender);
+                              setState(() {});
+                            },
                           ),
                         ),
                         SizedBox(

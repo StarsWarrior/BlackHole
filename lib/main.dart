@@ -4,6 +4,7 @@ import 'package:audio_service/audio_service.dart';
 import 'package:blackhole/Screens/Library/nowplaying.dart';
 import 'package:blackhole/Screens/Library/playlists.dart';
 import 'package:blackhole/Screens/Library/recent.dart';
+import 'package:blackhole/Screens/YouTube/youtube_search.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
@@ -142,6 +143,7 @@ class _MyAppState extends State<MyApp> {
         '/': (context) => initialFuntion(),
         '/setting': (context) => SettingPage(),
         '/search': (context) => SearchPage(),
+        '/youtubesearch': (context) => YouTubeSearchPage(),
         // '/liked': (context) => LikedSongs(),
         // '/downloaded': (context) => DownloadedSongs(),
         // '/play': (context) => PlayScreen(),

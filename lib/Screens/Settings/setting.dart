@@ -8,6 +8,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:blackhole/Helpers/config.dart';
+import 'package:flutter/services.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -24,6 +25,7 @@ class SettingPage extends StatefulWidget {
 
 class _SettingPageState extends State<SettingPage> {
   double appVersion;
+  Box settingsBox = Hive.box('settings');
   String downloadPath = Hive.box('settings')
       .get('downloadPath', defaultValue: '/storage/emulated/0/Music');
   List dirPaths = Hive.box('settings').get('searchPaths', defaultValue: []);
@@ -557,7 +559,7 @@ class _SettingPageState extends State<SettingPage> {
                 child: Column(
                   children: [
                     ListTile(
-                      title: Text("\nMusic Language"),
+                      title: Text("Music Language"),
                       subtitle: Text('To display songs on Home Screen'),
                       trailing: SizedBox(
                         width: 150,
@@ -822,34 +824,6 @@ class _SettingPageState extends State<SettingPage> {
                       ),
                       dense: true,
                     ),
-                    SwitchListTile(
-                        activeColor: Theme.of(context).accentColor,
-                        title: Text('\nStop music on App Close'),
-                        subtitle: Text(
-                            "If turned off, music won't stop even after app close until you press stop button\nDefault: On\n"),
-                        dense: true,
-                        value: stopForegroundService ?? true,
-                        onChanged: (val) {
-                          Hive.box('settings')
-                              .put('stopForegroundService', val);
-                          stopForegroundService = val;
-                          updateUserDetails('stopForegroundService', val);
-                          setState(() {});
-                        }),
-                    SwitchListTile(
-                        activeColor: Theme.of(context).accentColor,
-                        title:
-                            Text('Remove Service from foreground when paused'),
-                        subtitle: Text(
-                            "If turned on, you can slide notification when paused to stop the service. But Service can also be stopped by android to release memory. If you don't want android to stop service while paused, turn it off\nDefault: On"),
-                        dense: true,
-                        value: stopServiceOnPause ?? true,
-                        onChanged: (val) {
-                          Hive.box('settings').put('stopServiceOnPause', val);
-                          stopServiceOnPause = val;
-                          updateUserDetails('stopServiceOnPause', val);
-                          setState(() {});
-                        }),
                     ListTile(
                       title: Text('Download Location'),
                       subtitle: Text('$downloadPath'),
@@ -1001,6 +975,64 @@ class _SettingPageState extends State<SettingPage> {
                         })
                   ],
                 ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(15, 10, 15, 0),
+              child: Text(
+                'Others',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).accentColor,
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(5.0, 0, 5, 10),
+              child: GradientCard(
+                child: Column(children: [
+                  SwitchListTile(
+                      activeColor: Theme.of(context).accentColor,
+                      title: Text('Show Last Session on Home Screen'),
+                      subtitle: Text('Default: On'),
+                      dense: true,
+                      value: settingsBox.get('showRecent') ?? true,
+                      onChanged: (val) {
+                        settingsBox.put('showRecent', val);
+                        updateUserDetails('showRecent', val);
+                        setState(() {});
+                        widget.callback();
+                      }),
+                  SwitchListTile(
+                      activeColor: Theme.of(context).accentColor,
+                      title: Text('Stop music on App Close'),
+                      subtitle: Text(
+                          "If turned off, music won't stop even after app close until you press stop button\nDefault: On\n"),
+                      isThreeLine: true,
+                      dense: true,
+                      value: stopForegroundService ?? true,
+                      onChanged: (val) {
+                        Hive.box('settings').put('stopForegroundService', val);
+                        stopForegroundService = val;
+                        updateUserDetails('stopForegroundService', val);
+                        setState(() {});
+                      }),
+                  SwitchListTile(
+                      activeColor: Theme.of(context).accentColor,
+                      title: Text('Remove Service from foreground when paused'),
+                      subtitle: Text(
+                          "If turned on, you can slide notification when paused to stop the service. But Service can also be stopped by android to release memory. If you don't want android to stop service while paused, turn it off\nDefault: On\n"),
+                      isThreeLine: true,
+                      dense: true,
+                      value: stopServiceOnPause ?? true,
+                      onChanged: (val) {
+                        Hive.box('settings').put('stopServiceOnPause', val);
+                        stopServiceOnPause = val;
+                        updateUserDetails('stopServiceOnPause', val);
+                        setState(() {});
+                      }),
+                ]),
               ),
             ),
             Padding(
@@ -1186,20 +1218,62 @@ class _SettingPageState extends State<SettingPage> {
                       },
                     ),
                     ListTile(
-                        title: Text('Donate with GPay'),
-                        subtitle: Text('Even ₹1 makes me smile :)'),
-                        dense: true,
-                        onTap: () {
-                          final userID = Hive.box('settings').get('userID');
-                          final pa = 'ankit.sangwan.5688@oksbi';
-                          final pn = 'Ankit Sangwan';
-                          final tr = 'BlackHoleDonation';
-                          final tn = userID;
-                          final cu = 'INR';
-                          String upiUrl =
-                              'upi://pay?pa=$pa&pn=$pn&tr=$tr&cu=$cu&tn=$tn';
-                          launch(upiUrl);
-                        }),
+                      title: Text('Donate with GPay'),
+                      subtitle: Text(
+                          'Even ₹1 makes me smile :)\nTap to donate or Long press to copy UPI ID'),
+                      dense: true,
+                      isThreeLine: true,
+                      onTap: () {
+                        final userID = Hive.box('settings').get('userID');
+                        String upiUrl =
+                            'upi://pay?pa=8570094149@okbizaxis&pn=Ankit%20Sangwan&mc=5732&aid=uGICAgIDn98OpSw&tr=BCR2DN6T37O6DB3Q&cu=INR&tn=$userID';
+                        launch(upiUrl);
+                      },
+                      onLongPress: () {
+                        Clipboard.setData(new ClipboardData(
+                            text: "ankit.sangwan.5688@oksbi"));
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            elevation: 6,
+                            backgroundColor: Colors.grey[900],
+                            behavior: SnackBarBehavior.floating,
+                            content: Text(
+                              'UPI ID Copied!',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            action: SnackBarAction(
+                              textColor: Theme.of(context).accentColor,
+                              label: 'Ok',
+                              onPressed: () {},
+                            ),
+                          ),
+                        );
+                      },
+                      trailing: TextButton(
+                        style: TextButton.styleFrom(
+                          primary:
+                              Theme.of(context).brightness == Brightness.dark
+                                  ? Colors.white
+                                  : Colors.grey[700],
+                        ),
+                        child: Text(
+                          "Show QR Code",
+                          style: TextStyle(fontWeight: FontWeight.w500),
+                        ),
+                        onPressed: () {
+                          showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return Dialog(
+                                    elevation: 10,
+                                    backgroundColor: Colors.transparent,
+                                    child: Image(
+                                        image:
+                                            AssetImage('assets/gpayQR.png')));
+                              });
+                        },
+                      ),
+                    ),
                     ListTile(
                       title: Text('Join us on Telegram'),
                       // subtitle: Text(

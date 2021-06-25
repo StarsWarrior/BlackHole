@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>1002304014127-sln51rhotf3vmlnsoqtbfgcotqbnucj0.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.1002304014127-sln51rhotf3vmlnsoqtbfgcotqbnucj0</string>
+	<key>API_KEY</key>
+	<string>AIzaSyCTpmYCQ98UQ8Xt-brXBz_QkSGqEM_1Jdo</string>
+	<key>GCM_SENDER_ID</key>
+	<string>1002304014127</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.shadow.blackhole</string>
+	<key>PROJECT_ID</key>
+	<string>blackhole-6e784</string>
+	<key>STORAGE_BUCKET</key>
+	<string>blackhole-6e784.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:1002304014127:ios:09fec9f7380538ab8843da</string>
+	<key>DATABASE_URL</key>
+	<string>https://blackhole-6e784-default-rtdb.firebaseio.com</string>
+</dict>
+</plist>

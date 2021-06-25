@@ -41,6 +41,17 @@ class _RecentlyPlayedState extends State<RecentlyPlayed> {
                     ? Colors.transparent
                     : Theme.of(context).accentColor,
                 elevation: 0,
+                actions: [
+                  IconButton(
+                    onPressed: () {
+                      Hive.box('recentlyPlayed')?.put('recentSongs', []);
+                      setState(() {
+                        _songs = [];
+                      });
+                    },
+                    icon: Icon(Icons.clear_all_rounded),
+                  ),
+                ],
               ),
               body: _songs.isEmpty
                   ? EmptyScreen().emptyScreen(context, 3, "Nothing to ", 15,

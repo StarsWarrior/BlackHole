@@ -102,7 +102,8 @@ class _TrendingPageState extends State<TrendingPage> {
         itemCount: plst.length,
         itemBuilder: (context, idx) {
           if (idx == 0) {
-            return (recentList.isEmpty)
+            return (recentList.isEmpty ||
+                    !Hive.box('settings').get('showRecent'))
                 ? SizedBox()
                 : Column(
                     children: [

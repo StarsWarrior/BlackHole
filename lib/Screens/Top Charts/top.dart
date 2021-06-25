@@ -31,16 +31,27 @@ class _TopChartsState extends State<TopCharts> {
             bottom: TabBar(
               tabs: [
                 Tab(
-                  child: Text('Local'),
+                  child: Text(
+                    'Local',
+                    style: TextStyle(
+                        color: Theme.of(context).textTheme.bodyText1.color),
+                  ),
                 ),
                 Tab(
-                  child: Text('Global'),
+                  child: Text(
+                    'Global',
+                    style: TextStyle(
+                        color: Theme.of(context).textTheme.bodyText1.color),
+                  ),
                 ),
               ],
             ),
             title: Text(
               'Spotify Top Charts',
-              style: TextStyle(fontSize: 18),
+              style: TextStyle(
+                fontSize: 18,
+                color: Theme.of(context).textTheme.bodyText1.color,
+              ),
             ),
             centerTitle: true,
             backgroundColor: Colors.transparent,
@@ -119,12 +130,16 @@ class _TopPageState extends State<TopPage> {
     setState(() {
       if (region == 'global') {
         globalItems = temp;
-        cachedGlobalItems = globalItems;
-        Hive.box('cache').put(region, globalItems);
+        if (globalItems.isNotEmpty) {
+          cachedGlobalItems = globalItems;
+          Hive.box('cache').put(region, globalItems);
+        }
       } else {
         items = temp;
-        cachedItems = items;
-        Hive.box('cache').put(region, items);
+        if (items.isNotEmpty) {
+          cachedItems = items;
+          Hive.box('cache').put(region, items);
+        }
       }
     });
   }

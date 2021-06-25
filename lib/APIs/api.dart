@@ -44,8 +44,6 @@ class Search {
     if (res.statusCode == 200) {
       final getMain = json.decode(res.body);
       List responseList = getMain["songs"];
-      print("response list is");
-      print(responseList);
       searchedList =
           await FormatResponse().formatAlbumSongsResponse(responseList);
     }

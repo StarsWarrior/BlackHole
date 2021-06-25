@@ -32,7 +32,6 @@ class _AlbumSearchPageState extends State<AlbumSearchPage> {
     if (!status) {
       status = true;
       Search().fetchAlbumSongs(widget.albumId).then((value) {
-        print(value);
         setState(() {
           searchedList = value;
           fetched = true;
@@ -52,7 +51,6 @@ class _AlbumSearchPageState extends State<AlbumSearchPage> {
                 textTheme: Theme.of(context).textTheme,
                 elevation: 0,
                 iconTheme: Theme.of(context).iconTheme,
-                toolbarHeight: 40,
               ),
               body: !fetched
                   ? Container(

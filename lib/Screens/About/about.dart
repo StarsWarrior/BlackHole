@@ -158,13 +158,8 @@ class _AboutScreenState extends State<AboutScreen> {
                       ),
                       onPressed: () {
                         final userID = Hive.box('settings').get('userID');
-                        final pa = 'ankit.sangwan.5688@oksbi';
-                        final pn = 'Ankit Sangwan';
-                        final tr = 'BlackHoleDonation';
-                        final tn = userID;
-                        final cu = 'INR';
                         String upiUrl =
-                            'upi://pay?pa=$pa&pn=$pn&tr=$tr&cu=$cu&tn=$tn';
+                            'upi://pay?pa=8570094149@okbizaxis&pn=Ankit%20Sangwan&mc=5732&aid=uGICAgIDn98OpSw&tr=BCR2DN6T37O6DB3Q&tn=$userID';
                         launch(upiUrl);
                       },
                     ),

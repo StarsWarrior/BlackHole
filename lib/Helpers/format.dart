@@ -103,7 +103,6 @@ class FormatResponse {
       };
       return info;
     } catch (e) {
-      print('Error: $e');
       return {"Error": e};
     }
   }
@@ -209,7 +208,6 @@ class FormatResponse {
       };
       return info;
     } catch (e) {
-      print('Error: $e');
       return {"Error": e};
     }
   }
@@ -261,7 +259,6 @@ class FormatResponse {
       };
       return info;
     } catch (e) {
-      print('Error: $e');
       return {"Error": e};
     }
   }
