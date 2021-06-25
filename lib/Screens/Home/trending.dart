@@ -103,7 +103,7 @@ class _TrendingPageState extends State<TrendingPage> {
         itemBuilder: (context, idx) {
           if (idx == 0) {
             return (recentList.isEmpty ||
-                    !Hive.box('settings').get('showRecent'))
+                    !Hive.box('settings').get('showRecent', defaultValue: true))
                 ? SizedBox()
                 : Column(
                     children: [
