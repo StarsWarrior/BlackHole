@@ -4,7 +4,6 @@ import 'package:audio_service/audio_service.dart';
 import 'package:blackhole/Screens/Library/nowplaying.dart';
 import 'package:blackhole/Screens/Library/playlists.dart';
 import 'package:blackhole/Screens/Library/recent.dart';
-import 'package:blackhole/Screens/YouTube/youtube_search.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
@@ -16,7 +15,6 @@ import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:blackhole/Screens/Login/auth.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -79,14 +77,12 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  final FirebaseAnalytics analytics = FirebaseAnalytics();
   @override
   void initState() {
     super.initState();
     currentTheme.addListener(() {
       setState(() {});
     });
-    analytics.logAppOpen();
   }
 
   initialFuntion() {
@@ -143,7 +139,6 @@ class _MyAppState extends State<MyApp> {
         '/': (context) => initialFuntion(),
         '/setting': (context) => SettingPage(),
         '/search': (context) => SearchPage(),
-        '/youtubesearch': (context) => YouTubeSearchPage(),
         // '/liked': (context) => LikedSongs(),
         // '/downloaded': (context) => DownloadedSongs(),
         // '/play': (context) => PlayScreen(),
