@@ -1,7 +1,7 @@
 # BlackHole
 Awesome Music Player made with Flutter
 
-[![made-with-flutter](https://img.shields.io/badge/Made%20with-Flutter-1f425f.svg)](https://flutter.dev/) ![Release](https://img.shields.io/github/v/release/Sangwan5688/BlackHole)
+[![made-with-flutter](https://img.shields.io/badge/Made%20with-Flutter-1f425f.svg)](https://flutter.dev/) ![Release](https://img.shields.io/github/v/release/Sangwan5688/BlackHole) ![Downloads](https://img.shields.io/github/downloads/Sangwan5688/BlackHole/total)
 
 ### Dont forget to :star: the repo
 
@@ -25,24 +25,29 @@ Play Online as well as Offline Songs<br>
 ## Features
 
 * Best Streaming Quality (320kbps)
-* Music Search
+* Music and Album Search
 * Trending Songs
 * Support 15+ music languages
 * Local and Global Top Spotify songs
 * Add Songs to Favorite
 * Playlists support
 * Import Playlists from Spotify
+* Import/Export Playlists as JSON File
+* Share Playlists
 * Sleep timer
 * Lyrics Support
+* Queue Management
 * Listening history record
 * Dark mode / accent color
 * Download for offline play (320kbps with ID3 tags)
 * Play Online as well as Offline Songs
+* Play videos as audio
 * Queue Management
 * Auto Update Check
 * Cache support
 * No Subscription
 * No Ads
+* YouTube Support (comming soon)
 
 More to come...
 
@@ -103,6 +108,7 @@ You can join our [Telegram Group](https://t.me/joinchat/fHDC1AWnOhw0ZmI9) if you
 
 # What's New
 <<<<<<< HEAD
+<<<<<<< HEAD
 ## v1.3
 ### Fixed:
 Song not downloading in Android 11.<br>
@@ -150,3 +156,40 @@ Fixed colour issues in the Light theme.<br>
 Changed about page.<br>
 Few bug fixes.<br>
 >>>>>>> 190c7b3 (Update README.md)
+=======
+## v1.8
+### New Features:
+* Option to select the download location.
+* Option to select folders to search for music.
+* Caching for Offline Songs.
+* A Genre tab along with songs, albums, and artists.
+* Display the total song number in a playlist.
+* Added Now playing in the play screen.
+* Added Album artist details for tracks.
+* Like and Download option in now playing queue.
+* Image Slideshow in the player.
+* Import/Export playlists using a JSON file.
+* Option to share playlists as JSON files.
+* Replaced Alert Dialogs with Snack Bars.
+* Download option in playlists.
+* Changed Buy me a Coffee donation amount & added GPay.
+* Option to download Full playlist.
+* Changed position of the stop button in the notification.
+* Keep cached trending playlists in case any error occurs.
+* Gapless Playback (No more wait in autoplay).
+* Added “.opus” format to videos.
+* Added Albums in search results.
+* A search bar in the results screen.
+* Option to clear and opt-out of the Last session.
+* Made the gender option during login more simple and easy to find.
+* Option to download the whole album from search results.
+
+### Bug Fixes:
+* Music pauses when a notification arrives.
+* Removed the gap between the bottom navigation drawer and the mini-player.
+* Image doesn’t change in Autoplay.
+* Next and previous button inactive even when repeat all is on.
+
+
+To read full changelog visit the [wiki page](https://github.com/Sangwan5688/BlackHole/wiki/Changelog)
+>>>>>>> 883c592 (Updated README.md)
