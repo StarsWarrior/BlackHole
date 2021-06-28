@@ -127,6 +127,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.1"
+  equatable:
+    dependency: transitive
+    description:
+      name: equatable
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.3"
   ext_storage:
     dependency: "direct main"
     description:
@@ -277,6 +284,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.6.3"
+  json_annotation:
+    dependency: transitive
+    description:
+      name: json_annotation
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "4.0.1"
   just_audio:
     dependency: "direct main"
     description:
@@ -634,13 +648,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.0"
-  web_scraper:
-    dependency: "direct main"
-    description:
-      name: web_scraper
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.1.4"
   webview_flutter:
     dependency: "direct main"
     description:
@@ -669,6 +676,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "5.1.2"
+  youtube_explode_dart:
+    dependency: "direct main"
+    description:
+      name: youtube_explode_dart
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.9.6"
 sdks:
   dart: ">=2.13.0 <3.0.0"
   flutter: ">=2.0.0"

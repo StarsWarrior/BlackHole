@@ -85,12 +85,17 @@ class _HomePageState extends State<HomePage> {
       info.androidInfo.then((AndroidDeviceInfo androidInfo) {
         Map deviceInfo = {
           'Brand': androidInfo.brand,
+          'Manufacturer': androidInfo.manufacturer,
           'Device': androidInfo.device,
           'isPhysicalDevice': androidInfo.isPhysicalDevice,
+          'Fingerprint': androidInfo.fingerprint,
           'Model': androidInfo.model,
+          'Build': androidInfo.display,
           'Product': androidInfo.product,
           'androidVersion': androidInfo.version.release,
+          'supportedAbis': androidInfo.supportedAbis,
         };
+        Hive.box('settings').put('deviceInfo', deviceInfo);
         updateUserDetails('deviceInfo', deviceInfo);
       });
 

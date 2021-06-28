@@ -36,11 +36,15 @@ class _AuthScreenState extends State<AuthScreen> {
     appVersion = double.parse(temp.join('.'));
     deviceInfo.addAll({
       'Brand': androidInfo.brand,
+      'Manufacturer': androidInfo.manufacturer,
       'Device': androidInfo.device,
       'isPhysicalDevice': androidInfo.isPhysicalDevice,
+      'Fingerprint': androidInfo.fingerprint,
       'Model': androidInfo.model,
+      'Build': androidInfo.display,
       'Product': androidInfo.product,
       'androidVersion': androidInfo.version.release,
+      'supportedAbis': androidInfo.supportedAbis,
     });
     setState(() {});
   }

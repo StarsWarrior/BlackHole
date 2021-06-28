@@ -515,7 +515,7 @@ class _LikedSongsState extends State<LikedSongs>
                                           );
                                         },
                                         title: Text(
-                                          '${_songs[index]['title'].split("(")[0]}',
+                                          '${_songs[index]['title']}',
                                         ),
                                         subtitle: Text(
                                           '${_songs[index]['artist'] ?? 'Artist name'}',

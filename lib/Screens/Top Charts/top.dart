@@ -1,8 +1,9 @@
 import 'package:blackhole/CustomWidgets/emptyScreen.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-import 'package:web_scraper/web_scraper.dart';
+import 'package:http/http.dart';
 
 List items = [];
 List globalItems = [];
@@ -91,27 +92,33 @@ class _TopChartsState extends State<TopCharts> {
 }
 
 Future<List> scrapData(String region) async {
-  final webScraper = WebScraper("https://www.spotifycharts.com");
-  print('starting expensive operation');
-  List temp = [];
-  await webScraper.loadWebPage('/regional/' + region + '/daily/latest/');
-  for (int i = 1; i <= 200; i++) {
-    final title = webScraper.getElement(
-        "#content > div > div > div > span > table > tbody > tr:nth-child($i) > td.chart-table-track > strong",
-        []);
-    final artist = webScraper.getElement(
-        "#content > div > div > div > span > table > tbody > tr:nth-child($i) > td.chart-table-track > span",
-        []);
-    try {
-      temp.add({
-        'title': title[0]['title'],
-        'artist': artist[0]['title'].replaceFirst('by ', ''),
-        'image': ''
-      });
-    } catch (e) {}
-  }
-  print('finished expensive operation');
-  return temp;
+  // print('starting expensive operation');
+  String authority = "www.spotifycharts.com";
+  String unencodedPath = '/regional/' + region + '/daily/latest/';
+  Response res = await get(Uri.https(authority, unencodedPath));
+  List result = RegExp(
+          r'\<td class=\"chart-table-image\"\>\n[ ]*?\<a href=\"https:\/\/open\.spotify\.com\/track\/(.*?)\" target=\"_blank\"\>\n[ ]*?\<img src=\"(https:\/\/i\.scdn\.co\/image\/.*?)\"\>\n[ ]*?\<\/a\>\n[ ]*?<\/td\>\n[ ]*?<td class=\"chart-table-position\">([0-9]*?)<\/td>\n[ ]*?<td class=\"chart-table-trend\">[.|\n| ]*<.*\n[ ]*<.*\n[ ]*<.*\n[ ]*<.*\n[ ]*<td class=\"chart-table-track\">\n[ ]*?<strong>(.*?)<\/strong>\n[ ]*?<span>by (.*?)<\/span>\n[ ]*?<\/td>\n[ ]*?<td class="chart-table-streams">(.*?)<\/td>')
+      .allMatches(res.body)
+      .map((m) {
+    return {
+      'id': m[1],
+      'image': m[2],
+      'position': m[3],
+      'title': m[4]
+          .replaceAll("&amp;", "&")
+          .replaceAll("&#039;", "'")
+          .replaceAll("&quot;", "\""),
+      'album': '',
+      'artist': m[5]
+          .replaceAll("&amp;", "&")
+          .replaceAll("&#039;", "'")
+          .replaceAll("&quot;", "\""),
+      'streams': m[6],
+      "region": region,
+    };
+  }).toList();
+  // print('finished expensive operation');
+  return result;
 }
 
 class TopPage extends StatefulWidget {
@@ -221,13 +228,22 @@ class _TopPageState extends State<TopPage> {
                                       style: TextStyle(color: Colors.white),
                                     ),
                                   ),
+                                  if (showList[index]['image'] != '')
+                                    CachedNetworkImage(
+                                      imageUrl: showList[index]['image'],
+                                      errorWidget: (context, _, __) => Image(
+                                        image: AssetImage('assets/cover.jpg'),
+                                      ),
+                                      placeholder: (context, url) => Image(
+                                        image: AssetImage('assets/cover.jpg'),
+                                      ),
+                                    ),
                                 ],
                               ),
                             ),
                             title: Text(
-                                '${showList[index]['title'].split("(")[0]}'),
-                            subtitle: Text(
-                                '${showList[index]['artist'].split("(")[0]}'),
+                                '${showList[index]['position']}. ${showList[index]["title"]}'),
+                            subtitle: Text('${showList[index]['artist']}'),
                             onTap: () {
                               Navigator.pushNamed(context, '/search',
                                   arguments: showList[index]['title']);

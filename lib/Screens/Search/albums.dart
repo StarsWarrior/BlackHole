@@ -79,7 +79,7 @@ class _AlbumSearchPageState extends State<AlbumSearchPage> {
                               child: ListTile(
                                 contentPadding: EdgeInsets.only(left: 15.0),
                                 title: Text(
-                                  '${searchedList[index]["title"].split("(")[0]}',
+                                  '${searchedList[index]["title"]}',
                                   style: TextStyle(fontWeight: FontWeight.w500),
                                 ),
                                 subtitle:

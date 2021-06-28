@@ -57,8 +57,8 @@ class FormatResponse {
             .replaceAll("&amp;", "&")
             .replaceAll("&#039;", "'")
             .replaceAll("&quot;", "\"")
-            .split('(')
-            .first
+            // .split('(')
+            // .first
             .trim(),
         "year": response["year"],
         "duration": response["duration"],
@@ -83,8 +83,8 @@ class FormatResponse {
             .replaceAll("&amp;", "&")
             .replaceAll("&#039;", "'")
             .replaceAll("&quot;", "\"")
-            .split('(')
-            .first
+            // .split('(')
+            // .first
             .trim(),
         "artist": artistNames
             .join(", ")
@@ -161,8 +161,8 @@ class FormatResponse {
             .replaceAll("&amp;", "&")
             .replaceAll("&#039;", "'")
             .replaceAll("&quot;", "\"")
-            .split('(')
-            .first
+            // .split('(')
+            // .first
             .trim(),
         "year": response["year"],
         "duration": response["more_info"]["duration"],
@@ -188,8 +188,8 @@ class FormatResponse {
             .replaceAll("&amp;", "&")
             .replaceAll("&#039;", "'")
             .replaceAll("&quot;", "\"")
-            .split('(')
-            .first
+            // .split('(')
+            // .first
             .trim(),
         "artist": artistNames
             .join(", ")
@@ -221,8 +221,8 @@ class FormatResponse {
             .replaceAll("&amp;", "&")
             .replaceAll("&#039;", "'")
             .replaceAll("&quot;", "\"")
-            .split('(')
-            .first
+            // .split('(')
+            // .first
             .trim(),
         "year": response["more_info"]["year"],
         "language": capitalize(response["more_info"]["language"].toString()),
@@ -239,8 +239,8 @@ class FormatResponse {
             .replaceAll("&amp;", "&")
             .replaceAll("&#039;", "'")
             .replaceAll("&quot;", "\"")
-            .split('(')
-            .first
+            // .split('(')
+            // .first
             .trim(),
         "artist": response["music"]
             .toString()

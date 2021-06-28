@@ -35,13 +35,13 @@ dependencies:
   http: ^0.13.3
   des_plugin: ^0.0.3
   share_plus: ^2.1.4
-  web_scraper: ^0.1.4
   device_info: ^2.0.2
   package_info: ^2.0.2
   url_launcher: ^6.0.6
   webview_flutter: ^2.0.8
   # flutter_web_auth: ^0.3.0
   cached_network_image: ^3.0.0
+  youtube_explode_dart: ^1.9.6
 
 
   # UI related

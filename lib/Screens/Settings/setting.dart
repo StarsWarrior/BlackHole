@@ -997,7 +997,7 @@ class _SettingPageState extends State<SettingPage> {
                       title: Text('Show Last Session on Home Screen'),
                       subtitle: Text('Default: On'),
                       dense: true,
-                      value: settingsBox.get('showRecent') ?? true,
+                      value: settingsBox.get('showRecent', defaultValue: true),
                       onChanged: (val) {
                         settingsBox.put('showRecent', val);
                         updateUserDetails('showRecent', val);

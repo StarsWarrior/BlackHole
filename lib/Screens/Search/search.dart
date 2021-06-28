@@ -167,7 +167,7 @@ class _SearchPageState extends State<SearchPage> {
                                             contentPadding:
                                                 EdgeInsets.only(left: 15.0),
                                             title: Text(
-                                              '${searchedList[index]["title"].split("(")[0]}',
+                                              '${searchedList[index]["title"]}',
                                               style: TextStyle(
                                                   fontWeight: FontWeight.w500),
                                             ),
@@ -258,7 +258,7 @@ class _SearchPageState extends State<SearchPage> {
                                             contentPadding:
                                                 EdgeInsets.only(left: 15.0),
                                             title: Text(
-                                              '${searchedAlbumList[index]["title"].split("(")[0]}',
+                                              '${searchedAlbumList[index]["title"]}',
                                               style: TextStyle(
                                                   fontWeight: FontWeight.w500),
                                             ),

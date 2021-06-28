@@ -154,13 +154,13 @@ class _TrendingPageState extends State<TrendingPage> {
                                       ),
                                     ),
                                     Text(
-                                      '${recentList[index]["title"].split("(")[0]}',
+                                      '${recentList[index]["title"]}',
                                       textAlign: TextAlign.center,
                                       softWrap: false,
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                     Text(
-                                      '${recentList[index]["artist"].split("(")[0]}',
+                                      '${recentList[index]["artist"]}',
                                       textAlign: TextAlign.center,
                                       softWrap: false,
                                       overflow: TextOverflow.ellipsis,
@@ -293,7 +293,7 @@ class _TrendingPageState extends State<TrendingPage> {
                                     ),
                                   ),
                                   Text(
-                                    '${plst[idx]["songsList"][index]["title"].split("(")[0]}',
+                                    '${plst[idx]["songsList"][index]["title"]}',
                                     textAlign: TextAlign.center,
                                     softWrap: false,
                                     overflow: TextOverflow.ellipsis,
@@ -301,7 +301,7 @@ class _TrendingPageState extends State<TrendingPage> {
                                     //     color: Theme.of(context).accentColor),
                                   ),
                                   Text(
-                                    '${plst[idx]["songsList"][index]["artist"].split("(")[0]}',
+                                    '${plst[idx]["songsList"][index]["artist"]}',
                                     textAlign: TextAlign.center,
                                     softWrap: false,
                                     overflow: TextOverflow.ellipsis,

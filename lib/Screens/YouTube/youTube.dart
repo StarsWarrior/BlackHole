@@ -1,5 +1,8 @@
+import 'package:blackhole/CustomWidgets/gradientContainers.dart';
+import 'package:blackhole/Screens/YouTube/youtube_search.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:material_floating_search_bar/material_floating_search_bar.dart';
 
 class YouTube extends StatefulWidget {
@@ -11,6 +14,7 @@ class YouTube extends StatefulWidget {
 
 class _YouTubeState extends State<YouTube> {
   FloatingSearchBarController _controller = FloatingSearchBarController();
+  List ytSearch = Hive.box('settings').get('ytSearch', defaultValue: []);
 
   @override
   Widget build(BuildContext cntxt) {
@@ -49,20 +53,34 @@ class _YouTubeState extends State<YouTube> {
         ],
         hint: 'Search on YouTube',
         height: 52.0,
-        margins: EdgeInsets.all(15.0),
+        margins: EdgeInsets.fromLTRB(18.0, 8.0, 18.0, 15.0),
         scrollPadding: EdgeInsets.only(bottom: 50),
-        // transitionDuration: Duration(milliseconds: 500),
         backdropColor: Colors.black12,
         transitionCurve: Curves.easeInOut,
         physics: BouncingScrollPhysics(),
         axisAlignment: 0.0,
         openAxisAlignment: 0.0,
         debounceDelay: Duration(milliseconds: 500),
-        onQueryChanged: (_query) {
-          print(_query);
-        },
+        // onQueryChanged: (_query) {
+        // print(_query);
+        // },
         onSubmitted: (_query) {
-          print("onsubmit " + _query);
+          _controller.close();
+          Navigator.push(
+            context,
+            PageRouteBuilder(
+              opaque: false,
+              pageBuilder: (_, __, ___) => YouTubeSearchPage(
+                query: _query,
+              ),
+            ),
+          );
+          setState(() {
+            if (ytSearch.contains(_query)) ytSearch.remove(_query);
+            ytSearch.insert(0, _query);
+            if (ytSearch.length > 10) ytSearch = ytSearch.sublist(0, 10);
+            Hive.box('settings').put('ytSearch', ytSearch);
+          });
         },
         transition: CircularFloatingSearchBarTransition(),
         actions: [
@@ -90,15 +108,45 @@ class _YouTubeState extends State<YouTube> {
         builder: (context, transition) {
           return ClipRRect(
             borderRadius: BorderRadius.circular(8),
-            child: Material(
-              color: Colors.white,
-              elevation: 4.0,
+            child: GradientCard(
               child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: Colors.accents.map((color) {
-                  return Container(height: 112, color: color);
-                }).toList(),
-              ),
+                  mainAxisSize: MainAxisSize.min,
+                  children: ytSearch
+                      .map((e) => ListTile(
+                          // dense: true,
+                          horizontalTitleGap: 0.0,
+                          title: Text(e),
+                          leading: Icon(CupertinoIcons.search),
+                          trailing: IconButton(
+                              icon: Icon(
+                                CupertinoIcons.clear,
+                                size: 15.0,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  ytSearch.remove(e);
+                                  Hive.box('settings')
+                                      .put('ytSearch', ytSearch);
+                                });
+                              }),
+                          onTap: () {
+                            _controller.close();
+                            setState(() {
+                              ytSearch.remove(e);
+                              ytSearch.insert(0, e);
+                              Hive.box('settings').put('ytSearch', ytSearch);
+                            });
+                            Navigator.push(
+                              context,
+                              PageRouteBuilder(
+                                opaque: false,
+                                pageBuilder: (_, __, ___) => YouTubeSearchPage(
+                                  query: e,
+                                ),
+                              ),
+                            );
+                          }))
+                      .toList()),
             ),
           );
         },
