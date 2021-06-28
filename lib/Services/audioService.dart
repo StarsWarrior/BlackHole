@@ -71,6 +71,8 @@ class AudioPlayerTask extends BackgroundAudioTask {
   }
 
   addRecentlyPlayed(MediaItem mediaitem) async {
+    if (mediaItem.artUri.toString().startsWith('https://img.youtube.com'))
+      return;
     List recentList;
     try {
       recentList = await Hive.box('recentlyPlayed').get('recentSongs').toList();

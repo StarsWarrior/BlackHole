@@ -32,7 +32,6 @@ class _YouTubeSearchPageState extends State<YouTubeSearchPage> {
     if (!status) {
       status = true;
       YouTubeServices().fetchSearchResults(query ?? widget.query).then((value) {
-        print(value);
         setState(() {
           searchedList = value;
           fetched = true;
@@ -202,13 +201,14 @@ class _YouTubeSearchPageState extends State<YouTubeSearchPage> {
                                                 CachedNetworkImage(
                                                   errorWidget:
                                                       (context, _, __) => Image(
-                                                    image: AssetImage(
-                                                        'assets/ytCover.png'),
+                                                    image: NetworkImage(
+                                                        searchedList[index]
+                                                            .thumbnails
+                                                            .standardResUrl),
                                                   ),
                                                   imageUrl: searchedList[index]
                                                       .thumbnails
-                                                      .standardResUrl,
-                                                  // '${searchedList[index]["image"].replaceAll('http:', 'https:')}',
+                                                      .maxResUrl,
                                                   placeholder: (context, url) =>
                                                       Image(
                                                     image: AssetImage(

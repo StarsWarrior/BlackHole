@@ -2,6 +2,7 @@ import 'package:blackhole/CustomWidgets/emptyScreen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:html_unescape/html_unescape_small.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart';
 
@@ -93,9 +94,11 @@ class _TopChartsState extends State<TopCharts> {
 
 Future<List> scrapData(String region) async {
   // print('starting expensive operation');
+  HtmlUnescape unescape = HtmlUnescape();
   String authority = "www.spotifycharts.com";
   String unencodedPath = '/regional/' + region + '/daily/latest/';
   Response res = await get(Uri.https(authority, unencodedPath));
+
   List result = RegExp(
           r'\<td class=\"chart-table-image\"\>\n[ ]*?\<a href=\"https:\/\/open\.spotify\.com\/track\/(.*?)\" target=\"_blank\"\>\n[ ]*?\<img src=\"(https:\/\/i\.scdn\.co\/image\/.*?)\"\>\n[ ]*?\<\/a\>\n[ ]*?<\/td\>\n[ ]*?<td class=\"chart-table-position\">([0-9]*?)<\/td>\n[ ]*?<td class=\"chart-table-trend\">[.|\n| ]*<.*\n[ ]*<.*\n[ ]*<.*\n[ ]*<.*\n[ ]*<td class=\"chart-table-track\">\n[ ]*?<strong>(.*?)<\/strong>\n[ ]*?<span>by (.*?)<\/span>\n[ ]*?<\/td>\n[ ]*?<td class="chart-table-streams">(.*?)<\/td>')
       .allMatches(res.body)
@@ -104,15 +107,9 @@ Future<List> scrapData(String region) async {
       'id': m[1],
       'image': m[2],
       'position': m[3],
-      'title': m[4]
-          .replaceAll("&amp;", "&")
-          .replaceAll("&#039;", "'")
-          .replaceAll("&quot;", "\""),
+      'title': unescape.convert(m[4]),
       'album': '',
-      'artist': m[5]
-          .replaceAll("&amp;", "&")
-          .replaceAll("&#039;", "'")
-          .replaceAll("&quot;", "\""),
+      'artist': unescape.convert(m[5]),
       'streams': m[6],
       "region": region,
     };
@@ -221,13 +218,6 @@ class _TopPageState extends State<TopPage> {
                                   Image(
                                     image: AssetImage('assets/cover.jpg'),
                                   ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(3.0),
-                                    child: Text(
-                                      (index + 1).toString(),
-                                      style: TextStyle(color: Colors.white),
-                                    ),
-                                  ),
                                   if (showList[index]['image'] != '')
                                     CachedNetworkImage(
                                       imageUrl: showList[index]['image'],
@@ -241,8 +231,9 @@ class _TopPageState extends State<TopPage> {
                                 ],
                               ),
                             ),
-                            title: Text(
-                                '${showList[index]['position']}. ${showList[index]["title"]}'),
+                            title: Text(showList[index]['position'] == null
+                                ? '${showList[index]["title"]}'
+                                : '${showList[index]['position']}. ${showList[index]["title"]}'),
                             subtitle: Text('${showList[index]['artist']}'),
                             onTap: () {
                               Navigator.pushNamed(context, '/search',

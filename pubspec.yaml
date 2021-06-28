@@ -38,6 +38,7 @@ dependencies:
   device_info: ^2.0.2
   package_info: ^2.0.2
   url_launcher: ^6.0.6
+  html_unescape: ^2.0.0
   webview_flutter: ^2.0.8
   # flutter_web_auth: ^0.3.0
   cached_network_image: ^3.0.0

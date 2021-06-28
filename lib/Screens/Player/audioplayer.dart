@@ -156,7 +156,11 @@ class _PlayScreenState extends State<PlayScreen> {
       response.map((song) => MediaItem(
               id: song['id'],
               album: song['album'],
-              duration: Duration(seconds: int.parse(song['duration'] ?? 180)),
+              duration: Duration(
+                  seconds: int.parse(
+                      (song['duration'] == null || song['duration'] == 'null')
+                          ? 180
+                          : song['duration'])),
               title: song['title'],
               artist: song["artist"],
               artUri: Uri.parse(song['image']),

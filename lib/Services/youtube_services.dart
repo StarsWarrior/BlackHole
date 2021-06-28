@@ -4,23 +4,29 @@ import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 class YouTubeServices {
   // String searchAuthority = "www.youtube.com";
   // String searchPath = "/results";
+  Future<List<Video>> getPlaylistSongs(String id) async {
+    YoutubeExplode yt = YoutubeExplode();
+    List<Video> results = await yt.playlists.getVideos(id).toList();
+    yt.close();
+    return results;
+  }
 
   Future<Map> formatVideo(Video video) async {
     return {
       'id': video.id.value,
-      'album': video.author,
-      'duration': video.duration.inSeconds.toString(),
+      'album': video?.author,
+      'duration': video?.duration?.inSeconds.toString(),
       'title': video.title,
       'artist': video.author,
-      'image': video.thumbnails.highResUrl.toString(),
+      'image': video?.thumbnails?.highResUrl.toString(),
       'language': '',
       'url': await getUri(video),
-      'year': video.uploadDate.year.toString(),
+      'year': video?.uploadDate?.year.toString(),
       '320kbps': 'false',
       'has_lyrics': 'false',
-      'release_date': video.publishDate.toString(),
-      'album_id': video.channelId.value,
-      'subtitle': video.author,
+      'release_date': video?.publishDate.toString(),
+      'album_id': video?.channelId?.value,
+      'subtitle': video?.author,
     };
   }
 
@@ -80,9 +86,7 @@ class YouTubeServices {
     StreamManifest manifest =
         await yt.videos.streamsClient.getManifest(video.id);
     AudioOnlyStreamInfo streamInfo = manifest.audioOnly.withHighestBitrate();
-    print(streamInfo.url);
     print(streamInfo.bitrate);
-    print(streamInfo.size);
     yt.close();
     return streamInfo.url.toString();
   }
