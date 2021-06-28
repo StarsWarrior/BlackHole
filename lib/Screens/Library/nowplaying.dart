@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:audio_service/audio_service.dart';
-import 'package:blackhole/CustomWidgets/GradientContainers.dart';
+import 'package:blackhole/CustomWidgets/gradientContainers.dart';
 import 'package:blackhole/CustomWidgets/downloadButton.dart';
 import 'package:blackhole/CustomWidgets/emptyScreen.dart';
 import 'package:blackhole/CustomWidgets/like_button.dart';

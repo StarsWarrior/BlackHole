@@ -1,5 +1,5 @@
 import 'package:blackhole/Helpers/countrycodes.dart';
-import 'package:blackhole/CustomWidgets/GradientContainers.dart';
+import 'package:blackhole/CustomWidgets/gradientContainers.dart';
 import 'package:blackhole/Helpers/picker.dart';
 import 'package:blackhole/Screens/Top Charts/top.dart' as topScreen;
 import 'package:blackhole/Screens/Home/trending.dart' as trendingScreen;

@@ -1,5 +1,5 @@
 import 'package:blackhole/APIs/api.dart';
-import 'package:blackhole/CustomWidgets/GradientContainers.dart';
+import 'package:blackhole/CustomWidgets/gradientContainers.dart';
 import 'package:blackhole/CustomWidgets/collage.dart';
 import 'package:blackhole/Helpers/import_export_playlist.dart';
 import 'package:blackhole/Helpers/webView.dart';

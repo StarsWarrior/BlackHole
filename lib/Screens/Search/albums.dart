@@ -1,7 +1,7 @@
 import 'dart:ui';
 import 'package:blackhole/CustomWidgets/downloadButton.dart';
 import 'package:blackhole/Screens/Player/audioplayer.dart';
-import 'package:blackhole/CustomWidgets/GradientContainers.dart';
+import 'package:blackhole/CustomWidgets/gradientContainers.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:blackhole/CustomWidgets/emptyScreen.dart';
