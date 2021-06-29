@@ -259,9 +259,16 @@ class _YouTubeSearchPageState extends State<YouTubeSearchPage> {
                                                                 right: 15.0),
                                                         child: Text(
                                                           searchedList[index]
-                                                              .duration
-                                                              .toString()
-                                                              .split(".")[0],
+                                                                      .duration
+                                                                      .toString() ==
+                                                                  'null'
+                                                              ? 'LIVE NOW'
+                                                              : searchedList[
+                                                                      index]
+                                                                  .duration
+                                                                  .toString()
+                                                                  .split(
+                                                                      ".")[0],
                                                         ),
                                                       ),
                                                     ],
@@ -294,21 +301,50 @@ class _YouTubeSearchPageState extends State<YouTubeSearchPage> {
                                               setState(() {
                                                 done = true;
                                               });
-                                              Navigator.push(
-                                                context,
-                                                PageRouteBuilder(
-                                                  opaque: false,
-                                                  pageBuilder: (_, __, ___) =>
-                                                      PlayScreen(
-                                                    fromMiniplayer: false,
-                                                    data: {
-                                                      'response': [response],
-                                                      'index': 0,
-                                                      'offline': false,
-                                                    },
-                                                  ),
-                                                ),
-                                              );
+                                              response == null
+                                                  ? ScaffoldMessenger.of(
+                                                          context)
+                                                      .showSnackBar(
+                                                      SnackBar(
+                                                        elevation: 6,
+                                                        backgroundColor:
+                                                            Colors.grey[900],
+                                                        behavior:
+                                                            SnackBarBehavior
+                                                                .floating,
+                                                        content: Text(
+                                                          'Video is live. Please wait until the live stream finishes and try again.',
+                                                          style: TextStyle(
+                                                              color:
+                                                                  Colors.white),
+                                                        ),
+                                                        action: SnackBarAction(
+                                                          textColor:
+                                                              Theme.of(context)
+                                                                  .accentColor,
+                                                          label: 'Ok',
+                                                          onPressed: () {},
+                                                        ),
+                                                      ),
+                                                    )
+                                                  : Navigator.push(
+                                                      context,
+                                                      PageRouteBuilder(
+                                                        opaque: false,
+                                                        pageBuilder:
+                                                            (_, __, ___) =>
+                                                                PlayScreen(
+                                                          fromMiniplayer: false,
+                                                          data: {
+                                                            'response': [
+                                                              response
+                                                            ],
+                                                            'index': 0,
+                                                            'offline': false,
+                                                          },
+                                                        ),
+                                                      ),
+                                                    );
                                             },
                                           ),
                                         ),

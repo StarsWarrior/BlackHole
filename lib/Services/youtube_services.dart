@@ -12,13 +12,15 @@ class YouTubeServices {
   }
 
   Future<Map> formatVideo(Video video) async {
+    if (video?.duration?.inSeconds == null) return null;
     return {
       'id': video.id.value,
       'album': video?.author,
       'duration': video?.duration?.inSeconds.toString(),
       'title': video.title,
       'artist': video.author,
-      'image': video?.thumbnails?.highResUrl.toString(),
+      'image': video?.thumbnails?.maxResUrl.toString(),
+      'secondImage': video?.thumbnails?.highResUrl.toString(),
       'language': '',
       'url': await getUri(video),
       'year': video?.uploadDate?.year.toString(),
