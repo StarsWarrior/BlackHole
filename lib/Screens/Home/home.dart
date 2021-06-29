@@ -2,6 +2,7 @@ import 'package:blackhole/Helpers/countrycodes.dart';
 import 'package:blackhole/CustomWidgets/gradientContainers.dart';
 import 'package:blackhole/Screens/Library/downloaded.dart';
 import 'package:blackhole/Screens/Library/library.dart';
+import 'package:blackhole/Screens/Search/search.dart';
 import 'package:blackhole/Screens/Settings/setting.dart';
 import 'package:blackhole/Screens/YouTube/youTube.dart';
 import 'package:device_info/device_info.dart';
@@ -616,54 +617,69 @@ class _HomePageState extends State<HomePage> {
                                             ),
                                             border: InputBorder.none,
                                             hintText:
-                                                "Songs, artists or podcasts",
+                                                "Songs, albums or artists",
                                           ),
                                           autofocus: false,
                                           onSubmitted: (query) {
-                                            query.trim() == ''
-                                                ? showDialog(
-                                                    context: context,
-                                                    builder:
-                                                        (BuildContext context) {
-                                                      return AlertDialog(
-                                                        title: Text(
-                                                          'Invalid search',
-                                                          style: TextStyle(
-                                                              color: Theme.of(
-                                                                      context)
+                                            if (query.trim() == '') {
+                                              showDialog(
+                                                context: context,
+                                                builder:
+                                                    (BuildContext context) {
+                                                  return AlertDialog(
+                                                    title: Text(
+                                                      'Invalid search',
+                                                      style: TextStyle(
+                                                          color:
+                                                              Theme.of(context)
                                                                   .accentColor),
+                                                    ),
+                                                    content: Column(
+                                                      mainAxisSize:
+                                                          MainAxisSize.min,
+                                                      children: [
+                                                        SizedBox(
+                                                          height: 10,
                                                         ),
-                                                        content: Column(
-                                                          mainAxisSize:
-                                                              MainAxisSize.min,
-                                                          children: [
-                                                            SizedBox(
-                                                              height: 10,
-                                                            ),
-                                                            Text(
-                                                                'Please enter a valid search query'),
-                                                          ],
-                                                        ),
-                                                        actions: [
-                                                          TextButton(
-                                                              style: TextButton
-                                                                  .styleFrom(
-                                                                primary: Theme.of(
-                                                                        context)
-                                                                    .accentColor,
-                                                              ),
-                                                              onPressed: () {
-                                                                Navigator.pop(
-                                                                    context);
-                                                              },
-                                                              child: Text('Ok'))
-                                                        ],
-                                                      );
-                                                    },
-                                                  )
-                                                : Navigator.pushNamed(
-                                                    context, '/search',
-                                                    arguments: query);
+                                                        Text(
+                                                            'Please enter a valid search query'),
+                                                      ],
+                                                    ),
+                                                    actions: [
+                                                      TextButton(
+                                                          style: TextButton
+                                                              .styleFrom(
+                                                            primary: Theme.of(
+                                                                    context)
+                                                                .accentColor,
+                                                          ),
+                                                          onPressed: () {
+                                                            Navigator.pop(
+                                                                context);
+                                                          },
+                                                          child: Text('Ok'))
+                                                    ],
+                                                  );
+                                                },
+                                              );
+                                            } else {
+                                              List search = Hive.box('settings')
+                                                  .get('search',
+                                                      defaultValue: []);
+                                              if (search.contains(query))
+                                                search.remove(query);
+                                              search.insert(0, query);
+                                              if (search.length > 10)
+                                                search = search.sublist(0, 10);
+                                              Hive.box('settings')
+                                                  .put('search', search);
+                                              Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          SearchPage(
+                                                              query: query)));
+                                            }
                                             controller.text = '';
                                           },
                                         ),

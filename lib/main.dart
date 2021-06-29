@@ -10,7 +10,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:blackhole/Screens/About/about.dart';
 import 'package:blackhole/Screens/Home/home.dart';
 import 'package:blackhole/Screens/Settings/setting.dart';
-import 'package:blackhole/Screens/Search/search.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:blackhole/Screens/Login/auth.dart';
@@ -138,10 +137,6 @@ class _MyAppState extends State<MyApp> {
       routes: {
         '/': (context) => initialFuntion(),
         '/setting': (context) => SettingPage(),
-        '/search': (context) => SearchPage(),
-        // '/liked': (context) => LikedSongs(),
-        // '/downloaded': (context) => DownloadedSongs(),
-        // '/play': (context) => PlayScreen(),
         '/about': (context) => AboutScreen(),
         '/playlists': (context) => PlaylistScreen(),
         '/nowplaying': (context) => NowPlaying(),

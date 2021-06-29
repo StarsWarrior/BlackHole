@@ -152,7 +152,6 @@ class AudioPlayerTask extends BackgroundAudioTask {
 
   @override
   Future<void> onUpdateQueue(List<MediaItem> _queue) async {
-    print("Queue is $_queue");
     await AudioServiceBackground.setQueue(_queue);
     await AudioServiceBackground.setMediaItem(_queue[index]);
     concatenatingAudioSource = ConcatenatingAudioSource(

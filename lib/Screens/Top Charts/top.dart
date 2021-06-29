@@ -1,4 +1,5 @@
 import 'package:blackhole/CustomWidgets/emptyScreen.dart';
+import 'package:blackhole/Screens/Search/search.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -236,8 +237,11 @@ class _TopPageState extends State<TopPage> {
                                 : '${showList[index]['position']}. ${showList[index]["title"]}'),
                             subtitle: Text('${showList[index]['artist']}'),
                             onTap: () {
-                              Navigator.pushNamed(context, '/search',
-                                  arguments: showList[index]['title']);
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => SearchPage(
+                                          query: showList[index]['title'])));
                             },
                           );
                         },

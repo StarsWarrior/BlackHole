@@ -317,7 +317,7 @@ class _YouTubeState extends State<YouTube> {
                                       Theme.of(context).accentColor),
                                   strokeWidth: 5,
                                 )),
-                            Text('Coverting Video to Audio'),
+                            Text('Fetching Audio Stream'),
                           ],
                         ),
                       ),
