@@ -12,12 +12,11 @@ List globalItems = [];
 List cachedItems = [];
 List cachedGlobalItems = [];
 bool fetched = false;
+bool emptyRegional, emptyGlobal = false;
 
 class TopCharts extends StatefulWidget {
   final String region;
-  final status;
-  const TopCharts({Key key, @required this.region, @required this.status})
-      : super(key: key);
+  const TopCharts({Key key, @required this.region}) : super(key: key);
 
   @override
   _TopChartsState createState() => _TopChartsState();
@@ -81,11 +80,9 @@ class _TopChartsState extends State<TopCharts> {
             children: [
               TopPage(
                 region: widget.region,
-                status: widget.status,
               ),
               TopPage(
                 region: 'global',
-                status: widget.status,
               ),
             ],
           ),
@@ -121,9 +118,7 @@ Future<List> scrapData(String region) async {
 
 class TopPage extends StatefulWidget {
   final region;
-  final status;
-  TopPage({Key key, @required this.region, @required this.status})
-      : super(key: key);
+  TopPage({Key key, @required this.region}) : super(key: key);
   @override
   _TopPageState createState() => _TopPageState();
 }
@@ -139,12 +134,14 @@ class _TopPageState extends State<TopPage> {
           cachedGlobalItems = globalItems;
           Hive.box('cache').put(region, globalItems);
         }
+        emptyGlobal = globalItems.isEmpty && cachedGlobalItems.isEmpty;
       } else {
         items = temp;
         if (items.isNotEmpty) {
           cachedItems = items;
           Hive.box('cache').put(region, items);
         }
+        emptyRegional = items.isEmpty && cachedItems.isEmpty;
       }
     });
   }
@@ -174,78 +171,78 @@ class _TopPageState extends State<TopPage> {
 
   @override
   Widget build(BuildContext context) {
+    bool isGlobal = widget.region == 'global';
     if (!fetched) {
       getCachedData(widget.region);
       getData(widget.region);
     }
-    List showList =
-        (widget.region == 'global' ? cachedGlobalItems : cachedItems);
+    List showList = (isGlobal ? cachedGlobalItems : cachedItems);
     return Column(
       children: [
         showList.length <= 50
             ? Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                        height: MediaQuery.of(context).size.width / 6,
-                        width: MediaQuery.of(context).size.width / 6,
-                        child: CircularProgressIndicator(
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                              Theme.of(context).accentColor),
-                          strokeWidth: 5,
-                        )),
-                  ],
-                ),
-              )
-            : Expanded(
-                child: !widget.status
+                child: (isGlobal ? emptyGlobal : emptyRegional)
                     ? EmptyScreen().emptyScreen(context, 0, ":( ", 100, "ERROR",
                         60, "Service Unavailable", 20)
-                    : ListView.builder(
-                        physics: BouncingScrollPhysics(),
-                        itemCount: showList.length,
-                        itemBuilder: (context, index) {
-                          return ListTile(
-                            leading: Card(
-                              elevation: 5,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(7.0),
+                    : Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          SizedBox(
+                              height: MediaQuery.of(context).size.width / 6,
+                              width: MediaQuery.of(context).size.width / 6,
+                              child: CircularProgressIndicator(
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                    Theme.of(context).accentColor),
+                                strokeWidth: 5,
+                              )),
+                        ],
+                      ),
+              )
+            : Expanded(
+                child: ListView.builder(
+                physics: BouncingScrollPhysics(),
+                itemCount: showList.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    leading: Card(
+                      elevation: 5,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(7.0),
+                      ),
+                      clipBehavior: Clip.antiAlias,
+                      child: Stack(
+                        children: [
+                          Image(
+                            image: AssetImage('assets/cover.jpg'),
+                          ),
+                          if (showList[index]['image'] != '')
+                            CachedNetworkImage(
+                              imageUrl: showList[index]['image'],
+                              errorWidget: (context, _, __) => Image(
+                                image: AssetImage('assets/cover.jpg'),
                               ),
-                              clipBehavior: Clip.antiAlias,
-                              child: Stack(
-                                children: [
-                                  Image(
-                                    image: AssetImage('assets/cover.jpg'),
-                                  ),
-                                  if (showList[index]['image'] != '')
-                                    CachedNetworkImage(
-                                      imageUrl: showList[index]['image'],
-                                      errorWidget: (context, _, __) => Image(
-                                        image: AssetImage('assets/cover.jpg'),
-                                      ),
-                                      placeholder: (context, url) => Image(
-                                        image: AssetImage('assets/cover.jpg'),
-                                      ),
-                                    ),
-                                ],
+                              placeholder: (context, url) => Image(
+                                image: AssetImage('assets/cover.jpg'),
                               ),
                             ),
-                            title: Text(showList[index]['position'] == null
-                                ? '${showList[index]["title"]}'
-                                : '${showList[index]['position']}. ${showList[index]["title"]}'),
-                            subtitle: Text('${showList[index]['artist']}'),
-                            onTap: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => SearchPage(
-                                          query: showList[index]['title'])));
-                            },
-                          );
-                        },
-                      )),
+                        ],
+                      ),
+                    ),
+                    title: Text(showList[index]['position'] == null
+                        ? '${showList[index]["title"]}'
+                        : '${showList[index]['position']}. ${showList[index]["title"]}'),
+                    subtitle: Text('${showList[index]['artist']}'),
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  SearchPage(query: showList[index]['title'])));
+                    },
+                  );
+                },
+              )),
       ],
     );
   }
