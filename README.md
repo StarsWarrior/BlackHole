@@ -1,5 +1,10 @@
 # BlackHole
+<<<<<<< HEAD
 Awesome Music Player made with Flutter
+=======
+
+Awesome Music Player made with Flutter!
+>>>>>>> a97411b (spanish translation added and some minor changes in the README file)
 
 [![made-with-flutter](https://img.shields.io/badge/Made%20with-Flutter-1f425f.svg)](https://flutter.dev/) ![Release](https://img.shields.io/github/v/release/Sangwan5688/BlackHole) ![Downloads](https://img.shields.io/github/downloads/Sangwan5688/BlackHole/total)
 [![CI](https://github.com/Sangwan5688/BlackHole/actions/workflows/flutter.yml/badge.svg)](https://github.com/Sangwan5688/BlackHole/actions/workflows/flutter.yml)
@@ -8,6 +13,7 @@ Awesome Music Player made with Flutter
 
 [![GitHub stars](https://img.shields.io/github/stars/Sangwan5688/BlackHole.svg?style=social&label=Star)](https://github.com//Sangwan5688/BlackHole) ![GitHub forks](https://img.shields.io/github/forks/Sangwan5688/BlackHole.svg?style=social&label=Forks) ![GitHub followers](https://img.shields.io/github/followers/Sangwan5688.svg?style=social&label=Follow)
 
+<<<<<<< HEAD
 
 <<<<<<< HEAD
 <h3>Features</h3>
@@ -23,6 +29,8 @@ Play Online as well as Offline Songs<br>
 
   <h3 align="center">Screenshots</h3>
 =======
+=======
+>>>>>>> a97411b (spanish translation added and some minor changes in the README file)
 ## Features
 
 * Best Streaming Quality (320kbps)
@@ -43,7 +51,6 @@ Play Online as well as Offline Songs<br>
 * Download for offline play (320kbps with ID3 tags)
 * Play Online as well as Offline Songs
 * Play videos as audio
-* Queue Management
 * Auto Update Check
 * Cache support
 * No Subscription
@@ -52,6 +59,7 @@ Play Online as well as Offline Songs<br>
 
 More to come...
 
+<<<<<<< HEAD
   <h3 align="center">Preview</h3>
 >>>>>>> 5a44d32 (Update README.md)
   
@@ -63,6 +71,10 @@ More to come...
 =======
 <img src="https://github.com/Sangwan5688/BlackHole/blob/main/Screenshots/home.png?raw=true" width="32%"> <img src="https://github.com/Sangwan5688/BlackHole/blob/main/Screenshots/play.png?raw=true" width="32%"> <img src="https://github.com/Sangwan5688/BlackHole/blob/main/Screenshots/local200.png?raw=true" width="32%"> <img src="https://github.com/Sangwan5688/BlackHole/blob/main/Screenshots/global200.png?raw=true" width="31%"> <img src="https://github.com/Sangwan5688/BlackHole/blob/main/Screenshots/mymusic.png?raw=true" width="31%"> <img src="https://github.com/Sangwan5688/BlackHole/blob/main/Screenshots/favorites.png?raw=true" width="31%">
 =======
+=======
+<h3 align="center">Preview</h3>
+
+>>>>>>> a97411b (spanish translation added and some minor changes in the README file)
 <img src="https://github.com/Sangwan5688/BlackHole/blob/main/Screenshots/home.png?raw=true" width="32%"> <img src="https://github.com/Sangwan5688/BlackHole/blob/main/Screenshots/play.png?raw=true" width="32%"> <img src="https://github.com/Sangwan5688/BlackHole/blob/main/Screenshots/local200.png?raw=true" width="32%"> <img src="https://github.com/Sangwan5688/BlackHole/blob/main/Screenshots/global200.png?raw=true" width="32%"> <img src="https://github.com/Sangwan5688/BlackHole/blob/main/Screenshots/mymusic.png?raw=true" width="32%"> <img src="https://github.com/Sangwan5688/BlackHole/blob/main/Screenshots/favorites.png?raw=true" width="32%">
 >>>>>>> d56b0e8 (Update README.md)
 
@@ -70,16 +82,15 @@ More to come...
 
 ## License
 
-BlackHole is licensed under the [GPL v3.0](https://github.com/Sangwan5688/BlackHole/blob/main/LICENSE) license. You can redistribute and/or modify the project under the terms of GNU General Public License v3.0 as published by Free Software Foundation, Inc.</br>
+BlackHole is licensed under the [GPL v3.0](https://github.com/Sangwan5688/BlackHole/blob/main/LICENSE) license. You can redistribute and/or modify the project under the terms of GNU General Public License v3.0 as published by Free Software Foundation.<br>
 Copyright © 2021 Ankit Sangwan
-
 
 ## Build
 
 1. If you don't have Flutter SDK installed, please visit official [Flutter](https://flutter.dev/) site.
 2. Fetch latest source code from master branch.
 
-``` 
+```
 git clone https://github.com/Sangwan5688/BlackHole.git
 ```
 
@@ -87,14 +98,19 @@ git clone https://github.com/Sangwan5688/BlackHole.git
 >>>>>>> 4c264a7 (Update README.md)
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 ``` 
+=======
+```
+>>>>>>> a97411b (spanish translation added and some minor changes in the README file)
 flutter pub get
 flutter run
 ```
+
 4. (Optional) You can setup your own database for the app or use the default. To setup your own follow [these instructions](https://github.com/Sangwan5688/BlackHole/wiki/Set-up-your-own-Firebase-Database).
 
-## Contribute 
+## Contribute
 
 Contributions are welcomed. Please read our [contributing guidelines](https://github.com/Sangwan5688/BlackHole/blob/main/CONTRIBUTING.md) before contributing.
 
@@ -103,11 +119,16 @@ Contributions are welcomed. Please read our [contributing guidelines](https://gi
 You can join our [Telegram Group](https://t.me/joinchat/fHDC1AWnOhw0ZmI9) if you have any query, or need help with something as well as to stay updated with the project and contact me.
 
 ## Liked my work?
+<<<<<<< HEAD
 >>>>>>> 47d4796 (Update README.md)
+=======
+
+>>>>>>> a97411b (spanish translation added and some minor changes in the README file)
 <a href="https://www.buymeacoffee.com/ankitsangwan" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" alt="Buy Me A Coffee" style="height: 41px !important;width: 174px !important;box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;-webkit-box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;" ></a>
 <h3><a href="https://github.com/Sangwan5688/BlackHole/releases" rel="GitHub Releases">Download Latest Version</h3>
 
 # What's New
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 ## v1.3
@@ -158,8 +179,13 @@ Changed about page.<br>
 Few bug fixes.<br>
 >>>>>>> 190c7b3 (Update README.md)
 =======
+=======
+
+>>>>>>> a97411b (spanish translation added and some minor changes in the README file)
 ## v1.8
+
 ### New Features:
+
 * Option to select the download location.
 * Option to select folders to search for music.
 * Caching for Offline Songs.
@@ -186,11 +212,11 @@ Few bug fixes.<br>
 * Option to download the whole album from search results.
 
 ### Bug Fixes:
+
 * Music pauses when a notification arrives.
 * Removed the gap between the bottom navigation drawer and the mini-player.
 * Image doesn’t change in Autoplay.
 * Next and previous button inactive even when repeat all is on.
-
 
 To read full changelog visit the [wiki page](https://github.com/Sangwan5688/BlackHole/wiki/Changelog)
 >>>>>>> 883c592 (Updated README.md)
