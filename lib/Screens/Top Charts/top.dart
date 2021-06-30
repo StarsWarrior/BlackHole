@@ -177,11 +177,12 @@ class _TopPageState extends State<TopPage> {
       getData(widget.region);
     }
     List showList = (isGlobal ? cachedGlobalItems : cachedItems);
+    bool isListEmpty = isGlobal ? emptyGlobal : emptyRegional;
     return Column(
       children: [
         showList.length <= 50
             ? Expanded(
-                child: (isGlobal ? emptyGlobal : emptyRegional)
+                child: isListEmpty != null && isListEmpty
                     ? EmptyScreen().emptyScreen(context, 0, ":( ", 100, "ERROR",
                         60, "Service Unavailable", 20)
                     : Column(
