@@ -223,7 +223,8 @@ class _YouTubeSearchPageState extends State<YouTubeSearchPage> {
                                                           left: 15.0),
                                                   title: Text(
                                                     searchedList[index].title,
-                                                    // '${searchedList[index]["title"].trim()}',
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
                                                     style: TextStyle(
                                                         fontWeight:
                                                             FontWeight.w500),
@@ -239,11 +240,14 @@ class _YouTubeSearchPageState extends State<YouTubeSearchPage> {
                                                             CrossAxisAlignment
                                                                 .start,
                                                         children: [
-                                                          Text(searchedList[
-                                                                      index]
-                                                                  .author
-                                                              // '${searchedList[index]["channelName"]}'
-                                                              ),
+                                                          Text(
+                                                            searchedList[index]
+                                                                .author,
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
+                                                            // '${searchedList[index]["channelName"]}'
+                                                          ),
                                                           // Text(searchedList[index]
                                                           //         .engagement
                                                           //         .viewCount

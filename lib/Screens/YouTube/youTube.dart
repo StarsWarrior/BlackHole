@@ -231,7 +231,7 @@ class _YouTubeState extends State<YouTube> {
                                     contentPadding: EdgeInsets.only(left: 15.0),
                                     title: Text(
                                       searchedList[index].title,
-                                      // '${searchedList[index]["title"].trim()}',
+                                      overflow: TextOverflow.ellipsis,
                                       style: TextStyle(
                                           fontWeight: FontWeight.w500),
                                     ),
@@ -244,7 +244,10 @@ class _YouTubeState extends State<YouTube> {
                                           crossAxisAlignment:
                                               CrossAxisAlignment.start,
                                           children: [
-                                            Text(searchedList[index].author),
+                                            Text(
+                                              searchedList[index].author,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
                                           ],
                                         ),
                                         Padding(

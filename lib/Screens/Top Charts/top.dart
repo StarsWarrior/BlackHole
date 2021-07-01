@@ -231,10 +231,16 @@ class _TopPageState extends State<TopPage> {
                         ],
                       ),
                     ),
-                    title: Text(showList[index]['position'] == null
-                        ? '${showList[index]["title"]}'
-                        : '${showList[index]['position']}. ${showList[index]["title"]}'),
-                    subtitle: Text('${showList[index]['artist']}'),
+                    title: Text(
+                      showList[index]['position'] == null
+                          ? '${showList[index]["title"]}'
+                          : '${showList[index]['position']}. ${showList[index]["title"]}',
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    subtitle: Text(
+                      '${showList[index]['artist']}',
+                      overflow: TextOverflow.ellipsis,
+                    ),
                     onTap: () {
                       Navigator.push(
                           context,
