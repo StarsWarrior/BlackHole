@@ -690,7 +690,15 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                     ],
                   ),
                 ),
-                title: Text('${_cachedSongs[index]['id'].split('/').last}'),
+                title: Text(
+                  _cachedSongs[index]['title'] ??
+                      '${_cachedSongs[index]['id'].split('/').last}',
+                  overflow: TextOverflow.ellipsis,
+                ),
+                subtitle: Text(
+                  _cachedSongs[index]['artist'] ?? "",
+                  overflow: TextOverflow.ellipsis,
+                ),
                 trailing: PopupMenuButton(
                   icon: Icon(Icons.more_vert_rounded),
                   shape: RoundedRectangleBorder(
