@@ -82,8 +82,14 @@ class _RecentlyPlayedState extends State<RecentlyPlayed> {
                                     ),
                                   ),
                                 ),
-                                title: Text('${_songs[index]["title"]}'),
-                                subtitle: Text('${_songs[index]["artist"]}'),
+                                title: Text(
+                                  '${_songs[index]["title"]}',
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                subtitle: Text(
+                                  '${_songs[index]["artist"]}',
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                                 onTap: () {
                                   Navigator.push(
                                       context,

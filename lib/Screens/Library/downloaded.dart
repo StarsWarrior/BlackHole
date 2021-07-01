@@ -1259,7 +1259,10 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                               .length),
                   placeholderImage: 'assets/album.png',
                 ),
-                title: Text('${sortedCachedAlbumKeysList[index]}'),
+                title: Text(
+                  '${sortedCachedAlbumKeysList[index]}',
+                  overflow: TextOverflow.ellipsis,
+                ),
                 subtitle: Text(
                   _cachedAlbums[sortedCachedAlbumKeysList[index]].length == 1
                       ? '${_cachedAlbums[sortedCachedAlbumKeysList[index]].length} Song'
@@ -1305,7 +1308,10 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                                   .length),
                   placeholderImage: 'assets/artist.png',
                 ),
-                title: Text('${sortedCachedArtistKeysList[index]}'),
+                title: Text(
+                  '${sortedCachedArtistKeysList[index]}',
+                  overflow: TextOverflow.ellipsis,
+                ),
                 subtitle: Text(
                   _cachedArtists[sortedCachedArtistKeysList[index]].length == 1
                       ? '${_cachedArtists[sortedCachedArtistKeysList[index]].length} Song'
@@ -1349,7 +1355,10 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                               .length),
                   placeholderImage: 'assets/album.png',
                 ),
-                title: Text('${sortedCachedGenreKeysList[index]}'),
+                title: Text(
+                  '${sortedCachedGenreKeysList[index]}',
+                  overflow: TextOverflow.ellipsis,
+                ),
                 subtitle: Text(
                   _cachedGenres[sortedCachedGenreKeysList[index]].length == 1
                       ? '${_cachedGenres[sortedCachedGenreKeysList[index]].length} Song'
@@ -1400,7 +1409,11 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                     ],
                   ),
                 ),
-                title: Text('${_cachedVideos[index]['id'].split('/').last}'),
+                title: Text(
+                  '${_cachedVideos[index]['id'].split('/').last}',
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 2,
+                ),
                 trailing: PopupMenuButton(
                   icon: Icon(Icons.more_vert_rounded),
                   shape: RoundedRectangleBorder(

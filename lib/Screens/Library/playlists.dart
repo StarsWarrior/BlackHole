@@ -242,7 +242,10 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                                         imageList: playlistDetails[
                                             playlistNames[index]]['imagesList'],
                                         placeholderImage: 'assets/cover.jpg'),
-                                title: Text('${playlistNames[index]}'),
+                                title: Text(
+                                  '${playlistNames[index]}',
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                                 subtitle: Text(playlistDetails[
                                                 playlistNames[index]] ==
                                             null ||

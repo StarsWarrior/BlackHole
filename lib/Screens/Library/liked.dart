@@ -517,9 +517,11 @@ class _LikedSongsState extends State<LikedSongs>
                                         },
                                         title: Text(
                                           '${_songs[index]['title']}',
+                                          overflow: TextOverflow.ellipsis,
                                         ),
                                         subtitle: Text(
                                           '${_songs[index]['artist'] ?? 'Artist name'}',
+                                          overflow: TextOverflow.ellipsis,
                                         ),
                                         trailing: Row(
                                           mainAxisSize: MainAxisSize.min,
@@ -616,7 +618,10 @@ class _LikedSongsState extends State<LikedSongs>
                           0, _albums[sortedAlbumKeysList[index]].length),
                   placeholderImage: 'assets/album.png',
                 ),
-                title: Text('${sortedAlbumKeysList[index]}'),
+                title: Text(
+                  '${sortedAlbumKeysList[index]}',
+                  overflow: TextOverflow.ellipsis,
+                ),
                 subtitle: Text(
                   _albums[sortedAlbumKeysList[index]].length == 1
                       ? '${_albums[sortedAlbumKeysList[index]].length} Song'
@@ -655,7 +660,8 @@ class _LikedSongsState extends State<LikedSongs>
                           0, _artists[sortedArtistKeysList[index]].length),
                   placeholderImage: 'assets/artist.png',
                 ),
-                title: Text('${sortedArtistKeysList[index]}'),
+                title: Text('${sortedArtistKeysList[index]}',
+                    overflow: TextOverflow.ellipsis),
                 subtitle: Text(
                   _artists[sortedArtistKeysList[index]].length == 1
                       ? '${_artists[sortedArtistKeysList[index]].length} Song'
@@ -694,7 +700,10 @@ class _LikedSongsState extends State<LikedSongs>
                           0, _genres[sortedGenreKeysList[index]].length),
                   placeholderImage: 'assets/album.png',
                 ),
-                title: Text('${sortedGenreKeysList[index]}'),
+                title: Text(
+                  '${sortedGenreKeysList[index]}',
+                  overflow: TextOverflow.ellipsis,
+                ),
                 subtitle: Text(
                   _genres[sortedGenreKeysList[index]].length == 1
                       ? '${_genres[sortedGenreKeysList[index]].length} Song'

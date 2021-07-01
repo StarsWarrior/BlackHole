@@ -1647,6 +1647,9 @@ class _PlayScreenState extends State<PlayScreen> {
                                                               ),
                                                               title: Text(
                                                                 '${queue[index].title}',
+                                                                overflow:
+                                                                    TextOverflow
+                                                                        .ellipsis,
                                                                 style: TextStyle(
                                                                     fontWeight: queue[index] ==
                                                                             mediaItem
@@ -1657,6 +1660,9 @@ class _PlayScreenState extends State<PlayScreen> {
                                                               ),
                                                               subtitle: Text(
                                                                 '${queue[index].artist}',
+                                                                overflow:
+                                                                    TextOverflow
+                                                                        .ellipsis,
                                                               ),
                                                               onTap: () {
                                                                 AudioService

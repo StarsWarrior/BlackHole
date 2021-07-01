@@ -221,6 +221,8 @@ class _NowPlayingState extends State<NowPlaying> {
                                                         ),
                                                         title: Text(
                                                           '${queue[index].title}',
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
                                                           style: TextStyle(
                                                               fontWeight: queue[
                                                                           index] ==
@@ -232,6 +234,8 @@ class _NowPlayingState extends State<NowPlaying> {
                                                         ),
                                                         subtitle: Text(
                                                           '${queue[index].artist}',
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
                                                         ),
                                                         onTap: () {
                                                           AudioService
