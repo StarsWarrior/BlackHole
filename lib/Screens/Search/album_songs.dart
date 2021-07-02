@@ -2,29 +2,29 @@ import 'dart:ui';
 import 'package:blackhole/CustomWidgets/downloadButton.dart';
 import 'package:blackhole/Screens/Player/audioplayer.dart';
 import 'package:blackhole/CustomWidgets/gradientContainers.dart';
-import 'package:blackhole/Screens/Search/album_songs.dart';
-import 'package:blackhole/Screens/Search/artists.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:blackhole/CustomWidgets/emptyScreen.dart';
 import 'package:blackhole/CustomWidgets/miniplayer.dart';
 import 'package:blackhole/APIs/api.dart';
 
-class AlbumSearchPage extends StatefulWidget {
-  final String query;
+class AlbumSongsSearchPage extends StatefulWidget {
+  final String albumName;
+  final String albumId;
   final String type;
 
-  AlbumSearchPage({
+  AlbumSongsSearchPage({
     Key key,
-    @required this.query,
+    @required this.albumId,
     @required this.type,
+    this.albumName,
   }) : super(key: key);
 
   @override
-  _AlbumSearchPageState createState() => _AlbumSearchPageState();
+  _AlbumSongsSearchPageState createState() => _AlbumSongsSearchPageState();
 }
 
-class _AlbumSearchPageState extends State<AlbumSearchPage> {
+class _AlbumSongsSearchPageState extends State<AlbumSongsSearchPage> {
   bool status = false;
   List searchedList = [];
   bool fetched = false;
@@ -34,9 +34,8 @@ class _AlbumSearchPageState extends State<AlbumSearchPage> {
     if (!status) {
       status = true;
       switch (widget.type) {
-        case 'Playlists':
-          print(widget.query);
-          Search().fetchAlbums(widget.query, 'playlist').then((value) {
+        case 'Songs':
+          Search().fetchSongSearchResults(widget.albumId, '20').then((value) {
             setState(() {
               searchedList = value;
               fetched = true;
@@ -44,15 +43,15 @@ class _AlbumSearchPageState extends State<AlbumSearchPage> {
           });
           break;
         case 'Albums':
-          Search().fetchAlbums(widget.query, 'album').then((value) {
+          Search().fetchAlbumSongs(widget.albumId).then((value) {
             setState(() {
               searchedList = value;
               fetched = true;
             });
           });
           break;
-        case 'Artists':
-          Search().fetchAlbums(widget.query, 'artist').then((value) {
+        case 'Playlists':
+          Search().fetchPlaylistSongs(widget.albumId).then((value) {
             setState(() {
               searchedList = value;
               fetched = true;
@@ -70,7 +69,7 @@ class _AlbumSearchPageState extends State<AlbumSearchPage> {
             child: Scaffold(
               backgroundColor: Colors.transparent,
               appBar: AppBar(
-                title: Text(widget.type),
+                title: Text(widget.albumName ?? 'Songs'),
                 centerTitle: true,
                 backgroundColor: Colors.transparent,
                 textTheme: Theme.of(context).textTheme,
@@ -112,54 +111,36 @@ class _AlbumSearchPageState extends State<AlbumSearchPage> {
                                 leading: Card(
                                   elevation: 8,
                                   shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(
-                                          widget.type == 'Artists'
-                                              ? 50.0
-                                              : 7.0)),
+                                      borderRadius: BorderRadius.circular(7.0)),
                                   clipBehavior: Clip.antiAlias,
                                   child: CachedNetworkImage(
                                     errorWidget: (context, _, __) => Image(
-                                      image: AssetImage(widget.type == 'Artists'
-                                          ? 'assets/artist.png'
-                                          : 'assets/album.png'),
+                                      image: AssetImage('assets/cover.jpg'),
                                     ),
                                     imageUrl:
                                         '${searchedList[index]["image"].replaceAll('http:', 'https:')}',
                                     placeholder: (context, url) => Image(
-                                      image: AssetImage(widget.type == 'Artists'
-                                          ? 'assets/artist.png'
-                                          : 'assets/album.png'),
+                                      image: AssetImage('assets/cover.jpg'),
                                     ),
                                   ),
                                 ),
-                                trailing: widget.type != 'Albums'
-                                    ? null
-                                    : AlbumDownloadButton(
-                                        albumName: searchedList[index]['title'],
-                                        albumId: searchedList[index]['id'],
-                                      ),
+                                trailing: DownloadButton(
+                                  data: searchedList[index],
+                                  icon: 'download',
+                                ),
                                 onTap: () {
                                   Navigator.push(
                                     context,
                                     PageRouteBuilder(
                                       opaque: false,
-                                      pageBuilder: (_, __, ___) =>
-                                          widget.type == 'Artists'
-                                              ? ArtistSearchPage(
-                                                  artistName:
-                                                      searchedList[index]
-                                                          ['title'],
-                                                  artistToken:
-                                                      searchedList[index]
-                                                          ['artistToken'],
-                                                )
-                                              : AlbumSongsSearchPage(
-                                                  albumName: searchedList[index]
-                                                      ['title'],
-                                                  albumId: searchedList[index]
-                                                      ['id'],
-                                                  type: widget.type,
-                                                ),
+                                      pageBuilder: (_, __, ___) => PlayScreen(
+                                        data: {
+                                          'response': searchedList,
+                                          'index': index,
+                                          'offline': false,
+                                        },
+                                        fromMiniplayer: false,
+                                      ),
                                     ),
                                   );
                                 },

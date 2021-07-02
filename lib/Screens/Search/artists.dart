@@ -2,7 +2,7 @@ import 'dart:ui';
 import 'package:blackhole/CustomWidgets/downloadButton.dart';
 import 'package:blackhole/Screens/Player/audioplayer.dart';
 import 'package:blackhole/CustomWidgets/gradientContainers.dart';
-import 'package:blackhole/Screens/Search/albums.dart';
+import 'package:blackhole/Screens/Search/album_songs.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:blackhole/CustomWidgets/emptyScreen.dart';
@@ -161,34 +161,31 @@ class _ArtistSearchPageState extends State<ArtistSearchPage> {
                                                 context,
                                                 PageRouteBuilder(
                                                   opaque: false,
-                                                  pageBuilder: (_, __, ___) =>
-                                                      (entry.key ==
-                                                                  'Top Songs' ||
-                                                              entry.key ==
-                                                                  'Latest Release' ||
-                                                              entry.key ==
-                                                                  'Singles')
-                                                          ? PlayScreen(
-                                                              data: {
-                                                                'response':
-                                                                    entry.value,
-                                                                'index': index,
-                                                                'offline':
-                                                                    false,
-                                                              },
-                                                              fromMiniplayer:
-                                                                  false,
-                                                            )
-                                                          : AlbumSearchPage(
-                                                              albumName:
-                                                                  entry.value[
-                                                                          index]
-                                                                      ['title'],
-                                                              albumId: entry
-                                                                      .value[
-                                                                  index]['id'],
-                                                              type: 'Albums',
-                                                            ),
+                                                  pageBuilder: (_, __, ___) => (entry
+                                                                  .key ==
+                                                              'Top Songs' ||
+                                                          entry.key ==
+                                                              'Latest Release' ||
+                                                          entry.key ==
+                                                              'Singles')
+                                                      ? PlayScreen(
+                                                          data: {
+                                                            'response':
+                                                                entry.value,
+                                                            'index': index,
+                                                            'offline': false,
+                                                          },
+                                                          fromMiniplayer: false,
+                                                        )
+                                                      : AlbumSongsSearchPage(
+                                                          albumName:
+                                                              entry.value[index]
+                                                                  ['title'],
+                                                          albumId:
+                                                              entry.value[index]
+                                                                  ['id'],
+                                                          type: 'Albums',
+                                                        ),
                                                 ),
                                               );
                                             },

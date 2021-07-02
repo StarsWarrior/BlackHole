@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:blackhole/CustomWidgets/downloadButton.dart';
 import 'package:blackhole/Screens/Player/audioplayer.dart';
 import 'package:blackhole/CustomWidgets/gradientContainers.dart';
+import 'package:blackhole/Screens/Search/album_songs.dart';
 import 'package:blackhole/Screens/Search/albums.dart';
 import 'package:blackhole/Screens/Search/artists.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -38,7 +39,7 @@ class _SearchPageState extends State<SearchPage> {
       status = true;
       // this fetches top 10 songs results
       Search()
-          .fetchSongSearchResults(query == '' ? widget.query : query)
+          .fetchSongSearchResults(query == '' ? widget.query : query, '5')
           .then((value) {
         setState(() {
           // searchedList = value;
@@ -211,7 +212,7 @@ class _SearchPageState extends State<SearchPage> {
                                 (e) {
                                   String key = position[e];
                                   List value = searchedData[key];
-                                  bool first = e == 0;
+                                  bool first = e == sortedKeys[0];
                                   if (value == null) return SizedBox();
                                   return Column(
                                     children: [
@@ -356,7 +357,7 @@ class _SearchPageState extends State<SearchPage> {
                                                                 },
                                                               fromMiniplayer:
                                                                   false)
-                                                          : AlbumSearchPage(
+                                                          : AlbumSongsSearchPage(
                                                               albumName:
                                                                   value[index]
                                                                       ['title'],
@@ -371,6 +372,65 @@ class _SearchPageState extends State<SearchPage> {
                                           );
                                         },
                                       ),
+                                      if (key != 'Top Result')
+                                        Padding(
+                                          padding:
+                                              EdgeInsets.fromLTRB(25, 0, 25, 0),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.end,
+                                            children: [
+                                              GestureDetector(
+                                                child: Row(
+                                                  children: [
+                                                    Text(
+                                                      "View All",
+                                                      style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.w800,
+                                                      ),
+                                                    ),
+                                                    Icon(Icons
+                                                        .chevron_right_rounded),
+                                                  ],
+                                                ),
+                                                onTap: () {
+                                                  if (key == 'Albums' ||
+                                                      key == 'Playlists' ||
+                                                      key == 'Artists')
+                                                    Navigator.push(
+                                                        context,
+                                                        PageRouteBuilder(
+                                                          opaque: false,
+                                                          pageBuilder: (_, __,
+                                                                  ___) =>
+                                                              AlbumSearchPage(
+                                                            query: query == ''
+                                                                ? widget.query
+                                                                : query,
+                                                            type: key,
+                                                          ),
+                                                        ));
+                                                  if (key == 'Songs')
+                                                    Navigator.push(
+                                                        context,
+                                                        PageRouteBuilder(
+                                                          opaque: false,
+                                                          pageBuilder: (_, __,
+                                                                  ___) =>
+                                                              AlbumSongsSearchPage(
+                                                            albumId: query == ''
+                                                                ? widget.query
+                                                                : query,
+                                                            albumName: key,
+                                                            type: key,
+                                                          ),
+                                                        ));
+                                                },
+                                              ),
+                                            ],
+                                          ),
+                                        ),
                                     ],
                                   );
                                 },

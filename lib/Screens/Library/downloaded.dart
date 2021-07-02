@@ -692,7 +692,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                 ),
                 title: Text(
                   _cachedSongs[index]['title'] != null &&
-                          _cachedSongs[index]['title'] != ""
+                          _cachedSongs[index]['title'].trim() != ""
                       ? _cachedSongs[index]['title']
                       : '${_cachedSongs[index]['id'].split('/').last}',
                   overflow: TextOverflow.ellipsis,

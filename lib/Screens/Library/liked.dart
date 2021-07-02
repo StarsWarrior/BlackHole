@@ -227,9 +227,10 @@ class _LikedSongsState extends State<LikedSongs>
                     ),
                   ]),
                   actions: [
-                    MultiDownloadButton(
-                      data: _songs,
-                    ),
+                    if (_songs.isNotEmpty)
+                      MultiDownloadButton(
+                        data: _songs,
+                      ),
                     PopupMenuButton(
                         icon: Icon(Icons.sort_rounded),
                         shape: RoundedRectangleBorder(

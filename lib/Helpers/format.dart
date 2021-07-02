@@ -243,16 +243,26 @@ class FormatResponse {
             // .split('(')
             // .first
             .trim(),
-        "year": response["more_info"]["year"],
-        "language": capitalize(response["more_info"]["language"].toString()),
-        "genre": capitalize(response["more_info"]["language"].toString()),
+        "year": response["more_info"]["year"] ?? response["year"],
+        "language": capitalize(response["more_info"]["language"] == null
+            ? response["language"].toString()
+            : response["more_info"]["language"].toString()),
+        "genre": capitalize(response["more_info"]["language"] == null
+            ? response["language"].toString()
+            : response["more_info"]["language"].toString()),
         "album_id": response["id"],
-        "subtitle": response["description"]
-            .toString()
-            .replaceAll("&amp;", "&")
-            .replaceAll("&#039;", "'")
-            .replaceAll("&quot;", "\"")
-            .trim(),
+        "subtitle": response["description"] == null
+            ? response["subtitle"]
+                .toString()
+                .replaceAll("&amp;", "&")
+                .replaceAll("&#039;", "'")
+                .replaceAll("&quot;", "\"")
+                .trim()
+            : response["description"]
+                .toString()
+                .replaceAll("&amp;", "&")
+                .replaceAll("&#039;", "'")
+                .replaceAll("&quot;", "\""),
         "title": response['title']
             .toString()
             .replaceAll("&amp;", "&")
@@ -261,19 +271,25 @@ class FormatResponse {
             // .split('(')
             // .first
             .trim(),
-        "artist": response["music"]
-            .toString()
-            .replaceAll("&amp;", "&")
-            .replaceAll("&#039;", "'")
-            .replaceAll("&quot;", "\"")
-            .trim(),
+        "artist": response["music"] == null
+            ? (response["more_info"]["artistMap"]["primary_artists"] == null
+                ? ''
+                : response["more_info"]["artistMap"]["primary_artists"][0]
+                    ["name"])
+            : response["music"]
+                .toString()
+                .replaceAll("&amp;", "&")
+                .replaceAll("&#039;", "'")
+                .replaceAll("&quot;", "\"")
+                .trim(),
         "image": response["image"]
             .toString()
             .replaceAll("150x150", "500x500")
             .replaceAll('50x50', "500x500")
             .replaceAll('http:', 'https:'),
-        "count":
-            response["more_info"]["song_pids"].toString().split(", ").length,
+        "count": response["more_info"]["song_pids"] == null
+            ? 0
+            : response["more_info"]["song_pids"].toString().split(", ").length,
         "songs_pids": response["more_info"]["song_pids"].toString().split(", "),
       };
       return info;
@@ -293,15 +309,26 @@ class FormatResponse {
             .replaceAll("&#039;", "'")
             .replaceAll("&quot;", "\"")
             .trim(),
-        "language": capitalize(response["language"].toString()),
-        "genre": capitalize(response["language"].toString()),
+        "language": capitalize(response["language"] == null
+            ? response["more_info"]["language"].toString()
+            : response["language"].toString()),
+        "genre": capitalize(response["language"] == null
+            ? response["more_info"]["language"].toString()
+            : response["language"].toString()),
         "playlistId": response["id"],
-        "subtitle": response["description"]
-            .toString()
-            .replaceAll("&amp;", "&")
-            .replaceAll("&#039;", "'")
-            .replaceAll("&quot;", "\"")
-            .trim(),
+        "subtitle": response["description"] == null
+            ? response["subtitle"]
+                .toString()
+                .replaceAll("&amp;", "&")
+                .replaceAll("&#039;", "'")
+                .replaceAll("&quot;", "\"")
+                .trim()
+            : response["description"]
+                .toString()
+                .replaceAll("&amp;", "&")
+                .replaceAll("&#039;", "'")
+                .replaceAll("&quot;", "\"")
+                .trim(),
         "title": response['title']
             .toString()
             .replaceAll("&amp;", "&")
@@ -333,30 +360,45 @@ class FormatResponse {
       Map info = {
         "id": response["id"],
         "type": response["type"],
-        "album": response["title"]
-            .toString()
-            .replaceAll("&amp;", "&")
-            .replaceAll("&#039;", "'")
-            .replaceAll("&quot;", "\"")
-            .trim(),
+        "album": response['title'] == null
+            ? response['name']
+                .toString()
+                .replaceAll("&amp;", "&")
+                .replaceAll("&#039;", "'")
+                .replaceAll("&quot;", "\"")
+            : response['title']
+                .toString()
+                .replaceAll("&amp;", "&")
+                .replaceAll("&#039;", "'")
+                .replaceAll("&quot;", "\""),
         "language": capitalize(response["language"].toString()),
         "genre": capitalize(response["language"].toString()),
         "artistId": response["id"],
-        "artistToken": response["url"].toString().split('/').last,
-        "subtitle": response["description"]
-            .toString()
-            .replaceAll("&amp;", "&")
-            .replaceAll("&#039;", "'")
-            .replaceAll("&quot;", "\"")
-            .trim(),
-        "title": response['title']
-            .toString()
-            .replaceAll("&amp;", "&")
-            .replaceAll("&#039;", "'")
-            .replaceAll("&quot;", "\"")
-            // .split('(')
-            // .first
-            .trim(),
+        "artistToken": response["url"] == null
+            ? response["perma_url"].toString().split('/').last
+            : response["url"].toString().split('/').last,
+        "subtitle": response["description"] == null
+            ? capitalize(response["role"])
+            : response["description"]
+                .toString()
+                .replaceAll("&amp;", "&")
+                .replaceAll("&#039;", "'")
+                .replaceAll("&quot;", "\"")
+                .trim(),
+        "title": response['title'] == null
+            ? response['name']
+                .toString()
+                .replaceAll("&amp;", "&")
+                .replaceAll("&#039;", "'")
+                .replaceAll("&quot;", "\"")
+            : response['title']
+                .toString()
+                .replaceAll("&amp;", "&")
+                .replaceAll("&#039;", "'")
+                .replaceAll("&quot;", "\"")
+                // .split('(')
+                // .first
+                .trim(),
         "artist": response["title"]
             .toString()
             .replaceAll("&amp;", "&")
