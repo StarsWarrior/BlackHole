@@ -11,6 +11,10 @@ Un increible reproductor de música basado en Flutter
 
 [![GitHub stars](https://img.shields.io/github/stars/Sangwan5688/BlackHole.svg?style=social&label=Star)](https://github.com//Sangwan5688/BlackHole) ![GitHub forks](https://img.shields.io/github/forks/Sangwan5688/BlackHole.svg?style=social&label=Forks) ![GitHub followers](https://img.shields.io/github/followers/Sangwan5688.svg?style=social&label=Follow)
 
+## Traducciones
+
+- [English :uk:](/README.md)
+
 ## Características
 
 * La mejor calidad de streaming (320kbps)
@@ -111,10 +115,8 @@ Puedes unirte a nuestro [Grupo de Telegram](https://t.me/joinchat/fHDC1AWnOhw0Zm
 * Opción para borrar y darse de baja de la última sesión.
 * Se simplificó y se hizo más fácil de localizar la opción de genero durante el inicio de sesión.
 * Opción para descargar todo el álbum desde los resultados de búsqueda.
-  
-  
-  
-  ### 'Bugs' corregidos:
+
+### 'Bugs' corregidos:
 
 * La música se pausaba cuando una notificación era entregada
 * Se eliminó el espacio entre el cajón de navegación inferior y el mini reproductor.

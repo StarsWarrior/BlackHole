@@ -14,6 +14,7 @@ Awesome Music Player made with Flutter!
 [![GitHub stars](https://img.shields.io/github/stars/Sangwan5688/BlackHole.svg?style=social&label=Star)](https://github.com//Sangwan5688/BlackHole) ![GitHub forks](https://img.shields.io/github/forks/Sangwan5688/BlackHole.svg?style=social&label=Forks) ![GitHub followers](https://img.shields.io/github/followers/Sangwan5688.svg?style=social&label=Follow)
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 <<<<<<< HEAD
 <h3>Features</h3>
@@ -31,6 +32,12 @@ Play Online as well as Offline Songs<br>
 =======
 =======
 >>>>>>> a97411b (spanish translation added and some minor changes in the README file)
+=======
+## Translations
+
+- [Spanish :es:](/README.ES.md)
+
+>>>>>>> 07c161c (spanish translation added and some minor changes in the README file)
 ## Features
 
 * Best Streaming Quality (320kbps)
