@@ -29,10 +29,14 @@ class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
   Box settingsBox;
 <<<<<<< HEAD
+<<<<<<< HEAD
   double appVersion = 1.4;
 =======
   double appVersion;
 >>>>>>> b843d55 (final wrap-ups for v1.6)
+=======
+  int appVersion;
+>>>>>>> d822468 (added playlists and artists as search results)
   bool checked = false;
   bool update = false;
 
@@ -63,18 +67,23 @@ class _HomePageState extends State<HomePage> {
       print('checking for update..');
       checked = true;
       DateTime now = DateTime.now();
-      updateUserDetails('lastLogin',
-          '${now.toUtc().add(Duration(hours: 5, minutes: 30)).toString().split('.').first} IST');
-      updateUserDetails('timeZone',
-          'Zone: ${now.timeZoneName}, Offset: ${now.timeZoneOffset.toString().split('.').first}');
+      List lastLogin = now
+          .toUtc()
+          .add(Duration(hours: 5, minutes: 30))
+          .toString()
+          .split('.');
+      lastLogin.removeLast();
+      updateUserDetails('lastLogin', '${lastLogin.join('.')} IST');
+      List offset = now.timeZoneOffset.toString().split('.');
+      offset.removeLast();
+      updateUserDetails(
+          'timeZone', 'Zone: ${now.timeZoneName}, Offset: ${offset.join('.')}');
       final dbRef =
           FirebaseDatabase.instance.reference().child("LatestVersion");
 
       PackageInfo.fromPlatform().then((PackageInfo packageInfo) {
-        List temp = packageInfo.version.split('.');
-        temp.removeLast();
-        appVersion = double.parse(temp.join('.'));
-        updateUserDetails('version', appVersion);
+        appVersion = int.parse(packageInfo.version.replaceAll('.', ''));
+        updateUserDetails('version', packageInfo.version);
       });
       DeviceInfoPlugin info = DeviceInfoPlugin();
       info.androidInfo.then((AndroidDeviceInfo androidInfo) {
@@ -95,7 +104,8 @@ class _HomePageState extends State<HomePage> {
       });
 
       dbRef.once().then((DataSnapshot snapshot) {
-        if (double.parse(snapshot.value) > appVersion) {
+        if (int.parse(snapshot.value.toString().replaceAll('.', '')) >
+            appVersion) {
           print('UPDATE IS AVAILABLE');
           return ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(

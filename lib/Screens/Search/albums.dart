@@ -11,10 +11,12 @@ import 'package:blackhole/APIs/api.dart';
 class AlbumSearchPage extends StatefulWidget {
   final String albumName;
   final String albumId;
+  final String type;
 
   AlbumSearchPage({
     Key key,
     @required this.albumId,
+    @required this.type,
     this.albumName,
   }) : super(key: key);
 
@@ -31,12 +33,26 @@ class _AlbumSearchPageState extends State<AlbumSearchPage> {
   Widget build(BuildContext context) {
     if (!status) {
       status = true;
-      Search().fetchAlbumSongs(widget.albumId).then((value) {
-        setState(() {
-          searchedList = value;
-          fetched = true;
-        });
-      });
+      switch (widget.type) {
+        case 'Albums':
+          Search().fetchAlbumSongs(widget.albumId).then((value) {
+            setState(() {
+              searchedList = value;
+              fetched = true;
+            });
+          });
+          break;
+        case 'Playlists':
+          Search().fetchPlaylistSongs(widget.albumId).then((value) {
+            setState(() {
+              searchedList = value;
+              fetched = true;
+            });
+          });
+          break;
+        default:
+          break;
+      }
     }
     return GradientContainer(
       child: Column(

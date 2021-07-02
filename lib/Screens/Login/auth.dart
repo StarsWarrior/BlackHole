@@ -13,9 +13,13 @@ class AuthScreen extends StatefulWidget {
 
 class _AuthScreenState extends State<AuthScreen> {
 <<<<<<< HEAD
+<<<<<<< HEAD
   double appVersion = 1.4;
 =======
   double appVersion;
+=======
+  String appVersion;
+>>>>>>> d822468 (added playlists and artists as search results)
   Map deviceInfo = {};
 >>>>>>> b843d55 (final wrap-ups for v1.6)
   String gender = "male";
@@ -31,9 +35,7 @@ class _AuthScreenState extends State<AuthScreen> {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     DeviceInfoPlugin info = DeviceInfoPlugin();
     AndroidDeviceInfo androidInfo = await info.androidInfo;
-    List temp = packageInfo.version.split('.');
-    temp.removeLast();
-    appVersion = double.parse(temp.join('.'));
+    appVersion = packageInfo.version;
     deviceInfo.addAll({
       'Brand': androidInfo.brand,
       'Manufacturer': androidInfo.manufacturer,

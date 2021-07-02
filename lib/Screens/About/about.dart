@@ -11,9 +11,13 @@ class AboutScreen extends StatefulWidget {
 
 class _AboutScreenState extends State<AboutScreen> {
 <<<<<<< HEAD
+<<<<<<< HEAD
   double appVersion = 1.4;
 =======
   double appVersion;
+=======
+  String appVersion;
+>>>>>>> d822468 (added playlists and artists as search results)
 
   @override
   void initState() {
@@ -23,10 +27,8 @@ class _AboutScreenState extends State<AboutScreen> {
 
   void main() async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
-    List temp = packageInfo.version.split('.');
-    temp.removeLast();
     setState(() {
-      appVersion = double.parse(temp.join('.'));
+      appVersion = packageInfo.version;
     });
   }
 

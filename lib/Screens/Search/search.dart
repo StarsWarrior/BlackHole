@@ -3,6 +3,7 @@ import 'package:blackhole/CustomWidgets/downloadButton.dart';
 import 'package:blackhole/Screens/Player/audioplayer.dart';
 import 'package:blackhole/CustomWidgets/gradientContainers.dart';
 import 'package:blackhole/Screens/Search/albums.dart';
+import 'package:blackhole/Screens/Search/artists.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -23,8 +24,9 @@ class SearchPage extends StatefulWidget {
 class _SearchPageState extends State<SearchPage> {
   String query = '';
   bool status = false;
-  List searchedList = [];
-  List searchedAlbumList = [];
+  Map<String, List> searchedData = {};
+  Map<int, String> position = {};
+  List<int> sortedKeys = [];
   bool fetched = false;
   bool albumFetched = false;
   List search = Hive.box('settings').get('search', defaultValue: []);
@@ -34,19 +36,24 @@ class _SearchPageState extends State<SearchPage> {
   Widget build(BuildContext context) {
     if (!status) {
       status = true;
+      // this fetches top 10 songs results
+      Search()
+          .fetchSongSearchResults(query == '' ? widget.query : query)
+          .then((value) {
+        setState(() {
+          // searchedList = value;
+          searchedData["Songs"] = value;
+          fetched = true;
+        });
+      });
+      // this fetches albums, playlists, artists, etc
       Search()
           .fetchSearchResults(query == '' ? widget.query : query)
           .then((value) {
         setState(() {
-          searchedList = value;
-          fetched = true;
-        });
-      });
-      Search()
-          .fetchAlbumSearchResults(query == '' ? widget.query : query)
-          .then((value) {
-        setState(() {
-          searchedAlbumList = value;
+          searchedData.addEntries(value[0].entries);
+          position = value[1];
+          sortedKeys = position.keys.toList()..sort();
           albumFetched = true;
         });
       });
@@ -105,7 +112,7 @@ class _SearchPageState extends State<SearchPage> {
                       fetched = false;
                       query = _query;
                       status = false;
-                      searchedList = [];
+                      searchedData = {};
                       if (search.contains(_query)) search.remove(_query);
                       search.insert(0, _query);
                       if (search.length > 10) search = search.sublist(0, 10);
@@ -115,7 +122,6 @@ class _SearchPageState extends State<SearchPage> {
                   transition:
                       // CircularFloatingSearchBarTransition(),
                       SlideFadeFloatingSearchBarTransition(),
-
                   actions: [
                     FloatingSearchBarAction(
                       showIfOpened: false,
@@ -169,7 +175,7 @@ class _SearchPageState extends State<SearchPage> {
                                         fetched = false;
                                         query = e;
                                         status = false;
-                                        searchedList = [];
+                                        searchedData = {};
 
                                         search.remove(e);
                                         search.insert(0, e);
@@ -194,23 +200,29 @@ class _SearchPageState extends State<SearchPage> {
                                 )),
                           ),
                         )
-                      : (searchedList.isEmpty && searchedAlbumList.isEmpty)
+                      : (searchedData.isEmpty)
                           ? EmptyScreen().emptyScreen(context, 0, ":( ", 100,
                               "SORRY", 60, "Results Not Found", 20)
-                          : (searchedList.isEmpty)
-                              ? SizedBox()
-                              : SingleChildScrollView(
-                                  padding: EdgeInsets.only(top: 80),
-                                  physics: BouncingScrollPhysics(),
-                                  child: Column(
+                          : SingleChildScrollView(
+                              padding: EdgeInsets.only(top: 80),
+                              physics: BouncingScrollPhysics(),
+                              child: Column(
+                                  children: sortedKeys.map(
+                                (e) {
+                                  String key = position[e];
+                                  List value = searchedData[key];
+                                  bool first = e == 0;
+                                  if (value == null) return SizedBox();
+                                  return Column(
                                     children: [
                                       Padding(
-                                        padding: const EdgeInsets.fromLTRB(
-                                            25, 10, 0, 0),
+                                        padding: first
+                                            ? EdgeInsets.fromLTRB(25, 0, 0, 0)
+                                            : EdgeInsets.fromLTRB(25, 30, 0, 0),
                                         child: Row(
                                           children: [
                                             Text(
-                                              'Songs',
+                                              key,
                                               style: TextStyle(
                                                 color: Theme.of(context)
                                                     .accentColor,
@@ -222,162 +234,137 @@ class _SearchPageState extends State<SearchPage> {
                                         ),
                                       ),
                                       ListView.builder(
-                                        itemCount: searchedList.length,
+                                        itemCount: value.length,
                                         physics: NeverScrollableScrollPhysics(),
                                         shrinkWrap: true,
                                         padding:
-                                            EdgeInsets.fromLTRB(5, 0, 5, 0),
-                                        itemBuilder: (context, index) {
-                                          return Padding(
-                                            padding: const EdgeInsets.fromLTRB(
-                                                0, 7, 7, 5),
-                                            child: ListTile(
-                                              contentPadding:
-                                                  EdgeInsets.only(left: 15.0),
-                                              title: Text(
-                                                '${searchedList[index]["title"]}',
-                                                style: TextStyle(
-                                                    fontWeight:
-                                                        FontWeight.w500),
-                                              ),
-                                              subtitle: Text(
-                                                  '${searchedList[index]["subtitle"]}'),
-                                              leading: Card(
-                                                elevation: 8,
-                                                shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            7.0)),
-                                                clipBehavior: Clip.antiAlias,
-                                                child: CachedNetworkImage(
-                                                  errorWidget:
-                                                      (context, _, __) => Image(
-                                                    image: AssetImage(
-                                                        'assets/cover.jpg'),
-                                                  ),
-                                                  imageUrl:
-                                                      '${searchedList[index]["image"].replaceAll('http:', 'https:')}',
-                                                  placeholder: (context, url) =>
-                                                      Image(
-                                                    image: AssetImage(
-                                                        'assets/cover.jpg'),
-                                                  ),
-                                                ),
-                                              ),
-                                              trailing: DownloadButton(
-                                                data: searchedList[index],
-                                                icon: 'download',
-                                              ),
-                                              onTap: () {
-                                                Navigator.push(
-                                                  context,
-                                                  PageRouteBuilder(
-                                                    opaque: false,
-                                                    pageBuilder: (_, __, ___) =>
-                                                        PlayScreen(
-                                                      data: {
-                                                        'response':
-                                                            searchedList,
-                                                        'index': index,
-                                                        'offline': false,
-                                                      },
-                                                      fromMiniplayer: false,
-                                                    ),
-                                                  ),
-                                                );
-                                              },
-                                            ),
-                                          );
-                                        },
-                                      ),
-                                      searchedAlbumList.isEmpty
-                                          ? SizedBox()
-                                          : Padding(
-                                              padding:
-                                                  const EdgeInsets.fromLTRB(
-                                                      25, 30, 0, 0),
-                                              child: Row(
-                                                children: [
-                                                  Text(
-                                                    'Albums',
-                                                    style: TextStyle(
-                                                      color: Theme.of(context)
-                                                          .accentColor,
-                                                      fontSize: 18,
-                                                      fontWeight:
-                                                          FontWeight.w800,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                      ListView.builder(
-                                        itemCount: searchedAlbumList.length,
-                                        physics: NeverScrollableScrollPhysics(),
-                                        shrinkWrap: true,
-                                        padding:
-                                            EdgeInsets.fromLTRB(5, 0, 5, 0),
+                                            EdgeInsets.fromLTRB(5, 0, 10, 0),
                                         itemBuilder: (context, index) {
                                           int count =
-                                              searchedAlbumList[index]["count"];
-                                          String countText;
-                                          (count > 1)
+                                              value[index]["count"] ?? 0;
+                                          String countText =
+                                              value[index]["artist"];
+                                          count > 1
                                               ? countText = '$count Songs'
                                               : countText = '$count Song';
                                           return ListTile(
                                             contentPadding:
                                                 EdgeInsets.only(left: 15.0),
                                             title: Text(
-                                              '${searchedAlbumList[index]["title"]}',
+                                              '${value[index]["title"]}',
                                               style: TextStyle(
                                                   fontWeight: FontWeight.w500),
+                                              overflow: TextOverflow.ellipsis,
                                             ),
                                             subtitle: Text(
-                                                '$countText\n${searchedAlbumList[index]["subtitle"]}'),
-                                            isThreeLine: true,
+                                              key == 'Albums' ||
+                                                      (key == 'Top Result' &&
+                                                          value[0]["type"] ==
+                                                              'album')
+                                                  ? '$countText\n${value[index]["subtitle"]}'
+                                                  : '${value[index]["subtitle"]}',
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                            isThreeLine: key == 'Albums' ||
+                                                (key == 'Top Result' &&
+                                                    value[0]["type"] ==
+                                                        'album'),
                                             leading: Card(
                                               elevation: 8,
                                               shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          7.0)),
+                                                  borderRadius: BorderRadius
+                                                      .circular(key ==
+                                                                  'Artists' ||
+                                                              (key == 'Top Result' &&
+                                                                  value[0][
+                                                                          "type"] ==
+                                                                      'artist')
+                                                          ? 50.0
+                                                          : 7.0)),
                                               clipBehavior: Clip.antiAlias,
                                               child: CachedNetworkImage(
                                                 errorWidget: (context, _, __) =>
                                                     Image(
-                                                  image: AssetImage(
-                                                      'assets/album.png'),
+                                                  image: AssetImage(key ==
+                                                              'Artists' ||
+                                                          (key == 'Top Result' &&
+                                                              value[0][
+                                                                      "type"] ==
+                                                                  'artist')
+                                                      ? 'assets/artist.png'
+                                                      : key == 'Songs'
+                                                          ? 'assets/cover.jpg'
+                                                          : 'assets/album.png'),
                                                 ),
                                                 imageUrl:
-                                                    '${searchedAlbumList[index]["image"].replaceAll('http:', 'https:')}',
+                                                    '${value[index]["image"].replaceAll('http:', 'https:')}',
                                                 placeholder: (context, url) =>
                                                     Image(
-                                                  image: AssetImage(
-                                                      'assets/album.png'),
+                                                  image: AssetImage(key ==
+                                                              'Artists' ||
+                                                          (key == 'Top Result' &&
+                                                              value[0][
+                                                                      "type"] ==
+                                                                  'artist')
+                                                      ? 'assets/artist.png'
+                                                      : key == 'Songs'
+                                                          ? 'assets/cover.jpg'
+                                                          : 'assets/album.png'),
                                                 ),
                                               ),
                                             ),
-                                            trailing: AlbumDownloadButton(
-                                                albumName:
-                                                    searchedAlbumList[index]
+                                            trailing: key != 'Albums'
+                                                ? key == 'Songs'
+                                                    ? DownloadButton(
+                                                        data: value[index],
+                                                        icon: 'download',
+                                                      )
+                                                    : null
+                                                : AlbumDownloadButton(
+                                                    albumName: value[index]
                                                         ['title'],
-                                                albumId:
-                                                    searchedAlbumList[index]
+                                                    albumId: value[index]
                                                         ['id']),
                                             onTap: () {
                                               Navigator.push(
                                                 context,
                                                 PageRouteBuilder(
                                                   opaque: false,
-                                                  pageBuilder: (_, __, ___) =>
-                                                      AlbumSearchPage(
-                                                    albumName:
-                                                        searchedAlbumList[index]
-                                                            ['title'],
-                                                    albumId:
-                                                        searchedAlbumList[index]
-                                                            ['id'],
-                                                  ),
+                                                  pageBuilder: (_, __, ___) => key ==
+                                                              'Artists' ||
+                                                          (key == 'Top Result' &&
+                                                              value[0][
+                                                                      "type"] ==
+                                                                  'artist')
+                                                      ? ArtistSearchPage(
+                                                          artistName:
+                                                              value[index]
+                                                                  ['title'],
+                                                          artistToken: value[
+                                                                  index]
+                                                              ['artistToken'],
+                                                        )
+                                                      : key == 'Songs'
+                                                          ? PlayScreen(
+                                                              data: {
+                                                                  'response':
+                                                                      value,
+                                                                  'index':
+                                                                      index,
+                                                                  'offline':
+                                                                      false,
+                                                                },
+                                                              fromMiniplayer:
+                                                                  false)
+                                                          : AlbumSearchPage(
+                                                              albumName:
+                                                                  value[index]
+                                                                      ['title'],
+                                                              albumId:
+                                                                  value[index]
+                                                                      ['id'],
+                                                              type: key,
+                                                            ),
                                                 ),
                                               );
                                             },
@@ -385,8 +372,9 @@ class _SearchPageState extends State<SearchPage> {
                                         },
                                       ),
                                     ],
-                                  ),
-                                ),
+                                  );
+                                },
+                              ).toList())),
                 ),
               ),
             ),

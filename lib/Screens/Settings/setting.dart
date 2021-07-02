@@ -24,7 +24,8 @@ class SettingPage extends StatefulWidget {
 }
 
 class _SettingPageState extends State<SettingPage> {
-  double appVersion;
+  String appVersion;
+  int appVersionCheck;
   Box settingsBox = Hive.box('settings');
   String downloadPath = Hive.box('settings')
       .get('downloadPath', defaultValue: '/storage/emulated/0/Music');
@@ -71,9 +72,8 @@ class _SettingPageState extends State<SettingPage> {
 
   void main() async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
-    List temp = packageInfo.version.split('.');
-    temp.removeLast();
-    appVersion = double.parse(temp.join('.'));
+    appVersionCheck = int.parse(packageInfo.version.replaceAll('.', ''));
+    appVersion = packageInfo.version;
     setState(() {});
   }
 
@@ -1090,7 +1090,10 @@ class _SettingPageState extends State<SettingPage> {
                               .reference()
                               .child("LatestVersion");
                           dbRef.once().then((DataSnapshot snapshot) {
-                            if (double.parse(snapshot.value) > appVersion) {
+                            if (int.parse(snapshot.value
+                                    .toString()
+                                    .replaceAll('.', '')) >
+                                appVersionCheck) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   elevation: 6,

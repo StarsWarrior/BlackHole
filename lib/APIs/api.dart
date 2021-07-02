@@ -3,7 +3,7 @@ import 'package:http/http.dart';
 import 'package:blackhole/Helpers/format.dart';
 
 class Search {
-  Future<List> fetchSearchResults(String searchQuery) async {
+  Future<List> fetchSongSearchResults(String searchQuery) async {
     List searchedList = [];
     Uri searchUrl = Uri.https(
       "www.jiosaavn.com",
@@ -15,23 +15,79 @@ class Search {
     if (res.statusCode == 200) {
       final getMain = json.decode(res.body);
       List responseList = getMain["results"];
-      searchedList = await FormatResponse().formatResponse(responseList);
+      searchedList =
+          await FormatResponse().formatSongsResponse(responseList, 'song');
     }
     return searchedList;
   }
 
-  Future<List> fetchAlbumSearchResults(String searchQuery) async {
+  Future<List<Map>> fetchSearchResults(String searchQuery) async {
+    Map<String, List> result = {};
+    Map<int, String> position = {};
     List searchedAlbumList = [];
+    List searchedPlaylistList = [];
+    List searchedArtistList = [];
+    List searchedTopQueryList = [];
     Uri searchUrl = Uri.https("www.jiosaavn.com",
         "api.php?__call=autocomplete.get&_format=json&_marker=0&cc=in&includeMetaTags=1&query=$searchQuery");
     final res = await get(searchUrl);
     if (res.statusCode == 200) {
       final getMain = json.decode(res.body);
-      List responseList = getMain["albums"]["data"];
-      searchedAlbumList =
-          await FormatResponse().formatAlbumResponse(responseList);
+      List albumResponseList = getMain["albums"]["data"];
+      position[getMain["albums"]["position"]] = 'Albums';
+      List playlistResponseList = getMain["playlists"]["data"];
+      position[getMain["playlists"]["position"]] = 'Playlists';
+      List artistResponseList = getMain["artists"]["data"];
+      position[getMain["artists"]["position"]] = 'Artists';
+      List topQuery = getMain["topquery"]["data"];
+
+      searchedAlbumList = await FormatResponse()
+          .formatAlbumResponse(albumResponseList, 'album');
+      if (searchedAlbumList.isNotEmpty) result['Albums'] = searchedAlbumList;
+
+      searchedPlaylistList = await FormatResponse()
+          .formatAlbumResponse(playlistResponseList, 'playlist');
+      if (searchedPlaylistList.isNotEmpty)
+        result['Playlists'] = searchedPlaylistList;
+
+      searchedArtistList = await FormatResponse()
+          .formatAlbumResponse(artistResponseList, 'artist');
+      if (searchedArtistList.isNotEmpty) result['Artists'] = searchedArtistList;
+
+      if (topQuery.isNotEmpty &&
+          (topQuery[0]["type"] == 'playlist' ||
+              topQuery[0]["type"] == 'artist' ||
+              topQuery[0]["type"] == 'album')) {
+        position[getMain["topquery"]["position"]] = 'Top Result';
+        position[getMain["songs"]["position"]] = 'Songs';
+
+        switch (topQuery[0]["type"]) {
+          case ('artist'):
+            searchedTopQueryList =
+                await FormatResponse().formatAlbumResponse(topQuery, 'artist');
+            break;
+          case ('album'):
+            searchedTopQueryList =
+                await FormatResponse().formatAlbumResponse(topQuery, 'album');
+            break;
+          case ('playlist'):
+            searchedTopQueryList = await FormatResponse()
+                .formatAlbumResponse(topQuery, 'playlist');
+            break;
+          default:
+            break;
+        }
+        if (searchedTopQueryList.isNotEmpty)
+          result['Top Result'] = searchedTopQueryList;
+      } else {
+        if (topQuery.isNotEmpty && topQuery[0]["type"] == 'song') {
+          position[getMain["topquery"]["position"]] = 'Songs';
+        } else {
+          position[getMain["songs"]["position"]] = 'Songs';
+        }
+      }
     }
-    return searchedAlbumList;
+    return [result, position];
   }
 
   Future<List> fetchAlbumSongs(String albumId) async {
@@ -45,7 +101,80 @@ class Search {
       final getMain = json.decode(res.body);
       List responseList = getMain["songs"];
       searchedList =
-          await FormatResponse().formatAlbumSongsResponse(responseList);
+          await FormatResponse().formatSongsResponse(responseList, 'album');
+    }
+    return searchedList;
+  }
+
+  Future<Map> fetchArtistSongs(String artistToken) async {
+    Map<String, List> data = {};
+    Uri searchUrl = Uri.https("www.jiosaavn.com",
+        "/api.php?__call=webapi.get&type=artist&p=&n_song=50&n_album=50&sub_type=&category=&sort_order=&includeMetaTags=0&ctx=wap6dot0&api_version=4&_format=json&_marker=0&token=$artistToken");
+
+    final res = await get(searchUrl);
+    if (res.statusCode == 200) {
+      final getMain = json.decode(res.body);
+      List topSongsResponseList = getMain["topSongs"];
+      List topAlbumsResponseList = getMain["topAlbums"];
+      // List singlesResponseList = getMain["singles"];
+      // List latestReleaseResponseList = getMain["latest_release"];
+      // List dedicatedArtistPlaylistResponseList = [];
+      // if (getMain["dedicated_artist_playlist"] is List) {
+      //   dedicatedArtistPlaylistResponseList =
+      //       getMain["dedicated_artist_playlist"];
+      // }
+      // List featuredArtistPlaylistResponseList = [];
+      // if (getMain["featured_artist_playlist"] is List) {
+      //   featuredArtistPlaylistResponseList =
+      //       getMain["featured_artist_playlist"];
+      // }
+
+      List topSongsSearchedList = await FormatResponse()
+          .formatSongsResponse(topSongsResponseList, 'song');
+      if (topSongsSearchedList.isNotEmpty)
+        data['Top Songs'] = topSongsSearchedList;
+
+      List topAlbumsSearchedList = await FormatResponse()
+          .formatArtistTopAlbumsResponse(topAlbumsResponseList);
+      if (topAlbumsSearchedList.isNotEmpty)
+        data['Top Albums'] = topAlbumsSearchedList;
+
+      // List latestReleaseSearchedList = await FormatResponse()
+      // .formatSongsResponse(latestReleaseResponseList, 'songs');
+      // if (latestReleaseSearchedList.isNotEmpty)
+      // data['Latest Release'] = latestReleaseSearchedList;
+
+      // List singlesSearchedList = await FormatResponse()
+      // .formatSongsResponse(singlesResponseList, 'songs');
+      // if (singlesSearchedList.isNotEmpty) data['Singles'] = singlesSearchedList;
+
+      // List dedicatedArtistPlaylistSearchedList = await FormatResponse()
+      //     .formatArtistDedicatedArtistPlaylistResponse(
+      //         dedicatedArtistPlaylistResponseList);
+      // if (dedicatedArtistPlaylistSearchedList.isNotEmpty)
+      //   data['Dedicated Artist Playlist'] = dedicatedArtistPlaylistSearchedList;
+
+      // List featuredArtistPlaylistSearchedList = await FormatResponse()
+      //     .formatArtistFeaturedArtistPlaylistResponse(
+      //         featuredArtistPlaylistResponseList);
+      // if (featuredArtistPlaylistSearchedList.isNotEmpty)
+      //   data['Featured Artist Playlist'] = featuredArtistPlaylistSearchedList;
+    }
+    return data;
+  }
+
+  Future<List> fetchPlaylistSongs(String playlistId) async {
+    List searchedList = [];
+    Uri searchUrl = Uri.https(
+      "www.jiosaavn.com",
+      "/api.php?__call=playlist.getDetails&_format=json&cc=in&_marker=0%3F_marker%3D0&listid=$playlistId",
+    );
+    final res = await get(searchUrl);
+    if (res.statusCode == 200) {
+      final getMain = json.decode(res.body);
+      List responseList = getMain["songs"];
+      searchedList =
+          await FormatResponse().formatSongsResponse(responseList, 'playlist');
     }
     return searchedList;
   }
@@ -62,8 +191,8 @@ class Search {
     if (res.statusCode == 200) {
       final getMain = json.decode(res.body);
       List responseList = getMain["results"];
-      searchedList
-          .add(await FormatResponse().formatSingleResponse(responseList[0]));
+      searchedList.add(
+          await FormatResponse().formatSingleSongResponse(responseList[0]));
     }
     return searchedList;
   }
@@ -80,7 +209,7 @@ class Playlist {
       item["title"] = playlist["title"];
       item["image"] = playlist["image"];
       item["songsList"] =
-          await FormatResponse().formatResponse(playlist["list"]);
+          await FormatResponse().formatSongsResponse(playlist["list"], 'song');
     }
     return item;
   }
