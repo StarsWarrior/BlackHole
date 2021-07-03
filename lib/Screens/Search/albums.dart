@@ -1,6 +1,5 @@
 import 'dart:ui';
 import 'package:blackhole/CustomWidgets/downloadButton.dart';
-import 'package:blackhole/Screens/Player/audioplayer.dart';
 import 'package:blackhole/CustomWidgets/gradientContainers.dart';
 import 'package:blackhole/Screens/Search/album_songs.dart';
 import 'package:blackhole/Screens/Search/artists.dart';
