@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:blackhole/CustomWidgets/downloadButton.dart';
 import 'package:blackhole/CustomWidgets/gradientContainers.dart';
 import 'package:blackhole/CustomWidgets/like_button.dart';
+import 'package:blackhole/Helpers/lyrics.dart';
 import 'package:blackhole/Helpers/playlist.dart';
 import 'package:blackhole/Services/audioService.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -349,25 +350,25 @@ class _PlayScreenState extends State<PlayScreen> {
                               return mediaItem == null
                                   ? SizedBox()
                                   : BottomGradientContainer(
+                                      padding: EdgeInsets.zero,
                                       child: Center(
                                         child: SingleChildScrollView(
-                                          physics: BouncingScrollPhysics(),
-                                          padding:
-                                              EdgeInsets.fromLTRB(0, 20, 0, 20),
-                                          child: mediaItem
-                                                      .extras["has_lyrics"] ==
-                                                  "true"
-                                              ? FutureBuilder(
-                                                  future: fetchLyrics(),
-                                                  builder: (BuildContext
-                                                          context,
-                                                      AsyncSnapshot snapshot) {
-                                                    if (snapshot
-                                                            .connectionState ==
-                                                        ConnectionState.done) {
-                                                      if (mediaItem.extras[
-                                                              "has_lyrics"] ==
-                                                          "true") {
+                                            physics: BouncingScrollPhysics(),
+                                            padding: EdgeInsets.fromLTRB(
+                                                0, 20, 0, 20),
+                                            child: mediaItem
+                                                        .extras["has_lyrics"] ==
+                                                    "true"
+                                                ? FutureBuilder(
+                                                    future: fetchLyrics(),
+                                                    builder:
+                                                        (BuildContext context,
+                                                            AsyncSnapshot
+                                                                snapshot) {
+                                                      if (snapshot
+                                                              .connectionState ==
+                                                          ConnectionState
+                                                              .done) {
                                                         List lyricsEdited =
                                                             (snapshot.data.body)
                                                                 .split("-->");
@@ -382,25 +383,52 @@ class _PlayScreenState extends State<PlayScreen> {
                                                                 "<br>", "\n");
                                                         return Text(lyrics);
                                                       }
-                                                    }
-                                                    return CircularProgressIndicator(
-                                                      valueColor:
-                                                          AlwaysStoppedAnimation<
-                                                                  Color>(
-                                                              Theme.of(context)
-                                                                  .accentColor),
-                                                    );
-                                                  })
-                                              : EmptyScreen().emptyScreen(
-                                                  context,
-                                                  0,
-                                                  ":( ",
-                                                  100.0,
-                                                  "Lyrics",
-                                                  60.0,
-                                                  "Not Available",
-                                                  20.0),
-                                        ),
+                                                      return CircularProgressIndicator(
+                                                        valueColor:
+                                                            AlwaysStoppedAnimation<
+                                                                Color>(Theme.of(
+                                                                    context)
+                                                                .accentColor),
+                                                      );
+                                                    })
+                                                : FutureBuilder(
+                                                    future: Lyrics().getLyrics(
+                                                        mediaItem.title
+                                                            .toString(),
+                                                        mediaItem.artist
+                                                            .toString()),
+                                                    builder:
+                                                        (BuildContext context,
+                                                            AsyncSnapshot
+                                                                snapshot) {
+                                                      if (snapshot
+                                                              .connectionState ==
+                                                          ConnectionState
+                                                              .done) {
+                                                        String lyrics =
+                                                            snapshot.data;
+                                                        if (lyrics == '') {
+                                                          return EmptyScreen()
+                                                              .emptyScreen(
+                                                                  context,
+                                                                  0,
+                                                                  ":( ",
+                                                                  100.0,
+                                                                  "Lyrics",
+                                                                  60.0,
+                                                                  "Not Available",
+                                                                  20.0);
+                                                        }
+                                                        return Text(lyrics);
+                                                      }
+                                                      return CircularProgressIndicator(
+                                                        valueColor:
+                                                            AlwaysStoppedAnimation<
+                                                                Color>(Theme.of(
+                                                                    context)
+                                                                .accentColor),
+                                                      );
+                                                    })),
                                       ),
                                     );
                             },

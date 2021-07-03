@@ -26,7 +26,6 @@ class Search {
     try {
       final res = await get(searchUrl, headers: headers);
       if (res.statusCode == 200) {
-        print(res.headers);
         final getMain = json.decode(res.body);
         List responseList = getMain["results"];
         searchedList =
