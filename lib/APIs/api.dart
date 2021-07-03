@@ -3,28 +3,30 @@ import 'package:hive/hive.dart';
 import 'package:http/http.dart';
 import 'package:blackhole/Helpers/format.dart';
 
-class Search {
-  List preferredLanguage = Hive.box('settings')
+class SaavnAPI {
+  List preferredLanguages = Hive.box('settings')
       .get('preferredLanguage', defaultValue: ['Hindi'])?.toList();
   Map<String, String> headers = {};
+  String baseUrl = "www.jiosaavn.com";
+  String apiStr = "/api.php?_format=json&_marker=0&api_version=4&ctx=wap6dot0";
 
-  Future<Map> setHeader() async {
-    preferredLanguage =
-        preferredLanguage.map((email) => email.toLowerCase()).toList();
-    String languageHeader = 'L=' + preferredLanguage.join('%2C');
+  Future<Response> getResponse(String params) async {
+    Uri url = Uri.https(baseUrl, "$apiStr&$params");
+
+    preferredLanguages =
+        preferredLanguages.map((lang) => lang.toLowerCase()).toList();
+    String languageHeader = 'L=' + preferredLanguages.join('%2C');
     headers = {"cookie": languageHeader};
-    return headers;
+
+    return await get(url, headers: headers);
   }
 
   Future<List> fetchSongSearchResults(String searchQuery, String count) async {
     List searchedList = [];
-    Uri searchUrl = Uri.https(
-      "www.jiosaavn.com",
-      "/api.php?p=1&q=$searchQuery&_format=json&_marker=0&api_version=4&ctx=wap6dot0&n=$count&__call=search.getResults",
-    );
-    await setHeader();
+    String params = "p=1&q=$searchQuery&n=$count&__call=search.getResults";
+
     try {
-      final res = await get(searchUrl, headers: headers);
+      final res = await getResponse(params);
       if (res.statusCode == 200) {
         final getMain = json.decode(res.body);
         List responseList = getMain["results"];
@@ -43,12 +45,10 @@ class Search {
     List searchedArtistList = [];
     List searchedTopQueryList = [];
 
-    await setHeader();
+    String params =
+        "__call=autocomplete.get&cc=in&includeMetaTags=1&query=$searchQuery";
 
-    Uri searchUrl = Uri.https("www.jiosaavn.com",
-        "api.php?__call=autocomplete.get&_format=json&_marker=0&cc=in&includeMetaTags=1&query=$searchQuery");
-
-    final res = await get(searchUrl, headers: headers);
+    final res = await getResponse(params);
     if (res.statusCode == 200) {
       final getMain = json.decode(res.body);
       List albumResponseList = getMain["albums"]["data"];
@@ -110,20 +110,15 @@ class Search {
 
   Future<List> fetchAlbums(String searchQuery, String type) async {
     List searchedList = [];
-    await setHeader();
-    Uri searchUrl;
+    String params;
     if (type == 'playlist')
-      searchUrl = Uri.https("www.jiosaavn.com",
-          "/api.php?p=1&q=$searchQuery&_format=json&_marker=0&api_version=4&ctx=wap6dot0&n=20&__call=search.getPlaylistResults");
+      params = "p=1&q=$searchQuery&n=20&__call=search.getPlaylistResults";
     if (type == 'album')
-      searchUrl = Uri.https("www.jiosaavn.com",
-          "/api.php?p=1&q=$searchQuery&_format=json&_marker=0&api_version=4&ctx=wap6dot0&n=20&__call=search.getAlbumResults");
-
+      params = "p=1&q=$searchQuery&n=20&__call=search.getAlbumResults";
     if (type == 'artist')
-      searchUrl = Uri.https("www.jiosaavn.com",
-          "/api.php?p=1&q=$searchQuery&_format=json&_marker=0&api_version=4&ctx=wap6dot0&n=20&__call=search.getArtistResults");
+      params = "p=1&q=$searchQuery&n=20&__call=search.getArtistResults";
 
-    final res = await get(searchUrl, headers: headers);
+    final res = await getResponse(params);
     if (res.statusCode == 200) {
       final getMain = json.decode(res.body);
       List responseList = getMain["results"];
@@ -135,12 +130,8 @@ class Search {
 
   Future<List> fetchAlbumSongs(String albumId) async {
     List searchedList = [];
-    Uri searchUrl = Uri.https(
-      "www.jiosaavn.com",
-      "/api.php?__call=content.getAlbumDetails&_format=json&cc=in&_marker=0%3F_marker=0&albumid=$albumId",
-    );
-    await setHeader();
-    final res = await get(searchUrl, headers: headers);
+    String params = "__call=content.getAlbumDetails&cc=in&albumid=$albumId";
+    final res = await getResponse(params);
     if (res.statusCode == 200) {
       final getMain = json.decode(res.body);
       List responseList = getMain["songs"];
@@ -152,10 +143,9 @@ class Search {
 
   Future<Map> fetchArtistSongs(String artistToken) async {
     Map<String, List> data = {};
-    Uri searchUrl = Uri.https("www.jiosaavn.com",
-        "/api.php?__call=webapi.get&type=artist&p=&n_song=50&n_album=50&sub_type=&category=&sort_order=&includeMetaTags=0&ctx=wap6dot0&api_version=4&_format=json&_marker=0&token=$artistToken");
-    await setHeader();
-    final res = await get(searchUrl, headers: headers);
+    String params =
+        "__call=webapi.get&type=artist&p=&n_song=50&n_album=50&sub_type=&category=&sort_order=&includeMetaTags=0&token=$artistToken";
+    final res = await getResponse(params);
     if (res.statusCode == 200) {
       final getMain = json.decode(res.body);
       List topSongsResponseList = getMain["topSongs"];
@@ -209,12 +199,8 @@ class Search {
 
   Future<List> fetchPlaylistSongs(String playlistId) async {
     List searchedList = [];
-    Uri searchUrl = Uri.https(
-      "www.jiosaavn.com",
-      "/api.php?__call=playlist.getDetails&_format=json&cc=in&_marker=0%3F_marker%3D0&listid=$playlistId",
-    );
-    await setHeader();
-    final res = await get(searchUrl, headers: headers);
+    String params = "__call=playlist.getDetails&cc=in&listid=$playlistId";
+    final res = await getResponse(params);
     if (res.statusCode == 200) {
       final getMain = json.decode(res.body);
       List responseList = getMain["songs"];
@@ -226,12 +212,8 @@ class Search {
 
   Future<List> fetchTopSearchResult(String searchQuery) async {
     List searchedList = [];
-    Uri searchUrl = Uri.https(
-      "www.jiosaavn.com",
-      "/api.php?p=1&q=$searchQuery&_format=json&_marker=0&api_version=4&ctx=wap6dot0&n=10&__call=search.getResults",
-    );
-    await setHeader();
-    final res = await get(searchUrl, headers: headers);
+    String params = "p=1&q=$searchQuery&n=10&__call=search.getResults";
+    final res = await getResponse(params);
     if (res.statusCode == 200) {
       final getMain = json.decode(res.body);
       List responseList = getMain["results"];
@@ -240,13 +222,11 @@ class Search {
     }
     return searchedList;
   }
-}
 
-class Playlist {
-  Future<Map> fetchPlaylistSongs(Map item) async {
-    Uri playlistUrl = Uri.https("www.jiosaavn.com",
-        "/api.php?__call=webapi.get&token=${item["id"]}&type=playlist&p=1&n=100&includeMetaTags=0&ctx=web6dot0&api_version=4&_format=json&_marker=0");
-    final res = await get(playlistUrl, headers: {"Accept": "application/json"});
+  Future<Map> fetchPlaylistSongs2(Map item) async {
+    String params =
+        "__call=webapi.get&token=${item["id"]}&type=playlist&p=1&n=100&includeMetaTags=0";
+    final res = await getResponse(params);
     final playlist = json.decode(res.body);
     if (res.statusCode == 200) {
       item["title"] = playlist["title"];

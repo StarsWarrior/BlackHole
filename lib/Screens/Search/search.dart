@@ -38,7 +38,7 @@ class _SearchPageState extends State<SearchPage> {
     if (!status) {
       status = true;
       // this fetches top 10 songs results
-      Search()
+      SaavnAPI()
           .fetchSongSearchResults(query == '' ? widget.query : query, '5')
           .then((value) {
         setState(() {
@@ -48,7 +48,7 @@ class _SearchPageState extends State<SearchPage> {
         });
       });
       // this fetches albums, playlists, artists, etc
-      Search()
+      SaavnAPI()
           .fetchSearchResults(query == '' ? widget.query : query)
           .then((value) {
         setState(() {

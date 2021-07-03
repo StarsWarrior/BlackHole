@@ -441,7 +441,7 @@ fetchPlaylists(code, context, playlistNames, settingsBox) async {
         }
         try {
           List result =
-              await Search().fetchTopSearchResult('$trackName by $trackArtist');
+              await SaavnAPI().fetchTopSearchResult('$trackName by $trackArtist');
           addPlaylist(playName, result[0]);
         } catch (e) {
           print('Error in $_done: $e');

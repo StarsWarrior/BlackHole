@@ -53,7 +53,7 @@ class _TrendingPageState extends State<TrendingPage> {
     await getPlaylists();
     for (int i = 1; i < playlists.length; i++) {
       try {
-        playlists[i] = await Playlist().fetchPlaylistSongs(playlists[i]);
+        playlists[i] = await SaavnAPI().fetchPlaylistSongs2(playlists[i]);
         if (playlists[i]["songsList"].isNotEmpty) {
           Hive.box('cache').put(playlists[i]["id"], playlists[i]);
         }

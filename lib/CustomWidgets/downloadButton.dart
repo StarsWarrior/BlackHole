@@ -227,8 +227,8 @@ class _AlbumDownloadButtonState extends State<AlbumDownloadButton> {
                                     textColor: Theme.of(context).accentColor,
                                     label: 'Ok',
                                     onPressed: () {})));
-                            data =
-                                await Search().fetchAlbumSongs(widget.albumId);
+                            data = await SaavnAPI()
+                                .fetchAlbumSongs(widget.albumId);
                             for (Map items in data) {
                               down.prepareDownload(context, items);
                               await _waitUntilDone(items['id']);

@@ -35,7 +35,7 @@ class _AlbumSongsSearchPageState extends State<AlbumSongsSearchPage> {
       status = true;
       switch (widget.type) {
         case 'Songs':
-          Search().fetchSongSearchResults(widget.albumId, '20').then((value) {
+          SaavnAPI().fetchSongSearchResults(widget.albumId, '20').then((value) {
             setState(() {
               searchedList = value;
               fetched = true;
@@ -43,7 +43,7 @@ class _AlbumSongsSearchPageState extends State<AlbumSongsSearchPage> {
           });
           break;
         case 'Albums':
-          Search().fetchAlbumSongs(widget.albumId).then((value) {
+          SaavnAPI().fetchAlbumSongs(widget.albumId).then((value) {
             setState(() {
               searchedList = value;
               fetched = true;
@@ -51,7 +51,7 @@ class _AlbumSongsSearchPageState extends State<AlbumSongsSearchPage> {
           });
           break;
         case 'Playlists':
-          Search().fetchPlaylistSongs(widget.albumId).then((value) {
+          SaavnAPI().fetchPlaylistSongs(widget.albumId).then((value) {
             setState(() {
               searchedList = value;
               fetched = true;

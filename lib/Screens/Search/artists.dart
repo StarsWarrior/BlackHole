@@ -32,7 +32,7 @@ class _ArtistSearchPageState extends State<ArtistSearchPage> {
   Widget build(BuildContext context) {
     if (!status) {
       status = true;
-      Search().fetchArtistSongs(widget.artistToken).then((value) {
+      SaavnAPI().fetchArtistSongs(widget.artistToken).then((value) {
         setState(() {
           data = value;
           fetched = true;
