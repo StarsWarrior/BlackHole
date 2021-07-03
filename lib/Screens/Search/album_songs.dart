@@ -104,10 +104,13 @@ class _AlbumSongsSearchPageState extends State<AlbumSongsSearchPage> {
                                 contentPadding: EdgeInsets.only(left: 15.0),
                                 title: Text(
                                   '${searchedList[index]["title"]}',
+                                  overflow: TextOverflow.ellipsis,
                                   style: TextStyle(fontWeight: FontWeight.w500),
                                 ),
-                                subtitle:
-                                    Text('${searchedList[index]["subtitle"]}'),
+                                subtitle: Text(
+                                  '${searchedList[index]["subtitle"]}',
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                                 leading: Card(
                                   elevation: 8,
                                   shape: RoundedRectangleBorder(

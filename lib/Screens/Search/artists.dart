@@ -107,11 +107,14 @@ class _ArtistSearchPageState extends State<ArtistSearchPage> {
                                                 EdgeInsets.only(left: 15.0),
                                             title: Text(
                                               '${entry.value[index]["title"]}',
+                                              overflow: TextOverflow.ellipsis,
                                               style: TextStyle(
                                                   fontWeight: FontWeight.w500),
                                             ),
                                             subtitle: Text(
-                                                '${entry.value[index]["subtitle"]}'),
+                                              '${entry.value[index]["subtitle"]}',
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
                                             leading: Card(
                                               elevation: 8,
                                               shape: RoundedRectangleBorder(
