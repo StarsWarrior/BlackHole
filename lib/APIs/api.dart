@@ -23,13 +23,16 @@ class Search {
       "/api.php?p=1&q=$searchQuery&_format=json&_marker=0&api_version=4&ctx=wap6dot0&n=$count&__call=search.getResults",
     );
     await setHeader();
-    final res = await get(searchUrl, headers: headers);
-    if (res.statusCode == 200) {
-      final getMain = json.decode(res.body);
-      List responseList = getMain["results"];
-      searchedList =
-          await FormatResponse().formatSongsResponse(responseList, 'song');
-    }
+    try {
+      final res = await get(searchUrl, headers: headers);
+      if (res.statusCode == 200) {
+        print(res.headers);
+        final getMain = json.decode(res.body);
+        List responseList = getMain["results"];
+        searchedList =
+            await FormatResponse().formatSongsResponse(responseList, 'song');
+      }
+    } catch (e) {}
     return searchedList;
   }
 
@@ -121,15 +124,12 @@ class Search {
       searchUrl = Uri.https("www.jiosaavn.com",
           "/api.php?p=1&q=$searchQuery&_format=json&_marker=0&api_version=4&ctx=wap6dot0&n=20&__call=search.getArtistResults");
 
-    print(searchUrl);
     final res = await get(searchUrl, headers: headers);
     if (res.statusCode == 200) {
       final getMain = json.decode(res.body);
       List responseList = getMain["results"];
-      print("response list is $responseList");
       searchedList =
           await FormatResponse().formatAlbumResponse(responseList, type);
-      print("searched list is $searchedList");
     }
     return searchedList;
   }
@@ -247,7 +247,6 @@ class Playlist {
   Future<Map> fetchPlaylistSongs(Map item) async {
     Uri playlistUrl = Uri.https("www.jiosaavn.com",
         "/api.php?__call=webapi.get&token=${item["id"]}&type=playlist&p=1&n=100&includeMetaTags=0&ctx=web6dot0&api_version=4&_format=json&_marker=0");
-    // print(playlistUrl);
     final res = await get(playlistUrl, headers: {"Accept": "application/json"});
     final playlist = json.decode(res.body);
     if (res.statusCode == 200) {

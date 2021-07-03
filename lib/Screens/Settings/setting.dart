@@ -1,6 +1,7 @@
 import 'package:blackhole/Helpers/countrycodes.dart';
 import 'package:blackhole/CustomWidgets/gradientContainers.dart';
 import 'package:blackhole/Helpers/picker.dart';
+import 'package:blackhole/Helpers/proxy.dart';
 import 'package:blackhole/Screens/Top Charts/top.dart' as topScreen;
 import 'package:blackhole/Screens/Home/trending.dart' as trendingScreen;
 import 'package:ext_storage/ext_storage.dart';
@@ -39,6 +40,7 @@ class _SettingPageState extends State<SettingPage> {
   bool stopServiceOnPause =
       Hive.box('settings').get('stopServiceOnPause', defaultValue: true);
   String region = Hive.box('settings').get('region', defaultValue: 'India');
+  bool useProxy = Hive.box('settings').get('useProxy', defaultValue: false);
   String themeColor =
       Hive.box('settings').get('themeColor', defaultValue: 'Teal');
   int colorHue = Hive.box('settings').get('colorHue', defaultValue: 400);
@@ -1064,6 +1066,123 @@ class _SettingPageState extends State<SettingPage> {
                           updateUserDetails('stopServiceOnPause', val);
                           setState(() {});
                         }),
+                    SwitchListTile(
+                        activeColor: Theme.of(context).accentColor,
+                        title: Text('Use Proxy'),
+                        subtitle:
+                            Text("Turn this on if you are NOT from India"),
+                        dense: true,
+                        value: useProxy,
+                        onChanged: (val) {
+                          val ? appProxy.enable() : appProxy.disable();
+                          Hive.box('settings').put('useProxy', val);
+                          useProxy = val;
+                          updateUserDetails('useProxy', val);
+                          setState(() {});
+                        }),
+                    if (useProxy)
+                      ListTile(
+                        title: Text('Proxy Settings'),
+                        subtitle: Text('Change Proxy IP and Port'),
+                        dense: true,
+                        trailing: Text(
+                          '${Hive.box('settings').get("proxyIp", defaultValue: "103.47.64.85")}:${Hive.box('settings').get("proxyPort", defaultValue: 8080)}',
+                          style: TextStyle(fontSize: 12),
+                        ),
+                        onTap: () {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              final _controller = TextEditingController(
+                                  text: settingsBox.get('proxyIp',
+                                      defaultValue: "103.47.64.85"));
+                              final _controller2 = TextEditingController(
+                                  text: settingsBox
+                                      .get('proxyPort', defaultValue: 8080)
+                                      .toString());
+                              return AlertDialog(
+                                content: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Text(
+                                          'IP Address',
+                                          style: TextStyle(
+                                              color: Theme.of(context)
+                                                  .accentColor),
+                                        ),
+                                      ],
+                                    ),
+                                    TextField(
+                                      autofocus: true,
+                                      controller: _controller,
+                                    ),
+                                    SizedBox(
+                                      height: 30,
+                                    ),
+                                    Row(
+                                      children: [
+                                        Text(
+                                          'Port',
+                                          style: TextStyle(
+                                              color: Theme.of(context)
+                                                  .accentColor),
+                                        ),
+                                      ],
+                                    ),
+                                    TextField(
+                                      autofocus: true,
+                                      controller: _controller2,
+                                    ),
+                                  ],
+                                ),
+                                actions: [
+                                  TextButton(
+                                    style: TextButton.styleFrom(
+                                      primary: Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? Colors.white
+                                          : Colors.grey[700],
+                                      // backgroundColor: Theme.of(context).accentColor,
+                                    ),
+                                    child: Text("Cancel"),
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                  ),
+                                  TextButton(
+                                    style: TextButton.styleFrom(
+                                      primary: Colors.white,
+                                      backgroundColor:
+                                          Theme.of(context).accentColor,
+                                    ),
+                                    child: Text(
+                                      "Ok",
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                    onPressed: () {
+                                      settingsBox.put(
+                                          'proxyIp', _controller.text.trim());
+                                      settingsBox.put('proxyPort',
+                                          int.parse(_controller2.text.trim()));
+                                      Navigator.pop(context);
+                                      updateUserDetails(
+                                          'proxyIp', _controller.text.trim());
+                                      updateUserDetails('proxyPort',
+                                          _controller2.text.trim());
+                                      setState(() {});
+                                    },
+                                  ),
+                                  SizedBox(
+                                    width: 5,
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        },
+                      )
                   ]),
                 ),
               ),
