@@ -128,7 +128,7 @@ class _SaavnHomePageState extends State<SaavnHomePage> {
         shrinkWrap: true,
         padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
         scrollDirection: Axis.vertical,
-        itemCount: lists.length,
+        itemCount: data.isEmpty ? 1 : lists.length,
         itemBuilder: (context, idx) {
           if (idx == 0) {
             return (recentList.isEmpty ||
