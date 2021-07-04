@@ -32,7 +32,7 @@ class _SongsListPageState extends State<SongsListPage> {
     if (!status) {
       status = true;
       switch (widget.listItem['type']) {
-        case 'songs':
+        case 'song':
           SaavnAPI()
               .fetchSongSearchResults(widget.listItem['id'], '20')
               .then((value) {
