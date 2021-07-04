@@ -25,9 +25,10 @@ class SaavnHomePage extends StatefulWidget {
 }
 
 class _SaavnHomePageState extends State<SaavnHomePage> {
-  List recentList = Hive.box('recentlyPlayed').get('recentSongs') ?? [];
+  List recentList =
+      Hive.box('recentlyPlayed').get('recentSongs', defaultValue: []);
 
-  getHomePageData() async {
+  void getHomePageData() async {
     Map recievedData = await SaavnAPI().fetchHomePageData();
     if (recievedData != null || recievedData.isNotEmpty) {
       Hive.box('cache').put('homepage', recievedData);
@@ -36,24 +37,20 @@ class _SaavnHomePageState extends State<SaavnHomePage> {
     setState(() {});
   }
 
-  getSubTitle(Map item) {
+  String getSubTitle(Map item) {
     final type = item['type'];
     if (type == 'playlist') {
-      return item['subtitle'] ?? '';
+      return formatString(item['subtitle']) ?? '';
     } else if (type == 'radio_station') {
       return "Artist Radio";
     } else if (type == "song") {
-      return item["artist"];
+      return formatString(item["artist"]);
     } else {
       final artists = item['more_info']['artistMap']['artists']
           .map((artist) => artist['name'])
           .toList();
-      return artists.join(', ');
+      return formatString(artists.join(', '));
     }
-  }
-
-  String capitalize(String msg) {
-    return "${msg[0].toUpperCase()}${msg.substring(1)}";
   }
 
   String formatString(String text) {
@@ -72,7 +69,7 @@ class _SaavnHomePageState extends State<SaavnHomePage> {
       fetched = true;
     }
     return ListView.builder(
-        physics: BouncingScrollPhysics(), //NeverScrollableScrollPhysics(),
+        physics: BouncingScrollPhysics(),
         shrinkWrap: true,
         padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
         scrollDirection: Axis.vertical,
@@ -181,7 +178,7 @@ class _SaavnHomePageState extends State<SaavnHomePage> {
                   Padding(
                     padding: const EdgeInsets.fromLTRB(15, 10, 0, 5),
                     child: Text(
-                      '${capitalize(formatString(data['modules'][lists[idx]]["title"]))}',
+                      '${formatString(data['modules'][lists[idx]]["title"])}',
                       style: TextStyle(
                         color: Theme.of(context).accentColor,
                         fontSize: 16,
@@ -219,8 +216,6 @@ class _SaavnHomePageState extends State<SaavnHomePage> {
                                   textAlign: TextAlign.center,
                                   softWrap: false,
                                   overflow: TextOverflow.ellipsis,
-                                  // style: TextStyle(
-                                  //     color: Theme.of(context).accentColor),
                                 ),
                                 Text(
                                   'Please Wait',
@@ -250,7 +245,6 @@ class _SaavnHomePageState extends State<SaavnHomePage> {
                         itemBuilder: (context, index) {
                           final item = data[lists[idx]][index];
                           return GestureDetector(
-                            // TODO: don't draw for radio station
                             child: SizedBox(
                               width: 150,
                               child: Column(
@@ -280,18 +274,14 @@ class _SaavnHomePageState extends State<SaavnHomePage> {
                                     ),
                                   ),
                                   Text(
-                                    '${capitalize(formatString(item["title"]))}',
+                                    '${formatString(item["title"])}',
                                     textAlign: TextAlign.center,
                                     softWrap: false,
                                     overflow: TextOverflow.ellipsis,
-                                    // maxLines: 2,
-                                    // style: TextStyle(
-                                    //     color: Theme.of(context).accentColor),
                                   ),
                                   lists[idx] != 'charts'
                                       ? Text(
-                                          capitalize(
-                                              formatString(getSubTitle(item))),
+                                          getSubTitle(item),
                                           textAlign: TextAlign.center,
                                           softWrap: false,
                                           overflow: TextOverflow.ellipsis,
@@ -315,7 +305,10 @@ class _SaavnHomePageState extends State<SaavnHomePage> {
                                       item["type"] == "song"
                                           ? PlayScreen(
                                               data: {
-                                                'response': [item],
+                                                'response': data[lists[idx]]
+                                                    .where((e) =>
+                                                        (e["type"] == 'song'))
+                                                    .toList(),
                                                 'index': 0,
                                                 'offline': false,
                                               },
