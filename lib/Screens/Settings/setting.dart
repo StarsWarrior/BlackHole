@@ -665,25 +665,6 @@ class _SettingPageState extends State<SettingPage> {
                                                       "preferredLanguage",
                                                       checked);
                                                   homeScreen.fetched = false;
-                                                  homeScreen.showCached = true;
-                                                  homeScreen.playlists = [
-                                                    {
-                                                      "id": "RecentlyPlayed",
-                                                      "title": "RecentlyPlayed",
-                                                      "image": "",
-                                                      "songsList": [],
-                                                      "type": ""
-                                                    }
-                                                  ];
-                                                  homeScreen.cachedPlaylists = [
-                                                    {
-                                                      "id": "RecentlyPlayed",
-                                                      "title": "RecentlyPlayed",
-                                                      "image": "",
-                                                      "songsList": [],
-                                                      "type": ""
-                                                    }
-                                                  ];
                                                   homeScreen.preferredLanguage =
                                                       preferredLanguage;
                                                   widget.callback();
