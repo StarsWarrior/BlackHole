@@ -1,5 +1,6 @@
 import 'package:blackhole/Helpers/countrycodes.dart';
 import 'package:blackhole/CustomWidgets/gradientContainers.dart';
+import 'package:blackhole/Screens/Home/saavn.dart';
 import 'package:blackhole/Screens/Library/downloaded.dart';
 import 'package:blackhole/Screens/Library/library.dart';
 import 'package:blackhole/Screens/Search/search.dart';
@@ -15,7 +16,6 @@ import 'package:blackhole/CustomWidgets/miniplayer.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:blackhole/Screens/Top Charts/top.dart';
 import 'dart:math';
-import 'trending.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:package_info/package_info.dart';
@@ -692,7 +692,7 @@ class _HomePageState extends State<HomePage> {
                                   ),
                                 ];
                               },
-                              body: TrendingPage(),
+                              body: SaavnHomePage(),
                             ),
                           ),
                           Builder(

@@ -8,7 +8,7 @@ class SaavnAPI {
       .get('preferredLanguage', defaultValue: ['Hindi'])?.toList();
   Map<String, String> headers = {};
   String baseUrl = "www.jiosaavn.com";
-  String apiStr = "/api.php?_format=json&_marker=0&api_version=4&ctx=wap6dot0";
+  String apiStr = "/api.php?_format=json&_marker=0&api_version=4&ctx=web6dot0";
 
   Future<Response> getResponse(String params) async {
     Uri url = Uri.https(baseUrl, "$apiStr&$params");
@@ -16,9 +16,21 @@ class SaavnAPI {
     preferredLanguages =
         preferredLanguages.map((lang) => lang.toLowerCase()).toList();
     String languageHeader = 'L=' + preferredLanguages.join('%2C');
-    headers = {"cookie": languageHeader};
+    headers = {"cookie": languageHeader, "Accept": "application/json"};
 
     return await get(url, headers: headers);
+  }
+
+  Future<Map> fetchHomePageData() async {
+    String params = "__call=webapi.getLaunchData";
+    Map<dynamic, dynamic> data;
+    try {
+      final res = await getResponse(params);
+      if (res.statusCode == 200) {
+        data = json.decode(res.body);
+      }
+    } catch (e) {}
+    return data;
   }
 
   Future<List> fetchSongSearchResults(String searchQuery, String count) async {
@@ -134,7 +146,7 @@ class SaavnAPI {
     final res = await getResponse(params);
     if (res.statusCode == 200) {
       final getMain = json.decode(res.body);
-      List responseList = getMain["songs"];
+      List responseList = getMain["list"];
       searchedList =
           await FormatResponse().formatSongsResponse(responseList, 'album');
     }
@@ -203,7 +215,7 @@ class SaavnAPI {
     final res = await getResponse(params);
     if (res.statusCode == 200) {
       final getMain = json.decode(res.body);
-      List responseList = getMain["songs"];
+      List responseList = getMain["list"];
       searchedList =
           await FormatResponse().formatSongsResponse(responseList, 'playlist');
     }
@@ -221,19 +233,5 @@ class SaavnAPI {
           await FormatResponse().formatSingleSongResponse(responseList[0]));
     }
     return searchedList;
-  }
-
-  Future<Map> fetchPlaylistSongs2(Map item) async {
-    String params =
-        "__call=webapi.get&token=${item["id"]}&type=playlist&p=1&n=100&includeMetaTags=0";
-    final res = await getResponse(params);
-    final playlist = json.decode(res.body);
-    if (res.statusCode == 200) {
-      item["title"] = playlist["title"];
-      item["image"] = playlist["image"];
-      item["songsList"] =
-          await FormatResponse().formatSongsResponse(playlist["list"], 'song');
-    }
-    return item;
   }
 }

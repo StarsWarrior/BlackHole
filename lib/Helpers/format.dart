@@ -11,11 +11,9 @@ class FormatResponse {
       Map response;
       switch (type) {
         case 'song':
-          response = await formatSingleSongResponse(responseList[i]);
-          break;
         case 'album':
         case 'playlist':
-          response = await formatSingleAlbumSongResponse(responseList[i]);
+          response = await formatSingleSongResponse(responseList[i]);
           break;
         default:
           break;

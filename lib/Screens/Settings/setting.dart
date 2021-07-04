@@ -3,7 +3,7 @@ import 'package:blackhole/CustomWidgets/gradientContainers.dart';
 import 'package:blackhole/Helpers/picker.dart';
 import 'package:blackhole/Helpers/proxy.dart';
 import 'package:blackhole/Screens/Top Charts/top.dart' as topScreen;
-import 'package:blackhole/Screens/Home/trending.dart' as trendingScreen;
+import 'package:blackhole/Screens/Home/saavn.dart' as homeScreen;
 import 'package:ext_storage/ext_storage.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
@@ -664,11 +664,9 @@ class _SettingPageState extends State<SettingPage> {
                                                   updateUserDetails(
                                                       "preferredLanguage",
                                                       checked);
-                                                  trendingScreen.fetched =
-                                                      false;
-                                                  trendingScreen.showCached =
-                                                      true;
-                                                  trendingScreen.playlists = [
+                                                  homeScreen.fetched = false;
+                                                  homeScreen.showCached = true;
+                                                  homeScreen.playlists = [
                                                     {
                                                       "id": "RecentlyPlayed",
                                                       "title": "RecentlyPlayed",
@@ -677,8 +675,7 @@ class _SettingPageState extends State<SettingPage> {
                                                       "type": ""
                                                     }
                                                   ];
-                                                  trendingScreen
-                                                      .cachedPlaylists = [
+                                                  homeScreen.cachedPlaylists = [
                                                     {
                                                       "id": "RecentlyPlayed",
                                                       "title": "RecentlyPlayed",
@@ -687,8 +684,7 @@ class _SettingPageState extends State<SettingPage> {
                                                       "type": ""
                                                     }
                                                   ];
-                                                  trendingScreen
-                                                          .preferredLanguage =
+                                                  homeScreen.preferredLanguage =
                                                       preferredLanguage;
                                                   widget.callback();
                                                 });

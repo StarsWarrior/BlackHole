@@ -1,8 +1,8 @@
 import 'dart:ui';
 import 'package:blackhole/CustomWidgets/downloadButton.dart';
+import 'package:blackhole/Screens/Common/song_list.dart';
 import 'package:blackhole/Screens/Player/audioplayer.dart';
 import 'package:blackhole/CustomWidgets/gradientContainers.dart';
-import 'package:blackhole/Screens/Search/album_songs.dart';
 import 'package:blackhole/Screens/Search/albums.dart';
 import 'package:blackhole/Screens/Search/artists.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -357,15 +357,9 @@ class _SearchPageState extends State<SearchPage> {
                                                                 },
                                                               fromMiniplayer:
                                                                   false)
-                                                          : AlbumSongsSearchPage(
-                                                              albumName:
-                                                                  value[index]
-                                                                      ['title'],
-                                                              albumId:
-                                                                  value[index]
-                                                                      ['id'],
-                                                              type: key,
-                                                            ),
+                                                          : SongsListPage(
+                                                              listItem:
+                                                                  value[index]),
                                                 ),
                                               );
                                             },
@@ -418,13 +412,16 @@ class _SearchPageState extends State<SearchPage> {
                                                           opaque: false,
                                                           pageBuilder: (_, __,
                                                                   ___) =>
-                                                              AlbumSongsSearchPage(
-                                                            albumId: query == ''
-                                                                ? widget.query
-                                                                : query,
-                                                            albumName: key,
-                                                            type: key,
-                                                          ),
+                                                              SongsListPage(
+                                                                  listItem: {
+                                                                "id": query ==
+                                                                        ''
+                                                                    ? widget
+                                                                        .query
+                                                                    : query,
+                                                                "title": key,
+                                                                "type": "songs",
+                                                              }),
                                                         ));
                                                 },
                                               ),
