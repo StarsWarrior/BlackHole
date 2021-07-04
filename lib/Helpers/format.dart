@@ -110,6 +110,7 @@ class FormatResponse {
         "url": await DesPlugin.decrypt(
             "38346591", response["more_info"]["encrypted_media_url"])
       };
+      info["url"] = info["url"].replaceAll("http:", "https:");
       return info;
     } catch (e) {
       return {"Error": e};
@@ -524,4 +525,17 @@ class FormatResponse {
   //   List result = [];
   //   return result;
   // }
+
+  Future<Map> formatHomePageData(Map data) async {
+    final trendingData = data["new_trending"];
+    if (trendingData.isNotEmpty) {
+      for (int i = 0; i < trendingData.length; i++) {
+        if (trendingData[i]["type"] == "song") {
+          data["new_trending"][i] =
+              await formatSingleSongResponse(trendingData[i]);
+        }
+      }
+    }
+    return data;
+  }
 }

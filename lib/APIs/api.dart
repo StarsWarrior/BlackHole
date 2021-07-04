@@ -23,11 +23,12 @@ class SaavnAPI {
 
   Future<Map> fetchHomePageData() async {
     String params = "__call=webapi.getLaunchData";
-    Map<dynamic, dynamic> data;
+    Map data;
     try {
       final res = await getResponse(params);
       if (res.statusCode == 200) {
         data = json.decode(res.body);
+        data = await FormatResponse().formatHomePageData(data);
       }
     } catch (e) {}
     return data;

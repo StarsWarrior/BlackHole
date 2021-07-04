@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:blackhole/CustomWidgets/emptyScreen.dart';
 import 'package:blackhole/CustomWidgets/miniplayer.dart';
 import 'package:blackhole/APIs/api.dart';
+import 'package:html_unescape/html_unescape_small.dart';
 
 class SongsListPage extends StatefulWidget {
   final Map listItem;
@@ -24,6 +25,7 @@ class _SongsListPageState extends State<SongsListPage> {
   bool status = false;
   List songList = [];
   bool fetched = false;
+  HtmlUnescape unescape = HtmlUnescape();
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +69,8 @@ class _SongsListPageState extends State<SongsListPage> {
             child: Scaffold(
               backgroundColor: Colors.transparent,
               appBar: AppBar(
-                title: Text(widget.listItem['title'] ?? 'Songs'),
+                title:
+                    Text(unescape.convert(widget.listItem['title'] ?? 'Songs')),
                 centerTitle: true,
                 backgroundColor: Colors.transparent,
                 textTheme: Theme.of(context).textTheme,
