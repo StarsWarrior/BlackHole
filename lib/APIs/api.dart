@@ -10,9 +10,13 @@ class SaavnAPI {
   String baseUrl = "www.jiosaavn.com";
   String apiStr = "/api.php?_format=json&_marker=0&api_version=4&ctx=web6dot0";
 
-  Future<Response> getResponse(String params) async {
-    Uri url = Uri.https(baseUrl, "$apiStr&$params");
-
+  Future<Response> getResponse(String params, bool usev4) async {
+    Uri url;
+    if (!usev4)
+      url = Uri.https(
+          baseUrl, "$apiStr&$params".replaceAll("&api_version=4", ""));
+    else
+      url = Uri.https(baseUrl, "$apiStr&$params");
     preferredLanguages =
         preferredLanguages.map((lang) => lang.toLowerCase()).toList();
     String languageHeader = 'L=' + preferredLanguages.join('%2C');
@@ -25,7 +29,7 @@ class SaavnAPI {
     String params = "__call=webapi.getLaunchData";
     Map data;
     try {
-      final res = await getResponse(params);
+      final res = await getResponse(params, true);
       if (res.statusCode == 200) {
         data = json.decode(res.body);
         data = await FormatResponse().formatHomePageData(data);
@@ -39,7 +43,7 @@ class SaavnAPI {
     String params = "p=1&q=$searchQuery&n=$count&__call=search.getResults";
 
     try {
-      final res = await getResponse(params);
+      final res = await getResponse(params, true);
       if (res.statusCode == 200) {
         final getMain = json.decode(res.body);
         List responseList = getMain["results"];
@@ -61,7 +65,7 @@ class SaavnAPI {
     String params =
         "__call=autocomplete.get&cc=in&includeMetaTags=1&query=$searchQuery";
 
-    final res = await getResponse(params);
+    final res = await getResponse(params, false);
     if (res.statusCode == 200) {
       final getMain = json.decode(res.body);
       List albumResponseList = getMain["albums"]["data"];
@@ -131,7 +135,7 @@ class SaavnAPI {
     if (type == 'artist')
       params = "p=1&q=$searchQuery&n=20&__call=search.getArtistResults";
 
-    final res = await getResponse(params);
+    final res = await getResponse(params, true);
     if (res.statusCode == 200) {
       final getMain = json.decode(res.body);
       List responseList = getMain["results"];
@@ -144,7 +148,7 @@ class SaavnAPI {
   Future<List> fetchAlbumSongs(String albumId) async {
     List searchedList = [];
     String params = "__call=content.getAlbumDetails&cc=in&albumid=$albumId";
-    final res = await getResponse(params);
+    final res = await getResponse(params, true);
     if (res.statusCode == 200) {
       final getMain = json.decode(res.body);
       List responseList = getMain["list"];
@@ -158,7 +162,7 @@ class SaavnAPI {
     Map<String, List> data = {};
     String params =
         "__call=webapi.get&type=artist&p=&n_song=50&n_album=50&sub_type=&category=&sort_order=&includeMetaTags=0&token=$artistToken";
-    final res = await getResponse(params);
+    final res = await getResponse(params, true);
     if (res.statusCode == 200) {
       final getMain = json.decode(res.body);
       List topSongsResponseList = getMain["topSongs"];
@@ -213,7 +217,7 @@ class SaavnAPI {
   Future<List> fetchPlaylistSongs(String playlistId) async {
     List searchedList = [];
     String params = "__call=playlist.getDetails&cc=in&listid=$playlistId";
-    final res = await getResponse(params);
+    final res = await getResponse(params, true);
     if (res.statusCode == 200) {
       final getMain = json.decode(res.body);
       List responseList = getMain["list"];
@@ -226,7 +230,7 @@ class SaavnAPI {
   Future<List> fetchTopSearchResult(String searchQuery) async {
     List searchedList = [];
     String params = "p=1&q=$searchQuery&n=10&__call=search.getResults";
-    final res = await getResponse(params);
+    final res = await getResponse(params, true);
     if (res.statusCode == 200) {
       final getMain = json.decode(res.body);
       List responseList = getMain["results"];
