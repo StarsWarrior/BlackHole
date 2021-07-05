@@ -20,22 +20,24 @@ class SaavnAPI {
     preferredLanguages =
         preferredLanguages.map((lang) => lang.toLowerCase()).toList();
     String languageHeader = 'L=' + preferredLanguages.join('%2C');
-    headers = {"cookie": languageHeader, "Accept": "application/json"};
+    headers = {"cookie": languageHeader, "Accept": "*/*"};
 
     return await get(url, headers: headers);
   }
 
   Future<Map> fetchHomePageData() async {
     String params = "__call=webapi.getLaunchData";
-    Map data;
+    Map result;
     try {
       final res = await getResponse(params, true);
       if (res.statusCode == 200) {
-        data = json.decode(res.body);
-        data = await FormatResponse().formatHomePageData(data);
+        final data = json.decode(res.body);
+        result = await FormatResponse().formatHomePageData(data);
       }
-    } catch (e) {}
-    return data;
+    } catch (e) {
+      print(e);
+    }
+    return result;
   }
 
   Future<List> fetchSongSearchResults(String searchQuery, String count) async {
@@ -238,5 +240,21 @@ class SaavnAPI {
           await FormatResponse().formatSingleSongResponse(responseList[0]));
     }
     return searchedList;
+  }
+
+  Future<Map> fetchSongDetails(String songId) async {
+    Map result;
+    String params = "pids=$songId&__call=song.getDetails";
+    try {
+      final res = await getResponse(params, true);
+      if (res.statusCode == 200) {
+        final data = json.decode(res.body);
+        result =
+            await FormatResponse().formatSingleSongResponse(data["songs"][0]);
+      }
+    } catch (err) {
+      print(err);
+    }
+    return result;
   }
 }

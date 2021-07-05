@@ -1,3 +1,4 @@
+import 'package:blackhole/APIs/api.dart';
 import 'package:des_plugin/des_plugin.dart';
 
 class FormatResponse {
@@ -396,15 +397,35 @@ class FormatResponse {
   // }
 
   Future<Map> formatHomePageData(Map data) async {
-    final trendingData = data["new_trending"];
-    if (trendingData.isNotEmpty) {
-      for (int i = 0; i < trendingData.length; i++) {
-        if (trendingData[i]["type"] == "song") {
-          data["new_trending"][i] =
-              await formatSingleSongResponse(trendingData[i]);
+    try {
+      data["new_trending"] = await formatSongsInList(data["new_trending"]);
+      List promoList = [];
+      data["modules"].forEach((k, v) {
+        if (k.startsWith('promo')) {
+          promoList.add(k.toString());
+        }
+      });
+      for (int i = 0; i < promoList.length; i++) {
+        data[promoList[i]] = await formatSongsInList(data[promoList[i]]);
+      }
+      data["promo_lists"] = promoList;
+    } catch (err) {
+      print(err);
+    }
+    return data;
+  }
+
+  Future<List> formatSongsInList(List list) async {
+    if (list.isNotEmpty) {
+      for (int i = 0; i < list.length; i++) {
+        if (list[i]["type"] == "song") {
+          list[i] = list[i]["mini_obj"] != null
+              ? await SaavnAPI().fetchSongDetails(list[i]["id"])
+              : await formatSingleSongResponse(list[i]);
         }
       }
     }
-    return data;
+    list.removeWhere((value) => value == null);
+    return list;
   }
 }

@@ -9,7 +9,7 @@ bool fetched = false;
 List preferredLanguage =
     Hive.box('settings').get('preferredLanguage') ?? ['Hindi'];
 Map data = Hive.box('cache').get('homepage', defaultValue: {});
-final lists = [
+List lists = [
   "recent",
   "new_trending",
   "charts",
@@ -30,9 +30,11 @@ class _SaavnHomePageState extends State<SaavnHomePage> {
 
   void getHomePageData() async {
     Map recievedData = await SaavnAPI().fetchHomePageData();
-    if (recievedData != null || recievedData.isNotEmpty) {
+    if (recievedData != null && recievedData.isNotEmpty) {
       Hive.box('cache').put('homepage', recievedData);
       data = recievedData;
+      if (data["promo_lists"] != null)
+        lists = [...lists, ...data["promo_lists"]];
     }
     setState(() {});
   }
@@ -244,6 +246,9 @@ class _SaavnHomePageState extends State<SaavnHomePage> {
                         itemCount: data[lists[idx]].length,
                         itemBuilder: (context, index) {
                           final item = data[lists[idx]][index];
+                          final currentSongList = data[lists[idx]]
+                              .where((e) => (e["type"] == 'song'))
+                              .toList();
                           return GestureDetector(
                             child: SizedBox(
                               width: 150,
@@ -301,22 +306,20 @@ class _SaavnHomePageState extends State<SaavnHomePage> {
                                 context,
                                 PageRouteBuilder(
                                   opaque: false,
-                                  pageBuilder: (_, __, ___) =>
-                                      item["type"] == "song"
-                                          ? PlayScreen(
-                                              data: {
-                                                'response': data[lists[idx]]
-                                                    .where((e) =>
-                                                        (e["type"] == 'song'))
-                                                    .toList(),
-                                                'index': 0,
-                                                'offline': false,
-                                              },
-                                              fromMiniplayer: false,
-                                            )
-                                          : SongsListPage(
-                                              listItem: item,
-                                            ),
+                                  pageBuilder: (_, __, ___) => item["type"] ==
+                                          "song"
+                                      ? PlayScreen(
+                                          data: {
+                                            'response': currentSongList,
+                                            'index': currentSongList.indexWhere(
+                                                (e) => (e["id"] == item['id'])),
+                                            'offline': false,
+                                          },
+                                          fromMiniplayer: false,
+                                        )
+                                      : SongsListPage(
+                                          listItem: item,
+                                        ),
                                 ),
                               );
                             },
