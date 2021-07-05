@@ -665,6 +665,7 @@ class _SettingPageState extends State<SettingPage> {
                                                       "preferredLanguage",
                                                       checked);
                                                   homeScreen.fetched = false;
+                                                  homeScreen.lists = ["recent"];
                                                   homeScreen.preferredLanguage =
                                                       preferredLanguage;
                                                   widget.callback();

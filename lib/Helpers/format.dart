@@ -408,7 +408,15 @@ class FormatResponse {
       for (int i = 0; i < promoList.length; i++) {
         data[promoList[i]] = await formatSongsInList(data[promoList[i]]);
       }
-      data["promo_lists"] = promoList;
+      data["collections"] = [
+        "new_trending",
+        "charts",
+        "new_albums",
+        "top_playlists",
+        // "city_mod",
+        // "artist_recos",
+        ...promoList
+      ];
     } catch (err) {
       print(err);
     }

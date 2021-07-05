@@ -9,15 +9,7 @@ bool fetched = false;
 List preferredLanguage =
     Hive.box('settings').get('preferredLanguage') ?? ['Hindi'];
 Map data = Hive.box('cache').get('homepage', defaultValue: {});
-List lists = [
-  "recent",
-  "new_trending",
-  "charts",
-  "new_albums",
-  "top_playlists",
-  // "city_mod",
-  // "artist_recos"
-];
+List lists = ["recent", ...data["collections"]];
 
 class SaavnHomePage extends StatefulWidget {
   @override
@@ -33,8 +25,7 @@ class _SaavnHomePageState extends State<SaavnHomePage> {
     if (recievedData != null && recievedData.isNotEmpty) {
       Hive.box('cache').put('homepage', recievedData);
       data = recievedData;
-      if (data["promo_lists"] != null)
-        lists = [...lists, ...data["promo_lists"]];
+      lists = ["recent", ...data["collections"]];
     }
     setState(() {});
   }
