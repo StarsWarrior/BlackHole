@@ -9,7 +9,9 @@ bool fetched = false;
 List preferredLanguage =
     Hive.box('settings').get('preferredLanguage') ?? ['Hindi'];
 Map data = Hive.box('cache').get('homepage', defaultValue: {});
-List lists = ["recent", ...data["collections"]];
+List lists = data["collections"] != null
+    ? ["recent", ...data["collections"]]
+    : ["recent"];
 
 class SaavnHomePage extends StatefulWidget {
   @override
