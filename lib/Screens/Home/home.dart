@@ -195,9 +195,6 @@ class _HomePageState extends State<HomePage> {
                                             final _controller =
                                                 TextEditingController(
                                                     text: box.get('name'));
-                                            final _controller2 =
-                                                TextEditingController(
-                                                    text: box.get('email'));
                                             return AlertDialog(
                                               content: Column(
                                                 mainAxisSize: MainAxisSize.min,
@@ -213,59 +210,15 @@ class _HomePageState extends State<HomePage> {
                                                       ),
                                                     ],
                                                   ),
-                                                  // SizedBox(
-                                                  //   height: 5,
-                                                  // ),
                                                   TextField(
                                                       autofocus: true,
                                                       controller: _controller,
                                                       onSubmitted: (value) {
                                                         box.put('name',
                                                             value.trim());
-                                                        box.put(
-                                                            'email',
-                                                            _controller2.text
-                                                                .trim());
                                                         Navigator.pop(context);
                                                         updateUserDetails(
                                                             'name',
-                                                            value.trim());
-                                                        updateUserDetails(
-                                                            'email',
-                                                            _controller2.text
-                                                                .trim());
-                                                      }),
-                                                  SizedBox(
-                                                    height: 30,
-                                                  ),
-                                                  Row(
-                                                    children: [
-                                                      Text(
-                                                        'Email',
-                                                        style: TextStyle(
-                                                            color: Theme.of(
-                                                                    context)
-                                                                .accentColor),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  TextField(
-                                                      autofocus: true,
-                                                      controller: _controller2,
-                                                      onSubmitted: (value) {
-                                                        box.put(
-                                                            'name',
-                                                            _controller.text
-                                                                .trim());
-                                                        box.put('email',
-                                                            value.trim());
-                                                        Navigator.pop(context);
-                                                        updateUserDetails(
-                                                            'name',
-                                                            _controller.text
-                                                                .trim());
-                                                        updateUserDetails(
-                                                            'email',
                                                             value.trim());
                                                       }),
                                                 ],
@@ -302,18 +255,11 @@ class _HomePageState extends State<HomePage> {
                                                         'name',
                                                         _controller.text
                                                             .trim());
-                                                    box.put(
-                                                        'email',
-                                                        _controller2.text
-                                                            .trim());
+
                                                     Navigator.pop(context);
                                                     updateUserDetails(
                                                         'name',
                                                         _controller.text
-                                                            .trim());
-                                                    updateUserDetails(
-                                                        'email',
-                                                        _controller2.text
                                                             .trim());
                                                   },
                                                 ),
@@ -332,12 +278,7 @@ class _HomePageState extends State<HomePage> {
                                       ? 'Guest User'
                                       : box.get('name')),
                                 ),
-                                accountEmail: Text(
-                                  (box.get('email') == null ||
-                                          box.get('email') == '')
-                                      ? 'xxxxxxxxxx@gmail.com'
-                                      : box.get('email'),
-                                ),
+                                accountEmail: Text("A BlackHole User"),
                                 decoration: BoxDecoration(
                                     image: DecorationImage(
                                         fit: BoxFit.fill,

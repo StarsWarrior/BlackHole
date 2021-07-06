@@ -34,7 +34,6 @@ class _AlbumSearchPageState extends State<AlbumSearchPage> {
       status = true;
       switch (widget.type) {
         case 'Playlists':
-          print(widget.query);
           SaavnAPI().fetchAlbums(widget.query, 'playlist').then((value) {
             setState(() {
               searchedList = value;
@@ -68,14 +67,6 @@ class _AlbumSearchPageState extends State<AlbumSearchPage> {
           Expanded(
             child: Scaffold(
               backgroundColor: Colors.transparent,
-              appBar: AppBar(
-                title: Text(widget.type),
-                centerTitle: true,
-                backgroundColor: Colors.transparent,
-                textTheme: Theme.of(context).textTheme,
-                elevation: 0,
-                iconTheme: Theme.of(context).iconTheme,
-              ),
               body: !fetched
                   ? Container(
                       child: Center(
@@ -92,76 +83,119 @@ class _AlbumSearchPageState extends State<AlbumSearchPage> {
                   : searchedList.isEmpty
                       ? EmptyScreen().emptyScreen(context, 0, ":( ", 100,
                           "SORRY", 60, "Results Not Found", 20)
-                      : ListView.builder(
-                          itemCount: searchedList.length,
+                      : CustomScrollView(
                           physics: BouncingScrollPhysics(),
-                          shrinkWrap: true,
-                          padding: EdgeInsets.fromLTRB(5, 10, 5, 0),
-                          itemBuilder: (context, index) {
-                            return Padding(
-                              padding: const EdgeInsets.fromLTRB(0, 7, 7, 5),
-                              child: ListTile(
-                                contentPadding: EdgeInsets.only(left: 15.0),
+                          slivers: [
+                            SliverAppBar(
+                              backgroundColor: Colors.transparent,
+                              elevation: 0,
+                              stretch: true,
+                              pinned: false,
+                              // floating: true,
+                              expandedHeight:
+                                  MediaQuery.of(context).size.height * 0.4,
+                              flexibleSpace: FlexibleSpaceBar(
                                 title: Text(
-                                  '${searchedList[index]["title"]}',
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(fontWeight: FontWeight.w500),
+                                  widget.type,
+                                  textAlign: TextAlign.center,
                                 ),
-                                subtitle: Text(
-                                  '${searchedList[index]["subtitle"]}',
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                leading: Card(
-                                  elevation: 8,
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(
-                                          widget.type == 'Artists'
-                                              ? 50.0
-                                              : 7.0)),
-                                  clipBehavior: Clip.antiAlias,
-                                  child: CachedNetworkImage(
-                                    errorWidget: (context, _, __) => Image(
-                                      image: AssetImage(widget.type == 'Artists'
-                                          ? 'assets/artist.png'
-                                          : 'assets/album.png'),
-                                    ),
-                                    imageUrl:
-                                        '${searchedList[index]["image"].replaceAll('http:', 'https:')}',
-                                    placeholder: (context, url) => Image(
-                                      image: AssetImage(widget.type == 'Artists'
-                                          ? 'assets/artist.png'
-                                          : 'assets/album.png'),
-                                    ),
-                                  ),
-                                ),
-                                trailing: widget.type != 'Albums'
-                                    ? null
-                                    : AlbumDownloadButton(
-                                        albumName: searchedList[index]['title'],
-                                        albumId: searchedList[index]['id'],
-                                      ),
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    PageRouteBuilder(
-                                      opaque: false,
-                                      pageBuilder: (_, __, ___) => widget
-                                                  .type ==
-                                              'Artists'
-                                          ? ArtistSearchPage(
-                                              artistName: searchedList[index]
-                                                  ['title'],
-                                              artistToken: searchedList[index]
-                                                  ['artistToken'],
-                                            )
-                                          : SongsListPage(
-                                              listItem: searchedList[index]),
-                                    ),
-                                  );
-                                },
+                                centerTitle: true,
+                                stretchModes: [StretchMode.zoomBackground],
+                                background: ShaderMask(
+                                    shaderCallback: (rect) {
+                                      return LinearGradient(
+                                        begin: Alignment.topCenter,
+                                        end: Alignment.bottomCenter,
+                                        colors: [
+                                          Colors.black,
+                                          Colors.transparent
+                                        ],
+                                      ).createShader(Rect.fromLTRB(
+                                          0, 0, rect.width, rect.height));
+                                    },
+                                    blendMode: BlendMode.dstIn,
+                                    child: Image(
+                                        fit: BoxFit.cover,
+                                        image: AssetImage(
+                                            widget.type == 'Artists'
+                                                ? 'assets/artist.png'
+                                                : 'assets/album.png'))),
                               ),
-                            );
-                          },
+                            ),
+                            SliverList(
+                                delegate:
+                                    SliverChildListDelegate(searchedList.map(
+                              (entry) {
+                                return Padding(
+                                  padding:
+                                      const EdgeInsets.fromLTRB(0, 7, 7, 5),
+                                  child: ListTile(
+                                    contentPadding: EdgeInsets.only(left: 15.0),
+                                    title: Text(
+                                      '${entry["title"]}',
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w500),
+                                    ),
+                                    subtitle: Text(
+                                      '${entry["subtitle"]}',
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    leading: Card(
+                                      elevation: 8,
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                              widget.type == 'Artists'
+                                                  ? 50.0
+                                                  : 7.0)),
+                                      clipBehavior: Clip.antiAlias,
+                                      child: CachedNetworkImage(
+                                        errorWidget: (context, _, __) => Image(
+                                          image: AssetImage(
+                                              widget.type == 'Artists'
+                                                  ? 'assets/artist.png'
+                                                  : 'assets/album.png'),
+                                        ),
+                                        imageUrl:
+                                            '${entry["image"].replaceAll('http:', 'https:')}',
+                                        placeholder: (context, url) => Image(
+                                          image: AssetImage(
+                                              widget.type == 'Artists'
+                                                  ? 'assets/artist.png'
+                                                  : 'assets/album.png'),
+                                        ),
+                                      ),
+                                    ),
+                                    trailing: widget.type != 'Albums'
+                                        ? null
+                                        : AlbumDownloadButton(
+                                            albumName: entry['title'],
+                                            albumId: entry['id'],
+                                          ),
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        PageRouteBuilder(
+                                          opaque: false,
+                                          pageBuilder: (_, __, ___) => widget
+                                                      .type ==
+                                                  'Artists'
+                                              ? ArtistSearchPage(
+                                                  artistName: entry['title'],
+                                                  artistToken:
+                                                      entry['artistToken'],
+                                                  artistImage: entry["image"])
+                                              : SongsListPage(
+                                                  listImage: entry["image"],
+                                                  listItem: entry),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                );
+                              },
+                            ).toList())),
+                          ],
                         ),
             ),
           ),

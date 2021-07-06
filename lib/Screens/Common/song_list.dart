@@ -11,10 +11,12 @@ import 'package:html_unescape/html_unescape_small.dart';
 
 class SongsListPage extends StatefulWidget {
   final Map listItem;
+  final String listImage;
 
   SongsListPage({
     Key key,
     @required this.listItem,
+    this.listImage,
   }) : super(key: key);
 
   @override
@@ -67,92 +69,151 @@ class _SongsListPageState extends State<SongsListPage> {
         children: [
           Expanded(
             child: Scaffold(
-              backgroundColor: Colors.transparent,
-              appBar: AppBar(
-                title:
-                    Text(unescape.convert(widget.listItem['title'] ?? 'Songs')),
-                centerTitle: true,
                 backgroundColor: Colors.transparent,
-                textTheme: Theme.of(context).textTheme,
-                elevation: 0,
-                iconTheme: Theme.of(context).iconTheme,
-              ),
-              body: !fetched
-                  ? Container(
-                      child: Center(
-                        child: Container(
-                            height: MediaQuery.of(context).size.width / 6,
-                            width: MediaQuery.of(context).size.width / 6,
-                            child: CircularProgressIndicator(
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                  Theme.of(context).accentColor),
-                              strokeWidth: 5,
-                            )),
-                      ),
-                    )
-                  : songList.isEmpty
-                      ? EmptyScreen().emptyScreen(context, 0, ":( ", 100,
-                          "SORRY", 60, "Results Not Found", 20)
-                      : ListView.builder(
-                          itemCount: songList.length,
-                          physics: BouncingScrollPhysics(),
-                          shrinkWrap: true,
-                          padding: EdgeInsets.fromLTRB(5, 10, 5, 0),
-                          itemBuilder: (context, index) {
-                            return Padding(
-                              padding: const EdgeInsets.fromLTRB(0, 7, 7, 5),
-                              child: ListTile(
-                                contentPadding: EdgeInsets.only(left: 15.0),
-                                title: Text(
-                                  '${songList[index]["title"]}',
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(fontWeight: FontWeight.w500),
-                                ),
-                                subtitle: Text(
-                                  '${songList[index]["subtitle"]}',
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                leading: Card(
-                                  elevation: 8,
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(7.0)),
-                                  clipBehavior: Clip.antiAlias,
-                                  child: CachedNetworkImage(
-                                    errorWidget: (context, _, __) => Image(
-                                      image: AssetImage('assets/cover.jpg'),
+                body: !fetched
+                    ? Container(
+                        child: Center(
+                          child: Container(
+                              height: MediaQuery.of(context).size.width / 6,
+                              width: MediaQuery.of(context).size.width / 6,
+                              child: CircularProgressIndicator(
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                    Theme.of(context).accentColor),
+                                strokeWidth: 5,
+                              )),
+                        ),
+                      )
+                    : songList.isEmpty
+                        ? EmptyScreen().emptyScreen(context, 0, ":( ", 100,
+                            "SORRY", 60, "Results Not Found", 20)
+                        : CustomScrollView(
+                            physics: BouncingScrollPhysics(),
+                            slivers: [
+                                SliverAppBar(
+                                  backgroundColor: Colors.transparent,
+                                  elevation: 0,
+                                  stretch: true,
+                                  pinned: false,
+                                  // floating: true,
+                                  expandedHeight:
+                                      MediaQuery.of(context).size.height * 0.4,
+                                  flexibleSpace: FlexibleSpaceBar(
+                                    title: Text(
+                                      unescape.convert(
+                                        widget.listItem['title'] ?? 'Songs',
+                                      ),
+                                      textAlign: TextAlign.center,
                                     ),
-                                    imageUrl:
-                                        '${songList[index]["image"].replaceAll('http:', 'https:')}',
-                                    placeholder: (context, url) => Image(
-                                      image: AssetImage('assets/cover.jpg'),
+                                    centerTitle: true,
+                                    stretchModes: [StretchMode.zoomBackground],
+                                    background: ShaderMask(
+                                      shaderCallback: (rect) {
+                                        return LinearGradient(
+                                          begin: Alignment.topCenter,
+                                          end: Alignment.bottomCenter,
+                                          colors: [
+                                            Colors.black,
+                                            Colors.transparent
+                                          ],
+                                        ).createShader(Rect.fromLTRB(
+                                            0, 0, rect.width, rect.height));
+                                      },
+                                      blendMode: BlendMode.dstIn,
+                                      child: widget.listImage == null
+                                          ? Image(
+                                              fit: BoxFit.cover,
+                                              image: AssetImage(
+                                                  'assets/cover.jpg'))
+                                          : CachedNetworkImage(
+                                              fit: BoxFit.cover,
+                                              errorWidget: (context, _, __) =>
+                                                  Image(
+                                                image: AssetImage(
+                                                    'assets/album.png'),
+                                              ),
+                                              imageUrl: widget.listImage
+                                                  .replaceAll('http:', 'https:')
+                                                  .replaceAll(
+                                                      '50x50', '500x500')
+                                                  .replaceAll(
+                                                      '150x150', '500x500'),
+                                              placeholder: (context, url) =>
+                                                  Image(
+                                                image: AssetImage(
+                                                    'assets/album.png'),
+                                              ),
+                                            ),
                                     ),
                                   ),
                                 ),
-                                trailing: DownloadButton(
-                                  data: songList[index],
-                                  icon: 'download',
-                                ),
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    PageRouteBuilder(
-                                      opaque: false,
-                                      pageBuilder: (_, __, ___) => PlayScreen(
-                                        data: {
-                                          'response': songList,
-                                          'index': index,
-                                          'offline': false,
-                                        },
-                                        fromMiniplayer: false,
+                                SliverList(
+                                    delegate: SliverChildListDelegate(
+                                        songList.map((entry) {
+                                  return Padding(
+                                    padding:
+                                        const EdgeInsets.fromLTRB(0, 7, 7, 5),
+                                    child: ListTile(
+                                      contentPadding:
+                                          EdgeInsets.only(left: 15.0),
+                                      title: Text(
+                                        '${entry["title"]}',
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w500),
                                       ),
+                                      subtitle: Text(
+                                        '${entry["subtitle"]}',
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      leading: Card(
+                                        elevation: 8,
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(7.0)),
+                                        clipBehavior: Clip.antiAlias,
+                                        child: CachedNetworkImage(
+                                          errorWidget: (context, _, __) =>
+                                              Image(
+                                            image:
+                                                AssetImage('assets/cover.jpg'),
+                                          ),
+                                          imageUrl:
+                                              '${entry["image"].replaceAll('http:', 'https:')}',
+                                          placeholder: (context, url) => Image(
+                                            image:
+                                                AssetImage('assets/cover.jpg'),
+                                          ),
+                                        ),
+                                      ),
+                                      trailing: DownloadButton(
+                                        data: entry,
+                                        icon: 'download',
+                                      ),
+                                      onTap: () {
+                                        Navigator.push(
+                                          context,
+                                          PageRouteBuilder(
+                                            opaque: false,
+                                            pageBuilder: (_, __, ___) =>
+                                                PlayScreen(
+                                              data: {
+                                                'response': songList,
+                                                'index': songList.indexWhere(
+                                                    (element) =>
+                                                        element == entry),
+                                                'offline': false,
+                                              },
+                                              fromMiniplayer: false,
+                                            ),
+                                          ),
+                                        );
+                                      },
                                     ),
+                                    // );
+                                    // },
                                   );
-                                },
-                              ),
-                            );
-                          },
-                        ),
-            ),
+                                }).toList()))
+                              ])),
           ),
           MiniPlayer(),
         ],

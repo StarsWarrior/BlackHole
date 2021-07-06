@@ -37,12 +37,11 @@ class _SearchPageState extends State<SearchPage> {
   Widget build(BuildContext context) {
     if (!status) {
       status = true;
-      // this fetches top 10 songs results
+      // this fetches top 5 songs results
       SaavnAPI()
           .fetchSongSearchResults(query == '' ? widget.query : query, '5')
           .then((value) {
         setState(() {
-          // searchedList = value;
           searchedData["Songs"] = value;
           fetched = true;
         });
@@ -344,6 +343,15 @@ class _SearchPageState extends State<SearchPage> {
                                                           artistToken: value[
                                                                   index]
                                                               ['artistToken'],
+                                                          artistImage: value[
+                                                                      index]
+                                                                  ['image']
+                                                              .replaceAll(
+                                                                  "150x150",
+                                                                  "500x500")
+                                                              .replaceAll(
+                                                                  '50x50',
+                                                                  "500x500"),
                                                         )
                                                       : key == 'Songs'
                                                           ? PlayScreen(
@@ -358,6 +366,9 @@ class _SearchPageState extends State<SearchPage> {
                                                               fromMiniplayer:
                                                                   false)
                                                           : SongsListPage(
+                                                              listImage:
+                                                                  value[index]
+                                                                      ["image"],
                                                               listItem:
                                                                   value[index]),
                                                 ),

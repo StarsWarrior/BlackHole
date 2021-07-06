@@ -28,6 +28,7 @@ class _SettingPageState extends State<SettingPage> {
   String appVersion;
   int appVersionCheck;
   Box settingsBox = Hive.box('settings');
+  String name = Hive.box('settings').get('name', defaultValue: 'Guest User');
   String downloadPath = Hive.box('settings')
       .get('downloadPath', defaultValue: '/storage/emulated/0/Music');
   List dirPaths = Hive.box('settings').get('searchPaths', defaultValue: []);
@@ -39,8 +40,6 @@ class _SettingPageState extends State<SettingPage> {
       Hive.box('settings').get('stopForegroundService', defaultValue: true);
   bool stopServiceOnPause =
       Hive.box('settings').get('stopServiceOnPause', defaultValue: true);
-  String gender =
-      Hive.box('settings').get('gender', defaultValue: 'male').toString();
   String region = Hive.box('settings').get('region', defaultValue: 'India');
   bool useProxy = Hive.box('settings').get('useProxy', defaultValue: false);
   String themeColor =
@@ -89,249 +88,134 @@ class _SettingPageState extends State<SettingPage> {
 
   @override
   Widget build(BuildContext context) {
-    return GradientContainer(
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        appBar: AppBar(
-          backgroundColor: Theme.of(context).brightness == Brightness.dark
-              ? Colors.transparent
-              : Theme.of(context).accentColor,
+    return Scaffold(
+      // backgroundColor: Colors.transparent,
+      body: CustomScrollView(physics: BouncingScrollPhysics(), slivers: [
+        SliverAppBar(
           elevation: 0,
-          title: Text(
-            'Settings',
-          ),
-          centerTitle: true,
-        ),
-        body: SafeArea(
-          child: ListView(
-            padding: EdgeInsets.only(left: 1.5, right: 1.5, top: 10),
-            shrinkWrap: true,
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(15, 15, 15, 0),
-                child: Text(
-                  'My Profile',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).accentColor,
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(5.0, 0, 5, 10),
-                child: GradientCard(
-                  child: Column(
-                    children: [
-                      ValueListenableBuilder(
-                        valueListenable: Hive.box('settings').listenable(),
-                        builder: (context, box, widget) {
-                          return ListTile(
-                            title: Text('Name'),
-                            dense: true,
-                            trailing: Text(
-                              box.get('name') == null || box.get('name') == ''
-                                  ? 'Guest User'
-                                  : box.get('name'),
-                              style: TextStyle(fontSize: 12),
-                            ),
-                            onTap: () {
-                              showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  final controller = TextEditingController(
-                                      text: box.get('name'));
-                                  return AlertDialog(
-                                    content: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Row(
-                                          children: [
-                                            Text(
-                                              'Name',
-                                              style: TextStyle(
-                                                  color: Theme.of(context)
-                                                      .accentColor),
-                                            ),
-                                          ],
-                                        ),
-                                        SizedBox(
-                                          height: 10,
-                                        ),
-                                        TextField(
-                                            autofocus: true,
-                                            controller: controller,
-                                            onSubmitted: (value) {
-                                              box.put('name', value.trim());
-                                              updateUserDetails(
-                                                  'name', value.trim());
-                                              Navigator.pop(context);
-                                            }),
-                                      ],
-                                    ),
-                                    actions: [
-                                      TextButton(
-                                        style: TextButton.styleFrom(
-                                          primary:
-                                              Theme.of(context).brightness ==
-                                                      Brightness.dark
-                                                  ? Colors.white
-                                                  : Colors.grey[700],
-                                          //       backgroundColor: Theme.of(context).accentColor,
-                                        ),
-                                        child: Text(
-                                          "Cancel",
-                                        ),
-                                        onPressed: () {
-                                          Navigator.pop(context);
-                                        },
-                                      ),
-                                      TextButton(
-                                        style: TextButton.styleFrom(
-                                          primary: Colors.white,
-                                          backgroundColor:
-                                              Theme.of(context).accentColor,
-                                        ),
-                                        child: Text(
-                                          "Ok",
-                                          style: TextStyle(color: Colors.white),
-                                        ),
-                                        onPressed: () {
-                                          box.put(
-                                              'name', controller.text.trim());
-                                          updateUserDetails(
-                                              'name', controller.text.trim());
-                                          Navigator.pop(context);
-                                        },
-                                      ),
-                                      SizedBox(
-                                        width: 5,
-                                      ),
-                                    ],
-                                  );
-                                },
-                              );
-                            },
-                          );
-                        },
+          stretch: true,
+          pinned: true,
+          actions: [
+            IconButton(
+              icon: Icon(Icons.edit_rounded),
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    final controller = TextEditingController(text: name);
+                    return AlertDialog(
+                      content: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Row(
+                            children: [
+                              Text(
+                                'Name',
+                                style: TextStyle(
+                                    color: Theme.of(context).accentColor),
+                              ),
+                            ],
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          TextField(
+                              autofocus: true,
+                              controller: controller,
+                              onSubmitted: (value) {
+                                if (value.trim() != '') {
+                                  settingsBox.put('name', value.trim());
+                                  updateUserDetails('name', value.trim());
+                                  name = value;
+                                  Navigator.pop(context);
+                                  setState(() {});
+                                }
+                              }),
+                        ],
                       ),
-                      ValueListenableBuilder(
-                        valueListenable: Hive.box('settings').listenable(),
-                        builder: (context, box, widget) {
-                          return ListTile(
-                            title: Text('Email'),
-                            dense: true,
-                            trailing: Text(
-                              box.get('email') == null || box.get('email') == ''
-                                  ? 'xxxxxxxxxx@gmail.com'
-                                  : box.get('email'),
-                              style: TextStyle(fontSize: 12),
-                            ),
-                            onTap: () {
-                              showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  final controller = TextEditingController(
-                                      text: box.get('email'));
-                                  return AlertDialog(
-                                    content: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Row(
-                                          children: [
-                                            Text(
-                                              'Email',
-                                              style: TextStyle(
-                                                  color: Theme.of(context)
-                                                      .accentColor),
-                                            ),
-                                          ],
-                                        ),
-                                        SizedBox(
-                                          height: 10,
-                                        ),
-                                        TextField(
-                                            autofocus: true,
-                                            controller: controller,
-                                            onSubmitted: (value) {
-                                              box.put('email', value.trim());
-                                              updateUserDetails(
-                                                  'email', value.trim());
-                                              Navigator.pop(context);
-                                            }),
-                                      ],
-                                    ),
-                                    actions: [
-                                      TextButton(
-                                        style: TextButton.styleFrom(
-                                          primary:
-                                              Theme.of(context).brightness ==
-                                                      Brightness.dark
-                                                  ? Colors.white
-                                                  : Colors.grey[700],
-                                          //       backgroundColor: Theme.of(context).accentColor,
-                                        ),
-                                        child: Text("Cancel"),
-                                        onPressed: () {
-                                          Navigator.pop(context);
-                                        },
-                                      ),
-                                      TextButton(
-                                        style: TextButton.styleFrom(
-                                          primary: Colors.white,
-                                          backgroundColor:
-                                              Theme.of(context).accentColor,
-                                        ),
-                                        child: Text(
-                                          "Ok",
-                                          style: TextStyle(color: Colors.white),
-                                        ),
-                                        onPressed: () {
-                                          box.put(
-                                              'email', controller.text.trim());
-                                          updateUserDetails(
-                                              'email', controller.text.trim());
-                                          Navigator.pop(context);
-                                        },
-                                      ),
-                                      SizedBox(
-                                        width: 5,
-                                      ),
-                                    ],
-                                  );
-                                },
-                              );
-                            },
-                          );
-                        },
-                      ),
-                      ListTile(
-                        title: Text('Gender'),
-                        subtitle: Text(gender == 'female' ? "Female" : "Male"),
-                        dense: true,
-                        trailing: SizedBox(
-                          width: 30,
-                          height: 30,
-                          child: Image(
-                              image: AssetImage(gender == 'female'
-                                  ? 'assets/female.png'
-                                  : 'assets/male.png')),
+                      actions: [
+                        TextButton(
+                          style: TextButton.styleFrom(
+                            primary:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? Colors.white
+                                    : Colors.grey[700],
+                            //       backgroundColor: Theme.of(context).accentColor,
+                          ),
+                          child: Text(
+                            "Cancel",
+                          ),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
                         ),
-                        onTap: () {
-                          gender == 'female'
-                              ? gender = 'male'
-                              : gender = 'female';
-                          settingsBox.put('gender', gender);
-                          updateUserDetails('gender', gender);
-                          setState(() {});
-                        },
-                      ),
-                    ],
+                        TextButton(
+                          style: TextButton.styleFrom(
+                            primary: Colors.white,
+                            backgroundColor: Theme.of(context).accentColor,
+                          ),
+                          child: Text(
+                            "Ok",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          onPressed: () {
+                            if (controller.text.trim() != '') {
+                              settingsBox.put('name', controller.text.trim());
+                              updateUserDetails('name', controller.text.trim());
+                              Navigator.pop(context);
+                              name = controller.text.trim();
+                              setState(() {});
+                            }
+                          },
+                        ),
+                        SizedBox(
+                          width: 5,
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
+            )
+          ],
+          expandedHeight: 180,
+          flexibleSpace: FlexibleSpaceBar(
+            title: Text(
+              name == '' ? 'Guest User' : name,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.white.withOpacity(0.9),
+              ),
+            ),
+            centerTitle: true,
+            stretchModes: [StretchMode.zoomBackground],
+            background: ShaderMask(
+              shaderCallback: (rect) {
+                return LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [Colors.black, Colors.transparent],
+                ).createShader(Rect.fromLTRB(0, 0, rect.width, rect.height));
+              },
+              blendMode: BlendMode.dstIn,
+              child: Center(
+                child: Text(
+                  "Settings",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 80,
+                    color: Colors.white,
                   ),
                 ),
               ),
+            ),
+          ),
+        ),
+        SliverList(
+          delegate: SliverChildListDelegate(
+            [
               Padding(
-                padding: const EdgeInsets.fromLTRB(15, 10, 15, 0),
+                padding: const EdgeInsets.fromLTRB(15, 5, 15, 0),
                 child: Text(
                   'Theme',
                   style: TextStyle(
@@ -612,7 +496,6 @@ class _SettingPageState extends State<SettingPage> {
                                                       "preferredLanguage",
                                                       checked);
                                                   homeScreen.fetched = false;
-                                                  homeScreen.lists = ["recent"];
                                                   homeScreen.preferredLanguage =
                                                       preferredLanguage;
                                                   widget.callback();
@@ -1387,7 +1270,7 @@ class _SettingPageState extends State<SettingPage> {
             ],
           ),
         ),
-      ),
+      ]),
     );
   }
 }
