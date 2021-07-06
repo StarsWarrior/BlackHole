@@ -162,15 +162,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "6.1.2"
-  filesystem_picker:
+  file_picker:
     dependency: "direct main"
     description:
-      path: package
-      ref: HEAD
-      resolved-ref: "22d68925b61dd3e4148c626aed801eef7a3bee52"
-      url: "https://github.com/Sangwan5688/filesystem_picker.git"
-    source: git
-    version: "2.0.0-nullsafety.0"
+      name: file_picker
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.0.3"
   firebase_core:
     dependency: "direct main"
     description:
@@ -225,6 +223,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.0"
+  flutter_plugin_android_lifecycle:
+    dependency: transitive
+    description:
+      name: flutter_plugin_android_lifecycle
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.2"
   flutter_test:
     dependency: "direct dev"
     description: flutter

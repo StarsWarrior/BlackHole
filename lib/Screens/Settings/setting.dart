@@ -39,6 +39,8 @@ class _SettingPageState extends State<SettingPage> {
       Hive.box('settings').get('stopForegroundService', defaultValue: true);
   bool stopServiceOnPause =
       Hive.box('settings').get('stopServiceOnPause', defaultValue: true);
+  String gender =
+      Hive.box('settings').get('gender', defaultValue: 'male').toString();
   String region = Hive.box('settings').get('region', defaultValue: 'India');
   bool useProxy = Hive.box('settings').get('useProxy', defaultValue: false);
   String themeColor =
@@ -303,80 +305,25 @@ class _SettingPageState extends State<SettingPage> {
                           );
                         },
                       ),
-                      ValueListenableBuilder(
-                        valueListenable: Hive.box('settings').listenable(),
-                        builder: (context, box, widget) {
-                          return ListTile(
-                            title: Text('DOB'),
-                            dense: true,
-                            trailing: Text(
-                              box.get('DOB') == null
-                                  ? '0000-00-00'
-                                  : box.get('DOB').toString().split(" ").first,
-                              style: TextStyle(fontSize: 12),
-                            ),
-                            onTap: () async {
-                              DateTime pickedDate = await showDatePicker(
-                                helpText: 'SELECT YOUR DOB',
-                                context: context,
-                                initialDate: box.get('DOB') ?? DateTime.now(),
-                                firstDate: DateTime(1900),
-                                lastDate: DateTime.now(),
-                                builder: (BuildContext context, Widget child) {
-                                  return Theme(
-                                    data: Theme.of(context).copyWith(
-                                      colorScheme: Theme.of(context)
-                                                  .brightness ==
-                                              Brightness.dark
-                                          ? ColorScheme.dark(
-                                              primary:
-                                                  Theme.of(context).accentColor,
-                                              surface: Colors.grey[850],
-                                            )
-                                          : ColorScheme.light(
-                                              primary:
-                                                  Theme.of(context).accentColor,
-                                            ),
-                                    ),
-                                    child: child,
-                                  );
-                                },
-                              );
-                              if (pickedDate != null) {
-                                box.put('DOB', pickedDate);
-                                updateUserDetails('DOB',
-                                    pickedDate.toString().split(" ").first);
-                              }
-                            },
-                          );
-                        },
-                      ),
-                      ValueListenableBuilder(
-                        valueListenable: Hive.box('settings').listenable(),
-                        builder: (context, box, widget) {
-                          String gender = box.get('gender');
-                          return ListTile(
-                            title: Text('Gender'),
-                            subtitle:
-                                Text(gender == 'female' ? "Female" : "Male"),
-                            dense: true,
-                            trailing: SizedBox(
-                              width: 30,
-                              height: 30,
-                              child: Image(
-                                  image: AssetImage(gender == 'female'
-                                      ? 'assets/female.png'
-                                      : 'assets/male.png')),
-                            ),
-                            onTap: () {
-                              gender == 'female'
-                                  ? gender = 'male'
-                                  : gender = 'female';
-                              box.put('gender', gender);
-                              updateUserDetails('gender', gender);
-                              setState(() {});
-                            },
-                          );
+                      ListTile(
+                        title: Text('Gender'),
+                        subtitle: Text(gender == 'female' ? "Female" : "Male"),
+                        dense: true,
+                        trailing: SizedBox(
+                          width: 30,
+                          height: 30,
+                          child: Image(
+                              image: AssetImage(gender == 'female'
+                                  ? 'assets/female.png'
+                                  : 'assets/male.png')),
+                        ),
+                        onTap: () {
+                          gender == 'female'
+                              ? gender = 'male'
+                              : gender = 'female';
+                          settingsBox.put('gender', gender);
+                          updateUserDetails('gender', gender);
+                          setState(() {});
                         },
                       ),
                     ],

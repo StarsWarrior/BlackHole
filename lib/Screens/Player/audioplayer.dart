@@ -164,7 +164,7 @@ class _PlayScreenState extends State<PlayScreen> {
                           : song['duration'])),
               title: song['title'],
               artist: song["artist"],
-              artUri: Uri.parse(song['image']),
+              artUri: Uri.parse(song['image'].replaceAll('50x50','500x500').replaceAll('150x150','500x500')),
               genre: song["language"],
               extras: {
                 "url": song["url"],
@@ -355,7 +355,7 @@ class _PlayScreenState extends State<PlayScreen> {
                                         child: SingleChildScrollView(
                                             physics: BouncingScrollPhysics(),
                                             padding: EdgeInsets.fromLTRB(
-                                                0, 20, 0, 20),
+                                                10, 30, 10, 30),
                                             child: mediaItem
                                                         .extras["has_lyrics"] ==
                                                     "true"
@@ -381,7 +381,11 @@ class _PlayScreenState extends State<PlayScreen> {
                                                             .toString()
                                                             .replaceAll(
                                                                 "<br>", "\n");
-                                                        return Text(lyrics);
+                                                        return Text(
+                                                          lyrics,
+                                                          textAlign:
+                                                              TextAlign.center,
+                                                        );
                                                       }
                                                       return CircularProgressIndicator(
                                                         valueColor:
@@ -419,7 +423,11 @@ class _PlayScreenState extends State<PlayScreen> {
                                                                   "Not Available",
                                                                   20.0);
                                                         }
-                                                        return Text(lyrics);
+                                                        return Text(
+                                                          lyrics,
+                                                          textAlign:
+                                                              TextAlign.center,
+                                                        );
                                                       }
                                                       return CircularProgressIndicator(
                                                         valueColor:

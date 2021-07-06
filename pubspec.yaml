@@ -41,6 +41,7 @@ dependencies:
   html_unescape: ^2.0.0
   webview_flutter: ^2.0.8
   # flutter_web_auth: ^0.3.0
+  # flutter_downloader: ^1.6.1
   cached_network_image: ^3.0.0
   youtube_explode_dart: ^1.9.6
 
@@ -66,11 +67,7 @@ dependencies:
   ext_storage: ^1.0.3
   path_provider: ^2.0.2
   permission_handler: ^8.1.1
-  # path_provider_ex: ^1.0.1
-  filesystem_picker:
-    git:
-      url: https://github.com/Sangwan5688/filesystem_picker.git
-      path: package
+  file_picker: ^3.0.3
   
 
 dev_dependencies:

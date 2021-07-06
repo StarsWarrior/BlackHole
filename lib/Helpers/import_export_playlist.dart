@@ -79,7 +79,7 @@ class ImportPlaylist {
   Future<List> importPlaylist(BuildContext context, List playlistNames) async {
     try {
       String temp = await Picker()
-          .selectFile(context, ['.json'], 'Select json file to import');
+          .selectFile(context, ['json'], 'Select json file to import');
       if (temp == '') {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
