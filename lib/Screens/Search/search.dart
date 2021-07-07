@@ -91,7 +91,6 @@ class _SearchPageState extends State<SearchPage> {
                     ),
                   ],
                   hint: 'Songs, albums or artists',
-                  progress: !fetched,
                   height: 52.0,
                   margins: EdgeInsets.fromLTRB(18.0, 8.0, 18.0, 15.0),
                   scrollPadding: EdgeInsets.only(bottom: 50),
@@ -391,12 +390,22 @@ class _SearchPageState extends State<SearchPage> {
                                                     Text(
                                                       "View All",
                                                       style: TextStyle(
+                                                        color: Theme.of(context)
+                                                            .textTheme
+                                                            .caption
+                                                            .color,
                                                         fontWeight:
                                                             FontWeight.w800,
                                                       ),
                                                     ),
-                                                    Icon(Icons
-                                                        .chevron_right_rounded),
+                                                    Icon(
+                                                      Icons
+                                                          .chevron_right_rounded,
+                                                      color: Theme.of(context)
+                                                          .textTheme
+                                                          .caption
+                                                          .color,
+                                                    ),
                                                   ],
                                                 ),
                                                 onTap: () {

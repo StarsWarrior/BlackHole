@@ -39,6 +39,7 @@ class _HomePageState extends State<HomePage> {
 >>>>>>> d822468 (added playlists and artists as search results)
   bool checked = false;
   bool update = false;
+  String name = Hive.box("settings").get('name', defaultValue: 'Guest');
 
   String capitalize(String msg) {
     return "${msg[0].toUpperCase()}${msg.substring(1)}";
@@ -175,221 +176,127 @@ class _HomePageState extends State<HomePage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  ListView(
-                      padding: EdgeInsets.zero,
-                      shrinkWrap: true,
-                      children: <Widget>[
-                        ValueListenableBuilder(
-                            valueListenable: Hive.box('settings').listenable(),
-                            builder: (BuildContext context, Box box, widget) {
-                              return UserAccountsDrawerHeader(
-                                otherAccountsPictures: [
-                                  IconButton(
-                                      icon: Icon(Icons.edit_rounded),
-                                      iconSize: 20,
-                                      color: Colors.white,
-                                      onPressed: () {
-                                        showDialog(
-                                          context: context,
-                                          builder: (BuildContext context) {
-                                            final _controller =
-                                                TextEditingController(
-                                                    text: box.get('name'));
-                                            return AlertDialog(
-                                              content: Column(
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: [
-                                                  Row(
-                                                    children: [
-                                                      Text(
-                                                        'Name',
-                                                        style: TextStyle(
-                                                            color: Theme.of(
-                                                                    context)
-                                                                .accentColor),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  TextField(
-                                                      autofocus: true,
-                                                      controller: _controller,
-                                                      onSubmitted: (value) {
-                                                        box.put('name',
-                                                            value.trim());
-                                                        Navigator.pop(context);
-                                                        updateUserDetails(
-                                                            'name',
-                                                            value.trim());
-                                                      }),
-                                                ],
-                                              ),
-                                              actions: [
-                                                TextButton(
-                                                  style: TextButton.styleFrom(
-                                                    primary: Theme.of(context)
-                                                                .brightness ==
-                                                            Brightness.dark
-                                                        ? Colors.white
-                                                        : Colors.grey[700],
-                                                    // backgroundColor: Theme.of(context).accentColor,
-                                                  ),
-                                                  child: Text("Cancel"),
-                                                  onPressed: () {
-                                                    Navigator.pop(context);
-                                                  },
-                                                ),
-                                                TextButton(
-                                                  style: TextButton.styleFrom(
-                                                    primary: Colors.white,
-                                                    backgroundColor:
-                                                        Theme.of(context)
-                                                            .accentColor,
-                                                  ),
-                                                  child: Text(
-                                                    "Ok",
-                                                    style: TextStyle(
-                                                        color: Colors.white),
-                                                  ),
-                                                  onPressed: () {
-                                                    box.put(
-                                                        'name',
-                                                        _controller.text
-                                                            .trim());
-
-                                                    Navigator.pop(context);
-                                                    updateUserDetails(
-                                                        'name',
-                                                        _controller.text
-                                                            .trim());
-                                                  },
-                                                ),
-                                                SizedBox(
-                                                  width: 5,
-                                                ),
-                                              ],
-                                            );
-                                          },
-                                        );
-                                      })
-                                ],
-                                accountName: Text(
-                                  capitalize((box.get('name') == null ||
-                                          box.get('name') == '')
-                                      ? 'Guest User'
-                                      : box.get('name')),
-                                ),
-                                accountEmail: Text("A BlackHole User"),
-                                decoration: BoxDecoration(
-                                    image: DecorationImage(
-                                        fit: BoxFit.fill,
-                                        image: AssetImage(
-                                            Theme.of(context).brightness ==
-                                                    Brightness.light
-                                                ? 'assets/header.jpg'
-                                                : 'assets/header-dark.jpg'))),
-                                currentAccountPicture: Container(
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    gradient: LinearGradient(
-                                        colors: Theme.of(context).brightness ==
-                                                Brightness.light
-                                            ? [
-                                                Colors.white60,
-                                                Colors.orangeAccent,
-                                                Colors.deepOrangeAccent,
-                                                Colors.redAccent,
-                                                Colors.redAccent[700],
-                                              ]
-                                            : [
-                                                Colors.grey[700],
-                                                // Colors.grey[800],
-                                                Colors.grey[800],
-                                                Colors.grey[900],
-                                                Colors.black,
-                                              ],
-                                        begin: Alignment.bottomLeft,
-                                        end: Alignment.topRight),
-                                  ),
-                                  child: CircleAvatar(
-                                    backgroundColor: Colors.transparent,
-                                    child: Text(
-                                        (box.get('name') == null ||
-                                                box.get('name') == '')
-                                            ? 'G'
-                                            : capitalize(box.get('name'))[0],
-                                        style: TextStyle(
-                                          fontSize: 32,
-                                          color: Colors
-                                              .white, // (context).accentColor,
-                                        )),
-                                  ),
-                                ),
-                              );
-                            }),
-                        ListTile(
+                  CustomScrollView(
+                    shrinkWrap: true,
+                    physics: BouncingScrollPhysics(),
+                    slivers: [
+                      SliverAppBar(
+                        backgroundColor: Colors.transparent,
+                        automaticallyImplyLeading: false,
+                        elevation: 0,
+                        stretch: true,
+                        pinned: false,
+                        expandedHeight:
+                            MediaQuery.of(context).size.height * 0.2,
+                        flexibleSpace: FlexibleSpaceBar(
                           title: Text(
-                            'Home',
+                            "BlackHole",
                             style: TextStyle(
-                              color: Theme.of(context).accentColor,
+                              fontSize: 30.0,
                             ),
                           ),
-                          leading: Icon(
-                            Icons.home_rounded,
-                            color: Theme.of(context).accentColor,
+                          titlePadding: EdgeInsets.only(bottom: 40.0),
+                          centerTitle: true,
+                          stretchModes: [StretchMode.zoomBackground],
+                          background: ShaderMask(
+                            shaderCallback: (rect) {
+                              return LinearGradient(
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                                colors: [Colors.black, Colors.transparent],
+                              ).createShader(
+                                  Rect.fromLTRB(0, 0, rect.width, rect.height));
+                            },
+                            blendMode: BlendMode.dstIn,
+                            child: Image(
+                                image: AssetImage(
+                                    Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? 'assets/header-dark.jpg'
+                                        : 'assets/header.jpg')),
                           ),
-                          selected: true,
-                          onTap: () {
-                            Navigator.pop(context);
-                          },
                         ),
-                        ListTile(
-                          title: Text('My Music'),
-                          leading: Icon(
-                            MdiIcons.folderMusic,
-                            color: Theme.of(context).iconTheme.color,
-                          ),
-                          onTap: () {
-                            Navigator.pop(context);
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        DownloadedSongs(type: 'all')));
-                          },
+                      ),
+                      SliverList(
+                        delegate: SliverChildListDelegate(
+                          [
+                            ListTile(
+                              title: Text(
+                                'Home',
+                                style: TextStyle(
+                                  color: Theme.of(context).accentColor,
+                                ),
+                              ),
+                              contentPadding:
+                                  EdgeInsets.symmetric(horizontal: 20.0),
+                              leading: Icon(
+                                Icons.home_rounded,
+                                color: Theme.of(context).accentColor,
+                              ),
+                              selected: true,
+                              onTap: () {
+                                Navigator.pop(context);
+                              },
+                            ),
+                            ListTile(
+                              title: Text('My Music'),
+                              contentPadding:
+                                  EdgeInsets.symmetric(horizontal: 20.0),
+                              leading: Icon(
+                                MdiIcons.folderMusic,
+                                color: Theme.of(context).iconTheme.color,
+                              ),
+                              onTap: () {
+                                Navigator.pop(context);
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            DownloadedSongs(type: 'all')));
+                              },
+                            ),
+                            ListTile(
+                              title: Text('Settings'),
+                              contentPadding:
+                                  EdgeInsets.symmetric(horizontal: 20.0),
+                              leading: Icon(
+                                Icons
+                                    .settings_rounded, // miscellaneous_services_rounded,
+                                color: Theme.of(context).iconTheme.color,
+                              ),
+                              onTap: () {
+                                Navigator.pop(context);
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            SettingPage(callback: callback)));
+                              },
+                            ),
+                            ListTile(
+                              title: Text('About'),
+                              contentPadding:
+                                  EdgeInsets.symmetric(horizontal: 20.0),
+                              leading: Icon(
+                                Icons.info_outline_rounded,
+                                color: Theme.of(context).iconTheme.color,
+                              ),
+                              onTap: () {
+                                Navigator.pop(context);
+                                Navigator.pushNamed(context, '/about');
+                              },
+                            ),
+                          ],
                         ),
-                        ListTile(
-                          title: Text('Settings'),
-                          leading: Icon(
-                            Icons
-                                .settings_rounded, // miscellaneous_services_rounded,
-                            color: Theme.of(context).iconTheme.color,
-                          ),
-                          onTap: () {
-                            Navigator.pop(context);
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        SettingPage(callback: callback)));
-                          },
-                        ),
-                        ListTile(
-                          title: Text('About'),
-                          leading: Icon(
-                            Icons.info_outline_rounded,
-                            color: Theme.of(context).iconTheme.color,
-                          ),
-                          onTap: () {
-                            Navigator.pop(context);
-                            Navigator.pushNamed(context, '/about');
-                          },
-                        ),
-                      ]),
+                      ),
+                    ],
+                  ),
                   Padding(
                     padding: const EdgeInsets.fromLTRB(5, 30, 5, 20),
                     child: Center(
                       child: Text(
                         'Made with ♥ by Ankit Sangwan',
+                        textAlign: TextAlign.center,
                         style: TextStyle(fontSize: 12),
                       ),
                     ),
@@ -443,68 +350,184 @@ class _HomePageState extends State<HomePage> {
                                           BoxConstraints constraints) {
                                         return FlexibleSpaceBar(
                                           // collapseMode: CollapseMode.parallax,
-                                          background: Column(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: <Widget>[
-                                              SizedBox(
-                                                height: 60,
-                                              ),
-                                              Row(
-                                                children: [
-                                                  Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            left: 15.0),
-                                                    child: Text(
-                                                      'Hi There,',
-                                                      style: TextStyle(
-                                                          letterSpacing: 2,
-                                                          color:
-                                                              Theme.of(context)
-                                                                  .accentColor,
-                                                          fontSize: 30,
-                                                          fontWeight:
-                                                              FontWeight.bold),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              Padding(
-                                                padding: const EdgeInsets.only(
-                                                    left: 15.0),
-                                                child: Row(
+                                          background: GestureDetector(
+                                            child: Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: <Widget>[
+                                                SizedBox(
+                                                  height: 60,
+                                                ),
+                                                Row(
                                                   children: [
-                                                    ValueListenableBuilder(
-                                                        valueListenable:
-                                                            Hive.box('settings')
-                                                                .listenable(),
-                                                        builder: (BuildContext
-                                                                context,
-                                                            Box box,
-                                                            widget) {
-                                                          return Text(
-                                                            (box.get('name') ==
-                                                                        null ||
-                                                                    box.get('name') ==
-                                                                        '')
-                                                                ? 'Guest'
-                                                                : capitalize(box
-                                                                    .get('name')
-                                                                    .split(
-                                                                        ' ')[0]),
-                                                            style: TextStyle(
-                                                                letterSpacing:
-                                                                    2,
-                                                                fontSize: 20,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w500),
-                                                          );
-                                                        }),
+                                                    Padding(
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                              left: 15.0),
+                                                      child: Text(
+                                                        'Hi There,',
+                                                        style: TextStyle(
+                                                            letterSpacing: 2,
+                                                            color: Theme.of(
+                                                                    context)
+                                                                .accentColor,
+                                                            fontSize: 30,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .bold),
+                                                      ),
+                                                    ),
                                                   ],
                                                 ),
-                                              ),
-                                            ],
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          left: 15.0),
+                                                  child: Row(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment.end,
+                                                    children: [
+                                                      ValueListenableBuilder(
+                                                          valueListenable:
+                                                              Hive.box(
+                                                                      'settings')
+                                                                  .listenable(),
+                                                          builder: (BuildContext
+                                                                  context,
+                                                              Box box,
+                                                              widget) {
+                                                            return Text(
+                                                              (box.get('name') ==
+                                                                          null ||
+                                                                      box.get('name') ==
+                                                                          '')
+                                                                  ? 'Guest'
+                                                                  : capitalize(box
+                                                                      .get(
+                                                                          'name')
+                                                                      .split(
+                                                                          ' ')[0]),
+                                                              style: TextStyle(
+                                                                  letterSpacing:
+                                                                      2,
+                                                                  fontSize: 20,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w500),
+                                                            );
+                                                          }),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            onTap: () {
+                                              showDialog(
+                                                context: context,
+                                                builder:
+                                                    (BuildContext context) {
+                                                  final _controller =
+                                                      TextEditingController(
+                                                          text: name);
+                                                  return AlertDialog(
+                                                    content: Column(
+                                                      mainAxisSize:
+                                                          MainAxisSize.min,
+                                                      children: [
+                                                        Row(
+                                                          children: [
+                                                            Text(
+                                                              'Name',
+                                                              style: TextStyle(
+                                                                  color: Theme.of(
+                                                                          context)
+                                                                      .accentColor),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        TextField(
+                                                            autofocus: true,
+                                                            controller:
+                                                                _controller,
+                                                            onSubmitted:
+                                                                (value) {
+                                                              Hive.box(
+                                                                      'settings')
+                                                                  .put(
+                                                                      'name',
+                                                                      value
+                                                                          .trim());
+                                                              name =
+                                                                  value.trim();
+                                                              Navigator.pop(
+                                                                  context);
+                                                              updateUserDetails(
+                                                                  'name',
+                                                                  value.trim());
+                                                              setState(() {});
+                                                            }),
+                                                      ],
+                                                    ),
+                                                    actions: [
+                                                      TextButton(
+                                                        style: TextButton
+                                                            .styleFrom(
+                                                          primary: Theme.of(
+                                                                          context)
+                                                                      .brightness ==
+                                                                  Brightness
+                                                                      .dark
+                                                              ? Colors.white
+                                                              : Colors
+                                                                  .grey[700],
+                                                        ),
+                                                        child: Text("Cancel"),
+                                                        onPressed: () {
+                                                          Navigator.pop(
+                                                              context);
+                                                        },
+                                                      ),
+                                                      TextButton(
+                                                        style: TextButton
+                                                            .styleFrom(
+                                                          primary: Colors.white,
+                                                          backgroundColor:
+                                                              Theme.of(context)
+                                                                  .accentColor,
+                                                        ),
+                                                        child: Text(
+                                                          "Ok",
+                                                          style: TextStyle(
+                                                              color:
+                                                                  Colors.white),
+                                                        ),
+                                                        onPressed: () {
+                                                          Hive.box("settings")
+                                                              .put(
+                                                                  'name',
+                                                                  _controller
+                                                                      .text
+                                                                      .trim());
+
+                                                          Navigator.pop(
+                                                              context);
+                                                          updateUserDetails(
+                                                              'name',
+                                                              _controller.text
+                                                                  .trim());
+                                                          name = _controller
+                                                              .text
+                                                              .trim();
+                                                          setState(() {});
+                                                        },
+                                                      ),
+                                                      SizedBox(
+                                                        width: 5,
+                                                      ),
+                                                    ],
+                                                  );
+                                                },
+                                              );
+                                            },
                                           ),
                                         );
                                       },

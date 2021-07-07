@@ -84,7 +84,7 @@ class _SaavnHomePageState extends State<SaavnHomePage> {
                               'Last Session',
                               style: TextStyle(
                                 color: Theme.of(context).accentColor,
-                                fontSize: 16,
+                                fontSize: 18,
                                 fontWeight: FontWeight.w800,
                               ),
                             ),
@@ -92,7 +92,7 @@ class _SaavnHomePageState extends State<SaavnHomePage> {
                         ],
                       ),
                       SizedBox(
-                        height: 200,
+                        height: MediaQuery.of(context).size.height / 4 + 5,
                         child: ListView.builder(
                           physics: BouncingScrollPhysics(),
                           scrollDirection: Axis.horizontal,
@@ -101,7 +101,8 @@ class _SaavnHomePageState extends State<SaavnHomePage> {
                           itemBuilder: (context, index) {
                             return GestureDetector(
                               child: SizedBox(
-                                width: 150,
+                                width:
+                                    MediaQuery.of(context).size.height / 4 - 30,
                                 child: Column(
                                   children: [
                                     Card(
@@ -116,7 +117,9 @@ class _SaavnHomePageState extends State<SaavnHomePage> {
                                           image: AssetImage('assets/cover.jpg'),
                                         ),
                                         imageUrl: recentList[index]["image"]
-                                            .replaceAll('http:', 'https:'),
+                                            .replaceAll('http:', 'https:')
+                                            .replaceAll('50x50', '500x500')
+                                            .replaceAll('150x150', '500x500'),
                                         placeholder: (context, url) => Image(
                                           image: AssetImage('assets/cover.jpg'),
                                         ),
@@ -176,7 +179,7 @@ class _SaavnHomePageState extends State<SaavnHomePage> {
                       '${formatString(data['modules'][lists[idx]]["title"])}',
                       style: TextStyle(
                         color: Theme.of(context).accentColor,
-                        fontSize: 16,
+                        fontSize: 18,
                         fontWeight: FontWeight.w800,
                       ),
                     ),
@@ -185,7 +188,7 @@ class _SaavnHomePageState extends State<SaavnHomePage> {
               ),
               data[lists[idx]] == null
                   ? SizedBox(
-                      height: 200,
+                      height: MediaQuery.of(context).size.height / 4 + 5,
                       child: ListView.builder(
                         physics: BouncingScrollPhysics(),
                         scrollDirection: Axis.horizontal,
@@ -193,7 +196,7 @@ class _SaavnHomePageState extends State<SaavnHomePage> {
                         itemCount: 10,
                         itemBuilder: (context, index) {
                           return SizedBox(
-                            width: 150,
+                            width: MediaQuery.of(context).size.height / 4 - 30,
                             child: Column(
                               children: [
                                 Card(
@@ -231,7 +234,7 @@ class _SaavnHomePageState extends State<SaavnHomePage> {
                       ),
                     )
                   : SizedBox(
-                      height: 200,
+                      height: MediaQuery.of(context).size.height / 4 + 5,
                       child: ListView.builder(
                         physics: BouncingScrollPhysics(),
                         scrollDirection: Axis.horizontal,
@@ -244,7 +247,8 @@ class _SaavnHomePageState extends State<SaavnHomePage> {
                               .toList();
                           return GestureDetector(
                             child: SizedBox(
-                              width: 150,
+                              width:
+                                  MediaQuery.of(context).size.height / 4 - 30,
                               child: Column(
                                 children: [
                                   Card(
@@ -258,7 +262,9 @@ class _SaavnHomePageState extends State<SaavnHomePage> {
                                         image: AssetImage('assets/cover.jpg'),
                                       ),
                                       imageUrl: item["image"]
-                                          .replaceAll('http:', 'https:'),
+                                          .replaceAll('http:', 'https:')
+                                          .replaceAll('50x50', '500x500')
+                                          .replaceAll('150x150', '500x500'),
                                       placeholder: (context, url) => Image(
                                         image: (item["type"] == 'playlist' ||
                                                 item["type"] == 'album')

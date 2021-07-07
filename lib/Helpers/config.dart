@@ -7,7 +7,104 @@ class MyTheme with ChangeNotifier {
   bool _isDark = Hive.box('settings').get('darkMode') ?? true;
 
   String accentColor = Hive.box('settings').get('themeColor');
+  String canvasColor =
+      Hive.box('settings').get('canvasColor', defaultValue: 'Grey');
+  String cardColor =
+      Hive.box('settings').get('cardColor', defaultValue: 'Grey850');
+
+  int backGrad = Hive.box('settings').get('backGrad', defaultValue: 1);
+  int cardGrad = Hive.box('settings').get('cardGrad', defaultValue: 3);
+  int bottomGrad = Hive.box('settings').get('bottomGrad', defaultValue: 2);
+
   int colorHue = Hive.box('settings').get('colorHue');
+
+  List<List<Color>> backOpt = [
+    [
+      Colors.grey[850],
+      Colors.grey[900],
+      Colors.black,
+    ],
+    [
+      Colors.grey[900],
+      Colors.grey[900],
+      Colors.black,
+    ],
+    [
+      Colors.grey[900],
+      Colors.black,
+    ],
+    [
+      Colors.grey[900],
+      Colors.black,
+      Colors.black,
+    ],
+    [
+      Colors.black,
+      Colors.black,
+    ]
+  ];
+
+  List<List<Color>> cardOpt = [
+    [
+      Colors.grey[850],
+      Colors.grey[850],
+      Colors.grey[900],
+    ],
+    [
+      Colors.grey[850],
+      Colors.grey[900],
+      Colors.grey[900],
+    ],
+    [
+      Colors.grey[850],
+      Colors.grey[900],
+      Colors.black,
+    ],
+    [
+      Colors.grey[900],
+      Colors.grey[900],
+      Colors.black,
+    ],
+    [
+      Colors.grey[900],
+      Colors.black,
+    ],
+    [
+      Colors.grey[900],
+      Colors.black,
+      Colors.black,
+    ],
+    [
+      Colors.black,
+      Colors.black,
+    ]
+  ];
+
+  List<List<Color>> transOpt = [
+    [
+      Colors.grey[850].withOpacity(0.8),
+      Colors.grey[900].withOpacity(0.9),
+      Colors.black.withOpacity(1),
+    ],
+    [
+      Colors.grey[900].withOpacity(0.8),
+      Colors.grey[900].withOpacity(0.9),
+      Colors.black.withOpacity(1),
+    ],
+    [
+      Colors.grey[900].withOpacity(0.9),
+      Colors.black.withOpacity(1),
+    ],
+    [
+      Colors.grey[900].withOpacity(0.9),
+      Colors.black.withOpacity(0.9),
+      Colors.black.withOpacity(1),
+    ],
+    [
+      Colors.black.withOpacity(0.9),
+      Colors.black.withOpacity(1),
+    ]
+  ];
 
   void switchTheme(bool val) {
     _isDark = val;
@@ -68,6 +165,48 @@ class MyTheme with ChangeNotifier {
       default:
         return _isDark ? Colors.tealAccent[400] : Colors.lightBlueAccent[400];
     }
+  }
+
+  Color getCanvasColor() {
+    if (canvasColor == 'Black') return Colors.black;
+    if (canvasColor == 'Grey') return Colors.grey[900];
+    return Colors.grey[900];
+  }
+
+  void switchCanvasColor(String color) {
+    Hive.box('settings').put('canvasColor', color);
+    canvasColor = color;
+    notifyListeners();
+  }
+
+  Color getCardColor() {
+    if (cardColor == 'Grey800') return Colors.grey[800];
+    if (cardColor == 'Grey850') return Colors.grey[850];
+    if (cardColor == 'Grey900') return Colors.grey[900];
+    if (cardColor == 'Black') return Colors.black;
+    return Colors.grey[850];
+  }
+
+  void switchCardColor(String color) {
+    Hive.box('settings').put('cardColor', color);
+    cardColor = color;
+    notifyListeners();
+  }
+
+  List<Color> getCardGradient() {
+    return cardOpt[cardGrad];
+  }
+
+  List<Color> getBackGradient() {
+    return backOpt[backGrad];
+  }
+
+  List<Color> getTransBackGradient() {
+    return transOpt[backGrad];
+  }
+
+  List<Color> getBottomGradient() {
+    return backOpt[bottomGrad];
   }
 
   Color currentColor() {

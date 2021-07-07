@@ -79,7 +79,6 @@ class _YouTubeSearchPageState extends State<YouTubeSearchPage> {
                   physics: BouncingScrollPhysics(),
                   axisAlignment: 0.0,
                   openAxisAlignment: 0.0,
-                  progress: !fetched,
                   debounceDelay: Duration(milliseconds: 500),
                   // onQueryChanged: (_query) {
                   // print(_query);

@@ -1,3 +1,4 @@
+import 'package:blackhole/Helpers/config.dart';
 import 'package:flutter/material.dart';
 
 class GradientContainer extends StatefulWidget {
@@ -18,16 +19,8 @@ class _GradientContainerState extends State<GradientContainer> {
           end: Alignment.bottomRight,
           colors: Theme.of(context).brightness == Brightness.dark
               ? ((widget.opacity == true)
-                  ? [
-                      Colors.grey[850].withOpacity(0.8),
-                      Colors.grey[900].withOpacity(0.9),
-                      Colors.black.withOpacity(1),
-                    ]
-                  : [
-                      Colors.grey[850],
-                      Colors.grey[900],
-                      Colors.black,
-                    ])
+                  ? currentTheme.getTransBackGradient()
+                  : currentTheme.getBackGradient())
               : [
                   Colors.white,
                   Theme.of(context).canvasColor,
@@ -64,11 +57,7 @@ class _BottomGradientContainerState extends State<BottomGradientContainer> {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: Theme.of(context).brightness == Brightness.dark
-              ? [
-                  Colors.grey[850],
-                  Colors.grey[900],
-                  Colors.black,
-                ]
+              ? currentTheme.getBottomGradient()
               : [
                   Colors.white,
                   Theme.of(context).canvasColor,
@@ -102,11 +91,7 @@ class _GradientCardState extends State<GradientCard> {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: Theme.of(context).brightness == Brightness.dark
-                ? [
-                    Colors.grey[850],
-                    Colors.grey[850],
-                    Colors.grey[900],
-                  ]
+                ? currentTheme.getCardGradient()
                 : [
                     Colors.white,
                     Theme.of(context).canvasColor,

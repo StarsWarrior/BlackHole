@@ -36,6 +36,11 @@ class _SettingPageState extends State<SettingPage> {
       Hive.box('settings').get('streamingQuality', defaultValue: '96 kbps');
   String downloadQuality =
       Hive.box('settings').get('downloadQuality', defaultValue: '320 kbps');
+  String canvasColor =
+      Hive.box('settings').get('canvasColor', defaultValue: 'Grey');
+
+  String cardColor =
+      Hive.box('settings').get('cardColor', defaultValue: 'Grey850');
   bool stopForegroundService =
       Hive.box('settings').get('stopForegroundService', defaultValue: true);
   bool stopServiceOnPause =
@@ -95,98 +100,8 @@ class _SettingPageState extends State<SettingPage> {
           elevation: 0,
           stretch: true,
           pinned: true,
-          actions: [
-            IconButton(
-              icon: Icon(Icons.edit_rounded),
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    final controller = TextEditingController(text: name);
-                    return AlertDialog(
-                      content: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Row(
-                            children: [
-                              Text(
-                                'Name',
-                                style: TextStyle(
-                                    color: Theme.of(context).accentColor),
-                              ),
-                            ],
-                          ),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          TextField(
-                              autofocus: true,
-                              controller: controller,
-                              onSubmitted: (value) {
-                                if (value.trim() != '') {
-                                  settingsBox.put('name', value.trim());
-                                  updateUserDetails('name', value.trim());
-                                  name = value;
-                                  Navigator.pop(context);
-                                  setState(() {});
-                                }
-                              }),
-                        ],
-                      ),
-                      actions: [
-                        TextButton(
-                          style: TextButton.styleFrom(
-                            primary:
-                                Theme.of(context).brightness == Brightness.dark
-                                    ? Colors.white
-                                    : Colors.grey[700],
-                            //       backgroundColor: Theme.of(context).accentColor,
-                          ),
-                          child: Text(
-                            "Cancel",
-                          ),
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                        ),
-                        TextButton(
-                          style: TextButton.styleFrom(
-                            primary: Colors.white,
-                            backgroundColor: Theme.of(context).accentColor,
-                          ),
-                          child: Text(
-                            "Ok",
-                            style: TextStyle(color: Colors.white),
-                          ),
-                          onPressed: () {
-                            if (controller.text.trim() != '') {
-                              settingsBox.put('name', controller.text.trim());
-                              updateUserDetails('name', controller.text.trim());
-                              Navigator.pop(context);
-                              name = controller.text.trim();
-                              setState(() {});
-                            }
-                          },
-                        ),
-                        SizedBox(
-                          width: 5,
-                        ),
-                      ],
-                    );
-                  },
-                );
-              },
-            )
-          ],
-          expandedHeight: 180,
+          expandedHeight: MediaQuery.of(context).size.height / 4.5,
           flexibleSpace: FlexibleSpaceBar(
-            title: Text(
-              name == '' ? 'Guest User' : name,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: Colors.white.withOpacity(0.9),
-              ),
-            ),
             centerTitle: true,
             stretchModes: [StretchMode.zoomBackground],
             background: ShaderMask(
@@ -219,7 +134,7 @@ class _SettingPageState extends State<SettingPage> {
                 child: Text(
                   'Theme',
                   style: TextStyle(
-                    fontSize: 18,
+                    fontSize: 20,
                     fontWeight: FontWeight.bold,
                     color: Theme.of(context).accentColor,
                   ),
@@ -296,6 +211,7 @@ class _SettingPageState extends State<SettingPage> {
                                 'Yellow',
                               ];
                               return BottomGradientContainer(
+                                borderRadius: BorderRadius.circular(20.0),
                                 child: ListView.builder(
                                     shrinkWrap: true,
                                     physics: BouncingScrollPhysics(),
@@ -376,17 +292,396 @@ class _SettingPageState extends State<SettingPage> {
                         dense: true,
                       ),
                       ListTile(
+                        title: Text('Background Gradient'),
+                        subtitle:
+                            Text('Gradient used as background everywhere'),
+                        trailing: Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Container(
+                            height: 25,
+                            width: 25,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(100.0),
+                              color: Theme.of(context).accentColor,
+                              gradient: LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? currentTheme.getBackGradient()
+                                    : [
+                                        Colors.white,
+                                        Theme.of(context).canvasColor,
+                                      ],
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black26,
+                                  blurRadius: 5.0,
+                                  spreadRadius: 0.0,
+                                  offset: Offset(0.0, 3.0),
+                                )
+                              ],
+                            ),
+                          ),
+                        ),
+                        onTap: () {
+                          showModalBottomSheet(
+                            isDismissible: true,
+                            backgroundColor: Colors.transparent,
+                            context: context,
+                            builder: (BuildContext context) {
+                              List gradients = currentTheme.backOpt;
+                              return BottomGradientContainer(
+                                borderRadius: BorderRadius.circular(20.0),
+                                child: ListView.builder(
+                                    shrinkWrap: true,
+                                    physics: BouncingScrollPhysics(),
+                                    padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+                                    scrollDirection: Axis.vertical,
+                                    itemCount: gradients.length,
+                                    itemBuilder: (context, index) {
+                                      return Padding(
+                                        padding:
+                                            const EdgeInsets.only(bottom: 15.0),
+                                        child: GestureDetector(
+                                            child: Container(
+                                              width: MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.125,
+                                              height: MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.125,
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                        100.0),
+                                                gradient: LinearGradient(
+                                                  begin: Alignment.topLeft,
+                                                  end: Alignment.bottomRight,
+                                                  colors: gradients[index],
+                                                ),
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color: Colors.black26,
+                                                    blurRadius: 5.0,
+                                                    spreadRadius: 0.0,
+                                                    offset: Offset(0.0, 3.0),
+                                                  )
+                                                ],
+                                              ),
+                                              child: (currentTheme
+                                                          .getBackGradient() ==
+                                                      gradients[index])
+                                                  ? Icon(Icons.done_rounded)
+                                                  : SizedBox(),
+                                            ),
+                                            onTap: () {
+                                              settingsBox.put(
+                                                  'backGrad', index);
+                                              currentTheme.backGrad = index;
+                                              widget.callback();
+                                              Navigator.pop(context);
+                                              setState(() {});
+                                            }),
+                                      );
+                                    }),
+                              );
+                            },
+                          );
+                        },
+                        dense: true,
+                      ),
+                      ListTile(
+                        title: Text('Card Gradient'),
+                        subtitle: Text('Gradient used in Cards'),
+                        trailing: Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Container(
+                            height: 25,
+                            width: 25,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(100.0),
+                              color: Theme.of(context).accentColor,
+                              gradient: LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? currentTheme.getCardGradient()
+                                    : [
+                                        Colors.white,
+                                        Theme.of(context).canvasColor,
+                                      ],
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black26,
+                                  blurRadius: 5.0,
+                                  spreadRadius: 0.0,
+                                  offset: Offset(0.0, 3.0),
+                                )
+                              ],
+                            ),
+                          ),
+                        ),
+                        onTap: () {
+                          showModalBottomSheet(
+                            isDismissible: true,
+                            backgroundColor: Colors.transparent,
+                            context: context,
+                            builder: (BuildContext context) {
+                              List gradients = currentTheme.cardOpt;
+                              return BottomGradientContainer(
+                                borderRadius: BorderRadius.circular(20.0),
+                                child: ListView.builder(
+                                    shrinkWrap: true,
+                                    physics: BouncingScrollPhysics(),
+                                    padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+                                    scrollDirection: Axis.vertical,
+                                    itemCount: gradients.length,
+                                    itemBuilder: (context, index) {
+                                      return Padding(
+                                        padding:
+                                            const EdgeInsets.only(bottom: 15.0),
+                                        child: GestureDetector(
+                                            child: Container(
+                                              width: MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.125,
+                                              height: MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.125,
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                        100.0),
+                                                gradient: LinearGradient(
+                                                  begin: Alignment.topLeft,
+                                                  end: Alignment.bottomRight,
+                                                  colors: gradients[index],
+                                                ),
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color: Colors.black26,
+                                                    blurRadius: 5.0,
+                                                    spreadRadius: 0.0,
+                                                    offset: Offset(0.0, 3.0),
+                                                  )
+                                                ],
+                                              ),
+                                              child: (currentTheme
+                                                          .getCardGradient() ==
+                                                      gradients[index])
+                                                  ? Icon(Icons.done_rounded)
+                                                  : SizedBox(),
+                                            ),
+                                            onTap: () {
+                                              settingsBox.put(
+                                                  'cardGrad', index);
+                                              currentTheme.cardGrad = index;
+                                              widget.callback();
+                                              Navigator.pop(context);
+                                              setState(() {});
+                                            }),
+                                      );
+                                    }),
+                              );
+                            },
+                          );
+                        },
+                        dense: true,
+                      ),
+                      ListTile(
+                        title: Text('Bottom Sheets Gradient'),
+                        subtitle: Text('Gradient used in Bottom Sheets'),
+                        trailing: Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Container(
+                            height: 25,
+                            width: 25,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(100.0),
+                              color: Theme.of(context).accentColor,
+                              gradient: LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? currentTheme.getBottomGradient()
+                                    : [
+                                        Colors.white,
+                                        Theme.of(context).canvasColor,
+                                      ],
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black26,
+                                  blurRadius: 5.0,
+                                  spreadRadius: 0.0,
+                                  offset: Offset(0.0, 3.0),
+                                )
+                              ],
+                            ),
+                          ),
+                        ),
+                        onTap: () {
+                          showModalBottomSheet(
+                            isDismissible: true,
+                            backgroundColor: Colors.transparent,
+                            context: context,
+                            builder: (BuildContext context) {
+                              List gradients = currentTheme.backOpt;
+                              return BottomGradientContainer(
+                                borderRadius: BorderRadius.circular(20.0),
+                                child: ListView.builder(
+                                    shrinkWrap: true,
+                                    physics: BouncingScrollPhysics(),
+                                    padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+                                    scrollDirection: Axis.vertical,
+                                    itemCount: gradients.length,
+                                    itemBuilder: (context, index) {
+                                      return Padding(
+                                        padding:
+                                            const EdgeInsets.only(bottom: 15.0),
+                                        child: GestureDetector(
+                                            child: Container(
+                                              width: MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.125,
+                                              height: MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.125,
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                        100.0),
+                                                gradient: LinearGradient(
+                                                  begin: Alignment.topLeft,
+                                                  end: Alignment.bottomRight,
+                                                  colors: gradients[index],
+                                                ),
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color: Colors.black26,
+                                                    blurRadius: 5.0,
+                                                    spreadRadius: 0.0,
+                                                    offset: Offset(0.0, 3.0),
+                                                  )
+                                                ],
+                                              ),
+                                              child: (currentTheme
+                                                          .getBottomGradient() ==
+                                                      gradients[index])
+                                                  ? Icon(Icons.done_rounded)
+                                                  : SizedBox(),
+                                            ),
+                                            onTap: () {
+                                              settingsBox.put(
+                                                  'bottomGrad', index);
+                                              currentTheme.bottomGrad = index;
+                                              Navigator.pop(context);
+                                              setState(() {});
+                                            }),
+                                      );
+                                    }),
+                              );
+                            },
+                          );
+                        },
+                        dense: true,
+                      ),
+                      ListTile(
+                        title: Text('Canvas Color'),
+                        subtitle: Text('Color of Background Canvas'),
+                        onTap: () {},
+                        trailing: DropdownButton(
+                          value: canvasColor,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Theme.of(context).textTheme.bodyText1.color,
+                          ),
+                          underline: SizedBox(),
+                          onChanged: (String newValue) {
+                            setState(() {
+                              currentTheme.switchCanvasColor(newValue);
+                              canvasColor = newValue;
+                            });
+                          },
+                          items: <String>['Grey', 'Black']
+                              .map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          }).toList(),
+                        ),
+                        dense: true,
+                      ),
+                      ListTile(
+                        title: Text('Card Color'),
+                        subtitle: Text('Color of Search Bar, Cards'),
+                        onTap: () {},
+                        trailing: DropdownButton(
+                          value: cardColor,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Theme.of(context).textTheme.bodyText1.color,
+                          ),
+                          underline: SizedBox(),
+                          onChanged: (String newValue) {
+                            setState(() {
+                              currentTheme.switchCardColor(newValue);
+                              cardColor = newValue;
+                            });
+                          },
+                          items: <String>[
+                            'Grey800',
+                            'Grey850',
+                            'Grey900',
+                            'Black'
+                          ].map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          }).toList(),
+                        ),
+                        dense: true,
+                      ),
+                      ListTile(
                           title: Text('Change to Default'),
-                          // subtitle: Text('Feedbacks appreciated'),
                           dense: true,
                           onTap: () {
                             Hive.box('settings').put('darkMode', true);
+
+                            settingsBox.put('backGrad', 1);
+                            currentTheme.backGrad = 1;
+                            settingsBox.put('cardGrad', 3);
+                            currentTheme.cardGrad = 3;
+                            settingsBox.put('bottomGrad', 2);
+                            currentTheme.bottomGrad = 2;
+
+                            currentTheme.switchCanvasColor('Grey');
+                            canvasColor = 'Grey';
+
+                            currentTheme.switchCardColor('Grey850');
+                            cardColor = 'Grey900';
+
                             themeColor = 'Teal';
                             colorHue = 400;
                             currentTheme.switchTheme(true);
                             updateUserDetails('darkMode', true);
                             updateUserDetails('themeColor', 'Teal');
                             updateUserDetails('colorHue', 400);
+                            setState(() {});
+                            widget.callback();
                           }),
                     ],
                   ),
@@ -397,7 +692,7 @@ class _SettingPageState extends State<SettingPage> {
                 child: Text(
                   'Music & Playback',
                   style: TextStyle(
-                      fontSize: 18,
+                      fontSize: 20,
                       fontWeight: FontWeight.bold,
                       color: Theme.of(context).accentColor),
                 ),
@@ -432,6 +727,7 @@ class _SettingPageState extends State<SettingPage> {
                                 return StatefulBuilder(builder:
                                     (BuildContext context, StateSetter setStt) {
                                   return BottomGradientContainer(
+                                    borderRadius: BorderRadius.circular(20.0),
                                     child: Column(
                                       children: [
                                         Expanded(
@@ -557,6 +853,7 @@ class _SettingPageState extends State<SettingPage> {
                                       CountryCodes().countryCodes;
                                   List<String> countries = codes.keys.toList();
                                   return BottomGradientContainer(
+                                    borderRadius: BorderRadius.circular(20.0),
                                     child: ListView.builder(
                                         physics: BouncingScrollPhysics(),
                                         shrinkWrap: true,
@@ -717,6 +1014,7 @@ class _SettingPageState extends State<SettingPage> {
                                 context: context,
                                 builder: (BuildContext context) {
                                   return BottomGradientContainer(
+                                    borderRadius: BorderRadius.circular(20.0),
                                     child: AnimatedList(
                                       physics: BouncingScrollPhysics(),
                                       shrinkWrap: true,
@@ -821,7 +1119,7 @@ class _SettingPageState extends State<SettingPage> {
                 child: Text(
                   'Others',
                   style: TextStyle(
-                    fontSize: 18,
+                    fontSize: 20,
                     fontWeight: FontWeight.bold,
                     color: Theme.of(context).accentColor,
                   ),
@@ -999,7 +1297,7 @@ class _SettingPageState extends State<SettingPage> {
                 child: Text(
                   'About',
                   style: TextStyle(
-                      fontSize: 18,
+                      fontSize: 20,
                       fontWeight: FontWeight.bold,
                       color: Theme.of(context).accentColor),
                 ),

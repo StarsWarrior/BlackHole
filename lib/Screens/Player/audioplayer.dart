@@ -20,9 +20,9 @@ import 'package:hive/hive.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:blackhole/CustomWidgets/emptyScreen.dart';
 import 'package:blackhole/CustomWidgets/seekBar.dart';
-import 'package:carousel_slider/carousel_controller.dart';
-import 'package:carousel_slider/carousel_options.dart';
-import 'package:carousel_slider/carousel_slider.dart';
+// import 'package:carousel_slider/carousel_controller.dart';
+// import 'package:carousel_slider/carousel_options.dart';
+// import 'package:carousel_slider/carousel_slider.dart';
 
 class PlayScreen extends StatefulWidget {
   final Map data;
@@ -59,7 +59,7 @@ class _PlayScreenState extends State<PlayScreen> {
   String defaultCover = '';
   MediaItem playItem;
 
-  final CarouselController _carouselController = CarouselController();
+  // final CarouselController _carouselController = CarouselController();
   // sleepTimer(0) cancels the timer
   void sleepTimer(int time) {
     AudioService.customAction('sleepTimer', time);
@@ -216,87 +216,87 @@ class _PlayScreenState extends State<PlayScreen> {
       }
     }
 
-    Widget imageSlider(MediaItem mediaItem, List<MediaItem> queue) {
-      int indx = queue.indexWhere((element) => element == mediaItem);
-      if (indx == -1) return SizedBox();
+    // Widget imageSlider(MediaItem mediaItem, List<MediaItem> queue) {
+    // int indx = queue.indexWhere((element) => element == mediaItem);
+    // if (indx == -1) return SizedBox();
 
-      AudioService.customEventStream.distinct().listen((event) {
-        if (_carouselController.ready && event != checkIndex) {
-          int oldIndex = checkIndex;
-          checkIndex = event;
-          if (oldIndex != null && (oldIndex - event).abs() == 1) {
-            if (event == oldIndex + 1) {
-              _carouselController.nextPage();
-            }
-            if (event == oldIndex - 1) {
-              _carouselController.previousPage();
-            }
-          } else {
-            _carouselController.jumpToPage(event);
-          }
-        }
-      });
+    // AudioService.customEventStream.distinct().listen((event) {
+    // if (_carouselController.ready && event != checkIndex) {
+    //   int oldIndex = checkIndex;
+    //   checkIndex = event;
+    //   if (oldIndex != null && (oldIndex - event).abs() == 1) {
+    //     if (event == oldIndex + 1) {
+    //       _carouselController.nextPage();
+    //     }
+    //     if (event == oldIndex - 1) {
+    //       _carouselController.previousPage();
+    //     }
+    //   } else {
+    //     _carouselController.jumpToPage(event);
+    //   }
+    // }
+    // });
 
-      return CarouselSlider(
-          carouselController: _carouselController,
-          options: CarouselOptions(
-            scrollDirection: Axis.horizontal,
-            autoPlay: false,
-            scrollPhysics: BouncingScrollPhysics(),
-            enableInfiniteScroll: repeatMode == 'All',
-            enlargeCenterPage: true,
-            height: MediaQuery.of(context).size.width * 0.85,
-            initialPage: indx,
-            pageSnapping: true,
-            enlargeStrategy: CenterPageEnlargeStrategy.scale,
-            onPageChanged: (index, reason) {
-              checkIndex = index;
-              if (reason == CarouselPageChangedReason.manual)
-                AudioService.skipToQueueItem(queue[index].id);
-            },
-          ),
-          items: queue
-              .map(
-                (item) => Card(
-                  elevation: 10,
-                  margin: EdgeInsets.zero,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15)),
-                  clipBehavior: Clip.antiAlias,
-                  child: Center(
-                    child: Stack(
-                      children: [
-                        SizedBox.expand(
-                          child: Image(
-                            fit: BoxFit.cover,
-                            image: AssetImage('assets/cover.jpg'),
-                          ),
-                        ),
-                        SizedBox.expand(
-                          child: offline
-                              ? Image(
-                                  fit: BoxFit.cover,
-                                  image:
-                                      FileImage(File(item.artUri.toFilePath())))
-                              : CachedNetworkImage(
-                                  fit: BoxFit.cover,
-                                  errorWidget: (BuildContext context, _, __) =>
-                                      Image(
-                                        image: AssetImage('assets/cover.jpg'),
-                                      ),
-                                  placeholder: (BuildContext context, _) =>
-                                      Image(
-                                        image: AssetImage('assets/cover.jpg'),
-                                      ),
-                                  imageUrl: item.artUri.toString()),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              )
-              .toList());
-    }
+    // return
+    //  CarouselSlider(
+    // carouselController: _carouselController,
+    // options: CarouselOptions(
+    // scrollDirection: Axis.horizontal,
+    // autoPlay: false,
+    // scrollPhysics: BouncingScrollPhysics(),
+    // enableInfiniteScroll: repeatMode == 'All',
+    // enlargeCenterPage: true,
+    // aspectRatio: 1,
+    // height: MediaQuery.of(context).size.width * 0.85,
+    // disableCenter: true,
+    // initialPage: indx,
+    // pageSnapping: true,
+    // enlargeStrategy: CenterPageEnlargeStrategy.scale,
+    // onPageChanged: (index, reason) {
+    // checkIndex = index;
+    // if (reason == CarouselPageChangedReason.manual)
+    // AudioService.skipToQueueItem(queue[index].id);
+    // },
+    // ),
+    // items: queue
+    // .map(
+    // (item) =>
+    //     Card(
+    //   elevation: 10,
+    //   margin: EdgeInsets.zero,
+    //   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+    //   clipBehavior: Clip.antiAlias,
+    //   child: Center(
+    //     child: Stack(
+    //       children: [
+    //         SizedBox.expand(
+    //           child: Image(
+    //             fit: BoxFit.cover,
+    //             image: AssetImage('assets/cover.jpg'),
+    //           ),
+    //         ),
+    //         SizedBox.expand(
+    //           child: offline
+    //               ? Image(
+    //                   fit: BoxFit.cover,
+    //                   image: FileImage(File(mediaItem.artUri.toFilePath())))
+    //               : CachedNetworkImage(
+    //                   fit: BoxFit.cover,
+    //                   errorWidget: (BuildContext context, _, __) => Image(
+    //                         image: AssetImage('assets/cover.jpg'),
+    //                       ),
+    //                   placeholder: (BuildContext context, _) => Image(
+    //                         image: AssetImage('assets/cover.jpg'),
+    //                       ),
+    //                   imageUrl: mediaItem.artUri.toString()),
+    //         ),
+    //       ],
+    //     ),
+    //   ),
+    // );
+    // )
+    // .toList());
+    // }
 
     Widget container = GradientContainer(
       child: SafeArea(
@@ -1043,30 +1043,66 @@ class _PlayScreenState extends State<PlayScreen> {
                                             AudioService.play();
                                           }
                                         },
-                                        child: (mediaItem != null &&
-                                                queue.isNotEmpty)
-                                            ? imageSlider(mediaItem, queue)
-                                            : Card(
-                                                elevation: 10,
-                                                shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            15)),
-                                                clipBehavior: Clip.antiAlias,
-                                                child: Stack(
-                                                  children: [
-                                                    Image(
-                                                        fit: BoxFit.cover,
-                                                        height: MediaQuery.of(
-                                                                    context)
-                                                                .size
-                                                                .width *
-                                                            0.85,
-                                                        image: AssetImage(
-                                                            'assets/cover.jpg')),
-                                                    if (globalQueue.length >
-                                                        globalIndex)
-                                                      offline
+                                        child: Card(
+                                          elevation: 10.0,
+                                          shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(15.0)),
+                                          clipBehavior: Clip.antiAlias,
+                                          child: Stack(
+                                            children: [
+                                              Image(
+                                                  fit: BoxFit.cover,
+                                                  height: MediaQuery.of(context)
+                                                          .size
+                                                          .width *
+                                                      0.85,
+                                                  image: AssetImage(
+                                                      'assets/cover.jpg')),
+                                              (mediaItem != null &&
+                                                      queue.isNotEmpty)
+                                                  ? offline
+                                                      ? Image(
+                                                          fit: BoxFit.cover,
+                                                          height: MediaQuery.of(
+                                                                      context)
+                                                                  .size
+                                                                  .width *
+                                                              0.85,
+                                                          image: FileImage(File(
+                                                              mediaItem.artUri
+                                                                  .toFilePath())))
+                                                      : CachedNetworkImage(
+                                                          fit: BoxFit.cover,
+                                                          errorWidget:
+                                                              (BuildContext
+                                                                          context,
+                                                                      _,
+                                                                      __) =>
+                                                                  Image(
+                                                            image: AssetImage(
+                                                                'assets/cover.jpg'),
+                                                          ),
+                                                          placeholder:
+                                                              (BuildContext
+                                                                          context,
+                                                                      _) =>
+                                                                  Image(
+                                                            image: AssetImage(
+                                                                'assets/cover.jpg'),
+                                                          ),
+                                                          imageUrl: mediaItem
+                                                              .artUri
+                                                              .toString(),
+                                                          height: MediaQuery.of(
+                                                                      context)
+                                                                  .size
+                                                                  .width *
+                                                              0.85,
+                                                        )
+                                                  : (globalQueue.length >
+                                                          globalIndex)
+                                                      ? offline
                                                           ? Image(
                                                               fit: BoxFit.cover,
                                                               height: MediaQuery.of(
@@ -1109,10 +1145,11 @@ class _PlayScreenState extends State<PlayScreen> {
                                                                       .size
                                                                       .width *
                                                                   0.85,
-                                                            ),
-                                                  ],
-                                                ),
-                                              ),
+                                                            )
+                                                      : SizedBox()
+                                            ],
+                                          ),
+                                        ),
                                       ),
 
                                       /// Title and subtitle
@@ -1550,14 +1587,23 @@ class _PlayScreenState extends State<PlayScreen> {
                                                                   newMediaIndex &&
                                                               newIndex <
                                                                   newMediaIndex) {
-                                                            _carouselController
-                                                                .jumpToPage(
-                                                                    newMediaIndex -
-                                                                        1);
+                                                            AudioService
+                                                                .skipToQueueItem(
+                                                                    queue[newMediaIndex -
+                                                                            1]
+                                                                        .id);
+                                                            // _carouselController
+                                                            // .jumpToPage(
+                                                            // newMediaIndex -
+                                                            // 1);
                                                           } else {
-                                                            _carouselController
-                                                                .jumpToPage(
-                                                                    newMediaIndex);
+                                                            AudioService
+                                                                .skipToQueueItem(
+                                                                    queue[newMediaIndex]
+                                                                        .id);
+                                                            // _carouselController
+                                                            // .jumpToPage(
+                                                            // newMediaIndex);
                                                           }
                                                         });
                                                       },
@@ -1591,9 +1637,13 @@ class _PlayScreenState extends State<PlayScreen> {
                                                                   .indexWhere((element) =>
                                                                       element ==
                                                                       mediaItem);
-                                                              _carouselController
-                                                                  .jumpToPage(
-                                                                      newIndex);
+                                                              AudioService
+                                                                  .skipToQueueItem(
+                                                                      queue[newIndex]
+                                                                          .id);
+                                                              // _carouselController
+                                                              // .jumpToPage(
+                                                              // newIndex);
                                                             });
                                                           },
                                                           child: ListTileTheme(

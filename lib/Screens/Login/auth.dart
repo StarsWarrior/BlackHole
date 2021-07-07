@@ -154,94 +154,48 @@ class _AuthScreenState extends State<AuthScreen> {
                         ),
                       ],
                     ),
-                    Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(left: 20, right: 20),
-                          child: GestureDetector(
-                            child: Row(
-                              children: [
-                                Text("I'm a",
-                                    style: TextStyle(
-                                        fontSize: 28,
-                                        fontWeight: FontWeight.bold)),
-                                SizedBox(
-                                  width: 40,
-                                  height: 40,
-                                  child: ColorFiltered(
-                                    colorFilter: ColorFilter.mode(
-                                        Colors.tealAccent[400],
-                                        BlendMode.srcIn),
-                                    child: Image(
-                                        image: AssetImage(gender == 'female'
-                                            ? 'assets/female.png'
-                                            : 'assets/male.png')),
-                                  ),
-                                ),
-                                Text(gender == 'female' ? "Female" : "Male",
-                                    style: TextStyle(
-                                        fontSize: 28,
-                                        color: Theme.of(context).accentColor,
-                                        fontWeight: FontWeight.bold)),
-                              ],
+                    Padding(
+                      padding: const EdgeInsets.only(left: 10, right: 10),
+                      child: Container(
+                        padding: EdgeInsets.only(
+                            top: 5, bottom: 5, left: 10, right: 10),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10.0),
+                          color: Theme.of(context).cardColor,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black26,
+                              blurRadius: 5.0,
+                              spreadRadius: 0.0,
+                              offset: Offset(0.0, 3.0),
+                            )
+                          ],
+                        ),
+                        child: TextField(
+                            controller: controller,
+                            decoration: InputDecoration(
+                              focusedBorder: UnderlineInputBorder(
+                                borderSide: BorderSide(
+                                    width: 1.5, color: Colors.transparent),
+                              ),
+                              prefixIcon: Icon(
+                                Icons.person,
+                                color: Theme.of(context).accentColor,
+                              ),
+                              border: InputBorder.none,
+                              hintText: "Your Name",
                             ),
-                            onTap: () {
-                              gender == 'female'
-                                  ? gender = 'male'
-                                  : gender = 'female';
-                              Hive.box('settings').put('gender', gender);
-                              setState(() {});
-                            },
-                          ),
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 10, right: 10),
-                          child: Container(
-                            padding: EdgeInsets.only(
-                                top: 5, bottom: 5, left: 10, right: 10),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10.0),
-                              color: Theme.of(context).cardColor,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black26,
-                                  blurRadius: 5.0,
-                                  spreadRadius: 0.0,
-                                  offset: Offset(0.0, 3.0),
-                                )
-                              ],
-                            ),
-                            child: TextField(
-                                controller: controller,
-                                decoration: InputDecoration(
-                                  focusedBorder: UnderlineInputBorder(
-                                    borderSide: BorderSide(
-                                        width: 1.5, color: Colors.transparent),
-                                  ),
-                                  prefixIcon: Icon(
-                                    Icons.person,
-                                    color: Theme.of(context).accentColor,
-                                  ),
-                                  border: InputBorder.none,
-                                  hintText: "Your Name",
-                                ),
-                                onSubmitted: (String value) {
-                                  if (value == '') {
-                                    Hive.box('settings').put('name', 'Guest');
-                                    _addUserData('Guest', gender);
-                                  } else {
-                                    Hive.box('settings')
-                                        .put('name', value.trim());
-                                    _addUserData(value, gender);
-                                  }
-                                  Navigator.popAndPushNamed(context, '/');
-                                }),
-                          ),
-                        ),
-                      ],
+                            onSubmitted: (String value) {
+                              if (value == '') {
+                                Hive.box('settings').put('name', 'Guest');
+                                _addUserData('Guest', gender);
+                              } else {
+                                Hive.box('settings').put('name', value.trim());
+                                _addUserData(value, gender);
+                              }
+                              Navigator.popAndPushNamed(context, '/');
+                            }),
+                      ),
                     ),
                   ],
                 ),
