@@ -48,7 +48,6 @@ dependencies:
 
   # UI related
   cupertino_icons: ^1.0.3
-  carousel_slider: ^4.0.0
   salomon_bottom_bar: ^3.0.0
   material_floating_search_bar: ^0.3.4
   material_design_icons_flutter: ^4.0.5955

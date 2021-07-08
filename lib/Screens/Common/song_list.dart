@@ -185,9 +185,14 @@ class _SongsListPageState extends State<SongsListPage> {
                                           ),
                                         ),
                                       ),
-                                      trailing: DownloadButton(
-                                        data: entry,
-                                        icon: 'download',
+                                      trailing: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          DownloadButton(
+                                            data: entry,
+                                            icon: 'download',
+                                          ),
+                                        ],
                                       ),
                                       onTap: () {
                                         Navigator.push(

@@ -32,7 +32,7 @@ class Download with ChangeNotifier {
     if (status.isGranted) {
       print('permission granted');
     }
-    final String filename = data['title'] + " - " + data['artist'] + ".m4a";
+    String filename = data['title'] + " - " + data['artist'] + ".m4a";
     if (dlPath == '')
       dlPath = await ExtStorage.getExternalStoragePublicDirectory(
           ExtStorage.DIRECTORY_MUSIC);
@@ -72,8 +72,11 @@ class Download with ChangeNotifier {
                       : Colors.grey[700],
                 ),
                 child: Text("Yes"),
-                onPressed: () {
+                onPressed: () async {
                   Navigator.pop(context);
+                  while (await File(dlPath + "/" + filename).exists()) {
+                    filename = filename.replaceAll('.m4a', ' (1).m4a');
+                  }
                   downloadSong(context, dlPath, filename, data);
                 },
               ),

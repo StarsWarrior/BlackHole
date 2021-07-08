@@ -20,9 +20,6 @@ import 'package:hive/hive.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:blackhole/CustomWidgets/emptyScreen.dart';
 import 'package:blackhole/CustomWidgets/seekBar.dart';
-// import 'package:carousel_slider/carousel_controller.dart';
-// import 'package:carousel_slider/carousel_options.dart';
-// import 'package:carousel_slider/carousel_slider.dart';
 
 class PlayScreen extends StatefulWidget {
   final Map data;
@@ -59,7 +56,7 @@ class _PlayScreenState extends State<PlayScreen> {
   String defaultCover = '';
   MediaItem playItem;
 
-  // final CarouselController _carouselController = CarouselController();
+  final _controller = PageController();
   // sleepTimer(0) cancels the timer
   void sleepTimer(int time) {
     AudioService.customAction('sleepTimer', time);
@@ -216,88 +213,6 @@ class _PlayScreenState extends State<PlayScreen> {
       }
     }
 
-    // Widget imageSlider(MediaItem mediaItem, List<MediaItem> queue) {
-    // int indx = queue.indexWhere((element) => element == mediaItem);
-    // if (indx == -1) return SizedBox();
-
-    // AudioService.customEventStream.distinct().listen((event) {
-    // if (_carouselController.ready && event != checkIndex) {
-    //   int oldIndex = checkIndex;
-    //   checkIndex = event;
-    //   if (oldIndex != null && (oldIndex - event).abs() == 1) {
-    //     if (event == oldIndex + 1) {
-    //       _carouselController.nextPage();
-    //     }
-    //     if (event == oldIndex - 1) {
-    //       _carouselController.previousPage();
-    //     }
-    //   } else {
-    //     _carouselController.jumpToPage(event);
-    //   }
-    // }
-    // });
-
-    // return
-    //  CarouselSlider(
-    // carouselController: _carouselController,
-    // options: CarouselOptions(
-    // scrollDirection: Axis.horizontal,
-    // autoPlay: false,
-    // scrollPhysics: BouncingScrollPhysics(),
-    // enableInfiniteScroll: repeatMode == 'All',
-    // enlargeCenterPage: true,
-    // aspectRatio: 1,
-    // height: MediaQuery.of(context).size.width * 0.85,
-    // disableCenter: true,
-    // initialPage: indx,
-    // pageSnapping: true,
-    // enlargeStrategy: CenterPageEnlargeStrategy.scale,
-    // onPageChanged: (index, reason) {
-    // checkIndex = index;
-    // if (reason == CarouselPageChangedReason.manual)
-    // AudioService.skipToQueueItem(queue[index].id);
-    // },
-    // ),
-    // items: queue
-    // .map(
-    // (item) =>
-    //     Card(
-    //   elevation: 10,
-    //   margin: EdgeInsets.zero,
-    //   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-    //   clipBehavior: Clip.antiAlias,
-    //   child: Center(
-    //     child: Stack(
-    //       children: [
-    //         SizedBox.expand(
-    //           child: Image(
-    //             fit: BoxFit.cover,
-    //             image: AssetImage('assets/cover.jpg'),
-    //           ),
-    //         ),
-    //         SizedBox.expand(
-    //           child: offline
-    //               ? Image(
-    //                   fit: BoxFit.cover,
-    //                   image: FileImage(File(mediaItem.artUri.toFilePath())))
-    //               : CachedNetworkImage(
-    //                   fit: BoxFit.cover,
-    //                   errorWidget: (BuildContext context, _, __) => Image(
-    //                         image: AssetImage('assets/cover.jpg'),
-    //                       ),
-    //                   placeholder: (BuildContext context, _) => Image(
-    //                         image: AssetImage('assets/cover.jpg'),
-    //                       ),
-    //                   imageUrl: mediaItem.artUri.toString()),
-    //         ),
-    //       ],
-    //     ),
-    //   ),
-    // );
-    // )
-    // .toList());
-    // }
-
     Widget container = GradientContainer(
       child: SafeArea(
         child: StreamBuilder<QueueState>(
@@ -306,6 +221,12 @@ class _PlayScreenState extends State<PlayScreen> {
               final queueState = snapshot.data;
               final queue = queueState?.queue ?? [];
               final mediaItem = queueState?.mediaItem;
+              try {
+                _controller.animateToPage(
+                    queue.indexWhere((e) => e == mediaItem),
+                    duration: Duration(milliseconds: 300),
+                    curve: Curves.fastOutSlowIn);
+              } catch (e) {}
               return Scaffold(
                 backgroundColor: Colors.transparent,
                 appBar: AppBar(
@@ -315,6 +236,7 @@ class _PlayScreenState extends State<PlayScreen> {
                   centerTitle: true,
                   leading: IconButton(
                       icon: Icon(Icons.expand_more_rounded),
+                      color: Theme.of(context).iconTheme.color,
                       onPressed: () {
                         if (widget.fromMiniplayer) {
                           widget.controller
@@ -325,7 +247,10 @@ class _PlayScreenState extends State<PlayScreen> {
                       }),
                   actions: [
                     PopupMenuButton(
-                      icon: Icon(Icons.more_vert_rounded),
+                      icon: Icon(
+                        Icons.more_vert_rounded,
+                        color: Theme.of(context).iconTheme.color,
+                      ),
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.all(Radius.circular(7.0))),
                       onSelected: (value) {
@@ -746,7 +671,11 @@ class _PlayScreenState extends State<PlayScreen> {
                                   value: 1,
                                   child: Row(
                                     children: [
-                                      Icon(CupertinoIcons.timer),
+                                      Icon(
+                                        CupertinoIcons.timer,
+                                        color:
+                                            Theme.of(context).iconTheme.color,
+                                      ),
                                       Spacer(),
                                       Text('Sleep Timer'),
                                       Spacer(),
@@ -758,7 +687,11 @@ class _PlayScreenState extends State<PlayScreen> {
                                   value: 0,
                                   child: Row(
                                     children: [
-                                      Icon(Icons.playlist_add_rounded),
+                                      Icon(
+                                        Icons.playlist_add_rounded,
+                                        color:
+                                            Theme.of(context).iconTheme.color,
+                                      ),
                                       Spacer(),
                                       Text('Add to playlist'),
                                       Spacer(),
@@ -768,7 +701,11 @@ class _PlayScreenState extends State<PlayScreen> {
                                   value: 1,
                                   child: Row(
                                     children: [
-                                      Icon(CupertinoIcons.timer),
+                                      Icon(
+                                        CupertinoIcons.timer,
+                                        color:
+                                            Theme.of(context).iconTheme.color,
+                                      ),
                                       Spacer(),
                                       Text('Sleep Timer'),
                                       Spacer(),
@@ -778,7 +715,11 @@ class _PlayScreenState extends State<PlayScreen> {
                                   value: 2,
                                   child: Row(
                                     children: [
-                                      Icon(CupertinoIcons.textformat),
+                                      Icon(
+                                        CupertinoIcons.textformat,
+                                        color:
+                                            Theme.of(context).iconTheme.color,
+                                      ),
                                       Spacer(),
                                       Text('Show Lyrics'),
                                       Spacer(),
@@ -1033,121 +974,161 @@ class _PlayScreenState extends State<PlayScreen> {
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceEvenly,
                                     children: [
-                                      GestureDetector(
-                                        onTap: () {
-                                          if (AudioService
-                                                  .playbackState.playing ==
-                                              true) {
-                                            AudioService.pause();
-                                          } else {
-                                            AudioService.play();
-                                          }
-                                        },
-                                        child: Card(
-                                          elevation: 10.0,
-                                          shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(15.0)),
-                                          clipBehavior: Clip.antiAlias,
-                                          child: Stack(
-                                            children: [
-                                              Image(
-                                                  fit: BoxFit.cover,
-                                                  height: MediaQuery.of(context)
-                                                          .size
-                                                          .width *
-                                                      0.85,
-                                                  image: AssetImage(
-                                                      'assets/cover.jpg')),
-                                              (mediaItem != null &&
-                                                      queue.isNotEmpty)
-                                                  ? offline
-                                                      ? Image(
+                                      Container(
+                                        height:
+                                            MediaQuery.of(context).size.width *
+                                                0.9,
+                                        child: PageView.builder(
+                                          controller: _controller,
+                                          itemCount: repeatMode != 'All'
+                                              ? queue.length
+                                              : null,
+                                          scrollBehavior: ScrollBehavior(),
+                                          onPageChanged: (indx) {
+                                            print(indx);
+                                            if (queue.isNotEmpty &&
+                                                mediaItem != null) {
+                                              if (repeatMode == 'All' ||
+                                                  queue[indx] != mediaItem) {
+                                                print("changing");
+                                                AudioService.skipToQueueItem(
+                                                    queue[indx % queue.length]
+                                                        .id);
+                                              }
+                                            } else
+                                              print("not changing");
+                                          },
+                                          physics: BouncingScrollPhysics(),
+                                          itemBuilder: (context, index) =>
+                                              GestureDetector(
+                                            onTap: () {
+                                              if (AudioService
+                                                      .playbackState.playing ==
+                                                  true) {
+                                                AudioService.pause();
+                                              } else {
+                                                AudioService.play();
+                                              }
+                                            },
+                                            child: Align(
+                                              alignment: Alignment.topCenter,
+                                              child: Container(
+                                                height: MediaQuery.of(context)
+                                                        .size
+                                                        .width *
+                                                    0.85,
+                                                padding: EdgeInsets.symmetric(
+                                                    horizontal: 35),
+                                                child: Card(
+                                                  elevation: 10.0,
+                                                  shape: RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              15.0)),
+                                                  clipBehavior: Clip.antiAlias,
+                                                  child: Stack(
+                                                    children: [
+                                                      Image(
                                                           fit: BoxFit.cover,
                                                           height: MediaQuery.of(
                                                                       context)
                                                                   .size
                                                                   .width *
                                                               0.85,
-                                                          image: FileImage(File(
-                                                              mediaItem.artUri
-                                                                  .toFilePath())))
-                                                      : CachedNetworkImage(
-                                                          fit: BoxFit.cover,
-                                                          errorWidget:
-                                                              (BuildContext
-                                                                          context,
-                                                                      _,
-                                                                      __) =>
-                                                                  Image(
-                                                            image: AssetImage(
-                                                                'assets/cover.jpg'),
-                                                          ),
-                                                          placeholder:
-                                                              (BuildContext
-                                                                          context,
-                                                                      _) =>
-                                                                  Image(
-                                                            image: AssetImage(
-                                                                'assets/cover.jpg'),
-                                                          ),
-                                                          imageUrl: mediaItem
-                                                              .artUri
-                                                              .toString(),
-                                                          height: MediaQuery.of(
-                                                                      context)
-                                                                  .size
-                                                                  .width *
-                                                              0.85,
-                                                        )
-                                                  : (globalQueue.length >
-                                                          globalIndex)
-                                                      ? offline
-                                                          ? Image(
-                                                              fit: BoxFit.cover,
-                                                              height: MediaQuery.of(
-                                                                          context)
-                                                                      .size
-                                                                      .width *
-                                                                  0.85,
-                                                              image: FileImage(
-                                                                  File(
-                                                                globalQueue[
-                                                                        globalIndex]
-                                                                    .artUri
-                                                                    .toFilePath(),
-                                                              )))
-                                                          : CachedNetworkImage(
-                                                              fit: BoxFit.cover,
-                                                              errorWidget:
-                                                                  (BuildContext
-                                                                              context,
-                                                                          _,
-                                                                          __) =>
-                                                                      Image(
-                                                                image: AssetImage(
-                                                                    'assets/cover.jpg'),
-                                                              ),
-                                                              placeholder:
-                                                                  (BuildContext
-                                                                              context,
-                                                                          _) =>
-                                                                      Image(
-                                                                image: AssetImage(
-                                                                    'assets/cover.jpg'),
-                                                              ),
-                                                              imageUrl: globalQueue[
-                                                                      globalIndex]
-                                                                  .artUri
-                                                                  .toString(),
-                                                              height: MediaQuery.of(
-                                                                          context)
-                                                                      .size
-                                                                      .width *
-                                                                  0.85,
-                                                            )
-                                                      : SizedBox()
-                                            ],
+                                                          image: AssetImage(
+                                                              'assets/cover.jpg')),
+                                                      (mediaItem != null &&
+                                                              queue.isNotEmpty)
+                                                          ? offline
+                                                              ? Image(
+                                                                  fit: BoxFit
+                                                                      .cover,
+                                                                  height: MediaQuery.of(context)
+                                                                          .size
+                                                                          .width *
+                                                                      0.85,
+                                                                  image: FileImage(File(queue[index %
+                                                                          queue
+                                                                              .length]
+                                                                      .artUri
+                                                                      .toFilePath())))
+                                                              : CachedNetworkImage(
+                                                                  fit: BoxFit
+                                                                      .cover,
+                                                                  errorWidget:
+                                                                      (BuildContext context,
+                                                                              _,
+                                                                              __) =>
+                                                                          Image(
+                                                                    image: AssetImage(
+                                                                        'assets/cover.jpg'),
+                                                                  ),
+                                                                  placeholder:
+                                                                      (BuildContext context,
+                                                                              _) =>
+                                                                          Image(
+                                                                    image: AssetImage(
+                                                                        'assets/cover.jpg'),
+                                                                  ),
+                                                                  imageUrl: queue[
+                                                                          index %
+                                                                              queue.length]
+                                                                      .artUri
+                                                                      .toString(),
+                                                                  height: MediaQuery.of(
+                                                                              context)
+                                                                          .size
+                                                                          .width *
+                                                                      0.85,
+                                                                )
+                                                          : (globalQueue
+                                                                      .length >
+                                                                  globalIndex)
+                                                              ? offline
+                                                                  ? Image(
+                                                                      fit: BoxFit
+                                                                          .cover,
+                                                                      height: MediaQuery.of(context)
+                                                                              .size
+                                                                              .width *
+                                                                          0.85,
+                                                                      image: FileImage(
+                                                                          File(
+                                                                        globalQueue[globalIndex]
+                                                                            .artUri
+                                                                            .toFilePath(),
+                                                                      )))
+                                                                  : CachedNetworkImage(
+                                                                      fit: BoxFit
+                                                                          .cover,
+                                                                      errorWidget: (BuildContext context,
+                                                                              _,
+                                                                              __) =>
+                                                                          Image(
+                                                                        image: AssetImage(
+                                                                            'assets/cover.jpg'),
+                                                                      ),
+                                                                      placeholder:
+                                                                          (BuildContext context, _) =>
+                                                                              Image(
+                                                                        image: AssetImage(
+                                                                            'assets/cover.jpg'),
+                                                                      ),
+                                                                      imageUrl: globalQueue[
+                                                                              globalIndex]
+                                                                          .artUri
+                                                                          .toString(),
+                                                                      height: MediaQuery.of(context)
+                                                                              .size
+                                                                              .width *
+                                                                          0.85,
+                                                                    )
+                                                              : SizedBox()
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
                                           ),
                                         ),
                                       ),
@@ -1155,7 +1136,7 @@ class _PlayScreenState extends State<PlayScreen> {
                                       /// Title and subtitle
                                       Padding(
                                         padding: const EdgeInsets.fromLTRB(
-                                            15, 20, 15, 0),
+                                            15, 10, 15, 0),
                                         child: Column(
                                           mainAxisAlignment:
                                               MainAxisAlignment.end,
@@ -1272,12 +1253,7 @@ class _PlayScreenState extends State<PlayScreen> {
                                                     AudioService.setShuffleMode(
                                                         AudioServiceShuffleMode
                                                             .none);
-                                                  // int newMediaIndex = queue
-                                                  // .indexWhere((element) =>
-                                                  // element == mediaItem);
-                                                  // _carouselController
-                                                  // .jumpToPage(
-                                                  // newMediaIndex);
+
                                                   setState(() {
                                                     print(queue);
                                                   });
@@ -1592,18 +1568,11 @@ class _PlayScreenState extends State<PlayScreen> {
                                                                     queue[newMediaIndex -
                                                                             1]
                                                                         .id);
-                                                            // _carouselController
-                                                            // .jumpToPage(
-                                                            // newMediaIndex -
-                                                            // 1);
                                                           } else {
                                                             AudioService
                                                                 .skipToQueueItem(
                                                                     queue[newMediaIndex]
                                                                         .id);
-                                                            // _carouselController
-                                                            // .jumpToPage(
-                                                            // newMediaIndex);
                                                           }
                                                         });
                                                       },
@@ -1641,9 +1610,6 @@ class _PlayScreenState extends State<PlayScreen> {
                                                                   .skipToQueueItem(
                                                                       queue[newIndex]
                                                                           .id);
-                                                              // _carouselController
-                                                              // .jumpToPage(
-                                                              // newIndex);
                                                             });
                                                           },
                                                           child: ListTileTheme(
@@ -1757,9 +1723,6 @@ class _PlayScreenState extends State<PlayScreen> {
                                                                     .skipToQueueItem(
                                                                         queue[index]
                                                                             .id);
-                                                                // _carouselController
-                                                                // .jumpToPage(
-                                                                // index);
                                                               },
                                                             ),
                                                           ),

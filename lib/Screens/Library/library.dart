@@ -20,7 +20,7 @@ class _LibraryPageState extends State<LibraryPage> {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
+    return Column(
       children: [
         AppBar(
           title: Text(
