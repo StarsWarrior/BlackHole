@@ -27,7 +27,6 @@ class _MiniPlayerState extends State<MiniPlayer> {
             return SizedBox();
           }
           final running = snapshot.data ?? false;
-          // !running
           return StreamBuilder<QueueState>(
               stream: _queueStateStream,
               builder: (context, snapshot) {
@@ -36,7 +35,7 @@ class _MiniPlayerState extends State<MiniPlayer> {
                 final mediaItem = queueState?.mediaItem;
                 return (running && mediaItem != null && queue.isNotEmpty)
                     ? Miniplayer(
-                        elevation: 15,
+                        elevation: 15.0,
                         controller: controller,
                         valueNotifier: playerExpandProgress,
                         duration: Duration(milliseconds: 300),

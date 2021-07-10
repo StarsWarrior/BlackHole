@@ -5,8 +5,8 @@ class AddSongsCount {
     Map playlistDetails =
         Hive.box('settings').get('playlistDetails', defaultValue: {});
     if (playlistDetails.containsKey(playlistName)) {
-      playlistDetails[playlistName]['count'] = len;
-      playlistDetails[playlistName]['imagesList'] = images;
+      playlistDetails[playlistName]
+          .addAll({'count': len, 'imagesList': images});
     } else {
       playlistDetails.addEntries([
         MapEntry(playlistName, {'count': len, 'imagesList': images})

@@ -13,7 +13,9 @@ import 'package:hive/hive.dart';
 
 class LikedSongs extends StatefulWidget {
   final String playlistName;
-  LikedSongs({Key key, @required this.playlistName}) : super(key: key);
+  final String showName;
+  LikedSongs({Key key, @required this.playlistName, this.showName})
+      : super(key: key);
   @override
   _LikedSongsState createState() => _LikedSongsState();
 }
@@ -204,8 +206,11 @@ class _LikedSongsState extends State<LikedSongs>
               child: Scaffold(
                 backgroundColor: Colors.transparent,
                 appBar: AppBar(
-                  title: Text(widget.playlistName[0].toUpperCase() +
-                      widget.playlistName.substring(1)),
+                  title: Text(widget.showName == null
+                      ? widget.playlistName[0].toUpperCase() +
+                          widget.playlistName.substring(1)
+                      : widget.showName[0].toUpperCase() +
+                          widget.showName.substring(1)),
                   centerTitle: true,
                   backgroundColor:
                       Theme.of(context).brightness == Brightness.dark

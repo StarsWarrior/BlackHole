@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:blackhole/CustomWidgets/add_queue.dart';
 import 'package:blackhole/CustomWidgets/downloadButton.dart';
 import 'package:blackhole/Screens/Player/audioplayer.dart';
 import 'package:blackhole/CustomWidgets/gradientContainers.dart';
@@ -192,6 +193,7 @@ class _SongsListPageState extends State<SongsListPage> {
                                             data: entry,
                                             icon: 'download',
                                           ),
+                                          AddToQueueButton(data: entry),
                                         ],
                                       ),
                                       onTap: () {

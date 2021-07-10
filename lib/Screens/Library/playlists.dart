@@ -221,39 +221,41 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                             shrinkWrap: true,
                             itemCount: playlistNames.length,
                             itemBuilder: (context, index) {
+                              String name = playlistNames[index];
                               return ListTile(
-                                leading: playlistDetails[
-                                                playlistNames[index]] ==
-                                            null ||
-                                        playlistDetails[playlistNames[index]]
-                                                ['imagesList'] ==
+                                leading: playlistDetails[name] == null ||
+                                        playlistDetails[name]['imagesList'] ==
                                             null
                                     ? Card(
-                                        elevation: 0,
-                                        color: Colors.transparent,
+                                        elevation: 5,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(7.0),
+                                        ),
+                                        clipBehavior: Clip.antiAlias,
                                         child: SizedBox(
-                                            height: 50,
-                                            width: 50,
-                                            child: Center(
-                                                child: Icon(Icons
-                                                    .queue_music_rounded))),
+                                          height: 50,
+                                          width: 50,
+                                          child: Image(
+                                              image: AssetImage(
+                                                  'assets/album.png')),
+                                        ),
                                       )
                                     : Collage(
-                                        imageList: playlistDetails[
-                                            playlistNames[index]]['imagesList'],
+                                        imageList: playlistDetails[name]
+                                            ['imagesList'],
                                         placeholderImage: 'assets/cover.jpg'),
                                 title: Text(
-                                  '${playlistNames[index]}',
+                                  '${playlistDetails.containsKey(name) ? playlistDetails[name]["name"] ?? name : name}',
                                   overflow: TextOverflow.ellipsis,
                                 ),
-                                subtitle: Text(playlistDetails[
-                                                playlistNames[index]] ==
+                                subtitle: playlistDetails[name] == null ||
+                                        playlistDetails[name]['count'] ==
                                             null ||
-                                        playlistDetails[playlistNames[index]]
-                                                ['count'] ==
-                                            0
-                                    ? ''
-                                    : '${playlistDetails[playlistNames[index]]['count']} Songs'),
+                                        playlistDetails[name]['count'] == 0
+                                    ? null
+                                    : Text(
+                                        '${playlistDetails[name]['count']} Songs'),
                                 trailing: PopupMenuButton(
                                   icon: Icon(Icons.more_vert_rounded),
                                   shape: RoundedRectangleBorder(
@@ -262,11 +264,21 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                                   onSelected: (value) async {
                                     if (value == 1) {
                                       ExportPlaylist().exportPlaylist(
-                                          context, playlistNames[index]);
+                                          context,
+                                          name,
+                                          playlistDetails.containsKey(name)
+                                              ? playlistDetails[name]["name"] ??
+                                                  name
+                                              : name);
                                     }
                                     if (value == 2) {
                                       ExportPlaylist().sharePlaylist(
-                                          context, playlistNames[index]);
+                                          context,
+                                          name,
+                                          playlistDetails.containsKey(name)
+                                              ? playlistDetails[name]["name"] ??
+                                                  name
+                                              : name);
                                     }
                                     if (value == 0) {
                                       ScaffoldMessenger.of(context)
@@ -276,7 +288,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                                           backgroundColor: Colors.grey[900],
                                           behavior: SnackBarBehavior.floating,
                                           content: Text(
-                                            'Deleted ${playlistNames[index]}',
+                                            'Deleted ${playlistDetails.containsKey(name) ? playlistDetails[name]["name"] ?? name : name}',
                                             style:
                                                 TextStyle(color: Colors.white),
                                           ),
@@ -288,20 +300,43 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                                           ),
                                         ),
                                       );
-                                      playlistDetails
-                                          .remove(playlistNames[index]);
+                                      playlistDetails.remove(name);
                                       await settingsBox.put(
                                           'playlistDetails', playlistDetails);
-                                      await Hive.openBox(playlistNames[index]);
-                                      await Hive.box(playlistNames[index])
-                                          .deleteFromDisk();
+                                      await Hive.openBox(name);
+                                      await Hive.box(name).deleteFromDisk();
                                       await playlistNames.removeAt(index);
                                       await settingsBox.put(
                                           'playlistNames', playlistNames);
                                       setState(() {});
                                     }
+                                    if (value == 3) {
+                                      String testName = 'TestName2';
+
+                                      playlistDetails[name] == null
+                                          ? playlistDetails.addAll({
+                                              name: {"name": testName}
+                                            })
+                                          : playlistDetails[name]
+                                              .addAll({'name': testName});
+
+                                      await settingsBox.put(
+                                          'playlistDetails', playlistDetails);
+                                      setState(() {});
+                                    }
                                   },
                                   itemBuilder: (context) => [
+                                    PopupMenuItem(
+                                      value: 3,
+                                      child: Row(
+                                        children: [
+                                          Icon(Icons.edit_rounded),
+                                          Spacer(),
+                                          Text('Rename'),
+                                          Spacer(),
+                                        ],
+                                      ),
+                                    ),
                                     PopupMenuItem(
                                       value: 0,
                                       child: Row(
@@ -338,14 +373,18 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                                   ],
                                 ),
                                 onTap: () async {
-                                  await Hive.openBox(playlistNames[index]);
+                                  await Hive.openBox(name);
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) => LikedSongs(
-                                              playlistName:
-                                                  playlistNames[index])));
-                                  // Navigator.pushNamed(context, '/liked');
+                                              playlistName: name,
+                                              showName: playlistDetails
+                                                      .containsKey(name)
+                                                  ? playlistDetails[name]
+                                                          ["name"] ??
+                                                      name
+                                                  : name)));
                                 },
                               );
                             })

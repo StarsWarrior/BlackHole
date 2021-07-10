@@ -8,7 +8,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
 class ExportPlaylist {
-  void exportPlaylist(BuildContext context, String playlistName) async {
+  void exportPlaylist(
+      BuildContext context, String playlistName, String showName) async {
     String dirPath =
         await Picker().selectFolder(context, 'Select Export Location');
     if (dirPath == '') {
@@ -18,7 +19,7 @@ class ExportPlaylist {
           backgroundColor: Colors.grey[900],
           behavior: SnackBarBehavior.floating,
           content: Text(
-            'Failed to Export "$playlistName"',
+            'Failed to Export "$showName"',
             style: TextStyle(color: Colors.white),
           ),
           action: SnackBarAction(
@@ -34,8 +35,8 @@ class ExportPlaylist {
     Box playlistBox = Hive.box(playlistName);
     Map _songsMap = playlistBox?.toMap();
     String _songs = json.encode(_songsMap);
-    File file = await File(dirPath + "/" + playlistName + '.json')
-        .create(recursive: true);
+    File file =
+        await File(dirPath + "/" + showName + '.json').create(recursive: true);
     await file.writeAsString(_songs.toString());
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -43,7 +44,7 @@ class ExportPlaylist {
         backgroundColor: Colors.grey[900],
         behavior: SnackBarBehavior.floating,
         content: Text(
-          'Exported "$playlistName"',
+          'Exported "$showName"',
           style: TextStyle(color: Colors.white),
         ),
         action: SnackBarAction(
@@ -55,7 +56,8 @@ class ExportPlaylist {
     );
   }
 
-  void sharePlaylist(BuildContext context, String playlistName) async {
+  void sharePlaylist(
+      BuildContext context, String playlistName, String showName) async {
     Directory appDir = await getApplicationDocumentsDirectory();
     String temp = appDir.path;
 
@@ -64,7 +66,7 @@ class ExportPlaylist {
     Map _songsMap = playlistBox?.toMap();
     String _songs = json.encode(_songsMap);
     File file =
-        await File(temp + "/" + playlistName + '.json').create(recursive: true);
+        await File(temp + "/" + showName + '.json').create(recursive: true);
     await file.writeAsString(_songs.toString());
 
     await Share.shareFiles([file.path], text: 'Have a look at my playlist!');

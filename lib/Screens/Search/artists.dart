@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:blackhole/CustomWidgets/add_queue.dart';
 import 'package:blackhole/CustomWidgets/downloadButton.dart';
 import 'package:blackhole/Screens/Common/song_list.dart';
 import 'package:blackhole/Screens/Player/audioplayer.dart';
@@ -191,10 +192,19 @@ class _ArtistSearchPageState extends State<ArtistSearchPage> {
                                                       entry.key ==
                                                           'Latest Release' ||
                                                       entry.key == 'Singles')
-                                                  ? DownloadButton(
-                                                      data: entry.value[index],
-                                                      icon: 'download',
-                                                    )
+                                                  ? Row(
+                                                      mainAxisSize:
+                                                          MainAxisSize.min,
+                                                      children: [
+                                                          DownloadButton(
+                                                            data: entry
+                                                                .value[index],
+                                                            icon: 'download',
+                                                          ),
+                                                          AddToQueueButton(
+                                                              data: entry.value[
+                                                                  index]),
+                                                        ])
                                                   : null,
                                               onTap: () {
                                                 Navigator.push(

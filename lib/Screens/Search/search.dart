@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:blackhole/CustomWidgets/add_queue.dart';
 import 'package:blackhole/CustomWidgets/downloadButton.dart';
 import 'package:blackhole/Screens/Common/song_list.dart';
 import 'package:blackhole/Screens/Player/audioplayer.dart';
@@ -314,10 +315,19 @@ class _SearchPageState extends State<SearchPage> {
                                             ),
                                             trailing: key != 'Albums'
                                                 ? key == 'Songs'
-                                                    ? DownloadButton(
-                                                        data: value[index],
-                                                        icon: 'download',
-                                                      )
+                                                    ? Row(
+                                                        mainAxisSize:
+                                                            MainAxisSize.min,
+                                                        children: [
+                                                            DownloadButton(
+                                                              data:
+                                                                  value[index],
+                                                              icon: 'download',
+                                                            ),
+                                                            AddToQueueButton(
+                                                                data: value[
+                                                                    index]),
+                                                          ])
                                                     : null
                                                 : AlbumDownloadButton(
                                                     albumName: value[index]

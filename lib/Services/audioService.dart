@@ -193,6 +193,22 @@ class AudioPlayerTask extends BackgroundAudioTask {
   }
 
   @override
+  Future<void> onAddQueueItem(MediaItem mediaItem) async {
+    final playerIndex = _player.currentIndex;
+    final pos = _player.position;
+
+    await concatenatingAudioSource.add(AudioSource.uri(offline
+        ? Uri.file(mediaItem.extras['url'])
+        : Uri.parse(mediaItem.extras['url'].replaceAll(
+            "_96.", "_${preferredQuality.replaceAll(' kbps', '')}."))));
+    queue.add(mediaItem);
+    await AudioServiceBackground.setQueue(queue);
+    await _player.setAudioSource(concatenatingAudioSource,
+        initialIndex: playerIndex, initialPosition: pos);
+    await AudioServiceBackground.setMediaItem(queue[playerIndex]);
+  }
+
+  @override
   Future<void> onRemoveQueueItem(MediaItem mediaItem) async {
     final removeIndex = queue.indexWhere((item) => item == mediaItem);
     final playerIndex = _player.currentIndex;

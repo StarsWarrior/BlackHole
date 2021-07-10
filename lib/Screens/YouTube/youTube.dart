@@ -9,6 +9,10 @@ import 'package:hive/hive.dart';
 import 'package:material_floating_search_bar/material_floating_search_bar.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
+bool status = false;
+List<Video> searchedList = [];
+bool fetched = false;
+
 class YouTube extends StatefulWidget {
   const YouTube({Key key}) : super(key: key);
 
@@ -17,9 +21,6 @@ class YouTube extends StatefulWidget {
 }
 
 class _YouTubeState extends State<YouTube> {
-  bool status = false;
-  List<Video> searchedList = [];
-  bool fetched = false;
   String playlist = 'PLnc6mq_nY21P4Ap1SIYC3v6uBQkvKrY3M';
   String globalTopVideos = 'PL4fGSI1pDJn5kI81J1fYWK5eZRl1zJ5kM';
   String globalTopSongs = 'PL4fGSI1pDJn6puJdseH2Rt9sMvt9E2M4i';
