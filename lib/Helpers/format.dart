@@ -1,5 +1,6 @@
 import 'package:blackhole/APIs/api.dart';
 import 'package:des_plugin/des_plugin.dart';
+import 'package:hive/hive.dart';
 
 class FormatResponse {
   String capitalize(String msg) {
@@ -39,6 +40,10 @@ class FormatResponse {
   }
 
   Future<Map> formatSingleSongResponse(Map response) async {
+    Map cachedSong = Hive.box('songDetails').get(response['id']);
+    if (cachedSong != null) {
+      return cachedSong;
+    }
     try {
       List artistNames = [];
       if (response['more_info']["artistMap"]['primary_artists'] == null ||
@@ -96,6 +101,7 @@ class FormatResponse {
             "38346591", response["more_info"]["encrypted_media_url"])
       };
       info["url"] = info["url"].replaceAll("http:", "https:");
+      Hive.box('songDetails').put(response['id'], info);
       return info;
     } catch (e) {
       return {"Error": e};
@@ -449,8 +455,13 @@ class FormatResponse {
         Map item = list[i];
         if (item["type"] == "song") {
           if (item["mini_obj"] ?? false) {
-            if (fetchDetails)
-              list[i] = await SaavnAPI().fetchSongDetails(item['id']);
+            if (fetchDetails) {
+              Map cachedDetails = Hive.box('songDetails').get(item['id']);
+              if (cachedDetails == null) {
+                cachedDetails = await SaavnAPI().fetchSongDetails(item['id']);
+              }
+              list[i] = cachedDetails;
+            }
             continue;
           }
           list[i] = await formatSingleSongResponse(item);
