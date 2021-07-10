@@ -1,3 +1,4 @@
+import 'package:blackhole/APIs/api.dart';
 import 'package:des_plugin/des_plugin.dart';
 
 class FormatResponse {
@@ -397,15 +398,20 @@ class FormatResponse {
 
   Future<Map> formatHomePageData(Map data) async {
     try {
-      data["new_trending"] = await formatSongsInList(data["new_trending"]);
+      data["new_trending"] =
+          await formatSongsInList(data["new_trending"], false);
       List promoList = [];
+      List promoListTemp = [];
       data["modules"].forEach((k, v) {
         if (k.startsWith('promo')) {
-          promoList.add(k.toString());
+          if (data[k][0]['type'] == 'song' && data[k][0]['mini_obj'] ?? false)
+            promoListTemp.add(k.toString());
+          else
+            promoList.add(k.toString());
         }
       });
       for (int i = 0; i < promoList.length; i++) {
-        data[promoList[i]] = await formatSongsInList(data[promoList[i]]);
+        data[promoList[i]] = await formatSongsInList(data[promoList[i]], false);
       }
       data["collections"] = [
         "new_trending",
@@ -416,18 +422,37 @@ class FormatResponse {
         // "artist_recos",
         ...promoList
       ];
+      data['collections_temp'] = promoListTemp;
     } catch (err) {
       print(err);
     }
     return data;
   }
 
-  Future<List> formatSongsInList(List list) async {
+  Future<Map> formatPromoLists(Map data) async {
+    try {
+      List promoList = data['collections_temp'];
+      for (int i = 0; i < promoList.length; i++) {
+        data[promoList[i]] = await formatSongsInList(data[promoList[i]], true);
+      }
+      data['collections'].addAll(promoList);
+      data['collections_temp'] = [];
+    } catch (err) {
+      print(err);
+    }
+    return data;
+  }
+
+  Future<List> formatSongsInList(List list, bool fetchDetails) async {
     if (list.isNotEmpty) {
       for (int i = 0; i < list.length; i++) {
         Map item = list[i];
         if (item["type"] == "song") {
-          if (item["mini_obj"] ?? false) continue;
+          if (item["mini_obj"] ?? false) {
+            if (fetchDetails)
+              list[i] = await SaavnAPI().fetchSongDetails(item['id']);
+            continue;
+          }
           list[i] = await formatSingleSongResponse(item);
         }
       }

@@ -1,3 +1,4 @@
+import 'package:blackhole/Helpers/format.dart';
 import 'package:blackhole/Screens/Common/song_list.dart';
 import 'package:blackhole/Screens/Player/audioplayer.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -22,6 +23,13 @@ class _SaavnHomePageState extends State<SaavnHomePage> {
 
   void getHomePageData() async {
     Map recievedData = await SaavnAPI().fetchHomePageData();
+    if (recievedData != null && recievedData.isNotEmpty) {
+      Hive.box('cache').put('homepage', recievedData);
+      data = recievedData;
+      lists = ["recent", ...?data["collections"]];
+    }
+    setState(() {});
+    recievedData = await FormatResponse().formatPromoLists(data);
     if (recievedData != null && recievedData.isNotEmpty) {
       Hive.box('cache').put('homepage', recievedData);
       data = recievedData;
