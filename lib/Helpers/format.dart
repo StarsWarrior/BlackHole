@@ -1,4 +1,3 @@
-import 'package:blackhole/APIs/api.dart';
 import 'package:des_plugin/des_plugin.dart';
 
 class FormatResponse {
@@ -426,10 +425,10 @@ class FormatResponse {
   Future<List> formatSongsInList(List list) async {
     if (list.isNotEmpty) {
       for (int i = 0; i < list.length; i++) {
-        if (list[i]["type"] == "song") {
-          list[i] = list[i]["mini_obj"] != null
-              ? await SaavnAPI().fetchSongDetails(list[i]["id"])
-              : await formatSingleSongResponse(list[i]);
+        Map item = list[i];
+        if (item["type"] == "song") {
+          if (item["mini_obj"] ?? false) continue;
+          list[i] = await formatSingleSongResponse(item);
         }
       }
     }

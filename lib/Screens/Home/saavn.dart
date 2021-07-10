@@ -9,9 +9,7 @@ bool fetched = false;
 List preferredLanguage =
     Hive.box('settings').get('preferredLanguage') ?? ['Hindi'];
 Map data = Hive.box('cache').get('homepage', defaultValue: {});
-List lists = data["collections"] != null
-    ? ["recent", ...data["collections"]]
-    : ["recent"];
+List lists = ["recent", ...?data["collections"]];
 
 class SaavnHomePage extends StatefulWidget {
   @override
@@ -27,15 +25,17 @@ class _SaavnHomePageState extends State<SaavnHomePage> {
     if (recievedData != null && recievedData.isNotEmpty) {
       Hive.box('cache').put('homepage', recievedData);
       data = recievedData;
-      lists = ["recent", ...data["collections"]];
+      lists = ["recent", ...?data["collections"]];
     }
     setState(() {});
   }
 
   String getSubTitle(Map item) {
     final type = item['type'];
-    if (type == 'playlist') {
-      return formatString(item['subtitle']) ?? '';
+    if (type == 'charts') {
+      return '';
+    } else if (type == 'playlist') {
+      return formatString(item['subtitle']);
     } else if (type == 'radio_station') {
       return "Artist Radio";
     } else if (type == "song") {
@@ -49,12 +49,14 @@ class _SaavnHomePageState extends State<SaavnHomePage> {
   }
 
   String formatString(String text) {
-    return text
-        .toString()
-        .replaceAll("&amp;", "&")
-        .replaceAll("&#039;", "'")
-        .replaceAll("&quot;", "\"")
-        .trim();
+    return text == null
+        ? ''
+        : text
+            .toString()
+            .replaceAll("&amp;", "&")
+            .replaceAll("&#039;", "'")
+            .replaceAll("&quot;", "\"")
+            .trim();
   }
 
   @override
@@ -245,6 +247,7 @@ class _SaavnHomePageState extends State<SaavnHomePage> {
                           final currentSongList = data[lists[idx]]
                               .where((e) => (e["type"] == 'song'))
                               .toList();
+                          final subTitle = getSubTitle(item);
                           return GestureDetector(
                             child: SizedBox(
                               width:
@@ -283,9 +286,9 @@ class _SaavnHomePageState extends State<SaavnHomePage> {
                                     softWrap: false,
                                     overflow: TextOverflow.ellipsis,
                                   ),
-                                  lists[idx] != 'charts'
+                                  subTitle != ''
                                       ? Text(
-                                          getSubTitle(item),
+                                          subTitle,
                                           textAlign: TextAlign.center,
                                           softWrap: false,
                                           overflow: TextOverflow.ellipsis,
