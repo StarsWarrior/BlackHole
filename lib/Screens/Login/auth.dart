@@ -76,8 +76,12 @@ class _AuthScreenState extends State<AuthScreen> {
       "themeColor": "",
       "colorHue": "",
       "lastLogin": "",
-      "accountCreatedOn":
-          DateTime.now().toUtc().add(Duration(hours: 5, minutes: 30)).toString().split('.').first,
+      "accountCreatedOn": DateTime.now()
+          .toUtc()
+          .add(Duration(hours: 5, minutes: 30))
+          .toString()
+          .split('.')
+          .first,
       "deviceInfo": deviceInfo,
       "preferredLanguage": ["Hindi"],
     });
@@ -161,7 +165,8 @@ class _AuthScreenState extends State<AuthScreen> {
                     Padding(
                       padding: const EdgeInsets.only(left: 10, right: 10),
                       child: Container(
-                        padding: EdgeInsets.only(top: 5, bottom: 5, left: 10, right: 10),
+                        padding: EdgeInsets.only(
+                            top: 5, bottom: 5, left: 10, right: 10),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10.0),
                           color: Theme.of(context).cardColor,
@@ -181,7 +186,8 @@ class _AuthScreenState extends State<AuthScreen> {
                             keyboardType: TextInputType.name,
                             decoration: InputDecoration(
                               focusedBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(width: 1.5, color: Colors.transparent),
+                                borderSide: BorderSide(
+                                    width: 1.5, color: Colors.transparent),
                               ),
                               prefixIcon: Icon(
                                 Icons.person,
