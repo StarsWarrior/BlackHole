@@ -25,6 +25,8 @@ class _YouTubeSearchPageState extends State<YouTubeSearchPage> {
   bool fetched = false;
   bool done = true;
   List ytSearch = Hive.box('settings').get('ytSearch', defaultValue: []);
+  bool showHistory =
+      Hive.box('settings').get('showHistory', defaultValue: true);
   FloatingSearchBarController _controller = FloatingSearchBarController();
 
   @override
@@ -44,6 +46,7 @@ class _YouTubeSearchPageState extends State<YouTubeSearchPage> {
           children: [
             Expanded(
               child: Scaffold(
+                resizeToAvoidBottomInset: false,
                 backgroundColor: Colors.transparent,
                 body: FloatingSearchBar(
                   borderRadius: BorderRadius.circular(10.0),
@@ -121,45 +124,47 @@ class _YouTubeSearchPageState extends State<YouTubeSearchPage> {
                     ),
                   ],
                   builder: (context, transition) {
-                    return ClipRRect(
-                      borderRadius: BorderRadius.circular(10.0),
-                      child: GradientCard(
-                        child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: ytSearch
-                                .map((e) => ListTile(
-                                    // dense: true,
-                                    horizontalTitleGap: 0.0,
-                                    title: Text(e),
-                                    leading: Icon(CupertinoIcons.search),
-                                    trailing: IconButton(
-                                        icon: Icon(
-                                          CupertinoIcons.clear,
-                                          size: 15.0,
-                                        ),
-                                        onPressed: () {
-                                          setState(() {
-                                            ytSearch.remove(e);
-                                            Hive.box('settings')
-                                                .put('ytSearch', ytSearch);
-                                          });
-                                        }),
-                                    onTap: () {
-                                      _controller.close();
-                                      setState(() {
-                                        fetched = false;
-                                        query = e;
-                                        status = false;
-                                        searchedList = [];
-                                        ytSearch.remove(e);
-                                        ytSearch.insert(0, e);
-                                        Hive.box('settings')
-                                            .put('ytSearch', ytSearch);
-                                      });
-                                    }))
-                                .toList()),
-                      ),
-                    );
+                    return !showHistory
+                        ? SizedBox()
+                        : ClipRRect(
+                            borderRadius: BorderRadius.circular(10.0),
+                            child: GradientCard(
+                              child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: ytSearch
+                                      .map((e) => ListTile(
+                                          // dense: true,
+                                          horizontalTitleGap: 0.0,
+                                          title: Text(e),
+                                          leading: Icon(CupertinoIcons.search),
+                                          trailing: IconButton(
+                                              icon: Icon(
+                                                CupertinoIcons.clear,
+                                                size: 15.0,
+                                              ),
+                                              onPressed: () {
+                                                setState(() {
+                                                  ytSearch.remove(e);
+                                                  Hive.box('settings').put(
+                                                      'ytSearch', ytSearch);
+                                                });
+                                              }),
+                                          onTap: () {
+                                            _controller.close();
+                                            setState(() {
+                                              fetched = false;
+                                              query = e;
+                                              status = false;
+                                              searchedList = [];
+                                              ytSearch.remove(e);
+                                              ytSearch.insert(0, e);
+                                              Hive.box('settings')
+                                                  .put('ytSearch', ytSearch);
+                                            });
+                                          }))
+                                      .toList()),
+                            ),
+                          );
                   },
                   body: (!fetched)
                       ? Container(

@@ -170,6 +170,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return GradientContainer(
       child: Scaffold(
+          resizeToAvoidBottomInset: false,
           backgroundColor: Colors.transparent,
           drawer: Drawer(
             child: GradientContainer(

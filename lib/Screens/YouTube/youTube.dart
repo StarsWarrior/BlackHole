@@ -27,6 +27,8 @@ class _YouTubeState extends State<YouTube> {
   String hitList = 'RDCLAK5uy_kmPRjHDECIcuVwnKsx2Ng7fyNgFKWNJFs';
   bool done = true;
   List ytSearch = Hive.box('settings').get('ytSearch', defaultValue: []);
+  bool showHistory =
+      Hive.box('settings').get('showHistory', defaultValue: true);
   FloatingSearchBarController _controller = FloatingSearchBarController();
 
   @override
@@ -34,11 +36,14 @@ class _YouTubeState extends State<YouTube> {
     if (!status) {
       status = true;
       YouTubeServices().getPlaylistSongs(hitList).then((value) {
-        if (value.isNotEmpty)
+        if (value.isNotEmpty) {
           setState(() {
             searchedList = value;
             fetched = true;
           });
+        } else {
+          status = false;
+        }
       });
     }
     super.initState();
@@ -47,6 +52,7 @@ class _YouTubeState extends State<YouTube> {
   @override
   Widget build(BuildContext cntxt) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: Colors.transparent,
       body: FloatingSearchBar(
         borderRadius: BorderRadius.circular(8.0),
@@ -134,49 +140,53 @@ class _YouTubeState extends State<YouTube> {
           ),
         ],
         builder: (context, transition) {
-          return ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: GradientCard(
-              child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: ytSearch
-                      .map((e) => ListTile(
-                          // dense: true,
-                          horizontalTitleGap: 0.0,
-                          title: Text(e),
-                          leading: Icon(CupertinoIcons.search),
-                          trailing: IconButton(
-                              icon: Icon(
-                                CupertinoIcons.clear,
-                                size: 15.0,
-                              ),
-                              onPressed: () {
-                                setState(() {
-                                  ytSearch.remove(e);
-                                  Hive.box('settings')
-                                      .put('ytSearch', ytSearch);
-                                });
-                              }),
-                          onTap: () {
-                            _controller.close();
-                            setState(() {
-                              ytSearch.remove(e);
-                              ytSearch.insert(0, e);
-                              Hive.box('settings').put('ytSearch', ytSearch);
-                            });
-                            Navigator.push(
-                              context,
-                              PageRouteBuilder(
-                                opaque: false,
-                                pageBuilder: (_, __, ___) => YouTubeSearchPage(
-                                  query: e,
-                                ),
-                              ),
-                            );
-                          }))
-                      .toList()),
-            ),
-          );
+          return !showHistory
+              ? SizedBox()
+              : ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: GradientCard(
+                    child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: ytSearch
+                            .map((e) => ListTile(
+                                // dense: true,
+                                horizontalTitleGap: 0.0,
+                                title: Text(e),
+                                leading: Icon(CupertinoIcons.search),
+                                trailing: IconButton(
+                                    icon: Icon(
+                                      CupertinoIcons.clear,
+                                      size: 15.0,
+                                    ),
+                                    onPressed: () {
+                                      setState(() {
+                                        ytSearch.remove(e);
+                                        Hive.box('settings')
+                                            .put('ytSearch', ytSearch);
+                                      });
+                                    }),
+                                onTap: () {
+                                  _controller.close();
+                                  setState(() {
+                                    ytSearch.remove(e);
+                                    ytSearch.insert(0, e);
+                                    Hive.box('settings')
+                                        .put('ytSearch', ytSearch);
+                                  });
+                                  Navigator.push(
+                                    context,
+                                    PageRouteBuilder(
+                                      opaque: false,
+                                      pageBuilder: (_, __, ___) =>
+                                          YouTubeSearchPage(
+                                        query: e,
+                                      ),
+                                    ),
+                                  );
+                                }))
+                            .toList()),
+                  ),
+                );
         },
         body: Stack(
           children: [

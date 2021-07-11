@@ -177,7 +177,7 @@ class _SettingPageState extends State<SettingPage> {
                               color: Theme.of(context).accentColor,
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black26,
+                                  color: Colors.grey[900],
                                   blurRadius: 5.0,
                                   spreadRadius: 0.0,
                                   offset: Offset(0.0, 3.0),
@@ -252,7 +252,8 @@ class _SettingPageState extends State<SettingPage> {
                                                           colors[index], hue),
                                                       boxShadow: [
                                                         BoxShadow(
-                                                          color: Colors.black26,
+                                                          color:
+                                                              Colors.grey[900],
                                                           blurRadius: 5.0,
                                                           spreadRadius: 0.0,
                                                           offset:
@@ -316,7 +317,7 @@ class _SettingPageState extends State<SettingPage> {
                               ),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black26,
+                                  color: Colors.grey[900],
                                   blurRadius: 5.0,
                                   spreadRadius: 0.0,
                                   offset: Offset(0.0, 3.0),
@@ -365,7 +366,7 @@ class _SettingPageState extends State<SettingPage> {
                                                 ),
                                                 boxShadow: [
                                                   BoxShadow(
-                                                    color: Colors.black26,
+                                                    color: Colors.grey[900],
                                                     blurRadius: 5.0,
                                                     spreadRadius: 0.0,
                                                     offset: Offset(0.0, 3.0),
@@ -418,7 +419,7 @@ class _SettingPageState extends State<SettingPage> {
                               ),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black26,
+                                  color: Colors.grey[900],
                                   blurRadius: 5.0,
                                   spreadRadius: 0.0,
                                   offset: Offset(0.0, 3.0),
@@ -467,7 +468,7 @@ class _SettingPageState extends State<SettingPage> {
                                                 ),
                                                 boxShadow: [
                                                   BoxShadow(
-                                                    color: Colors.black26,
+                                                    color: Colors.grey[900],
                                                     blurRadius: 5.0,
                                                     spreadRadius: 0.0,
                                                     offset: Offset(0.0, 3.0),
@@ -520,7 +521,7 @@ class _SettingPageState extends State<SettingPage> {
                               ),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black26,
+                                  color: Colors.grey[900],
                                   blurRadius: 5.0,
                                   spreadRadius: 0.0,
                                   offset: Offset(0.0, 3.0),
@@ -569,7 +570,7 @@ class _SettingPageState extends State<SettingPage> {
                                                 ),
                                                 boxShadow: [
                                                   BoxShadow(
-                                                    color: Colors.black26,
+                                                    color: Colors.grey[900],
                                                     blurRadius: 5.0,
                                                     spreadRadius: 0.0,
                                                     offset: Offset(0.0, 3.0),
@@ -1141,6 +1142,18 @@ class _SettingPageState extends State<SettingPage> {
                           updateUserDetails('showRecent', val);
                           setState(() {});
                           widget.callback();
+                        }),
+                    SwitchListTile(
+                        activeColor: Theme.of(context).accentColor,
+                        title: Text('Show Search History'),
+                        subtitle: Text('Default: On'),
+                        dense: true,
+                        value:
+                            settingsBox.get('showHistory', defaultValue: true),
+                        onChanged: (val) {
+                          settingsBox.put('showHistory', val);
+                          updateUserDetails('showHistory', val);
+                          setState(() {});
                         }),
                     SwitchListTile(
                         activeColor: Theme.of(context).accentColor,

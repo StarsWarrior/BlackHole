@@ -29,9 +29,12 @@ class _SearchPageState extends State<SearchPage> {
   Map<String, List> searchedData = {};
   Map<int, String> position = {};
   List<int> sortedKeys = [];
+  List topSearch = [];
   bool fetched = false;
   bool albumFetched = false;
   List search = Hive.box('settings').get('search', defaultValue: []);
+  bool showHistory =
+      Hive.box('settings').get('showHistory', defaultValue: true);
   FloatingSearchBarController _controller = FloatingSearchBarController();
 
   @override
@@ -65,6 +68,7 @@ class _SearchPageState extends State<SearchPage> {
           children: [
             Expanded(
               child: Scaffold(
+                resizeToAvoidBottomInset: false,
                 backgroundColor: Colors.transparent,
                 body: FloatingSearchBar(
                   borderRadius: BorderRadius.circular(10.0),
@@ -105,6 +109,10 @@ class _SearchPageState extends State<SearchPage> {
                   // onQueryChanged: (_query) {
                   // print(_query);
                   // },
+                  onFocusChanged: (isFocused) async {
+                    topSearch = await SaavnAPI().getTopSearches();
+                    setState(() {});
+                  },
                   onSubmitted: (_query) {
                     _controller.close();
 
@@ -115,7 +123,7 @@ class _SearchPageState extends State<SearchPage> {
                       searchedData = {};
                       if (search.contains(_query)) search.remove(_query);
                       search.insert(0, _query);
-                      if (search.length > 10) search = search.sublist(0, 10);
+                      if (search.length > 10) search = search.sublist(0, 5);
                       Hive.box('settings').put('search', search);
                     });
                   },
@@ -145,46 +153,78 @@ class _SearchPageState extends State<SearchPage> {
                     ),
                   ],
                   builder: (context, transition) {
-                    return ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: GradientCard(
-                        child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: search
-                                .map((e) => ListTile(
-                                    // dense: true,
-                                    horizontalTitleGap: 0.0,
-                                    title: Text(e),
-                                    leading: Icon(CupertinoIcons.search),
-                                    trailing: IconButton(
-                                        icon: Icon(
-                                          CupertinoIcons.clear,
-                                          size: 15.0,
-                                        ),
-                                        onPressed: () {
-                                          setState(() {
-                                            search.remove(e);
-                                            Hive.box('settings')
-                                                .put('search', search);
-                                          });
-                                        }),
-                                    onTap: () {
-                                      _controller.close();
+                    return Column(
+                      children: [
+                        if (showHistory)
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: GradientCard(
+                              child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: search
+                                      .map((e) => ListTile(
+                                          // dense: true,
+                                          horizontalTitleGap: 0.0,
+                                          title: Text(e),
+                                          leading: Icon(CupertinoIcons.search),
+                                          trailing: IconButton(
+                                              icon: Icon(
+                                                CupertinoIcons.clear,
+                                                size: 15.0,
+                                              ),
+                                              onPressed: () {
+                                                setState(() {
+                                                  search.remove(e);
+                                                  Hive.box('settings')
+                                                      .put('search', search);
+                                                });
+                                              }),
+                                          onTap: () {
+                                            _controller.close();
 
-                                      setState(() {
-                                        fetched = false;
-                                        query = e;
-                                        status = false;
-                                        searchedData = {};
+                                            setState(() {
+                                              fetched = false;
+                                              query = e;
+                                              status = false;
+                                              searchedData = {};
 
-                                        search.remove(e);
-                                        search.insert(0, e);
-                                        Hive.box('settings')
-                                            .put('search', search);
-                                      });
-                                    }))
-                                .toList()),
-                      ),
+                                              search.remove(e);
+                                              search.insert(0, e);
+                                              Hive.box('settings')
+                                                  .put('search', search);
+                                            });
+                                          }))
+                                      .toList()),
+                            ),
+                          ),
+                        if (topSearch.isNotEmpty)
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: GradientCard(
+                              child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: topSearch
+                                      .map((e) => ListTile(
+                                          horizontalTitleGap: 0.0,
+                                          title: Text(e),
+                                          leading:
+                                              Icon(Icons.trending_up_rounded),
+                                          onTap: () {
+                                            _controller.close();
+                                            setState(() {
+                                              fetched = false;
+                                              query = e;
+                                              status = false;
+                                              searchedData = {};
+                                              search.insert(0, e);
+                                              Hive.box('settings')
+                                                  .put('search', search);
+                                            });
+                                          }))
+                                      .toList()),
+                            ),
+                          ),
+                      ],
                     );
                   },
                   body: !fetched
