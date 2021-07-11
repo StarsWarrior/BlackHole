@@ -40,6 +40,21 @@ class SaavnAPI {
     return result;
   }
 
+  Future<List> getTopSearches() async {
+    List result = [];
+    String params = "__call=content.getTopSearches";
+    try {
+      final res = await getResponse(params, true);
+      if (res.statusCode == 200) {
+        final List getMain = json.decode(res.body);
+        result = getMain.map((element) {
+          return element["title"];
+        }).toList();
+      }
+    } catch (e) {}
+    return result;
+  }
+
   Future<List> fetchSongSearchResults(String searchQuery, String count) async {
     List searchedList = [];
     String params = "p=1&q=$searchQuery&n=$count&__call=search.getResults";
