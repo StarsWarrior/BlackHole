@@ -13,6 +13,7 @@ import 'dart:convert';
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:miniplayer/miniplayer.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:rxdart/rxdart.dart';
@@ -21,6 +22,7 @@ import 'package:hive/hive.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:blackhole/CustomWidgets/emptyScreen.dart';
 import 'package:blackhole/CustomWidgets/seekBar.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class PlayScreen extends StatefulWidget {
   final Map data;
@@ -52,8 +54,7 @@ class _PlayScreenState extends State<PlayScreen> {
   List response = [];
   bool fetched = false;
   bool offline = false;
-  bool change = true;
-  int checkIndex;
+  bool fromYT = false;
   String defaultCover = '';
   MediaItem playItem;
   static const double minExtent = 0.1;
@@ -194,6 +195,7 @@ class _PlayScreenState extends State<PlayScreen> {
     }
     response = data['response'];
     globalIndex = data['index'];
+    fromYT = data['fromYT'] ?? false;
     if (data['offline'] == null) {
       offline = AudioService.currentMediaItem?.extras['url'].startsWith('http')
           ? false
@@ -264,6 +266,9 @@ class _PlayScreenState extends State<PlayScreen> {
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.all(Radius.circular(7.0))),
                       onSelected: (value) {
+                        if (value == 3) {
+                          launch('https://youtube.com/watch?v=${mediaItem.id}');
+                        }
                         if (value == 2) {
                           showModalBottomSheet(
                             isDismissible: true,
@@ -790,6 +795,21 @@ class _PlayScreenState extends State<PlayScreen> {
                                       Spacer(),
                                     ],
                                   )),
+                              if (fromYT)
+                                PopupMenuItem(
+                                    value: 3,
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          MdiIcons.youtube,
+                                          color:
+                                              Theme.of(context).iconTheme.color,
+                                        ),
+                                        Spacer(),
+                                        Text('Watch Video'),
+                                        Spacer(),
+                                      ],
+                                    )),
                             ],
                     )
                   ],
@@ -815,76 +835,110 @@ class _PlayScreenState extends State<PlayScreen> {
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceEvenly,
                                       children: [
-                                        Card(
-                                          elevation: 10,
-                                          shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(15)),
-                                          clipBehavior: Clip.antiAlias,
-                                          child: Stack(
-                                            children: [
-                                              Image(
-                                                  fit: BoxFit.cover,
+                                        Container(
+                                          height: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              0.9,
+                                          child: Align(
+                                            alignment: Alignment.topCenter,
+                                            child: Container(
+                                              height: MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.85,
+                                              width: MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.85,
+                                              child: Card(
+                                                elevation: 10,
+                                                shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            15)),
+                                                clipBehavior: Clip.antiAlias,
+                                                child: Container(
                                                   height: MediaQuery.of(context)
                                                           .size
                                                           .width *
                                                       0.85,
-                                                  image: AssetImage(
-                                                      'assets/cover.jpg')),
-                                              globalQueue.length <= globalIndex
-                                                  ? Image(
-                                                      fit: BoxFit.cover,
-                                                      height:
-                                                          MediaQuery.of(context)
-                                                                  .size
-                                                                  .width *
-                                                              0.85,
-                                                      image: AssetImage(
-                                                          'assets/cover.jpg'))
-                                                  : offline
-                                                      ? Image(
+                                                  width: MediaQuery.of(context)
+                                                          .size
+                                                          .width *
+                                                      0.85,
+                                                  child: Stack(
+                                                    children: [
+                                                      Image(
                                                           fit: BoxFit.cover,
                                                           height: MediaQuery.of(
                                                                       context)
                                                                   .size
                                                                   .width *
                                                               0.85,
-                                                          image: FileImage(File(
-                                                            globalQueue[
-                                                                    globalIndex]
-                                                                .artUri
-                                                                .toFilePath(),
-                                                          )))
-                                                      : CachedNetworkImage(
-                                                          fit: BoxFit.cover,
-                                                          height: MediaQuery.of(
-                                                                      context)
-                                                                  .size
-                                                                  .width *
-                                                              0.85,
-                                                          errorWidget:
-                                                              (BuildContext
-                                                                          context,
-                                                                      _,
-                                                                      __) =>
-                                                                  Image(
-                                                            image: AssetImage(
-                                                                'assets/cover.jpg'),
-                                                          ),
-                                                          placeholder:
-                                                              (BuildContext
-                                                                          context,
-                                                                      _) =>
-                                                                  Image(
-                                                            image: AssetImage(
-                                                                'assets/cover.jpg'),
-                                                          ),
-                                                          imageUrl: globalQueue[
-                                                                  globalIndex]
-                                                              .artUri
-                                                              .toString(),
-                                                        ),
-                                            ],
+                                                          image: AssetImage(
+                                                              'assets/cover.jpg')),
+                                                      globalQueue.length <=
+                                                              globalIndex
+                                                          ? Image(
+                                                              fit: BoxFit.cover,
+                                                              height: MediaQuery.of(
+                                                                          context)
+                                                                      .size
+                                                                      .width *
+                                                                  0.85,
+                                                              image: AssetImage(
+                                                                  'assets/cover.jpg'))
+                                                          : offline
+                                                              ? Image(
+                                                                  fit: BoxFit
+                                                                      .cover,
+                                                                  height: MediaQuery.of(
+                                                                              context)
+                                                                          .size
+                                                                          .width *
+                                                                      0.85,
+                                                                  image:
+                                                                      FileImage(
+                                                                          File(
+                                                                    globalQueue[
+                                                                            globalIndex]
+                                                                        .artUri
+                                                                        .toFilePath(),
+                                                                  )))
+                                                              : CachedNetworkImage(
+                                                                  fit: BoxFit
+                                                                      .cover,
+                                                                  height: MediaQuery.of(
+                                                                              context)
+                                                                          .size
+                                                                          .width *
+                                                                      0.85,
+                                                                  errorWidget:
+                                                                      (BuildContext context,
+                                                                              _,
+                                                                              __) =>
+                                                                          Image(
+                                                                    image: AssetImage(
+                                                                        'assets/cover.jpg'),
+                                                                  ),
+                                                                  placeholder:
+                                                                      (BuildContext context,
+                                                                              _) =>
+                                                                          Image(
+                                                                    image: AssetImage(
+                                                                        'assets/cover.jpg'),
+                                                                  ),
+                                                                  imageUrl: globalQueue[
+                                                                          globalIndex]
+                                                                      .artUri
+                                                                      .toString(),
+                                                                ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
                                           ),
                                         ),
                                         Padding(
@@ -1055,6 +1109,11 @@ class _PlayScreenState extends State<PlayScreen> {
                                                                   .size
                                                                   .width *
                                                               0.85,
+                                                      width:
+                                                          MediaQuery.of(context)
+                                                                  .size
+                                                                  .width *
+                                                              0.85,
                                                       child: Card(
                                                         elevation: 10.0,
                                                         shape: RoundedRectangleBorder(
@@ -1162,6 +1221,11 @@ class _PlayScreenState extends State<PlayScreen> {
                                                             Alignment.topCenter,
                                                         child: Container(
                                                           height: MediaQuery.of(
+                                                                      context)
+                                                                  .size
+                                                                  .width *
+                                                              0.85,
+                                                          width: MediaQuery.of(
                                                                       context)
                                                                   .size
                                                                   .width *

@@ -345,6 +345,7 @@ class _YouTubeSearchPageState extends State<YouTubeSearchPage> {
                                                             ],
                                                             'index': 0,
                                                             'offline': false,
+                                                            'fromYT': true,
                                                           },
                                                         ),
                                                       ),

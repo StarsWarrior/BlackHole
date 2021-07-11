@@ -287,6 +287,7 @@ class _YouTubeState extends State<YouTube> {
                                         'response': [response],
                                         'index': 0,
                                         'offline': false,
+                                        'fromYT': true,
                                       },
                                     ),
                                   ),
