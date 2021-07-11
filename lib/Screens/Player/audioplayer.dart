@@ -60,6 +60,7 @@ class _PlayScreenState extends State<PlayScreen> {
   static const double maxExtent = 1;
   bool isExpanded = false;
   double initialExtent = minExtent;
+  int oldIndex;
 
   final _controller = PageController();
   // sleepTimer(0) cancels the timer
@@ -226,12 +227,16 @@ class _PlayScreenState extends State<PlayScreen> {
               final queueState = snapshot.data;
               final queue = queueState?.queue ?? [];
               final mediaItem = queueState?.mediaItem;
-              try {
-                _controller.animateToPage(
-                    queue.indexWhere((e) => e == mediaItem),
-                    duration: Duration(milliseconds: 300),
-                    curve: Curves.fastOutSlowIn);
-              } catch (e) {}
+              if (queue.isNotEmpty && mediaItem != null)
+                try {
+                  int newIndex =
+                      queue.indexWhere((element) => element == mediaItem);
+                  if (oldIndex != newIndex) {
+                    _controller.jumpToPage(newIndex);
+                    oldIndex = newIndex;
+                  }
+                  // });
+                } catch (e) {}
               return Scaffold(
                 backgroundColor: Colors.transparent,
                 appBar: AppBar(
@@ -935,6 +940,7 @@ class _PlayScreenState extends State<PlayScreen> {
                                         SeekBar(
                                           duration: Duration.zero,
                                           position: Duration.zero,
+                                          bufferedPosition: Duration.zero,
                                         ),
                                         Row(
                                           mainAxisAlignment:
@@ -1121,14 +1127,12 @@ class _PlayScreenState extends State<PlayScreen> {
                                                     scrollBehavior:
                                                         ScrollBehavior(),
                                                     onPageChanged: (indx) {
-                                                      print(indx);
                                                       if (queue.isNotEmpty &&
                                                           mediaItem != null) {
                                                         if (repeatMode ==
                                                                 'All' ||
                                                             queue[indx] !=
                                                                 mediaItem) {
-                                                          print("changing");
                                                           AudioService
                                                               .skipToQueueItem(
                                                                   queue[indx %
@@ -1136,8 +1140,7 @@ class _PlayScreenState extends State<PlayScreen> {
                                                                               .length]
                                                                       .id);
                                                         }
-                                                      } else
-                                                        print("not changing");
+                                                      }
                                                     },
                                                     physics:
                                                         BouncingScrollPhysics(),
@@ -1308,6 +1311,9 @@ class _PlayScreenState extends State<PlayScreen> {
                                                 Duration.zero,
                                             position: mediaState?.position ??
                                                 Duration.zero,
+                                            bufferedPosition:
+                                                mediaState?.bufferPosition ??
+                                                    Duration.zero,
                                             onChangeEnd: (newPosition) {
                                               AudioService.seekTo(newPosition);
                                             },
@@ -1345,10 +1351,6 @@ class _PlayScreenState extends State<PlayScreen> {
                                                     AudioService.setShuffleMode(
                                                         AudioServiceShuffleMode
                                                             .none);
-
-                                                  setState(() {
-                                                    print(queue);
-                                                  });
                                                 },
                                               ),
                                               if (!offline)
@@ -1660,42 +1662,22 @@ class _PlayScreenState extends State<PlayScreen> {
                                                                     oldIndex,
                                                                 int newIndex) {
                                                               setState(() {
-                                                                if (newIndex >
-                                                                    oldIndex) {
-                                                                  newIndex -= 1;
-                                                                }
+                                                                if (oldIndex <
+                                                                    newIndex)
+                                                                  newIndex--;
                                                                 final items =
                                                                     queue.removeAt(
                                                                         oldIndex);
                                                                 queue.insert(
                                                                     newIndex,
                                                                     items);
-                                                                int newMediaIndex =
-                                                                    queue.indexWhere((element) =>
-                                                                        element ==
-                                                                        mediaItem);
                                                                 AudioService
                                                                     .customAction(
                                                                         'reorder',
                                                                         [
                                                                       oldIndex,
-                                                                      newIndex,
-                                                                      newMediaIndex
+                                                                      newIndex
                                                                     ]);
-                                                                if (oldIndex <
-                                                                        newMediaIndex &&
-                                                                    newIndex <
-                                                                        newMediaIndex) {
-                                                                  AudioService.skipToQueueItem(
-                                                                      queue[newMediaIndex -
-                                                                              1]
-                                                                          .id);
-                                                                } else {
-                                                                  AudioService
-                                                                      .skipToQueueItem(
-                                                                          queue[newMediaIndex]
-                                                                              .id);
-                                                                }
                                                               });
                                                             },
                                                             physics:
@@ -1730,13 +1712,6 @@ class _PlayScreenState extends State<PlayScreen> {
                                                                     queue.remove(
                                                                         queue[
                                                                             index]);
-                                                                    int newIndex =
-                                                                        queue.indexWhere((element) =>
-                                                                            element ==
-                                                                            mediaItem);
-                                                                    AudioService.skipToQueueItem(
-                                                                        queue[newIndex]
-                                                                            .id);
                                                                   });
                                                                 },
                                                                 child:
@@ -1880,10 +1855,14 @@ class _PlayScreenState extends State<PlayScreen> {
   /// A stream reporting the combined state of the current media item and its
   /// current position.
   Stream<MediaState> get _mediaStateStream =>
-      Rx.combineLatest2<MediaItem, Duration, MediaState>(
+      Rx.combineLatest3<MediaItem, Duration, Duration, MediaState>(
           AudioService.currentMediaItemStream,
           AudioService.positionStream,
-          (mediaItem, position) => MediaState(mediaItem, position));
+          AudioService.playbackStateStream
+              .map((state) => state.bufferedPosition)
+              .distinct(),
+          (mediaItem, position, bufferPosition) =>
+              MediaState(mediaItem, position, bufferPosition));
 
   /// A stream reporting the combined state of the current queue and the current
   /// media item within that queue.
@@ -1944,8 +1923,9 @@ class QueueState {
 class MediaState {
   final MediaItem mediaItem;
   final Duration position;
+  final Duration bufferPosition;
 
-  MediaState(this.mediaItem, this.position);
+  MediaState(this.mediaItem, this.position, this.bufferPosition);
 }
 
 void _audioPlayerTaskEntrypoint() async {

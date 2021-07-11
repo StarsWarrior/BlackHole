@@ -280,12 +280,27 @@ class _AddToQueueButtonState extends State<AddToQueueButton> {
                 });
           }
           if (value == 1) {
-            // make sure to check if the current queue is online or offline
-
             MediaItem event = AudioService.currentMediaItem;
             if (event != null &&
                 event.extras['url'].toString().startsWith('http')) {
+              // TODO: make sure to check if song is already in queue
               AudioService.addQueueItem(mediaItem);
+
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                duration: Duration(seconds: 2),
+                elevation: 6,
+                backgroundColor: Colors.grey[900],
+                behavior: SnackBarBehavior.floating,
+                content: Text(
+                  'Added "${mediaItem.title}" to Queue',
+                  style: TextStyle(color: Colors.white),
+                ),
+                action: SnackBarAction(
+                  textColor: Theme.of(context).accentColor,
+                  label: 'Ok',
+                  onPressed: () {},
+                ),
+              ));
             } else {
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                 duration: Duration(seconds: 2),

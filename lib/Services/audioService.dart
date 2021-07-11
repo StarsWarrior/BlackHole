@@ -7,7 +7,6 @@ import 'package:just_audio/just_audio.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:audio_session/audio_session.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-// import 'package:flutter/services.dart' show rootBundle;
 import 'package:path_provider/path_provider.dart';
 
 class AudioPlayerTask extends BackgroundAudioTask {
@@ -122,13 +121,20 @@ class AudioPlayerTask extends BackgroundAudioTask {
     final session = await AudioSession.instance;
     await session.configure(AudioSessionConfiguration.music());
 
-    _player.currentIndexStream.listen((idx) {
+    _player.currentIndexStream.distinct().listen((idx) {
       if (idx != null && queue.isNotEmpty) {
         index = idx;
         AudioServiceBackground.setMediaItem(queue[idx]);
-        AudioServiceBackground.sendCustomEvent(idx);
       }
     });
+
+    // _player.sequenceStateStream.distinct().listen((state) {
+    // if (state != null) {
+    // MediaItem mediaItem = state.currentSource.tag;
+    // AudioServiceBackground.setMediaItem(mediaItem);
+    // index = queue.indexWhere((element) => element == mediaItem);
+    // }
+    // });
 
     _eventSubscription = _player.playbackEventStream.listen((event) {
       _broadcastState();
@@ -156,10 +162,12 @@ class AudioPlayerTask extends BackgroundAudioTask {
     await AudioServiceBackground.setMediaItem(_queue[index]);
     concatenatingAudioSource = ConcatenatingAudioSource(
       children: _queue
-          .map((item) => AudioSource.uri(offline
-              ? Uri.file(item.extras['url'])
-              : Uri.parse(item.extras['url'].replaceAll(
-                  "_96.", "_${preferredQuality.replaceAll(' kbps', '')}."))))
+          .map((item) => AudioSource.uri(
+              offline
+                  ? Uri.file(item.extras['url'])
+                  : Uri.parse(item.extras['url'].replaceAll(
+                      "_96.", "_${preferredQuality.replaceAll(' kbps', '')}.")),
+              tag: item))
           .toList(),
     );
     await _player.setAudioSource(concatenatingAudioSource);
@@ -169,86 +177,43 @@ class AudioPlayerTask extends BackgroundAudioTask {
 
   @override
   Future<void> onAddQueueItemAt(MediaItem mediaItem, int addIndex) async {
-    final playerIndex = _player.currentIndex;
-    final pos = _player.position;
-
     await concatenatingAudioSource.insert(
         addIndex,
-        AudioSource.uri(offline
-            ? Uri.file(mediaItem.extras['url'])
-            : Uri.parse(mediaItem.extras['url'].replaceAll(
-                "_96.", "_${preferredQuality.replaceAll(' kbps', '')}."))));
+        AudioSource.uri(
+            offline
+                ? Uri.file(mediaItem.extras['url'])
+                : Uri.parse(mediaItem.extras['url'].replaceAll(
+                    "_96.", "_${preferredQuality.replaceAll(' kbps', '')}.")),
+            tag: mediaItem));
     queue.insert(addIndex, mediaItem);
     await AudioServiceBackground.setQueue(queue);
-
-    if (addIndex > playerIndex) {
-      await _player.setAudioSource(concatenatingAudioSource,
-          initialIndex: playerIndex, initialPosition: pos);
-      await AudioServiceBackground.setMediaItem(queue[playerIndex]);
-    } else {
-      await _player.setAudioSource(concatenatingAudioSource,
-          initialIndex: playerIndex + 1, initialPosition: pos);
-      await AudioServiceBackground.setMediaItem(queue[playerIndex + 1]);
-    }
   }
 
   @override
   Future<void> onAddQueueItem(MediaItem mediaItem) async {
-    final playerIndex = _player.currentIndex;
-    final pos = _player.position;
-
-    await concatenatingAudioSource.add(AudioSource.uri(offline
-        ? Uri.file(mediaItem.extras['url'])
-        : Uri.parse(mediaItem.extras['url'].replaceAll(
-            "_96.", "_${preferredQuality.replaceAll(' kbps', '')}."))));
+    await concatenatingAudioSource.add(AudioSource.uri(
+        offline
+            ? Uri.file(mediaItem.extras['url'])
+            : Uri.parse(mediaItem.extras['url'].replaceAll(
+                "_96.", "_${preferredQuality.replaceAll(' kbps', '')}.")),
+        tag: mediaItem));
     queue.add(mediaItem);
     await AudioServiceBackground.setQueue(queue);
-    await _player.setAudioSource(concatenatingAudioSource,
-        initialIndex: playerIndex, initialPosition: pos);
-    await AudioServiceBackground.setMediaItem(queue[playerIndex]);
   }
 
   @override
   Future<void> onRemoveQueueItem(MediaItem mediaItem) async {
     final removeIndex = queue.indexWhere((item) => item == mediaItem);
-    final playerIndex = _player.currentIndex;
-    final pos = _player.position;
-
+    queue.remove(mediaItem);
     await concatenatingAudioSource.removeAt(removeIndex);
-    queue.removeAt(removeIndex);
     await AudioServiceBackground.setQueue(queue);
-    if (removeIndex > playerIndex) {
-      await _player.setAudioSource(concatenatingAudioSource,
-          initialIndex: playerIndex, initialPosition: pos);
-      await AudioServiceBackground.setMediaItem(queue[playerIndex]);
-    } else {
-      await _player.setAudioSource(concatenatingAudioSource,
-          initialIndex: playerIndex - 1, initialPosition: pos);
-      await AudioServiceBackground.setMediaItem(queue[playerIndex - 1]);
-    }
   }
 
-  Future<void> onReorderQueue(
-      int oldIndex, int newIndex, int newMediaIndex) async {
-    // int playerIndex = _player.currentIndex;
-    // final playerMediaItem = queue[playerIndex];
-    final pos = _player.position;
-
-    final items = queue.removeAt(oldIndex);
-    queue.insert(newIndex, items);
+  Future<void> onReorderQueue(int oldIndex, int newIndex) async {
+    concatenatingAudioSource.move(oldIndex, newIndex);
+    MediaItem item = queue.removeAt(oldIndex);
+    queue.insert(newIndex, item);
     await AudioServiceBackground.setQueue(queue);
-    await AudioServiceBackground.setMediaItem(queue[newMediaIndex]);
-    await concatenatingAudioSource.removeAt(oldIndex);
-    await concatenatingAudioSource.insert(
-        newIndex,
-        AudioSource.uri(offline
-            ? Uri.file(items.extras['url'])
-            : Uri.parse(items.extras['url'].replaceAll(
-                "_96.", "_${preferredQuality.replaceAll(' kbps', '')}."))));
-
-    // playerIndex = queue.indexWhere((element) => element == playerMediaItem);
-    await _player.setAudioSource(concatenatingAudioSource,
-        initialIndex: newMediaIndex, initialPosition: pos);
   }
 
   @override
@@ -271,7 +236,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
     }
 
     if (myFunction == 'reorder') {
-      onReorderQueue(myVariable[0], myVariable[1], myVariable[2]);
+      onReorderQueue(myVariable[0], myVariable[1]);
     }
 
     return Future.value(true);
@@ -297,45 +262,24 @@ class AudioPlayerTask extends BackgroundAudioTask {
 
   @override
   Future<void> onSetShuffleMode(AudioServiceShuffleMode shuffleMode) async {
-    int playerIndex = _player.currentIndex;
-    final playerMediaItem = queue[playerIndex];
-    final pos = _player.position;
-
     switch (shuffleMode) {
       case AudioServiceShuffleMode.none:
-        queue = defaultQueue.toList();
-        concatenatingAudioSource = ConcatenatingAudioSource(
-          children: queue
-              .map((item) => AudioSource.uri(offline
-                  ? Uri.file(item.extras['url'])
-                  : Uri.parse(item.extras['url'].replaceAll("_96.",
-                      "_${preferredQuality.replaceAll(' kbps', '')}."))))
-              .toList(),
-        );
-        await AudioServiceBackground.setQueue(queue);
-        playerIndex = queue.indexWhere((element) => element == playerMediaItem);
-        await AudioServiceBackground.setMediaItem(queue[playerIndex]);
-        await _player.setAudioSource(concatenatingAudioSource,
-            initialIndex: playerIndex, initialPosition: pos);
+        queue = defaultQueue;
+        _player.setShuffleModeEnabled(false);
+        AudioServiceBackground.setQueue(queue);
         break;
       case AudioServiceShuffleMode.group:
         break;
       case AudioServiceShuffleMode.all:
-        defaultQueue = queue.toList();
-        queue.shuffle();
-        concatenatingAudioSource = ConcatenatingAudioSource(
-          children: queue
-              .map((item) => AudioSource.uri(offline
-                  ? Uri.file(item.extras['url'])
-                  : Uri.parse(item.extras['url'].replaceAll("_96.",
-                      "_${preferredQuality.replaceAll(' kbps', '')}."))))
-              .toList(),
-        );
-        await AudioServiceBackground.setQueue(queue);
-        playerIndex = queue.indexWhere((element) => element == playerMediaItem);
-        await AudioServiceBackground.setMediaItem(queue[playerIndex]);
-        await _player.setAudioSource(concatenatingAudioSource,
-            initialIndex: playerIndex, initialPosition: pos);
+        defaultQueue = queue;
+        _player.setShuffleModeEnabled(true);
+        _player.shuffle();
+        _player.sequenceStateStream
+            .map((state) => state?.effectiveSequence)
+            .distinct()
+            .map((sequence) =>
+                sequence.map((source) => source.tag as MediaItem).toList())
+            .listen(AudioServiceBackground.setQueue);
         break;
     }
   }
@@ -351,7 +295,6 @@ class AudioPlayerTask extends BackgroundAudioTask {
     await _player.dispose();
     _eventSubscription.cancel();
     await _broadcastState();
-    // Shut down this task
     await super.onStop();
   }
 

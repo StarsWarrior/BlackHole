@@ -1,11 +1,10 @@
 import 'dart:ui';
-
 import 'package:blackhole/CustomWidgets/gradientContainers.dart';
-import 'package:device_info/device_info.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:package_info/package_info.dart';
+import 'package:device_info/device_info.dart';
 
 class AuthScreen extends StatefulWidget {
   @override
@@ -195,6 +194,9 @@ class _AuthScreenState extends State<AuthScreen> {
                               ),
                               border: InputBorder.none,
                               hintText: "Your Name",
+                              hintStyle: TextStyle(
+                                color: Colors.white60,
+                              ),
                             ),
                             onSubmitted: (String value) {
                               if (value == '') {

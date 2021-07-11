@@ -446,6 +446,9 @@ class _HomePageState extends State<HomePage> {
                                                         ),
                                                         TextField(
                                                             autofocus: true,
+                                                            textAlignVertical:
+                                                                TextAlignVertical
+                                                                    .bottom,
                                                             controller:
                                                                 _controller,
                                                             onSubmitted:
@@ -551,8 +554,7 @@ class _HomePageState extends State<HomePage> {
                                                 75),
 
                                         duration: Duration(milliseconds: 300),
-                                        padding:
-                                            EdgeInsets.only(top: 3, bottom: 1),
+                                        padding: EdgeInsets.all(2.0),
                                         // margin: EdgeInsets.zero,
                                         decoration: BoxDecoration(
                                           borderRadius:
@@ -570,6 +572,8 @@ class _HomePageState extends State<HomePage> {
                                         ),
                                         child: TextField(
                                           controller: controller,
+                                          textAlignVertical:
+                                              TextAlignVertical.center,
                                           decoration: InputDecoration(
                                             focusedBorder: UnderlineInputBorder(
                                               borderSide: BorderSide(
