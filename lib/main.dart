@@ -62,6 +62,12 @@ void main() async {
     await Hive.openBox("recentlyPlayed");
   }
   try {
+    final box = await Hive.openBox('songDetails');
+    // clear box if it grows large
+    // each song detail is about 3.9KB so it's <5MB
+    if (box.length > 1200) {
+      box.clear();
+    }
     await Hive.openBox('songDetails');
   } catch (e) {
     print('Failed to open songDetails Box');
