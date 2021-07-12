@@ -19,6 +19,8 @@ import 'dart:math';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:package_info/package_info.dart';
+import 'package:blackhole/CustomWidgets/custom_physics.dart';
+
 
 class HomePage extends StatefulWidget {
   @override
@@ -303,6 +305,7 @@ class _HomePageState extends State<HomePage> {
               children: [
                 Expanded(
                   child: PageView(
+                    physics: CustomPhysics(),
                     onPageChanged: (indx) {
                       setState(() {
                         _selectedIndex = indx;
