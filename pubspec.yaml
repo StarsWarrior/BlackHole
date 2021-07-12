@@ -29,7 +29,6 @@ dependencies:
   audiotagger: ^2.2.1
   audio_session: ^0.1.5
   audio_service: ^0.17.1
-  flutter_ffmpeg: ^0.4.0
   
 
   # Productivity
@@ -45,9 +44,6 @@ dependencies:
   # flutter_downloader: ^1.6.1
   cached_network_image: ^3.0.0
   youtube_explode_dart: ^1.9.6
-
-  # Testing
-  # device_preview: ^0.7.4
 
   # UI related
   cupertino_icons: ^1.0.3
