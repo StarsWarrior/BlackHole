@@ -194,7 +194,10 @@ class _DownloadedSongsState extends State<DownloadedSongs>
     }
 
     for (FileSystemEntity entity in _files) {
-      if (entity.path.endsWith('.mp3') || entity.path.endsWith('.m4a')) {
+      if (entity.path.endsWith('.mp3') ||
+          entity.path.endsWith('.m4a') ||
+          entity.path.endsWith('.wav') ||
+          entity.path.endsWith('.flac')) {
         try {
           final Tag tags = await tagger.readTags(path: entity.path);
           FileStat stats = await entity.stat();

@@ -9,6 +9,7 @@ import 'package:hive/hive.dart';
 import 'package:http/http.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:flutter_ffmpeg/flutter_ffmpeg.dart';
 
 class Download with ChangeNotifier {
   String preferredDownloadQuality =
@@ -50,14 +51,17 @@ class Download with ChangeNotifier {
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Row(
-                  children: [
-                    Text(
-                      '"${data['title']}" already exists.\nDo you want to download it again?',
-                      softWrap: true,
-                      // style: TextStyle(color: Theme.of(context).accentColor),
-                    ),
-                  ],
+                Container(
+                  width: 500,
+                  child: Row(
+                    children: [
+                      Text(
+                        '"${data['title']}" already exists. Do you want to download it again?',
+                        softWrap: true,
+                        // style: TextStyle(color: Theme.of(context).accentColor),
+                      ),
+                    ],
+                  ),
                 ),
                 SizedBox(
                   height: 10,
@@ -113,10 +117,14 @@ class Download with ChangeNotifier {
     notifyListeners();
     String filepath;
     String filepath2;
+    bool status = true;
     List<int> _bytes = [];
     final artname = data['title'] + "artwork.jpg";
     Directory appDir = await getApplicationDocumentsDirectory();
     String appPath = appDir.path;
+    if (data['url'].toString().contains('google')) {
+      filename = filename.replaceAll('.m4a', '.weba');
+    }
     try {
       await File(dlPath + "/" + filename)
           .create(recursive: true)
@@ -146,7 +154,9 @@ class Download with ChangeNotifier {
         backgroundColor: Colors.grey[900],
         behavior: SnackBarBehavior.floating,
         content: Text(
-          'Downloading "${data['title'].toString()}" in $preferredDownloadQuality',
+          filepath.endsWith('.weba')
+              ? 'Downloading "${data['title'].toString()}" in Best Quality Available'
+              : 'Downloading "${data['title'].toString()}" in $preferredDownloadQuality',
           style: TextStyle(color: Colors.white),
         ),
         action: SnackBarAction(
@@ -181,25 +191,59 @@ class Download with ChangeNotifier {
       File file2 = File(filepath2);
 
       await file2.writeAsBytes(bytes2);
-      debugPrint("Started tag editing");
+      if (filepath.endsWith('.weba')) {
+        final FlutterFFmpeg _flutterFFmpeg = new FlutterFFmpeg();
 
-      final Tag tag = Tag(
-        title: data['title'],
-        artist: data['artist'],
-        albumArtist: data['artist'].toString()?.split(', ')[0],
-        artwork: filepath2.toString(),
-        album: data['album'],
-        genre: data['language'],
-        year: data['year'],
-        comment: 'BlackHole',
-      );
+        scaffoldMessenger.showSnackBar(
+          SnackBar(
+            elevation: 6,
+            backgroundColor: Colors.grey[900],
+            behavior: SnackBarBehavior.floating,
+            content: Text(
+              'Converting to MP3, please wait',
+              style: TextStyle(color: Colors.white),
+            ),
+            action: SnackBarAction(
+              textColor: Theme.of(context).accentColor,
+              label: 'Ok',
+              onPressed: () {},
+            ),
+          ),
+        );
+        var arguments = [
+          "-i",
+          filepath,
+          filepath.replaceAll('.weba', '.mp3'),
+        ];
+        await _flutterFFmpeg.executeWithArguments(arguments).then((rc) {
+          if (rc != 0) status = false;
+        });
+      }
 
-      final tagger = Audiotagger();
-      await tagger.writeTags(
-        path: filepath,
-        tag: tag,
-      );
+      if (status) {
+        debugPrint("Started tag editing");
+        final Tag tag = Tag(
+          title: data['title'],
+          artist: data['artist'],
+          albumArtist: data['artist'].toString()?.split(', ')[0],
+          artwork: filepath2.toString(),
+          album: data['album'],
+          genre: data['language'],
+          year: data['year'],
+          comment: 'BlackHole',
+        );
+
+        final tagger = Audiotagger();
+        await tagger.writeTags(
+          path: filepath.replaceAll('.weba', '.mp3'),
+          tag: tag,
+        );
+      }
       await Future.delayed(const Duration(seconds: 1), () {});
+
+      if (filepath.endsWith('.weba') && status) {
+        await File(filepath).delete();
+      }
       if (await file2.exists()) {
         await file2.delete();
       }
@@ -213,7 +257,9 @@ class Download with ChangeNotifier {
         backgroundColor: Colors.grey[900],
         behavior: SnackBarBehavior.floating,
         content: Text(
-          '"${data['title'].toString()}" has been downloaded',
+          status
+              ? '"${data['title'].toString()}" has been downloaded'
+              : 'Failed to Convert "${data['title'].toString()}"',
           style: TextStyle(color: Colors.white),
         ),
         action: SnackBarAction(

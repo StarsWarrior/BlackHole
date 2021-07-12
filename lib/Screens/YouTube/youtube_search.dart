@@ -298,7 +298,6 @@ class _YouTubeSearchPageState extends State<YouTubeSearchPage> {
                                               ],
                                             ),
                                             onTap: () async {
-                                              print('pressed');
                                               setState(() {
                                                 done = false;
                                               });

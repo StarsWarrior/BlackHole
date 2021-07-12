@@ -962,6 +962,7 @@ class _PlayScreenState extends State<PlayScreen> {
                                                 Expanded(
                                                   flex: 5,
                                                   child: FittedBox(
+                                                    fit: BoxFit.fitHeight,
                                                     child: Text(
                                                       globalQueue.length <=
                                                               globalIndex
@@ -1363,25 +1364,22 @@ class _PlayScreenState extends State<PlayScreen> {
                                               /// Subtitle container
                                               Expanded(
                                                 flex: 2,
-                                                child: FittedBox(
-                                                  child: Text(
-                                                    (mediaItem?.artist != null)
-                                                        ? (mediaItem.artist)
-                                                        : ((globalQueue
-                                                                    .length <=
-                                                                globalIndex)
-                                                            ? ''
-                                                            : globalQueue[
-                                                                    globalIndex]
-                                                                .artist),
-                                                    textAlign: TextAlign.center,
-                                                    style: TextStyle(
-                                                        fontSize: 18,
-                                                        fontWeight:
-                                                            FontWeight.w500),
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                  ),
+                                                child: Text(
+                                                  (mediaItem?.artist != null)
+                                                      ? (mediaItem.artist)
+                                                      : ((globalQueue.length <=
+                                                              globalIndex)
+                                                          ? ''
+                                                          : globalQueue[
+                                                                  globalIndex]
+                                                              .artist),
+                                                  textAlign: TextAlign.center,
+                                                  style: TextStyle(
+                                                      fontSize: 18,
+                                                      fontWeight:
+                                                          FontWeight.w500),
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
                                                 ),
                                               ),
                                             ],

@@ -1,3 +1,20 @@
+/*
+ * Copyright (c) 2021 Ankit Sangwan
+ *
+ * BlackHole is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * BlackHole is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with BlackHole.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 import 'dart:io';
 import 'package:blackhole/Helpers/config.dart';
 import 'package:audio_service/audio_service.dart';
@@ -124,6 +141,7 @@ class _MyAppState extends State<MyApp> {
 
     return MaterialApp(
       title: 'BlackHole',
+      // debugShowCheckedModeBanner: false,
       themeMode: currentTheme.currentTheme(), //system,
       theme: ThemeData(
         textSelectionTheme: TextSelectionThemeData(
