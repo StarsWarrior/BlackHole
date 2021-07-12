@@ -10,14 +10,7 @@ class AboutScreen extends StatefulWidget {
 }
 
 class _AboutScreenState extends State<AboutScreen> {
-<<<<<<< HEAD
-<<<<<<< HEAD
-  double appVersion = 1.4;
-=======
-  double appVersion;
-=======
   String appVersion;
->>>>>>> d822468 (added playlists and artists as search results)
 
   @override
   void initState() {
@@ -32,7 +25,6 @@ class _AboutScreenState extends State<AboutScreen> {
     });
   }
 
->>>>>>> b843d55 (final wrap-ups for v1.6)
   @override
   Widget build(BuildContext context) {
     return GradientContainer(

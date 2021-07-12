@@ -28,15 +28,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
   Box settingsBox;
-<<<<<<< HEAD
-<<<<<<< HEAD
-  double appVersion = 1.4;
-=======
-  double appVersion;
->>>>>>> b843d55 (final wrap-ups for v1.6)
-=======
   int appVersion;
->>>>>>> d822468 (added playlists and artists as search results)
   bool checked = false;
   bool update = false;
   String name = Hive.box("settings").get('name', defaultValue: 'Guest');
@@ -725,7 +717,7 @@ class _HomePageState extends State<HomePage> {
 
                       SalomonBottomBarItem(
                         icon: Icon(Icons.trending_up_rounded),
-                        title: Text("Spotify Top Charts"),
+                        title: Text("Spotify Charts"),
                         selectedColor: Theme.of(context).accentColor,
                       ),
                       SalomonBottomBarItem(

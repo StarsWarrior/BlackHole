@@ -12,16 +12,8 @@ class AuthScreen extends StatefulWidget {
 }
 
 class _AuthScreenState extends State<AuthScreen> {
-<<<<<<< HEAD
-<<<<<<< HEAD
-  double appVersion = 1.4;
-=======
-  double appVersion;
-=======
   String appVersion;
->>>>>>> d822468 (added playlists and artists as search results)
   Map deviceInfo = {};
->>>>>>> b843d55 (final wrap-ups for v1.6)
   String gender = "male";
   final dbRef = FirebaseDatabase.instance.reference().child("Users");
   TextEditingController controller;

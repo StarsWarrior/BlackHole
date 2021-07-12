@@ -194,8 +194,8 @@ class _YouTubeState extends State<YouTube> {
                 ? Container(
                     child: Center(
                       child: Container(
-                          height: MediaQuery.of(context).size.width / 6,
-                          width: MediaQuery.of(context).size.width / 6,
+                          height: MediaQuery.of(context).size.width / 7,
+                          width: MediaQuery.of(context).size.width / 7,
                           child: CircularProgressIndicator(
                             valueColor: AlwaysStoppedAnimation<Color>(
                                 Theme.of(context).accentColor),
@@ -325,8 +325,8 @@ class _YouTubeState extends State<YouTube> {
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             SizedBox(
-                                height: MediaQuery.of(context).size.width / 6,
-                                width: MediaQuery.of(context).size.width / 6,
+                                height: MediaQuery.of(context).size.width / 7,
+                                width: MediaQuery.of(context).size.width / 7,
                                 child: CircularProgressIndicator(
                                   valueColor: AlwaysStoppedAnimation<Color>(
                                       Theme.of(context).accentColor),
