@@ -1,10 +1,6 @@
 # BlackHole
-<<<<<<< HEAD
-Awesome Music Player made with Flutter
-=======
 
 Awesome Music Player made with Flutter!
->>>>>>> a97411b (spanish translation added and some minor changes in the README file)
 
 [![made-with-flutter](https://img.shields.io/badge/Made%20with-Flutter-1f425f.svg)](https://flutter.dev/) ![Release](https://img.shields.io/github/v/release/Sangwan5688/BlackHole) ![Downloads](https://img.shields.io/github/downloads/Sangwan5688/BlackHole/total)
 [![CI](https://github.com/Sangwan5688/BlackHole/actions/workflows/flutter.yml/badge.svg)](https://github.com/Sangwan5688/BlackHole/actions/workflows/flutter.yml)
@@ -13,10 +9,6 @@ Awesome Music Player made with Flutter!
 
 [![GitHub stars](https://img.shields.io/github/stars/Sangwan5688/BlackHole.svg?style=social&label=Star)](https://github.com//Sangwan5688/BlackHole) ![GitHub forks](https://img.shields.io/github/forks/Sangwan5688/BlackHole.svg?style=social&label=Forks) ![GitHub followers](https://img.shields.io/github/followers/Sangwan5688.svg?style=social&label=Follow)
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-<<<<<<< HEAD
 <h3>Features</h3>
 <p>Music Search<br>
 Top Playlists<br>
@@ -25,19 +17,11 @@ Streaming (320kbps)<br>
 Add Songs to Favorite<br>
 Download Support (320kbps with ID3 tags)<br>
 Play Online as well as Offline Songs<br>
-
-
-
-  <h3 align="center">Screenshots</h3>
-=======
-=======
->>>>>>> a97411b (spanish translation added and some minor changes in the README file)
-=======
+  
 ## Translations
 
 - [Spanish :es:](/README.ES.md)
 
->>>>>>> 07c161c (spanish translation added and some minor changes in the README file)
 ## Features
 
 * Best Streaming Quality (320kbps)
@@ -66,24 +50,9 @@ Play Online as well as Offline Songs<br>
 
 More to come...
 
-<<<<<<< HEAD
-  <h3 align="center">Preview</h3>
->>>>>>> 5a44d32 (Update README.md)
-  
-<<<<<<< HEAD
-<<<<<<< HEAD
-<img src="https://github.com/Sangwan5688/BlackHole/blob/main/Screenshots/home.png?raw=true" width="30%"></img> <img src="https://github.com/Sangwan5688/BlackHole/blob/main/Screenshots/play.png?raw=true" width="30%"></img> <img src="https://github.com/Sangwan5688/BlackHole/blob/main/Screenshots/local200.png?raw=true" width="30%"></img> <img src="https://github.com/Sangwan5688/BlackHole/blob/main/Screenshots/global200.png?raw=true" width="30%"></img> <img src="https://github.com/Sangwan5688/BlackHole/blob/main/Screenshots/mymusic.png?raw=true" width="30%"></img> <img src="https://github.com/Sangwan5688/BlackHole/blob/main/Screenshots/favorites.png?raw=true" width="30%"></img> 
-<<<<<<< HEAD
-=======
-=======
-<img src="https://github.com/Sangwan5688/BlackHole/blob/main/Screenshots/home.png?raw=true" width="32%"> <img src="https://github.com/Sangwan5688/BlackHole/blob/main/Screenshots/play.png?raw=true" width="32%"> <img src="https://github.com/Sangwan5688/BlackHole/blob/main/Screenshots/local200.png?raw=true" width="32%"> <img src="https://github.com/Sangwan5688/BlackHole/blob/main/Screenshots/global200.png?raw=true" width="31%"> <img src="https://github.com/Sangwan5688/BlackHole/blob/main/Screenshots/mymusic.png?raw=true" width="31%"> <img src="https://github.com/Sangwan5688/BlackHole/blob/main/Screenshots/favorites.png?raw=true" width="31%">
-=======
-=======
 <h3 align="center">Preview</h3>
 
->>>>>>> a97411b (spanish translation added and some minor changes in the README file)
 <img src="https://github.com/Sangwan5688/BlackHole/blob/main/Screenshots/home.png?raw=true" width="32%"> <img src="https://github.com/Sangwan5688/BlackHole/blob/main/Screenshots/play.png?raw=true" width="32%"> <img src="https://github.com/Sangwan5688/BlackHole/blob/main/Screenshots/local200.png?raw=true" width="32%"> <img src="https://github.com/Sangwan5688/BlackHole/blob/main/Screenshots/global200.png?raw=true" width="32%"> <img src="https://github.com/Sangwan5688/BlackHole/blob/main/Screenshots/mymusic.png?raw=true" width="32%"> <img src="https://github.com/Sangwan5688/BlackHole/blob/main/Screenshots/favorites.png?raw=true" width="32%">
->>>>>>> d56b0e8 (Update README.md)
 
 ## [Download Latest Version](https://github.com/Sangwan5688/BlackHole/releases)
 
@@ -102,15 +71,8 @@ git clone https://github.com/Sangwan5688/BlackHole.git
 ```
 
 3. Run the app with Android Studio or Visual Studio. Or the command line.
->>>>>>> 4c264a7 (Update README.md)
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-``` 
-=======
 ```
->>>>>>> a97411b (spanish translation added and some minor changes in the README file)
 flutter pub get
 flutter run
 ```
@@ -130,69 +92,12 @@ Have a look at some [common Issues](https://github.com/Sangwan5688/BlackHole/wik
 You can join our [Telegram Group](https://t.me/joinchat/fHDC1AWnOhw0ZmI9) if you have any query, or need help with something as well as to stay updated with the project and contact me.
 
 ## Liked my work?
-<<<<<<< HEAD
->>>>>>> 47d4796 (Update README.md)
-=======
 
->>>>>>> a97411b (spanish translation added and some minor changes in the README file)
 <a href="https://www.buymeacoffee.com/ankitsangwan" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" alt="Buy Me A Coffee" style="height: 41px !important;width: 174px !important;box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;-webkit-box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;" ></a>
 <h3><a href="https://github.com/Sangwan5688/BlackHole/releases" rel="GitHub Releases">Download Latest Version</h3>
 
 # What's New
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-## v1.3
-### Fixed:
-Song not downloading in Android 11.<br>
-Bottom Navigation Bar not changing with swipe.<br>
-Global Top 200 not showing correctly.<br>
-Song not stopping after app exit.<br>
-Notification couldn't be swiped to stop when paused.<br>
-Minor Bug fixes
-### New Features
-Added Sleep Timer.<br>
-Added support for different music languages.<br>
-Added Shuffle and Repeat in Offline Mode.<br>
-Minor changes
-=======
-## v1.7
-### Changes:
-* Import Playlists from Spotify.
-* Added Cache support.
-* Added shuffle and repeat in online mode too.
-* Removed need for app restart after country and language change.
-* Increased search results from 5 to 10.
-* Some UI Fixes.
-* Minor Bug fixes.
-* Minor UI changes.
->>>>>>> 5a44d32 (Update README.md)
 
-## v1.2
-### Fixed:
-Search bar remaining 3/4 after screen change.<br>
-TextField Color remaining blue/teal.<br>
-Notification image not showing in Offline play.<br>
-Offline songs not playing in order.<br>
-Download stop after screen changed.<br>
-Unplayable/failed songs showing in offline.<br>
-### New Features
-Added Sort option in Offline Music.<br>
-Added few gestures.<br>
-Added Last Session Playlists.<br>
-
-## v1.1
-Create new Playlists, add or remove songs from them.<br>
-Change the accent colour of the app as well as the colour hue the way you like it.<br>
-Play screen no longer shows 'Unknown' during the song loading.<br>
-Fixed colour issues in the Light theme.<br>
-Changed about page.<br>
-Few bug fixes.<br>
->>>>>>> 190c7b3 (Update README.md)
-=======
-=======
-
->>>>>>> a97411b (spanish translation added and some minor changes in the README file)
 ## v1.8
 
 ### New Features:
@@ -230,4 +135,3 @@ Few bug fixes.<br>
 * Next and previous button inactive even when repeat all is on.
 
 To read full changelog visit the [wiki page](https://github.com/Sangwan5688/BlackHole/wiki/Changelog)
->>>>>>> 883c592 (Updated README.md)
