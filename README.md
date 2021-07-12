@@ -37,7 +37,7 @@ Awesome Music Player made with Flutter!
 * Cache support
 * No Subscription
 * No Ads
-* YouTube Support (comming soon)
+* YouTube Support
 
 More to come...
 
@@ -48,9 +48,18 @@ More to come...
 ## [Download Latest Version](https://github.com/Sangwan5688/BlackHole/releases)
 
 ## License
-
-BlackHole is licensed under the [GPL v3.0](https://github.com/Sangwan5688/BlackHole/blob/main/LICENSE) license. You can redistribute and/or modify the project under the terms of GNU General Public License v3.0 as published by Free Software Foundation.<br>
+```
 Copyright © 2021 Ankit Sangwan
+
+BlackHole is free software licensed under GPL v3.0.
+You can redistribute and/or modify it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+BlackHole is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+See the GNU General Public License for more details.
+```
+[View License](https://github.com/Sangwan5688/BlackHole/blob/main/LICENSE)
 
 ## Build
 
