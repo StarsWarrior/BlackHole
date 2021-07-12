@@ -9,15 +9,6 @@ Awesome Music Player made with Flutter!
 
 [![GitHub stars](https://img.shields.io/github/stars/Sangwan5688/BlackHole.svg?style=social&label=Star)](https://github.com//Sangwan5688/BlackHole) ![GitHub forks](https://img.shields.io/github/forks/Sangwan5688/BlackHole.svg?style=social&label=Forks) ![GitHub followers](https://img.shields.io/github/followers/Sangwan5688.svg?style=social&label=Follow)
 
-<h3>Features</h3>
-<p>Music Search<br>
-Top Playlists<br>
-Local and Global Top 200 songs<br>
-Streaming (320kbps)<br>
-Add Songs to Favorite<br>
-Download Support (320kbps with ID3 tags)<br>
-Play Online as well as Offline Songs<br>
-  
 ## Translations
 
 - [Spanish :es:](/README.ES.md)
@@ -52,7 +43,7 @@ More to come...
 
 <h3 align="center">Preview</h3>
 
-<img src="https://github.com/Sangwan5688/BlackHole/blob/main/Screenshots/home.png?raw=true" width="32%"> <img src="https://github.com/Sangwan5688/BlackHole/blob/main/Screenshots/play.png?raw=true" width="32%"> <img src="https://github.com/Sangwan5688/BlackHole/blob/main/Screenshots/local200.png?raw=true" width="32%"> <img src="https://github.com/Sangwan5688/BlackHole/blob/main/Screenshots/global200.png?raw=true" width="32%"> <img src="https://github.com/Sangwan5688/BlackHole/blob/main/Screenshots/mymusic.png?raw=true" width="32%"> <img src="https://github.com/Sangwan5688/BlackHole/blob/main/Screenshots/favorites.png?raw=true" width="32%">
+<img src="https://github.com/Sangwan5688/BlackHole/blob/main/Screenshots/home.png?raw=true" width="32%"> <img src="https://github.com/Sangwan5688/BlackHole/blob/main/Screenshots/play.png?raw=true" width="32%"> <img src="https://github.com/Sangwan5688/BlackHole/blob/main/Screenshots/artist.png?raw=true" width="32%"> <img src="https://github.com/Sangwan5688/BlackHole/blob/main/Screenshots/topCharts.png?raw=true" width="32%"> <img src="https://github.com/Sangwan5688/BlackHole/blob/main/Screenshots/youtube.png?raw=true" width="32%"> <img src="https://github.com/Sangwan5688/BlackHole/blob/main/Screenshots/playlist.png?raw=true" width="32%">
 
 ## [Download Latest Version](https://github.com/Sangwan5688/BlackHole/releases)
 
