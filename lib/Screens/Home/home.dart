@@ -1,4 +1,5 @@
 import 'package:blackhole/Helpers/countrycodes.dart';
+import 'package:blackhole/CustomWidgets/custom_physics.dart';
 import 'package:blackhole/CustomWidgets/gradientContainers.dart';
 import 'package:blackhole/Screens/Home/saavn.dart';
 import 'package:blackhole/Screens/Library/downloaded.dart';
@@ -303,6 +304,7 @@ class _HomePageState extends State<HomePage> {
               children: [
                 Expanded(
                   child: PageView(
+                    physics: CustomPhysics(),
                     onPageChanged: (indx) {
                       setState(() {
                         _selectedIndex = indx;

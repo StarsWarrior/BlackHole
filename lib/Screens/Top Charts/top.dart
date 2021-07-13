@@ -1,3 +1,4 @@
+import 'package:blackhole/CustomWidgets/custom_physics.dart';
 import 'package:blackhole/CustomWidgets/emptyScreen.dart';
 import 'package:blackhole/Screens/Search/search.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -77,6 +78,7 @@ class _TopChartsState extends State<TopCharts> {
             ),
           ),
           body: TabBarView(
+            physics: CustomPhysics(),
             children: [
               TopPage(
                 region: widget.region,
