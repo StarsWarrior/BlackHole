@@ -1,4 +1,5 @@
 import 'package:blackhole/CustomWidgets/collage.dart';
+import 'package:blackhole/CustomWidgets/custom_physics.dart';
 import 'package:blackhole/CustomWidgets/downloadButton.dart';
 import 'package:blackhole/CustomWidgets/emptyScreen.dart';
 import 'package:blackhole/CustomWidgets/gradientContainers.dart';
@@ -463,6 +464,7 @@ class _LikedSongsState extends State<LikedSongs>
                         ),
                       )
                     : TabBarView(
+                        physics: CustomPhysics(),
                         controller: _tcontroller,
                         children: [
                           _songs.length == 0
@@ -480,6 +482,7 @@ class _LikedSongsState extends State<LikedSongs>
                                   padding: EdgeInsets.only(top: 10, bottom: 10),
                                   shrinkWrap: true,
                                   itemCount: _songs.length,
+                                  itemExtent: 70.0,
                                   itemBuilder: (context, index) {
                                     return ListTile(
                                         leading: Card(
@@ -614,6 +617,7 @@ class _LikedSongsState extends State<LikedSongs>
             padding: EdgeInsets.only(top: 20, bottom: 10),
             shrinkWrap: true,
             itemCount: sortedAlbumKeysList.length,
+            itemExtent: 70.0,
             itemBuilder: (context, index) {
               return ListTile(
                 leading: Collage(
@@ -656,6 +660,7 @@ class _LikedSongsState extends State<LikedSongs>
             padding: EdgeInsets.only(top: 20, bottom: 10),
             shrinkWrap: true,
             itemCount: sortedArtistKeysList.length,
+            itemExtent: 70.0,
             itemBuilder: (context, index) {
               return ListTile(
                 leading: Collage(
@@ -696,6 +701,7 @@ class _LikedSongsState extends State<LikedSongs>
             padding: EdgeInsets.only(top: 20, bottom: 10),
             shrinkWrap: true,
             itemCount: sortedGenreKeysList.length,
+            itemExtent: 70.0,
             itemBuilder: (context, index) {
               return ListTile(
                 leading: Collage(

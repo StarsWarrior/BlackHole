@@ -36,7 +36,7 @@ class _SeekBarState extends State<SeekBar> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: MediaQuery.of(context).size.width * 0.95,
+      width: MediaQuery.of(context).size.width * 0.975,
       child: Stack(
         children: [
           SliderTheme(

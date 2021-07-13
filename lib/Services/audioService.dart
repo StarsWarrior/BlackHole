@@ -171,7 +171,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
           .toList(),
     );
     await _player.setAudioSource(concatenatingAudioSource);
-    _player.seek(Duration.zero, index: index);
+    await _player.seek(Duration.zero, index: index);
     queue = _queue;
   }
 
@@ -272,8 +272,8 @@ class AudioPlayerTask extends BackgroundAudioTask {
         break;
       case AudioServiceShuffleMode.all:
         defaultQueue = queue;
-        _player.setShuffleModeEnabled(true);
-        _player.shuffle();
+        await _player.setShuffleModeEnabled(true);
+        await _player.shuffle();
         _player.sequenceStateStream
             .map((state) => state?.effectiveSequence)
             .distinct()

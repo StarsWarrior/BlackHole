@@ -323,7 +323,7 @@ class _PlayScreenState extends State<PlayScreen> {
                                                             .toString()
                                                             .replaceAll(
                                                                 "<br>", "\n");
-                                                        return Text(
+                                                        return SelectableText(
                                                           lyrics,
                                                           textAlign:
                                                               TextAlign.center,
@@ -365,7 +365,7 @@ class _PlayScreenState extends State<PlayScreen> {
                                                                   "Not Available",
                                                                   20.0);
                                                         }
-                                                        return Text(
+                                                        return SelectableText(
                                                           lyrics,
                                                           textAlign:
                                                               TextAlign.center,

@@ -185,6 +185,7 @@ class _SongsListState extends State<SongsList> {
                       padding: EdgeInsets.only(top: 10, bottom: 10),
                       shrinkWrap: true,
                       itemCount: _songs.length,
+                      itemExtent: 70.0,
                       itemBuilder: (context, index) {
                         return _songs.length == 0
                             ? SizedBox()

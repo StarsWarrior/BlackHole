@@ -1187,7 +1187,7 @@ class _SettingPageState extends State<SettingPage> {
                         }),
                     SwitchListTile(
                         activeColor: Theme.of(context).accentColor,
-                        title: Text('Use Proxy'),
+                        title: Text('Use Proxy (Beta)'),
                         subtitle:
                             Text("Turn this on if you are NOT from India"),
                         dense: true,

@@ -43,7 +43,7 @@ dependencies:
   # flutter_web_auth: ^0.3.0
   # flutter_downloader: ^1.6.1
   cached_network_image: ^3.0.0
-  youtube_explode_dart: ^1.9.6
+  youtube_explode_dart: ^1.9.9
 
   # UI related
   cupertino_icons: ^1.0.3

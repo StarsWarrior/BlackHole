@@ -88,7 +88,6 @@ class YouTubeServices {
     StreamManifest manifest =
         await yt.videos.streamsClient.getManifest(video.id);
     AudioOnlyStreamInfo streamInfo = manifest.audioOnly.withHighestBitrate();
-    print(streamInfo.bitrate);
     yt.close();
     return streamInfo.url.toString();
   }

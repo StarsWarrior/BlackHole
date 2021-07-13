@@ -207,6 +207,7 @@ class _TopPageState extends State<TopPage> {
                 child: ListView.builder(
                 physics: BouncingScrollPhysics(),
                 itemCount: showList.length,
+                itemExtent: 70.0,
                 itemBuilder: (context, index) {
                   return ListTile(
                     leading: Card(

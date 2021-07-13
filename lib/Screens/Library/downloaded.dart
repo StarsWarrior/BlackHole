@@ -1,6 +1,7 @@
 import 'package:audiotagger/models/audiofile.dart';
 import 'package:audiotagger/models/tag.dart';
 import 'package:blackhole/CustomWidgets/collage.dart';
+import 'package:blackhole/CustomWidgets/custom_physics.dart';
 import 'package:blackhole/Screens/Player/audioplayer.dart';
 import 'package:blackhole/CustomWidgets/gradientContainers.dart';
 import 'package:blackhole/CustomWidgets/emptyScreen.dart';
@@ -49,6 +50,12 @@ class _DownloadedSongsState extends State<DownloadedSongs>
     getCached();
     getDownloaded();
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _tcontroller.dispose();
   }
 
   void changeTitle() {
@@ -639,6 +646,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                         ),
                       )
                     : TabBarView(
+                        physics: CustomPhysics(),
                         controller: _tcontroller,
                         children: widget.type == 'all'
                             ? [
@@ -671,6 +679,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
             physics: BouncingScrollPhysics(),
             padding: EdgeInsets.only(top: 20, bottom: 10),
             shrinkWrap: true,
+            itemExtent: 70.0,
             itemCount: _cachedSongs.length,
             itemBuilder: (context, index) {
               return ListTile(
@@ -1247,6 +1256,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
             physics: BouncingScrollPhysics(),
             padding: EdgeInsets.only(top: 20, bottom: 10),
             shrinkWrap: true,
+            itemExtent: 70.0,
             itemCount: sortedCachedAlbumKeysList.length,
             itemBuilder: (context, index) {
               return ListTile(
@@ -1294,6 +1304,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
             physics: BouncingScrollPhysics(),
             padding: EdgeInsets.only(top: 20, bottom: 10),
             shrinkWrap: true,
+            itemExtent: 70.0,
             itemCount: sortedCachedArtistKeysList.length,
             itemBuilder: (context, index) {
               return ListTile(
@@ -1343,6 +1354,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
             physics: BouncingScrollPhysics(),
             padding: EdgeInsets.only(top: 20, bottom: 10),
             shrinkWrap: true,
+            itemExtent: 70.0,
             itemCount: sortedCachedGenreKeysList.length,
             itemBuilder: (context, index) {
               return ListTile(
@@ -1390,6 +1402,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
             physics: BouncingScrollPhysics(),
             padding: EdgeInsets.only(top: 20, bottom: 10),
             shrinkWrap: true,
+            itemExtent: 70.0,
             itemCount: _cachedVideos.length,
             itemBuilder: (context, index) {
               return ListTile(

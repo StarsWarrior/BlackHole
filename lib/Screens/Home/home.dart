@@ -1,6 +1,7 @@
 import 'package:blackhole/Helpers/countrycodes.dart';
 import 'package:blackhole/CustomWidgets/custom_physics.dart';
 import 'package:blackhole/CustomWidgets/gradientContainers.dart';
+import 'package:blackhole/Helpers/proxy.dart';
 import 'package:blackhole/Screens/Home/saavn.dart';
 import 'package:blackhole/Screens/Library/downloaded.dart';
 import 'package:blackhole/Screens/Library/library.dart';
@@ -128,6 +129,9 @@ class _HomePageState extends State<HomePage> {
           );
         }
       });
+      if (Hive.box('settings').get('useProxy', defaultValue: false)) {
+        appProxy.enable();
+      }
       return SizedBox();
     } else {
       // print('platform not android or already checked');

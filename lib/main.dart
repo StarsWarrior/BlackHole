@@ -18,7 +18,6 @@
 import 'dart:io';
 import 'package:blackhole/Helpers/config.dart';
 import 'package:audio_service/audio_service.dart';
-import 'package:blackhole/Helpers/proxy.dart';
 import 'package:blackhole/Screens/Library/nowplaying.dart';
 import 'package:blackhole/Screens/Library/playlists.dart';
 import 'package:blackhole/Screens/Library/recent.dart';
@@ -102,10 +101,6 @@ void main() async {
     await Firebase.initializeApp();
   } catch (e) {
     print('Failed to initialize Firebase');
-  }
-
-  if (Hive.box('settings').get('useProxy', defaultValue: false)) {
-    appProxy.enable();
   }
 
   Paint.enableDithering = true;
