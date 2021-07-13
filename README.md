@@ -15,8 +15,9 @@ Awesome Music Player made with Flutter!
 
 ## Features
 
-* Best Streaming Quality (320kbps)
-* Music and Album Search
+* Best Streaming Quality (320kbps aac)
+* Song, Album, Artist and Playlist Search
+* Language Specific Promoted Playlists
 * Trending Songs
 * Support 15+ music languages
 * Local and Global Top Spotify songs
@@ -30,6 +31,7 @@ Awesome Music Player made with Flutter!
 * Queue Management
 * Listening history record
 * Dark mode / accent color
+* Custom Gradients and other Theme options
 * Download for offline play (320kbps with ID3 tags)
 * Play Online as well as Offline Songs
 * Play videos as audio
@@ -37,9 +39,12 @@ Awesome Music Player made with Flutter!
 * Cache support
 * No Subscription
 * No Ads
-* YouTube Support
+* YouTube Search Support
+* Youtube Playlists
+* Tag Editing Support
 
-More to come...
+and much more...
+Check it yourself :)
 
 <h3 align="center">Preview</h3>
 
@@ -94,44 +99,30 @@ You can join our [Telegram Group](https://t.me/joinchat/fHDC1AWnOhw0ZmI9) if you
 ## Liked my work?
 
 <a href="https://www.buymeacoffee.com/ankitsangwan" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" alt="Buy Me A Coffee" style="height: 41px !important;width: 174px !important;box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;-webkit-box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;" ></a>
-<h3><a href="https://github.com/Sangwan5688/BlackHole/releases" rel="GitHub Releases">Download Latest Version</h3>
 
 # What's New
 
 ## v1.8
 
-### New Features:
-
-* Option to select the download location.
-* Option to select folders to search for music.
-* Caching for Offline Songs.
-* A Genre tab along with songs, albums, and artists.
-* Display the total song number in a playlist.
-* Added Now playing in the play screen.
-* Added Album artist details for tracks.
-* Like and Download option in now playing queue.
-* Image Slideshow in the player.
-* Import/Export playlists using a JSON file.
-* Option to share playlists as JSON files.
-* Replaced Alert Dialogs with Snack Bars.
-* Download option in playlists.
-* Changed Buy me a Coffee donation amount & added GPay.
-* Option to download Full playlist.
-* Changed position of the stop button in the notification.
-* Keep cached trending playlists in case any error occurs.
-* Gapless Playback (No more wait in autoplay).
-* Added “.opus” format to videos.
-* Added Albums in search results.
-* A search bar in the results screen.
-* Option to clear and opt-out of the Last session.
-* Made the gender option during login more simple and easy to find.
-* Option to download the whole album from search results.
-
-### Bug Fixes:
-
-* Music pauses when a notification arrives.
-* Removed the gap between the bottom navigation drawer and the mini-player.
-* Image doesn’t change in Autoplay.
-* Next and previous button inactive even when repeat all is on.
+* YouTube support added
+* Major UI Changes
+* Playlist and Artist Search Added
+* Added Promoted Playlists
+* Search History
+* Trending Searches
+* New Theme Options
+* Hide Last Session Songs
+* Proxy Support Added (beta)
+* Changed Default Theme
+* Add song to Queue
+* Flac and Wav Support Added for Offline Songs
+* Made UI more responsive for different screen sizes
+* Added more lyrics support
+* Removed the slight gap when rearranging queue
+* Duplicate song now doesn't replace the old one
+* Playlist rename option added
+* Added selected-language specific search results
+* Added SD Card Support
+* Bug Fixes
 
 To read full changelog visit the [wiki page](https://github.com/Sangwan5688/BlackHole/wiki/Changelog)
