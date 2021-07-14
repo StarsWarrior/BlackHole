@@ -282,46 +282,39 @@ class _PlayScreenState extends State<PlayScreen> {
                                           padding: EdgeInsets.fromLTRB(
                                               10, 30, 10, 30),
                                           child: FutureBuilder(
-                                                        future: Lyrics().getOffLyrics(
-                                                            mediaItem.id
-                                                                .toString(),),
-                                                        builder:
-                                                            (BuildContext context,
-                                                                AsyncSnapshot
-                                                                    snapshot) {
-                                                          if (snapshot
-                                                                  .connectionState ==
-                                                              ConnectionState
-                                                                  .done) {
-                                                            String lyrics =
-                                                                snapshot.data;
-                                                            if (lyrics == '') {
-                                                              return EmptyScreen()
-                                                                  .emptyScreen(
-                                                                      context,
-                                                                      0,
-                                                                      ":( ",
-                                                                      100.0,
-                                                                      "Lyrics",
-                                                                      60.0,
-                                                                      "Not Available",
-                                                                      20.0);
-                                                            }
-                                                            return SelectableText(
-                                                              lyrics,
-                                                              textAlign:
-                                                                  TextAlign
-                                                                      .center,
-                                                            );
-                                                          }
-                                                          return CircularProgressIndicator(
-                                                            valueColor:
-                                                                AlwaysStoppedAnimation<
-                                                                    Color>(Theme.of(
-                                                                        context)
-                                                                    .accentColor),
-                                                          );
-                                                        }),
+                                              future: Lyrics().getOffLyrics(
+                                                mediaItem.id.toString(),
+                                              ),
+                                              builder: (BuildContext context,
+                                                  AsyncSnapshot snapshot) {
+                                                if (snapshot.connectionState ==
+                                                    ConnectionState.done) {
+                                                  String lyrics = snapshot.data;
+                                                  if (lyrics == '') {
+                                                    return EmptyScreen()
+                                                        .emptyScreen(
+                                                            context,
+                                                            0,
+                                                            ":( ",
+                                                            100.0,
+                                                            "Lyrics",
+                                                            60.0,
+                                                            "Not Available",
+                                                            20.0);
+                                                  }
+                                                  return SelectableText(
+                                                    lyrics,
+                                                    textAlign: TextAlign.center,
+                                                  );
+                                                }
+                                                return CircularProgressIndicator(
+                                                  valueColor:
+                                                      AlwaysStoppedAnimation<
+                                                              Color>(
+                                                          Theme.of(context)
+                                                              .accentColor),
+                                                );
+                                              }),
                                         ),
                                       ),
                                     );
