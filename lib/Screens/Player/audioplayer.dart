@@ -8,8 +8,6 @@ import 'package:blackhole/Helpers/playlist.dart';
 import 'package:blackhole/Services/audioService.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:http/http.dart';
-import 'dart:convert';
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -180,7 +178,7 @@ class _PlayScreenState extends State<PlayScreen> {
                 "has_lyrics": song["has_lyrics"],
                 "release_date": song["release_date"],
                 "album_id": song["album_id"],
-                "subtitle": song['subtitle']
+                "subtitle": song["subtitle"],
               })),
     );
     fetched = true;
@@ -270,119 +268,164 @@ class _PlayScreenState extends State<PlayScreen> {
                           launch('https://youtube.com/watch?v=${mediaItem.id}');
                         }
                         if (value == 2) {
-                          showModalBottomSheet(
-                            isDismissible: true,
-                            backgroundColor: Colors.transparent,
-                            context: context,
-                            builder: (BuildContext context) {
-                              String lyrics;
-                              final queueState = snapshot.data;
-                              final mediaItem = queueState?.mediaItem;
-
-                              Future<dynamic> fetchLyrics() {
-                                Uri lyricsUrl = Uri.https(
-                                    "www.jiosaavn.com",
-                                    "/api.php?__call=lyrics.getLyrics&lyrics_id=" +
-                                        mediaItem.id +
-                                        "&ctx=web6dot0&api_version=4&_format=json");
-                                return get(lyricsUrl,
-                                    headers: {"Accept": "application/json"});
-                              }
-
-                              return mediaItem == null
-                                  ? SizedBox()
-                                  : BottomGradientContainer(
+                          offline
+                              ? showModalBottomSheet(
+                                  isDismissible: true,
+                                  backgroundColor: Colors.transparent,
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return BottomGradientContainer(
                                       padding: EdgeInsets.zero,
                                       child: Center(
                                         child: SingleChildScrollView(
-                                            physics: BouncingScrollPhysics(),
-                                            padding: EdgeInsets.fromLTRB(
-                                                10, 30, 10, 30),
-                                            child: mediaItem
-                                                        .extras["has_lyrics"] ==
-                                                    "true"
-                                                ? FutureBuilder(
-                                                    future: fetchLyrics(),
-                                                    builder:
-                                                        (BuildContext context,
-                                                            AsyncSnapshot
-                                                                snapshot) {
-                                                      if (snapshot
-                                                              .connectionState ==
-                                                          ConnectionState
-                                                              .done) {
-                                                        List lyricsEdited =
-                                                            (snapshot.data.body)
-                                                                .split("-->");
-                                                        final fetchedLyrics =
-                                                            json.decode(
-                                                                lyricsEdited[
-                                                                    1]);
-                                                        lyrics = fetchedLyrics[
-                                                                "lyrics"]
-                                                            .toString()
-                                                            .replaceAll(
-                                                                "<br>", "\n");
-                                                        return SelectableText(
-                                                          lyrics,
-                                                          textAlign:
-                                                              TextAlign.center,
-                                                        );
-                                                      }
-                                                      return CircularProgressIndicator(
-                                                        valueColor:
-                                                            AlwaysStoppedAnimation<
-                                                                Color>(Theme.of(
-                                                                    context)
-                                                                .accentColor),
-                                                      );
-                                                    })
-                                                : FutureBuilder(
-                                                    future: Lyrics().getLyrics(
-                                                        mediaItem.title
-                                                            .toString(),
-                                                        mediaItem.artist
-                                                            .toString()),
-                                                    builder:
-                                                        (BuildContext context,
-                                                            AsyncSnapshot
-                                                                snapshot) {
-                                                      if (snapshot
-                                                              .connectionState ==
-                                                          ConnectionState
-                                                              .done) {
-                                                        String lyrics =
-                                                            snapshot.data;
-                                                        if (lyrics == '') {
-                                                          return EmptyScreen()
-                                                              .emptyScreen(
-                                                                  context,
-                                                                  0,
-                                                                  ":( ",
-                                                                  100.0,
-                                                                  "Lyrics",
-                                                                  60.0,
-                                                                  "Not Available",
-                                                                  20.0);
-                                                        }
-                                                        return SelectableText(
-                                                          lyrics,
-                                                          textAlign:
-                                                              TextAlign.center,
-                                                        );
-                                                      }
-                                                      return CircularProgressIndicator(
-                                                        valueColor:
-                                                            AlwaysStoppedAnimation<
-                                                                Color>(Theme.of(
-                                                                    context)
-                                                                .accentColor),
-                                                      );
-                                                    })),
+                                          physics: BouncingScrollPhysics(),
+                                          padding: EdgeInsets.fromLTRB(
+                                              10, 30, 10, 30),
+                                          child: FutureBuilder(
+                                                        future: Lyrics().getOffLyrics(
+                                                            mediaItem.id
+                                                                .toString(),),
+                                                        builder:
+                                                            (BuildContext context,
+                                                                AsyncSnapshot
+                                                                    snapshot) {
+                                                          if (snapshot
+                                                                  .connectionState ==
+                                                              ConnectionState
+                                                                  .done) {
+                                                            String lyrics =
+                                                                snapshot.data;
+                                                            if (lyrics == '') {
+                                                              return EmptyScreen()
+                                                                  .emptyScreen(
+                                                                      context,
+                                                                      0,
+                                                                      ":( ",
+                                                                      100.0,
+                                                                      "Lyrics",
+                                                                      60.0,
+                                                                      "Not Available",
+                                                                      20.0);
+                                                            }
+                                                            return SelectableText(
+                                                              lyrics,
+                                                              textAlign:
+                                                                  TextAlign
+                                                                      .center,
+                                                            );
+                                                          }
+                                                          return CircularProgressIndicator(
+                                                            valueColor:
+                                                                AlwaysStoppedAnimation<
+                                                                    Color>(Theme.of(
+                                                                        context)
+                                                                    .accentColor),
+                                                          );
+                                                        }),
+                                        ),
                                       ),
                                     );
-                            },
-                          );
+                                  })
+                              : showModalBottomSheet(
+                                  isDismissible: true,
+                                  backgroundColor: Colors.transparent,
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    String lyrics;
+                                    final queueState = snapshot.data;
+                                    final mediaItem = queueState?.mediaItem;
+
+                                    return mediaItem == null
+                                        ? SizedBox()
+                                        : BottomGradientContainer(
+                                            padding: EdgeInsets.zero,
+                                            child: Center(
+                                              child: SingleChildScrollView(
+                                                physics:
+                                                    BouncingScrollPhysics(),
+                                                padding: EdgeInsets.fromLTRB(
+                                                    10, 30, 10, 30),
+                                                child: mediaItem.extras["has_lyrics"] ==
+                                                        "true"
+                                                    ? FutureBuilder(
+                                                        future: Lyrics()
+                                                            .getSaavnLyrics(
+                                                                mediaItem.id
+                                                                    .toString()),
+                                                        builder:
+                                                            (BuildContext context,
+                                                                AsyncSnapshot
+                                                                    snapshot) {
+                                                          if (snapshot
+                                                                  .connectionState ==
+                                                              ConnectionState
+                                                                  .done) {
+                                                            lyrics =
+                                                                snapshot.data;
+
+                                                            return SelectableText(
+                                                              lyrics,
+                                                              textAlign:
+                                                                  TextAlign
+                                                                      .center,
+                                                            );
+                                                          }
+                                                          return CircularProgressIndicator(
+                                                            valueColor:
+                                                                AlwaysStoppedAnimation<
+                                                                    Color>(Theme.of(
+                                                                        context)
+                                                                    .accentColor),
+                                                          );
+                                                        })
+                                                    : FutureBuilder(
+                                                        future: Lyrics().getLyrics(
+                                                            mediaItem.title
+                                                                .toString(),
+                                                            mediaItem.artist
+                                                                .toString()),
+                                                        builder:
+                                                            (BuildContext context,
+                                                                AsyncSnapshot
+                                                                    snapshot) {
+                                                          if (snapshot
+                                                                  .connectionState ==
+                                                              ConnectionState
+                                                                  .done) {
+                                                            String lyrics =
+                                                                snapshot.data;
+                                                            if (lyrics == '') {
+                                                              return EmptyScreen()
+                                                                  .emptyScreen(
+                                                                      context,
+                                                                      0,
+                                                                      ":( ",
+                                                                      100.0,
+                                                                      "Lyrics",
+                                                                      60.0,
+                                                                      "Not Available",
+                                                                      20.0);
+                                                            }
+                                                            return SelectableText(
+                                                              lyrics,
+                                                              textAlign:
+                                                                  TextAlign
+                                                                      .center,
+                                                            );
+                                                          }
+                                                          return CircularProgressIndicator(
+                                                            valueColor:
+                                                                AlwaysStoppedAnimation<
+                                                                    Color>(Theme.of(
+                                                                        context)
+                                                                    .accentColor),
+                                                          );
+                                                        }),
+                                              ),
+                                            ),
+                                          );
+                                  },
+                                );
                         }
                         if (value == 1) {
                           showDialog(
@@ -748,6 +791,20 @@ class _PlayScreenState extends State<PlayScreen> {
                                       ),
                                       Spacer(),
                                       Text('Sleep Timer'),
+                                      Spacer(),
+                                    ],
+                                  )),
+                              PopupMenuItem(
+                                  value: 2,
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        CupertinoIcons.textformat,
+                                        color:
+                                            Theme.of(context).iconTheme.color,
+                                      ),
+                                      Spacer(),
+                                      Text('Show Lyrics'),
                                       Spacer(),
                                     ],
                                   )),
