@@ -1,7 +1,6 @@
 import 'package:blackhole/Helpers/countrycodes.dart';
 import 'package:blackhole/CustomWidgets/gradientContainers.dart';
 import 'package:blackhole/Helpers/picker.dart';
-import 'package:blackhole/Helpers/proxy.dart';
 import 'package:blackhole/Screens/Top Charts/top.dart' as topScreen;
 import 'package:blackhole/Screens/Home/saavn.dart' as homeScreen;
 import 'package:ext_storage/ext_storage.dart';
@@ -1223,7 +1222,6 @@ class _SettingPageState extends State<SettingPage> {
                         isThreeLine: true,
                         value: useProxy,
                         onChanged: (val) {
-                          val ? appProxy.enable() : appProxy.disable();
                           Hive.box('settings').put('useProxy', val);
                           useProxy = val;
                           updateUserDetails('useProxy', val);
@@ -1235,7 +1233,7 @@ class _SettingPageState extends State<SettingPage> {
                         subtitle: Text('Change Proxy IP and Port'),
                         dense: true,
                         trailing: Text(
-                          '${Hive.box('settings').get("proxyIp", defaultValue: "103.47.64.85")}:${Hive.box('settings').get("proxyPort", defaultValue: 8080)}',
+                          '${Hive.box('settings').get("proxyIp")}:${Hive.box('settings').get("proxyPort")}',
                           style: TextStyle(fontSize: 12),
                         ),
                         onTap: () {
@@ -1243,12 +1241,10 @@ class _SettingPageState extends State<SettingPage> {
                             context: context,
                             builder: (BuildContext context) {
                               final _controller = TextEditingController(
-                                  text: settingsBox.get('proxyIp',
-                                      defaultValue: "103.47.64.85"));
+                                  text: settingsBox.get('proxyIp'));
                               final _controller2 = TextEditingController(
-                                  text: settingsBox
-                                      .get('proxyPort', defaultValue: 8080)
-                                      .toString());
+                                  text:
+                                      settingsBox.get('proxyPort').toString());
                               return AlertDialog(
                                 content: Column(
                                   mainAxisSize: MainAxisSize.min,
