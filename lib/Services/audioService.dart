@@ -8,13 +8,25 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:audio_session/audio_session.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:rxdart/rxdart.dart';
 
 class AudioPlayerTask extends BackgroundAudioTask {
-  AudioPlayer _player = AudioPlayer(
-    handleInterruptions: true,
-    androidApplyAudioAttributes: true,
-    handleAudioSessionActivation: true,
-  );
+  final _equalizer = AndroidEqualizer();
+  AudioPlayer _player;
+
+  setAudioPlayer() {
+    _player = AudioPlayer(
+      handleInterruptions: true,
+      androidApplyAudioAttributes: true,
+      handleAudioSessionActivation: true,
+      audioPipeline: AudioPipeline(
+        androidAudioEffects: [
+          _equalizer,
+        ],
+      ),
+    );
+  }
+
   Timer _sleepTimer;
   StreamSubscription<PlaybackEvent> _eventSubscription;
   String preferredQuality;
@@ -117,6 +129,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
     offline = params['offline'];
     preferredQuality = params['quality'];
     await initiateBox();
+    await setAudioPlayer();
 
     final session = await AudioSession.instance;
     await session.configure(AudioSessionConfiguration.music());
@@ -239,6 +252,10 @@ class AudioPlayerTask extends BackgroundAudioTask {
       onReorderQueue(myVariable[0], myVariable[1]);
     }
 
+    if (myFunction == 'setEqualizer') {
+      _equalizer.setEnabled((myVariable[0]));
+    }
+
     return Future.value(true);
   }
 
@@ -281,6 +298,51 @@ class AudioPlayerTask extends BackgroundAudioTask {
                 sequence.map((source) => source.tag as MediaItem).toList())
             .listen(AudioServiceBackground.setQueue);
         break;
+    }
+  }
+
+  @override
+  Future<void> onClick(MediaButton button) {
+    switch (button) {
+      case MediaButton.next:
+        onSkipToNext();
+        break;
+      case MediaButton.previous:
+        onSkipToPrevious();
+        break;
+      case MediaButton.media:
+        _handleMediaActionPressed();
+        break;
+    }
+    return Future.value();
+  }
+
+  BehaviorSubject<int> _tappedMediaActionNumber;
+  Timer _timer;
+
+  void _handleMediaActionPressed() {
+    if (_timer == null) {
+      _tappedMediaActionNumber = BehaviorSubject.seeded(1);
+      _timer = Timer(Duration(milliseconds: 600), () {
+        final tappedNumber = _tappedMediaActionNumber.value;
+        if (tappedNumber == 1) {
+          if (AudioServiceBackground.state.playing)
+            onPause();
+          else
+            onPlay();
+        } else if (tappedNumber == 2) {
+          onSkipToNext();
+        } else {
+          onSkipToPrevious();
+        }
+
+        _tappedMediaActionNumber.close();
+        _timer.cancel();
+        _timer = null;
+      });
+    } else {
+      final current = _tappedMediaActionNumber.value;
+      _tappedMediaActionNumber.add(current + 1);
     }
   }
 

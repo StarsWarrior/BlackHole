@@ -40,10 +40,10 @@ class FormatResponse {
   }
 
   Future<Map> formatSingleSongResponse(Map response) async {
-    Map cachedSong = Hive.box('songDetails').get(response['id']);
-    if (cachedSong != null) {
-      return cachedSong;
-    }
+    // Map cachedSong = Hive.box('songDetails').get(response['id']);
+    // if (cachedSong != null) {
+    //   return cachedSong;
+    // }
     try {
       List artistNames = [];
       if (response['more_info']["artistMap"]['primary_artists'] == null ||
@@ -92,6 +92,9 @@ class FormatResponse {
         // .split('(')
         // .first
         "artist": formatString(artistNames.join(", ")),
+        "album_artist": response["more_info"] == null
+            ? response["music"]
+            : response["more_info"]["music"],
         "image": response["image"]
             .toString()
             .replaceAll("150x150", "500x500")
@@ -101,7 +104,7 @@ class FormatResponse {
             "38346591", response["more_info"]["encrypted_media_url"])
       };
       info["url"] = info["url"].replaceAll("http:", "https:");
-      Hive.box('songDetails').put(response['id'], info);
+      // Hive.box('songDetails').put(response['id'], info);
       return info;
     } catch (e) {
       return {"Error": e};
@@ -158,6 +161,9 @@ class FormatResponse {
         // .split('(')
         // .first
         "artist": formatString(artistNames.join(", ")),
+        "album_artist": response["more_info"] == null
+            ? response["music"]
+            : response["more_info"]["music"],
         "image": response["image"]
             .toString()
             .replaceAll("150x150", "500x500")
@@ -227,6 +233,9 @@ class FormatResponse {
                         ["primary_artists"][0]["name"])
                 : formatString(response["more_info"]["music"])
             : formatString(response["music"]),
+        "album_artist": response["more_info"] == null
+            ? response["music"]
+            : response["more_info"]["music"],
         "image": response["image"]
             .toString()
             .replaceAll("150x150", "500x500")
@@ -263,6 +272,9 @@ class FormatResponse {
         // .split('(')
         // .first
         "artist": formatString(response["extra"]),
+        "album_artist": response["more_info"] == null
+            ? response["music"]
+            : response["more_info"]["music"],
         "image": response["image"]
             .toString()
             .replaceAll("150x150", "500x500")
@@ -299,6 +311,9 @@ class FormatResponse {
         // .first
 
         "artist": formatString(response["title"]),
+        "album_artist": response["more_info"] == null
+            ? response["music"]
+            : response["more_info"]["music"],
         "image": response["image"]
             .toString()
             .replaceAll("150x150", "500x500")
@@ -369,6 +384,9 @@ class FormatResponse {
         // .split('(')
         // .first
         "artist": formatString(artistNames.join(", ")),
+        "album_artist": response["more_info"] == null
+            ? response["music"]
+            : response["more_info"]["music"],
         "image": response["image"]
             .toString()
             .replaceAll("150x150", "500x500")

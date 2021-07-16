@@ -170,6 +170,7 @@ class _MyAppState extends State<MyApp> {
         appBarTheme: AppBarTheme(color: currentTheme.getCanvasColor()),
         canvasColor: currentTheme.getCanvasColor(),
         cardColor: currentTheme.getCardColor(),
+        dialogBackgroundColor: currentTheme.getCardColor(),
         accentColor: currentTheme.currentColor(),
       ),
       routes: {

@@ -44,10 +44,11 @@ class Download with ChangeNotifier {
     if (status.isGranted) {
       print('permission granted');
     }
-    String filename = data['title'].toString().replaceAll("\\", "") +
-        " - " +
-        data['artist'].toString().replaceAll("\\", "") +
-        ".m4a";
+    String filename =
+        data['title'].toString().replaceAll("\\", "").replaceAll(".", "") +
+            " - " +
+            data['artist'].toString().replaceAll("\\", "").replaceAll(".", "") +
+            ".m4a";
     filename = filename.replaceAll("?", "").replaceAll("\*", "");
     if (dlPath == '')
       dlPath = await ExtStorage.getExternalStoragePublicDirectory(
@@ -90,20 +91,6 @@ class Download with ChangeNotifier {
                       ? Colors.white
                       : Colors.grey[700],
                 ),
-                child: Text("Yes"),
-                onPressed: () async {
-                  Navigator.pop(context);
-                  while (await File(dlPath + "/" + filename).exists()) {
-                    filename = filename.replaceAll('.m4a', ' (1).m4a');
-                  }
-                  downloadSong(context, dlPath, filename, data);
-                },
-              ),
-              TextButton(
-                style: TextButton.styleFrom(
-                  primary: Theme.of(context).accentColor,
-                  backgroundColor: Theme.of(context).accentColor,
-                ),
                 child: Text(
                   "No",
                   style: TextStyle(color: Colors.white),
@@ -111,6 +98,32 @@ class Download with ChangeNotifier {
                 onPressed: () {
                   lastDownloadId = data['id'];
                   Navigator.pop(context);
+                },
+              ),
+              TextButton(
+                style: TextButton.styleFrom(
+                  primary: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white
+                      : Colors.grey[700],
+                ),
+                child: Text("Yes, but Replace Old"),
+                onPressed: () async {
+                  Navigator.pop(context);
+                  downloadSong(context, dlPath, filename, data);
+                },
+              ),
+              TextButton(
+                style: TextButton.styleFrom(
+                  primary: Colors.white,
+                  backgroundColor: Theme.of(context).accentColor,
+                ),
+                child: Text("Yes"),
+                onPressed: () async {
+                  Navigator.pop(context);
+                  while (await File(dlPath + "/" + filename).exists()) {
+                    filename = filename.replaceAll('.m4a', ' (1).m4a');
+                  }
+                  downloadSong(context, dlPath, filename, data);
                 },
               ),
               SizedBox(
@@ -221,7 +234,8 @@ class Download with ChangeNotifier {
       final Tag tag = Tag(
         title: data['title'],
         artist: data['artist'],
-        albumArtist: data['artist'].toString()?.split(', ')[0],
+        albumArtist:
+            data['album_artist'] ?? data['artist'].toString()?.split(', ')[0],
         artwork: filepath2.toString(),
         album: data['album'],
         genre: data['language'],

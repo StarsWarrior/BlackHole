@@ -626,7 +626,8 @@ class _SettingPageState extends State<SettingPage> {
                       ),
                       ListTile(
                         title: Text('Card Color'),
-                        subtitle: Text('Color of Search Bar, Cards'),
+                        subtitle:
+                            Text('Color of Search Bar, Alert Dialogs, Cards'),
                         onTap: () {},
                         trailing: DropdownButton(
                           value: cardColor,
