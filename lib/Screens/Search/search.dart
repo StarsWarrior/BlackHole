@@ -405,10 +405,10 @@ class _SearchPageState extends State<SearchPage> {
                                                       : key == 'Songs'
                                                           ? PlayScreen(
                                                               data: {
-                                                                  'response':
-                                                                      value,
-                                                                  'index':
-                                                                      index,
+                                                                  'response': [
+                                                                    value[index]
+                                                                  ],
+                                                                  'index': 0,
                                                                   'offline':
                                                                       false,
                                                                 },

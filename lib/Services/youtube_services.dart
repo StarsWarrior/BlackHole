@@ -1,14 +1,84 @@
-// import 'package:http/http.dart';
+import 'dart:convert';
+
+import 'package:flutter/cupertino.dart';
+import 'package:http/http.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
 class YouTubeServices {
-  // String searchAuthority = "www.youtube.com";
-  // String searchPath = "/results";
+  String searchAuthority = "www.youtube.com";
+  Map paths = {
+    "search": "/results",
+    "channel": "/channel",
+    "music": "/music",
+    "playlist": "/playlist"
+  };
   Future<List<Video>> getPlaylistSongs(String id) async {
     YoutubeExplode yt = YoutubeExplode();
     List<Video> results = await yt.playlists.getVideos(id).toList();
     yt.close();
     return results;
+  }
+
+  Future<List> getChannelSongs(String id) async {
+    Uri link = Uri.https(
+      searchAuthority,
+      paths["music"],
+    );
+    final Response response = await get(link);
+    if (response.statusCode != 200) {
+      return List.empty();
+    }
+    String searchResults = RegExp(r'"contents":({.*?}),"header"', dotAll: true)
+        .firstMatch(response.body)[1];
+    Map data = json.decode(searchResults);
+    List result = data["twoColumnBrowseResultsRenderer"]["tabs"][0]
+        ["tabRenderer"]["content"]["sectionListRenderer"]["contents"];
+
+    List shelfRenderer = result.map((element) {
+      return element["itemSectionRenderer"]["contents"][0]["shelfRenderer"];
+    }).toList();
+
+    List finalResult = shelfRenderer.map((element) {
+      if (element["title"]["runs"][0]["text"] != 'Charts' &&
+          element["title"]["runs"][0]["text"] != 'New Music Videos')
+        return {
+          "title": element["title"]["runs"][0]["text"],
+          "playlists": formatItems(
+              element["content"]["horizontalListRenderer"]["items"]),
+        };
+      else
+        return null;
+    }).toList();
+
+    finalResult.removeWhere((element) => element == null);
+
+    return finalResult;
+  }
+
+  List formatItems(List itemsList) {
+    List result = itemsList.map((e) {
+      return {
+        "title": e["compactStationRenderer"]["title"]["simpleText"],
+        "type": "playlist",
+        "description": e["compactStationRenderer"]["description"]["simpleText"],
+        "count": e["compactStationRenderer"]["videoCountText"]["runs"][0]
+            ["text"],
+        "playlistId": e["compactStationRenderer"]["navigationEndpoint"]
+            ["watchEndpoint"]["playlistId"],
+        "firstItemId": e["compactStationRenderer"]["navigationEndpoint"]
+            ["watchEndpoint"]["videoId"],
+        "image": e["compactStationRenderer"]["thumbnail"]["thumbnails"][0]
+            ["url"],
+        "imageMedium": e["compactStationRenderer"]["thumbnail"]["thumbnails"][0]
+            ["url"],
+        "imageStandard": e["compactStationRenderer"]["thumbnail"]["thumbnails"]
+            [1]["url"],
+        "imageMax": e["compactStationRenderer"]["thumbnail"]["thumbnails"][2]
+            ["url"],
+      };
+    }).toList();
+
+    return result;
   }
 
   Future<Map> formatVideo(Video video) async {
