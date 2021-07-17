@@ -516,6 +516,7 @@ fetchPlaylists(code, context, playlistNames, settingsBox) async {
         backgroundColor: Colors.transparent,
         context: context,
         builder: (BuildContext context) {
+          print("PLAYLIST IS $spotifyPlaylists");
           return BottomGradientContainer(
             child: ListView.builder(
                 shrinkWrap: true,
@@ -526,31 +527,33 @@ fetchPlaylists(code, context, playlistNames, settingsBox) async {
                 itemBuilder: (context, index) {
                   String playName = spotifyPlaylists[index]['name'];
                   int playTotal = spotifyPlaylists[index]['tracks']['total'];
-                  return ListTile(
-                    title: Text(playName),
-                    subtitle: Text(playTotal == 1
-                        ? '$playTotal Song'
-                        : '$playTotal Songs'),
-                    leading: Card(
-                      elevation: 8,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(7.0)),
-                      clipBehavior: Clip.antiAlias,
-                      child: CachedNetworkImage(
-                        errorWidget: (context, _, __) => Image(
-                          image: AssetImage('assets/cover.jpg'),
-                        ),
-                        imageUrl:
-                            '${spotifyPlaylists[index]["images"][0]['url'].replaceAll('http:', 'https:')}',
-                        placeholder: (context, url) => Image(
-                          image: AssetImage('assets/cover.jpg'),
-                        ),
-                      ),
-                    ),
-                    onTap: () async {
-                      Navigator.pop(context, index);
-                    },
-                  );
+                  return playTotal == 0
+                      ? SizedBox()
+                      : ListTile(
+                          title: Text(playName),
+                          subtitle: Text(playTotal == 1
+                              ? '$playTotal Song'
+                              : '$playTotal Songs'),
+                          leading: Card(
+                            elevation: 8,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(7.0)),
+                            clipBehavior: Clip.antiAlias,
+                            child: CachedNetworkImage(
+                              errorWidget: (context, _, __) => Image(
+                                image: AssetImage('assets/cover.jpg'),
+                              ),
+                              imageUrl:
+                                  '${spotifyPlaylists[index]["images"][0]['url'].replaceAll('http:', 'https:')}',
+                              placeholder: (context, url) => Image(
+                                image: AssetImage('assets/cover.jpg'),
+                              ),
+                            ),
+                          ),
+                          onTap: () async {
+                            Navigator.pop(context, index);
+                          },
+                        );
                 }),
           );
         });
