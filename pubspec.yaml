@@ -72,6 +72,14 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
+  # for app icon
+  flutter_launcher_icons: ^0.9.0  
+
+flutter_icons:
+  android: false
+  ios: true
+  image_path: "fastlane/metadata/android/en-US/images/app_icon.png"
+
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
