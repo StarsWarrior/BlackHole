@@ -17,6 +17,12 @@ class YouTubeServices {
     return results;
   }
 
+  Future<Playlist> getPlaylistDetails(String id) async {
+    YoutubeExplode yt = YoutubeExplode();
+    Playlist metadata = await yt.playlists.get(id);
+    return metadata;
+  }
+
   Future<List> getChannelSongs(String id) async {
     Uri link = Uri.https(
       searchAuthority,

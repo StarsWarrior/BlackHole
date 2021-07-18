@@ -3,6 +3,7 @@ import 'package:blackhole/CustomWidgets/gradientContainers.dart';
 import 'package:blackhole/CustomWidgets/collage.dart';
 import 'package:blackhole/Helpers/import_export_playlist.dart';
 import 'package:blackhole/Helpers/playlist.dart';
+import 'package:blackhole/Helpers/search_add_playlist.dart';
 import 'package:blackhole/Helpers/webView.dart';
 import 'package:blackhole/Screens/Library/liked.dart';
 import 'package:blackhole/CustomWidgets/miniplayer.dart';
@@ -214,6 +215,168 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                               playlistNames = playlistNames;
                             });
                           }
+                        }),
+                    ListTile(
+                        title: Text('Import from YouTube'),
+                        leading: Card(
+                          elevation: 0,
+                          color: Colors.transparent,
+                          child: SizedBox(
+                            width: 50,
+                            height: 50,
+                            child: Center(
+                              child: Icon(
+                                MdiIcons.youtube,
+                                color: Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? null
+                                    : Colors.grey[700],
+                              ),
+                            ),
+                          ),
+                        ),
+                        onTap: () async {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext ctxt) {
+                              final _controller = TextEditingController();
+                              return AlertDialog(
+                                content: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Text(
+                                          'Enter Playlist Link',
+                                          style: TextStyle(
+                                              color: Theme.of(context)
+                                                  .accentColor),
+                                        ),
+                                      ],
+                                    ),
+                                    TextField(
+                                        autofocus: true,
+                                        controller: _controller,
+                                        textAlignVertical:
+                                            TextAlignVertical.bottom,
+                                        onSubmitted: (value) async {
+                                          String link = value.trim();
+                                          Navigator.pop(context);
+                                          Map data = await SearchAddPlaylist()
+                                              .addYtPlaylist(link);
+                                          if (data.isNotEmpty) {
+                                            playlistNames.add(data['title']);
+                                            print(
+                                                "playlistNames npw is $playlistNames");
+                                            settingsBox.put(
+                                                'playlistNames', playlistNames);
+                                            await SearchAddPlaylist()
+                                                .showProgress(
+                                                    data['count'],
+                                                    context,
+                                                    data['title'],
+                                                    data['image'],
+                                                    data['tracks']);
+                                            setState(() {
+                                              playlistNames = playlistNames;
+                                            });
+                                          } else {
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(
+                                              SnackBar(
+                                                elevation: 6,
+                                                backgroundColor:
+                                                    Colors.grey[900],
+                                                behavior:
+                                                    SnackBarBehavior.floating,
+                                                content: Text(
+                                                  'Failed to Import',
+                                                  style: TextStyle(
+                                                      color: Colors.white),
+                                                ),
+                                                action: SnackBarAction(
+                                                  textColor: Theme.of(context)
+                                                      .accentColor,
+                                                  label: 'Ok',
+                                                  onPressed: () {},
+                                                ),
+                                              ),
+                                            );
+                                          }
+                                        }),
+                                  ],
+                                ),
+                                actions: [
+                                  TextButton(
+                                    style: TextButton.styleFrom(
+                                      primary: Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? Colors.white
+                                          : Colors.grey[700],
+                                    ),
+                                    child: Text("Cancel"),
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                  ),
+                                  TextButton(
+                                    style: TextButton.styleFrom(
+                                      primary: Colors.white,
+                                      backgroundColor:
+                                          Theme.of(context).accentColor,
+                                    ),
+                                    child: Text(
+                                      "Ok",
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                    onPressed: () async {
+                                      Navigator.pop(context);
+                                      String link = _controller.text.trim();
+                                      Map data = await SearchAddPlaylist()
+                                          .addYtPlaylist(link);
+                                      if (data.isNotEmpty) {
+                                        playlistNames.add(data['title']);
+                                        settingsBox.put(
+                                            'playlistNames', playlistNames);
+                                        await SearchAddPlaylist().showProgress(
+                                            data['count'],
+                                            context,
+                                            data['title'],
+                                            data['image'],
+                                            data['tracks']);
+                                        setState(() {
+                                          playlistNames = playlistNames;
+                                        });
+                                      } else {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          SnackBar(
+                                            elevation: 6,
+                                            backgroundColor: Colors.grey[900],
+                                            behavior: SnackBarBehavior.floating,
+                                            content: Text(
+                                              'Failed to Import',
+                                              style: TextStyle(
+                                                  color: Colors.white),
+                                            ),
+                                            action: SnackBarAction(
+                                              textColor:
+                                                  Theme.of(context).accentColor,
+                                              label: 'Ok',
+                                              onPressed: () {},
+                                            ),
+                                          ),
+                                        );
+                                      }
+                                    },
+                                  ),
+                                  SizedBox(
+                                    width: 5,
+                                  ),
+                                ],
+                              );
+                            },
+                          );
                         }),
                     playlistNames.isEmpty
                         ? SizedBox()
