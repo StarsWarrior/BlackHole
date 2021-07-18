@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:audio_service/audio_service.dart';
+import 'package:blackhole/Helpers/mediaitem_converter.dart';
 import 'package:hive/hive.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -91,23 +92,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
       recentList = null;
     }
 
-    Map item = {
-      'id': mediaItem.id.toString(),
-      'artist': mediaItem.artist.toString(),
-      'album': mediaItem.album.toString(),
-      'image': mediaItem.artUri.toString(),
-      'duration': mediaItem.duration.inSeconds.toString(),
-      'title': mediaItem.title.toString(),
-      'url': mediaItem.extras['url'].toString(),
-      "year": mediaItem.extras["year"].toString(),
-      "language": mediaItem.extras["language"].toString(),
-      "genre": mediaItem.genre.toString(),
-      "320kbps": mediaItem.extras["320kbps"],
-      "has_lyrics": mediaItem.extras["has_lyrics"],
-      "release_date": mediaItem.extras["release_date"],
-      "album_id": mediaItem.extras["album_id"],
-      "subtitle": mediaItem.extras["subtitle"]
-    };
+    Map item = MediaItemConverter().mediaItemtoMap(mediaItem);
     recentList == null ? recentList = [item] : recentList.insert(0, item);
 
     final jsonList = recentList.map((item) => jsonEncode(item)).toList();

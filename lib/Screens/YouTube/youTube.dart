@@ -202,7 +202,7 @@ class _YouTubeState extends State<YouTube> {
                     itemCount: searchedList.length,
                     physics: BouncingScrollPhysics(),
                     shrinkWrap: true,
-                    padding: EdgeInsets.fromLTRB(15, 80, 15, 0),
+                    padding: EdgeInsets.fromLTRB(10, 80, 10, 0),
                     itemBuilder: (context, index) {
                       return Column(
                         children: [
@@ -268,7 +268,7 @@ class _YouTubeState extends State<YouTube> {
                                           overflow: TextOverflow.ellipsis,
                                         ),
                                         Text(
-                                          item["description"],
+                                          "${item["count"]} Tracks | ${item["description"]}",
                                           textAlign: TextAlign.center,
                                           softWrap: false,
                                           overflow: TextOverflow.ellipsis,
@@ -286,11 +286,14 @@ class _YouTubeState extends State<YouTube> {
                                     Navigator.push(
                                       context,
                                       PageRouteBuilder(
-                                          opaque: false,
-                                          pageBuilder: (_, __, ___) =>
-                                              YouTubePlaylist(
-                                                  playlistId:
-                                                      item['playlistId'])),
+                                        opaque: false,
+                                        pageBuilder: (_, __, ___) =>
+                                            YouTubePlaylist(
+                                          playlistId: item['playlistId'],
+                                          playlistImage: item['imageStandard'],
+                                          playlistName: item['title'],
+                                        ),
+                                      ),
                                     );
                                   },
                                 );

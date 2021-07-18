@@ -1,9 +1,11 @@
+import 'package:blackhole/CustomWidgets/add_playlist.dart';
 import 'package:blackhole/CustomWidgets/collage.dart';
 import 'package:blackhole/CustomWidgets/custom_physics.dart';
 import 'package:blackhole/CustomWidgets/downloadButton.dart';
 import 'package:blackhole/CustomWidgets/emptyScreen.dart';
 import 'package:blackhole/CustomWidgets/gradientContainers.dart';
 import 'package:blackhole/CustomWidgets/miniplayer.dart';
+import 'package:blackhole/Helpers/mediaitem_converter.dart';
 import 'package:blackhole/Screens/Library/showSongs.dart';
 import 'package:blackhole/Screens/Player/audioplayer.dart';
 import 'package:blackhole/Helpers/songs_count.dart';
@@ -558,8 +560,30 @@ class _LikedSongsState extends State<LikedSongs>
                                                           ],
                                                         ),
                                                       ),
+                                                      PopupMenuItem(
+                                                        value: 1,
+                                                        child: Row(
+                                                          children: [
+                                                            Icon(Icons
+                                                                .playlist_add_rounded),
+                                                            Spacer(),
+                                                            Text(
+                                                                'Add to Playlist'),
+                                                            Spacer(),
+                                                          ],
+                                                        ),
+                                                      ),
                                                     ],
                                                 onSelected: (value) async {
+                                                  if (value == 1) {
+                                                    AddToPlaylist()
+                                                        .addToPlaylist(
+                                                            context,
+                                                            MediaItemConverter()
+                                                                .mapToMediaItem(
+                                                                    _songs[
+                                                                        index]));
+                                                  }
                                                   if (value == 0) {
                                                     ScaffoldMessenger.of(
                                                             context)
