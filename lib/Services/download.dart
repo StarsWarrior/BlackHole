@@ -44,12 +44,11 @@ class Download with ChangeNotifier {
     if (status.isGranted) {
       print('permission granted');
     }
-    String filename =
-        data['title'].toString().replaceAll("\\", "").replaceAll(".", "") +
-            " - " +
-            data['artist'].toString().replaceAll("\\", "").replaceAll(".", "") +
-            ".m4a";
-    filename = filename.replaceAll("?", "").replaceAll("\*", "");
+    RegExp avoid = RegExp(r'[\.\\\*\-\:\?#/;\|]');
+    String filename = data['title'].toString().replaceAll(avoid, "") +
+        " - " +
+        data['artist'].toString().replaceAll(avoid, "") +
+        ".m4a";
     if (dlPath == '')
       dlPath = await ExtStorage.getExternalStoragePublicDirectory(
           ExtStorage.DIRECTORY_MUSIC);

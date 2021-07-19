@@ -204,7 +204,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                           // String code = await SpotifyApi().authenticate();
                           String code = await Navigator.of(context).push(
                             PageRouteBuilder(
-                                opaque: false, // set to false
+                                opaque: false,
                                 pageBuilder: (_, __, ___) => SpotifyWebView()),
                           );
                           // print(code);
@@ -674,7 +674,6 @@ fetchPlaylists(code, context, playlistNames, settingsBox) async {
         backgroundColor: Colors.transparent,
         context: context,
         builder: (BuildContext context) {
-          print("PLAYLIST IS $spotifyPlaylists");
           return BottomGradientContainer(
             child: ListView.builder(
                 shrinkWrap: true,

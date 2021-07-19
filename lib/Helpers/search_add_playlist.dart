@@ -9,7 +9,6 @@ class SearchAddPlaylist {
   Future<Map> addYtPlaylist(String link) async {
     try {
       RegExpMatch id = RegExp(r'.*list=(.*)').firstMatch(link);
-      print(id[1]);
       Playlist metadata = await YouTubeServices().getPlaylistDetails(id[1]);
       List<Video> tracks = await YouTubeServices().getPlaylistSongs(id[1]);
       return {
