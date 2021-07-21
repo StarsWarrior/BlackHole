@@ -104,8 +104,8 @@ class _MiniPlayerState extends State<MiniPlayer> {
                                                 overflow: TextOverflow.ellipsis,
                                               ),
                                               leading: Hero(
-                                                tag: 'image',
-                                                child: Card(
+                                                  tag: 'image',
+                                                  child: Card(
                                                     elevation: 8,
                                                     shape:
                                                         RoundedRectangleBorder(
@@ -115,9 +115,7 @@ class _MiniPlayerState extends State<MiniPlayer> {
                                                                         7.0)),
                                                     clipBehavior:
                                                         Clip.antiAlias,
-                                                    child: //playlist.playSong.check()
-                                                        //? Image(image: MemoryImage(playlist.playImage)):
-                                                        Stack(
+                                                    child: Stack(
                                                       children: [
                                                         Image(
                                                             image: AssetImage(
@@ -126,35 +124,42 @@ class _MiniPlayerState extends State<MiniPlayer> {
                                                                 .toString()
                                                                 .startsWith(
                                                                     'file:')
-                                                            ? Image(
-                                                                image: FileImage(
-                                                                    File(mediaItem
-                                                                        .artUri
-                                                                        .toFilePath())))
-                                                            : CachedNetworkImage(
-                                                                errorWidget:
-                                                                    (BuildContext
-                                                                                context,
-                                                                            _,
-                                                                            __) =>
-                                                                        Image(
-                                                                          image:
-                                                                              AssetImage('assets/cover.jpg'),
-                                                                        ),
-                                                                placeholder:
-                                                                    (BuildContext
-                                                                                context,
-                                                                            _) =>
-                                                                        Image(
-                                                                          image:
-                                                                              AssetImage('assets/cover.jpg'),
-                                                                        ),
-                                                                imageUrl: mediaItem
-                                                                    .artUri
-                                                                    .toString())
+                                                            ? SizedBox(
+                                                                height: 50.0,
+                                                                width: 50.0,
+                                                                child: Image(
+                                                                    fit: BoxFit
+                                                                        .cover,
+                                                                    image: FileImage(File(
+                                                                        mediaItem
+                                                                            .artUri
+                                                                            .toFilePath()))),
+                                                              )
+                                                            : SizedBox(
+                                                                height: 50.0,
+                                                                width: 50.0,
+                                                                child:
+                                                                    CachedNetworkImage(
+                                                                        fit: BoxFit
+                                                                            .cover,
+                                                                        errorWidget: (BuildContext context,
+                                                                                _,
+                                                                                __) =>
+                                                                            Image(
+                                                                              image: AssetImage('assets/cover.jpg'),
+                                                                            ),
+                                                                        placeholder: (BuildContext context,
+                                                                                _) =>
+                                                                            Image(
+                                                                              image: AssetImage('assets/cover.jpg'),
+                                                                            ),
+                                                                        imageUrl: mediaItem
+                                                                            .artUri
+                                                                            .toString()),
+                                                              )
                                                       ],
-                                                    )),
-                                              ),
+                                                    ),
+                                                  )),
                                               trailing: Row(
                                                 mainAxisSize: MainAxisSize.min,
                                                 children: [

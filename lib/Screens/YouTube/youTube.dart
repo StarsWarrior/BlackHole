@@ -9,8 +9,7 @@ import 'package:hive/hive.dart';
 import 'package:material_floating_search_bar/material_floating_search_bar.dart';
 
 bool status = false;
-List searchedList = [];
-bool fetched = false;
+List searchedList = Hive.box('cache').get('ytHome', defaultValue: []);
 
 class YouTube extends StatefulWidget {
   const YouTube({Key key}) : super(key: key);
@@ -34,7 +33,7 @@ class _YouTubeState extends State<YouTube> {
         if (value.isNotEmpty) {
           setState(() {
             searchedList = value;
-            fetched = true;
+            Hive.box('cache').put('ytHome', value);
           });
         } else {
           status = false;
@@ -42,6 +41,12 @@ class _YouTubeState extends State<YouTube> {
       });
     }
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
@@ -185,7 +190,7 @@ class _YouTubeState extends State<YouTube> {
         },
         body: Stack(
           children: [
-            (!fetched)
+            (searchedList.isEmpty)
                 ? Container(
                     child: Center(
                       child: Container(
@@ -202,7 +207,7 @@ class _YouTubeState extends State<YouTube> {
                     itemCount: searchedList.length,
                     physics: BouncingScrollPhysics(),
                     shrinkWrap: true,
-                    padding: EdgeInsets.fromLTRB(10, 80, 10, 0),
+                    padding: EdgeInsets.fromLTRB(10, 70, 10, 0),
                     itemBuilder: (context, index) {
                       return Column(
                         children: [
@@ -210,7 +215,7 @@ class _YouTubeState extends State<YouTube> {
                             children: [
                               Padding(
                                 padding:
-                                    const EdgeInsets.fromLTRB(15, 10, 0, 5),
+                                    const EdgeInsets.fromLTRB(10, 10, 0, 5),
                                 child: Text(
                                   '${searchedList[index]["title"]}',
                                   style: TextStyle(
@@ -227,7 +232,7 @@ class _YouTubeState extends State<YouTube> {
                             child: ListView.builder(
                               physics: BouncingScrollPhysics(),
                               scrollDirection: Axis.horizontal,
-                              padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                              padding: EdgeInsets.symmetric(horizontal: 5),
                               itemCount:
                                   searchedList[index]["playlists"].length,
                               itemBuilder: (context, idx) {

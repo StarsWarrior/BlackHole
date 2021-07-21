@@ -1,6 +1,7 @@
 import 'package:blackhole/CustomWidgets/gradientContainers.dart';
 import 'package:blackhole/CustomWidgets/miniplayer.dart';
 import 'package:blackhole/Screens/Player/audioplayer.dart';
+import 'package:blackhole/Screens/Search/search.dart';
 import 'package:blackhole/Services/youtube_services.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
@@ -120,169 +121,186 @@ class _YouTubePlaylistState extends State<YouTubePlaylist> {
                                   (entry) {
                                     return Padding(
                                       padding: const EdgeInsets.only(
-                                          left: 15.0,
-                                          right: 15.0,
-                                          bottom: 10.0),
-                                      child: Card(
-                                        elevation: 8,
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(10.0)),
-                                        clipBehavior: Clip.antiAlias,
-                                        child: GradientContainer(
-                                          child: GestureDetector(
-                                            child: Column(
-                                              children: [
-                                                CachedNetworkImage(
+                                        left: 5.0,
+                                      ),
+                                      child: ListTile(
+                                          leading: Card(
+                                            elevation: 8,
+                                            shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(5.0)),
+                                            clipBehavior: Clip.antiAlias,
+                                            child: SizedBox(
+                                              height: 50.0,
+                                              width: 50.0,
+                                              child: CachedNetworkImage(
+                                                fit: BoxFit.cover,
+                                                errorWidget: (context, _, __) =>
+                                                    CachedNetworkImage(
+                                                  fit: BoxFit.cover,
+                                                  imageUrl: (entry.thumbnails
+                                                      .standardResUrl),
                                                   errorWidget:
-                                                      (context, _, __) =>
-                                                          CachedNetworkImage(
-                                                    imageUrl: (entry.thumbnails
-                                                        .standardResUrl),
-                                                    errorWidget:
-                                                        (context, _, __) =>
-                                                            Image(
-                                                      image: AssetImage(
-                                                          'assets/ytCover.png'),
-                                                    ),
-                                                  ),
-                                                  imageUrl: entry
-                                                      .thumbnails.maxResUrl,
-                                                  placeholder: (context, url) =>
-                                                      Image(
+                                                      (context, _, __) => Image(
                                                     image: AssetImage(
-                                                        'assets/ytCover.png'),
+                                                        'assets/cover.jpg'),
                                                   ),
                                                 ),
-                                                ListTile(
-                                                  dense: true,
-                                                  contentPadding:
-                                                      EdgeInsets.only(
-                                                          left: 15.0),
-                                                  title: Text(
-                                                    entry.title,
+                                                imageUrl:
+                                                    entry.thumbnails.maxResUrl,
+                                                placeholder: (context, url) =>
+                                                    Image(
+                                                  image: AssetImage(
+                                                      'assets/cover.jpg'),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          title: Text(
+                                            entry.title,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.w500),
+                                          ),
+                                          subtitle: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    entry.author,
                                                     overflow:
                                                         TextOverflow.ellipsis,
-                                                    style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.w500),
                                                   ),
-                                                  // isThreeLine: true,
-                                                  subtitle: Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceBetween,
-                                                    children: [
-                                                      Column(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .start,
-                                                        children: [
-                                                          Text(
-                                                            entry.author,
-                                                            overflow:
-                                                                TextOverflow
-                                                                    .ellipsis,
-                                                          ),
-                                                        ],
-                                                      ),
-                                                      Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                    .only(
-                                                                right: 15.0),
-                                                        child: Text(
-                                                          entry.duration
-                                                              .toString()
-                                                              .split(".")[0],
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                            onTap: () async {
-                                              setState(() {
-                                                done = false;
-                                              });
-
-                                              Map response =
-                                                  await YouTubeServices()
-                                                      .formatVideo(entry);
-                                              setState(() {
-                                                done = true;
-                                              });
-                                              Navigator.push(
-                                                context,
-                                                PageRouteBuilder(
-                                                  opaque: false,
-                                                  pageBuilder: (_, __, ___) =>
-                                                      PlayScreen(
-                                                    fromMiniplayer: false,
-                                                    data: {
-                                                      'response': [response],
-                                                      'index': 0,
-                                                      'offline': false,
-                                                      'fromYT': true,
-                                                    },
-                                                  ),
-                                                ),
-                                              );
-                                            },
+                                                ],
+                                              ),
+                                              Text(
+                                                entry.duration
+                                                    .toString()
+                                                    .split(".")[0]
+                                                    .replaceFirst("0:0", ""),
+                                              ),
+                                            ],
                                           ),
-                                        ),
-                                      ),
+                                          onTap: () async {
+                                            setState(() {
+                                              done = false;
+                                            });
+
+                                            Map response =
+                                                await YouTubeServices()
+                                                    .formatVideo(entry);
+                                            setState(() {
+                                              done = true;
+                                            });
+                                            Navigator.push(
+                                              context,
+                                              PageRouteBuilder(
+                                                opaque: false,
+                                                pageBuilder: (_, __, ___) =>
+                                                    PlayScreen(
+                                                  fromMiniplayer: false,
+                                                  data: {
+                                                    'response': [response],
+                                                    'index': 0,
+                                                    'offline': false,
+                                                    'fromYT': true,
+                                                  },
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                          trailing: PopupMenuButton(
+                                              icon: Icon(
+                                                Icons.more_vert_rounded,
+                                                color: Theme.of(context)
+                                                    .iconTheme
+                                                    .color,
+                                              ),
+                                              shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.all(
+                                                          Radius.circular(
+                                                              7.0))),
+                                              itemBuilder: (context) => [
+                                                    PopupMenuItem(
+                                                        value: 0,
+                                                        child: Row(
+                                                          children: [
+                                                            Icon(
+                                                              CupertinoIcons
+                                                                  .search,
+                                                              color: Theme.of(
+                                                                      context)
+                                                                  .iconTheme
+                                                                  .color,
+                                                            ),
+                                                            Spacer(),
+                                                            Text('Search Home'),
+                                                            Spacer(),
+                                                          ],
+                                                        )),
+                                                  ],
+                                              onSelected: (value) {
+                                                if (value == 0) {
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          SearchPage(
+                                                        query: entry.title
+                                                            .toString()
+                                                            .split("|")[0],
+                                                      ),
+                                                    ),
+                                                  );
+                                                }
+                                              })),
                                     );
                                   },
                                 ).toList(),
                               ),
                             ),
-                            if (!done)
-                              Center(
-                                child: SizedBox(
-                                  height: MediaQuery.of(context).size.width / 2,
-                                  width: MediaQuery.of(context).size.width / 2,
-                                  child: Card(
-                                    elevation: 10,
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(15)),
-                                    clipBehavior: Clip.antiAlias,
-                                    child: GradientContainer(
-                                      child: Center(
-                                        child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceEvenly,
-                                          children: [
-                                            SizedBox(
-                                                height: MediaQuery.of(context)
-                                                        .size
-                                                        .width /
-                                                    7,
-                                                width: MediaQuery.of(context)
-                                                        .size
-                                                        .width /
-                                                    7,
-                                                child:
-                                                    CircularProgressIndicator(
-                                                  valueColor:
-                                                      AlwaysStoppedAnimation<
-                                                              Color>(
-                                                          Theme.of(context)
-                                                              .accentColor),
-                                                  strokeWidth: 5,
-                                                )),
-                                            Text('Fetching Audio Stream'),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              )
                           ],
                         ),
+                  if (!done)
+                    Center(
+                      child: SizedBox(
+                        height: MediaQuery.of(context).size.width / 2,
+                        width: MediaQuery.of(context).size.width / 2,
+                        child: Card(
+                          elevation: 10,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15)),
+                          clipBehavior: Clip.antiAlias,
+                          child: GradientContainer(
+                            child: Center(
+                              child: Column(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  SizedBox(
+                                      height:
+                                          MediaQuery.of(context).size.width / 7,
+                                      width:
+                                          MediaQuery.of(context).size.width / 7,
+                                      child: CircularProgressIndicator(
+                                        valueColor:
+                                            AlwaysStoppedAnimation<Color>(
+                                                Theme.of(context).accentColor),
+                                        strokeWidth: 5,
+                                      )),
+                                  Text('Fetching Audio Stream'),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    )
                 ],
               ),
             ),

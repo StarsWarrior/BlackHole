@@ -696,8 +696,14 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                       ),
                       _cachedSongs[index]['image'] == null
                           ? SizedBox()
-                          : Image(
-                              image: MemoryImage(_cachedSongs[index]['image']),
+                          : SizedBox(
+                              height: 50.0,
+                              width: 50.0,
+                              child: Image(
+                                fit: BoxFit.cover,
+                                image:
+                                    MemoryImage(_cachedSongs[index]['image']),
+                              ),
                             )
                     ],
                   ),
@@ -1419,9 +1425,15 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                       ),
                       _cachedVideos[index]['image'] == null
                           ? SizedBox()
-                          : Image(
-                              image: MemoryImage(_cachedVideos[index]['image']),
-                            )
+                          : SizedBox(
+                              height: 50.0,
+                              width: 50.0,
+                              child: Image(
+                                fit: BoxFit.cover,
+                                image:
+                                    MemoryImage(_cachedVideos[index]['image']),
+                              ),
+                            ),
                     ],
                   ),
                 ),

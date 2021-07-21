@@ -250,7 +250,9 @@ class _PlayScreenState extends State<PlayScreen> {
                               });
                         }
                         if (value == 3) {
-                          launch('https://youtube.com/watch?v=${mediaItem.id}');
+                          launch(fromYT
+                              ? 'https://youtube.com/watch?v=${mediaItem.id}'
+                              : 'https://www.youtube.com/results?search_query=${mediaItem.title} by ${mediaItem.artist}');
                         }
                         if (value == 2) {
                           offline
@@ -612,21 +614,22 @@ class _PlayScreenState extends State<PlayScreen> {
                                       Spacer(),
                                     ],
                                   )),
-                              if (fromYT)
-                                PopupMenuItem(
-                                    value: 3,
-                                    child: Row(
-                                      children: [
-                                        Icon(
-                                          MdiIcons.youtube,
-                                          color:
-                                              Theme.of(context).iconTheme.color,
-                                        ),
-                                        Spacer(),
-                                        Text('Watch Video'),
-                                        Spacer(),
-                                      ],
-                                    )),
+                              PopupMenuItem(
+                                  value: 3,
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        MdiIcons.youtube,
+                                        color:
+                                            Theme.of(context).iconTheme.color,
+                                      ),
+                                      Spacer(),
+                                      Text(fromYT
+                                          ? 'Watch Video'
+                                          : 'Search Video'),
+                                      Spacer(),
+                                    ],
+                                  )),
                             ],
                     )
                   ],

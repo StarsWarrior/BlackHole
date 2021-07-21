@@ -257,6 +257,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                                     TextField(
                                         autofocus: true,
                                         controller: _controller,
+                                        keyboardType: TextInputType.url,
                                         textAlignVertical:
                                             TextAlignVertical.bottom,
                                         onSubmitted: (value) async {

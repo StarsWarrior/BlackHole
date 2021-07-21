@@ -30,6 +30,12 @@ class _YouTubeSearchPageState extends State<YouTubeSearchPage> {
   FloatingSearchBarController _controller = FloatingSearchBarController();
 
   @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     if (!status) {
       status = true;
@@ -276,8 +282,10 @@ class _YouTubeSearchPageState extends State<YouTubeSearchPage> {
                                                                       index]
                                                                   .duration
                                                                   .toString()
-                                                                  .split(
-                                                                      ".")[0],
+                                                                  .split(".")[0]
+                                                                  .replaceFirst(
+                                                                      "0:0",
+                                                                      ""),
                                                         ),
                                                       ),
                                                     ],

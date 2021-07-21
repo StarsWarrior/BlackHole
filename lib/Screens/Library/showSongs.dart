@@ -205,10 +205,16 @@ class _SongsListState extends State<SongsList> {
                                             ),
                                             _songs[index]['image'] == null
                                                 ? SizedBox()
-                                                : Image(
-                                                    image: MemoryImage(
-                                                        _songs[index]['image']),
-                                                  )
+                                                : SizedBox(
+                                                    height: 50.0,
+                                                    width: 50.0,
+                                                    child: Image(
+                                                      fit: BoxFit.cover,
+                                                      image: MemoryImage(
+                                                          _songs[index]
+                                                              ['image']),
+                                                    ),
+                                                  ),
                                           ],
                                         )
                                       : CachedNetworkImage(

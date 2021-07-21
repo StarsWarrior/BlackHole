@@ -44,7 +44,7 @@ class Download with ChangeNotifier {
     if (status.isGranted) {
       print('permission granted');
     }
-    RegExp avoid = RegExp(r'[\.\\\*\-\:\?#/;\|]');
+    RegExp avoid = RegExp(r'[\.\\\*\:\?#/;\|]');
     String filename = data['title'].toString().replaceAll(avoid, "") +
         " - " +
         data['artist'].toString().replaceAll(avoid, "") +

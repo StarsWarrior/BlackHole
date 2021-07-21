@@ -38,6 +38,12 @@ class _SearchPageState extends State<SearchPage> {
   FloatingSearchBarController _controller = FloatingSearchBarController();
 
   @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     if (!status) {
       status = true;
