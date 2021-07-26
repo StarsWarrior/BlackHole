@@ -1081,17 +1081,6 @@ class _SettingPageState extends State<SettingPage> {
                       ),
                       dense: true,
                     ),
-                    SwitchListTile(
-                        activeColor: Theme.of(context).accentColor,
-                        title: Text('Download Lyrics'),
-                        subtitle: Text('Default: Off'),
-                        dense: true,
-                        value: settingsBox.get('downloadLyrics',
-                            defaultValue: false),
-                        onChanged: (val) {
-                          settingsBox.put('downloadLyrics', val);
-                          setState(() {});
-                        }),
                     ListTile(
                       title: Text('Download Location'),
                       subtitle: Text('$downloadPath'),
@@ -1141,6 +1130,17 @@ class _SettingPageState extends State<SettingPage> {
                       },
                       dense: true,
                     ),
+                    SwitchListTile(
+                        activeColor: Theme.of(context).accentColor,
+                        title: Text('Download Lyrics'),
+                        subtitle: Text('Default: Off'),
+                        dense: true,
+                        value: settingsBox.get('downloadLyrics',
+                            defaultValue: false),
+                        onChanged: (val) {
+                          settingsBox.put('downloadLyrics', val);
+                          setState(() {});
+                        }),
                   ]),
                 ),
               ),

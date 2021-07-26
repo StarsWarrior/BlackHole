@@ -1175,7 +1175,9 @@ class _PlayScreenState extends State<PlayScreen> {
                                                   child: Text(
                                                     (mediaItem?.title != null)
                                                         ? (mediaItem.title
-                                                            .split(" (")[0])
+                                                            .split(" (")[0]
+                                                            .split("|")[0]
+                                                            .trim())
                                                         : ((globalQueue
                                                                     .length <=
                                                                 globalIndex)
@@ -1183,8 +1185,9 @@ class _PlayScreenState extends State<PlayScreen> {
                                                             : globalQueue[
                                                                     globalIndex]
                                                                 .title
-                                                                .split(
-                                                                    " (")[0]),
+                                                                .split(" (")[0]
+                                                                .split("|")[0]
+                                                                .trim()),
                                                     textAlign: TextAlign.center,
                                                     overflow: TextOverflow.fade,
                                                     maxLines: 1,

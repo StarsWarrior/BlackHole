@@ -25,7 +25,7 @@ dependencies:
     sdk: flutter
 
   # Audio related
-  just_audio: ^0.8.0
+  just_audio: ^0.9.3
   audiotagger: ^2.2.1
   audio_session: ^0.1.5
   audio_service: ^0.17.1
@@ -33,23 +33,24 @@ dependencies:
 
   # Productivity
   http: ^0.13.3
-  des_plugin: ^0.0.3
+  dart_des: ^1.0.0
   share_plus: ^2.1.4
   device_info: ^2.0.2
   package_info: ^2.0.2
-  url_launcher: ^6.0.6
+  url_launcher: ^6.0.9
   html_unescape: ^2.0.0
-  webview_flutter: ^2.0.8
+  webview_flutter: ^2.0.10
   # flutter_web_auth: ^0.3.0
   # flutter_downloader: ^1.6.1
-  cached_network_image: ^3.0.0
-  youtube_explode_dart: ^1.9.9
+  cached_network_image: ^3.1.0
+  youtube_explode_dart: ^1.9.10
+
 
   # UI related
   cupertino_icons: ^1.0.3
   salomon_bottom_bar: ^3.0.0
   material_floating_search_bar: ^0.3.4
-  material_design_icons_flutter: ^4.0.5955
+  material_design_icons_flutter: ^5.0.5955-rc.1
   miniplayer:
     git:
       url: https://github.com/Sangwan5688/miniplayer.git
@@ -62,7 +63,9 @@ dependencies:
   firebase_database: ^7.1.1
   
   # Storage related
-  ext_storage: ^1.0.3
+  ext_storage:
+    git:
+      url: git://github.com/GitJournal/ext_storage.git
   path_provider: ^2.0.2
   permission_handler: ^8.1.1
   file_picker: ^3.0.3

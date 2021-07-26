@@ -44,11 +44,10 @@ class Download with ChangeNotifier {
     if (status.isGranted) {
       print('permission granted');
     }
-    RegExp avoid = RegExp(r'[\.\\\*\:\?#/;\|]');
-    String filename = data['title'].toString().replaceAll(avoid, "") +
-        " - " +
-        data['artist'].toString().replaceAll(avoid, "") +
-        ".m4a";
+    RegExp avoid = RegExp(r'[\.\\\*\:\"\?#/;\|]');
+    data['title'] = data['title'].toString().split("(From")[0].trim();
+    String filename = data['title'] + " - " + data['artist'];
+    filename = filename.replaceAll(avoid, "") + ".m4a";
     if (dlPath == '')
       dlPath = await ExtStorage.getExternalStoragePublicDirectory(
           ExtStorage.DIRECTORY_MUSIC);
@@ -146,8 +145,7 @@ class Download with ChangeNotifier {
     String filepath2;
     List<int> _bytes = [];
     String lyrics;
-    final artname =
-        data['title'].replaceAll("?", "").replaceAll("\*", "") + "artwork.jpg";
+    final artname = filename.replaceAll(".m4a", "artwork.jpg");
     Directory appDir = await getApplicationDocumentsDirectory();
     String appPath = appDir.path;
     if (data['url'].toString().contains('google')) {

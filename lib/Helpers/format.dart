@@ -1,8 +1,22 @@
-import 'package:blackhole/APIs/api.dart';
-import 'package:des_plugin/des_plugin.dart';
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:hive/hive.dart';
+import 'package:dart_des/dart_des.dart';
+import 'package:blackhole/APIs/api.dart';
 
 class FormatResponse {
+  String decode(String input) {
+    String key = "38346591";
+    DES desECB = DES(key: key.codeUnits, mode: DESMode.ECB);
+
+    Uint8List encrypted = base64.decode(input);
+    List<int> decrypted = desECB.decrypt(encrypted);
+    String decoded =
+        utf8.decode(decrypted).replaceAll(RegExp(r'.mp4.*'), '.mp4');
+    return decoded;
+  }
+
   String capitalize(String msg) {
     return "${msg[0].toUpperCase()}${msg.substring(1)}";
   }
@@ -100,8 +114,7 @@ class FormatResponse {
             .replaceAll("150x150", "500x500")
             .replaceAll('50x50', "500x500")
             .replaceAll('http:', 'https:'),
-        "url": await DesPlugin.decrypt(
-            "38346591", response["more_info"]["encrypted_media_url"])
+        "url": decode(response["more_info"]["encrypted_media_url"])
       };
       info["url"] = info["url"].replaceAll("http:", "https:");
       // Hive.box('songDetails').put(response['id'], info);
@@ -169,8 +182,7 @@ class FormatResponse {
             .replaceAll("150x150", "500x500")
             .replaceAll('50x50', "500x500")
             .replaceAll('http:', 'https:'),
-        "url":
-            await DesPlugin.decrypt("38346591", response["encrypted_media_url"])
+        "url": decode(response["encrypted_media_url"])
       };
       return info;
     } catch (e) {
