@@ -166,6 +166,7 @@ class _MiniPlayerState extends State<MiniPlayer> {
                                                   IconButton(
                                                       icon: Icon(Icons
                                                           .skip_previous_rounded),
+                                                      tooltip: 'Skip Previous',
                                                       color: Theme.of(context)
                                                           .iconTheme
                                                           .color,
@@ -252,11 +253,13 @@ class _MiniPlayerState extends State<MiniPlayer> {
                                                                         child: playing
                                                                             ? IconButton(
                                                                                 icon: Icon(Icons.pause_rounded),
+                                                                                tooltip: 'Pause',
                                                                                 color: Theme.of(context).iconTheme.color,
                                                                                 onPressed: AudioService.pause,
                                                                               )
                                                                             : IconButton(
                                                                                 icon: Icon(Icons.play_arrow_rounded),
+                                                                                tooltip: 'Play',
                                                                                 onPressed: AudioService.play,
                                                                                 color: Theme.of(context).iconTheme.color,
                                                                               ),
@@ -271,6 +274,7 @@ class _MiniPlayerState extends State<MiniPlayer> {
                                                   IconButton(
                                                       icon: Icon(Icons
                                                           .skip_next_rounded),
+                                                      tooltip: 'Skip Next',
                                                       color: Theme.of(context)
                                                           .iconTheme
                                                           .color,

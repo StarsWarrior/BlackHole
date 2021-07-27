@@ -178,6 +178,7 @@ class _SearchPageState extends State<SearchPage> {
                                                 CupertinoIcons.clear,
                                                 size: 15.0,
                                               ),
+                                              tooltip: 'Remove',
                                               onPressed: () {
                                                 setState(() {
                                                   search.remove(e);

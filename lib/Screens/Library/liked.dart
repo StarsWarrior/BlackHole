@@ -36,8 +36,7 @@ class _LikedSongsState extends State<LikedSongs>
   List sortedGenreKeysList = [];
   TabController _tcontroller;
   int currentIndex = 0;
-  int sortValue =
-      Hive.box('settings').get('playlistSortValue', defaultValue: 2);
+  int sortValue = Hive.box('settings').get('sortValue', defaultValue: 2);
   int albumSortValue =
       Hive.box('settings').get('albumSortValue', defaultValue: 2);
 

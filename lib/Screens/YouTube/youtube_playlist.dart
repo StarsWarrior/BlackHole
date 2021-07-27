@@ -253,7 +253,8 @@ class _YouTubePlaylistState extends State<YouTubePlaylist> {
                                                           SearchPage(
                                                         query: entry.title
                                                             .toString()
-                                                            .split("|")[0],
+                                                            .split("|")[0]
+                                                            .split("(")[0],
                                                       ),
                                                     ),
                                                   );
@@ -282,6 +283,9 @@ class _YouTubePlaylistState extends State<YouTubePlaylist> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceEvenly,
                                 children: [
+                                  Text(
+                                      'Use Main Section for Better Quality and Download Support',
+                                      textAlign: TextAlign.center),
                                   SizedBox(
                                       height:
                                           MediaQuery.of(context).size.width / 7,

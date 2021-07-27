@@ -49,6 +49,7 @@ class _RecentlyPlayedState extends State<RecentlyPlayed> {
                         _songs = [];
                       });
                     },
+                    tooltip: 'Clear All',
                     icon: Icon(Icons.clear_all_rounded),
                   ),
                 ],

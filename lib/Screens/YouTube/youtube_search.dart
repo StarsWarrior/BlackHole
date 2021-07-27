@@ -148,6 +148,7 @@ class _YouTubeSearchPageState extends State<YouTubeSearchPage> {
                                                 CupertinoIcons.clear,
                                                 size: 15.0,
                                               ),
+                                              tooltip: 'Remove',
                                               onPressed: () {
                                                 setState(() {
                                                   ytSearch.remove(e);

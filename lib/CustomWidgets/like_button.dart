@@ -28,6 +28,7 @@ class _LikeButtonState extends State<LikeButton> {
           color: liked ? Colors.redAccent : null,
         ),
         iconSize: widget.size ?? 24.0,
+        tooltip: liked ? 'Unlike' : 'Like',
         onPressed: () {
           liked
               ? removeLiked(widget.mediaItem.id)

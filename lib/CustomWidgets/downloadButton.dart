@@ -33,6 +33,7 @@ class _DownloadButtonState extends State<DownloadButton> {
                   icon: Icon(widget.icon == 'download'
                       ? Icons.download_done_rounded
                       : Icons.save_alt),
+                  tooltip: 'Download Done',
                   color: Theme.of(context).accentColor,
                   iconSize: 25.0,
                   onPressed: () {},
@@ -44,6 +45,7 @@ class _DownloadButtonState extends State<DownloadButton> {
                               ? Icons.download_rounded
                               : Icons.save_alt),
                           iconSize: 25.0,
+                          tooltip: 'Download',
                           onPressed: () {
                             down.prepareDownload(context, widget.data);
                           }))
@@ -107,6 +109,7 @@ class _MultiDownloadButtonState extends State<MultiDownloadButton> {
                   ),
                   color: Theme.of(context).accentColor,
                   iconSize: 25.0,
+                  tooltip: 'Download Done',
                   onPressed: () {},
                 )
               : down.progress == 0
@@ -116,6 +119,7 @@ class _MultiDownloadButtonState extends State<MultiDownloadButton> {
                             Icons.save_alt_rounded,
                           ),
                           iconSize: 25.0,
+                          tooltip: 'Download',
                           onPressed: () async {
                             for (Map items in widget.data) {
                               down.prepareDownload(context, items);
@@ -205,6 +209,7 @@ class _AlbumDownloadButtonState extends State<AlbumDownloadButton> {
                   ),
                   color: Theme.of(context).accentColor,
                   iconSize: 25.0,
+                  tooltip: 'Download Done',
                   onPressed: () {},
                 )
               : down.progress == 0
@@ -214,6 +219,7 @@ class _AlbumDownloadButtonState extends State<AlbumDownloadButton> {
                             Icons.download_rounded,
                           ),
                           iconSize: 25.0,
+                          tooltip: 'Download',
                           onPressed: () async {
                             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                                 elevation: 6,

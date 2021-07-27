@@ -148,8 +148,8 @@ class AudioPlayerTask extends BackgroundAudioTask {
   @override
   Future<void> onSkipToQueueItem(String mediaId) async {
     final newIndex = queue.indexWhere((item) => item.id == mediaId);
-    index = newIndex;
     if (newIndex == -1) return;
+    index = newIndex;
     _player.seek(Duration.zero, index: newIndex);
     if (!offline) addRecentlyPlayed(queue[newIndex]);
   }

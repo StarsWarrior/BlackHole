@@ -225,6 +225,7 @@ class _PlayScreenState extends State<PlayScreen> {
                   leading: IconButton(
                       icon: Icon(Icons.expand_more_rounded),
                       color: Theme.of(context).iconTheme.color,
+                      tooltip: 'Back',
                       onPressed: () {
                         if (widget.fromMiniplayer) {
                           widget.controller
@@ -849,6 +850,7 @@ class _PlayScreenState extends State<PlayScreen> {
                                                   icon: Icon(
                                                     Icons.shuffle_rounded,
                                                   ),
+                                                  tooltip: 'Shuffle',
                                                   iconSize: 25.0,
                                                   onPressed: null,
                                                 ),
@@ -858,6 +860,7 @@ class _PlayScreenState extends State<PlayScreen> {
                                                       Icons
                                                           .favorite_border_rounded,
                                                     ),
+                                                    tooltip: 'Like',
                                                     iconSize: 25.0,
                                                     onPressed: null,
                                                   ),
@@ -866,6 +869,7 @@ class _PlayScreenState extends State<PlayScreen> {
                                             IconButton(
                                               icon: Icon(
                                                   Icons.skip_previous_rounded),
+                                              tooltip: 'Skip Previous',
                                               iconSize: 45.0,
                                               onPressed: null,
                                             ),
@@ -903,6 +907,7 @@ class _PlayScreenState extends State<PlayScreen> {
                                               icon:
                                                   Icon(Icons.skip_next_rounded),
                                               iconSize: 45.0,
+                                              tooltip: 'Skip Next',
                                               onPressed: null,
                                             ),
                                             Column(
@@ -912,6 +917,7 @@ class _PlayScreenState extends State<PlayScreen> {
                                                   icon: Icon(
                                                       Icons.repeat_rounded),
                                                   iconSize: 25.0,
+                                                  tooltip: 'Repeat',
                                                   onPressed: null,
                                                 ),
                                                 if (!offline)
@@ -919,6 +925,7 @@ class _PlayScreenState extends State<PlayScreen> {
                                                       icon:
                                                           Icon(Icons.save_alt),
                                                       iconSize: 25.0,
+                                                      tooltip: 'Download',
                                                       onPressed: null),
                                               ],
                                             ),
@@ -1265,6 +1272,7 @@ class _PlayScreenState extends State<PlayScreen> {
                                                   icon: Icon(
                                                       Icons.shuffle_rounded),
                                                   iconSize: 25.0,
+                                                  tooltip: 'Shuffle',
                                                   color: shuffle
                                                       ? Theme.of(context)
                                                           .accentColor
@@ -1289,6 +1297,7 @@ class _PlayScreenState extends State<PlayScreen> {
                                                           icon: Icon(Icons
                                                               .favorite_border_rounded),
                                                           iconSize: 25.0,
+                                                          tooltip: 'Like',
                                                           onPressed: null)
                                                       : LikeButton(
                                                           mediaItem: mediaItem,
@@ -1300,6 +1309,7 @@ class _PlayScreenState extends State<PlayScreen> {
                                                     icon: Icon(Icons
                                                         .skip_previous_rounded),
                                                     iconSize: 45.0,
+                                                    tooltip: 'Skip Previous',
                                                     onPressed: (mediaItem !=
                                                                 null &&
                                                             (mediaItem !=
@@ -1324,6 +1334,7 @@ class _PlayScreenState extends State<PlayScreen> {
                                                     icon: Icon(Icons
                                                         .skip_previous_rounded),
                                                     iconSize: 45.0,
+                                                    tooltip: 'Skip Previous',
                                                     onPressed: null),
 
                                             /// Play button
@@ -1397,6 +1408,7 @@ class _PlayScreenState extends State<PlayScreen> {
                                                     icon: Icon(Icons
                                                         .skip_next_rounded),
                                                     iconSize: 45.0,
+                                                    tooltip: 'Skip Next',
                                                     onPressed: (mediaItem !=
                                                                 null &&
                                                             (mediaItem !=
@@ -1422,6 +1434,7 @@ class _PlayScreenState extends State<PlayScreen> {
                                                     icon: Icon(Icons
                                                         .skip_next_rounded),
                                                     iconSize: 45.0,
+                                                    tooltip: 'Skip Next',
                                                     onPressed: null),
 
                                             Column(
@@ -1434,6 +1447,7 @@ class _PlayScreenState extends State<PlayScreen> {
                                                       : Icon(
                                                           Icons.repeat_rounded),
                                                   iconSize: 25.0,
+                                                  tooltip: 'Repeat $repeatMode',
                                                   color: repeatMode == 'None'
                                                       ? null
                                                       : Theme.of(context)
@@ -1521,6 +1535,7 @@ class _PlayScreenState extends State<PlayScreen> {
                                                             Icons.save_alt,
                                                           ),
                                                           iconSize: 25.0,
+                                                          tooltip: 'Download',
                                                           onPressed: null),
                                               ],
                                             ),
@@ -1685,6 +1700,8 @@ class _PlayScreenState extends State<PlayScreen> {
                                                                                 Icon(
                                                                               Icons.bar_chart_rounded,
                                                                             ),
+                                                                            tooltip:
+                                                                                'Playing',
                                                                             onPressed:
                                                                                 () {},
                                                                           )
@@ -1842,6 +1859,7 @@ class _PlayScreenState extends State<PlayScreen> {
 
   FloatingActionButton playButton() => FloatingActionButton(
         elevation: 10,
+        tooltip: 'Play',
         child: Icon(
           Icons.play_arrow_rounded,
           size: 40.0,
@@ -1852,6 +1870,7 @@ class _PlayScreenState extends State<PlayScreen> {
 
   FloatingActionButton pauseButton() => FloatingActionButton(
         elevation: 10,
+        tooltip: 'Pause',
         child: Icon(
           Icons.pause_rounded,
           color: Colors.white,

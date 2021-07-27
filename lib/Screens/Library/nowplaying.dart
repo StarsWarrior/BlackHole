@@ -234,6 +234,7 @@ class _NowPlayingState extends State<NowPlaying> {
                                                                               icon: Icon(
                                                                                 Icons.bar_chart_rounded,
                                                                               ),
+                                                                              tooltip: 'Now Playing',
                                                                               onPressed: () {},
                                                                             )
                                                                           : queue[index].artUri.toString().startsWith('file:')
