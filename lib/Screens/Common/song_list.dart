@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:blackhole/CustomWidgets/add_list_queue.dart';
 import 'package:blackhole/CustomWidgets/add_queue.dart';
 import 'package:blackhole/CustomWidgets/downloadButton.dart';
 import 'package:blackhole/Screens/Player/audioplayer.dart';
@@ -98,6 +99,12 @@ class _SongsListPageState extends State<SongsListPage> {
                                   // floating: true,
                                   expandedHeight:
                                       MediaQuery.of(context).size.height * 0.4,
+                                  actions: [
+                                    AddListToQueueButton(
+                                        data: songList,
+                                        title:
+                                            widget.listItem['title'] ?? 'Songs')
+                                  ],
                                   flexibleSpace: FlexibleSpaceBar(
                                     title: Text(
                                       unescape.convert(

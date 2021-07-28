@@ -4,7 +4,6 @@ import 'package:audio_service/audio_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-import 'package:just_audio/just_audio.dart';
 
 class Equalizer extends StatefulWidget {
   Equalizer({Key key}) : super(key: key);
@@ -15,70 +14,83 @@ class Equalizer extends StatefulWidget {
 
 class _EqualizerState extends State<Equalizer> {
   bool enabled = Hive.box('settings').get("setEqualizer") ?? false;
-  final _equalizer = AndroidEqualizer();
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          SwitchListTile(
-            title: Text('Equalizer'),
-            value: enabled,
-            onChanged: (value) {
-              enabled = value;
-              Hive.box('settings').put("equalizerEnabled", value);
-              AudioService.customAction("equalizerEnabled", value);
-              setState(() {});
-            },
-          ),
-          EqualizerControls(
-            equalizer: _equalizer,
-          ),
-        ],
+      // Scaffold(
+      content:
+          // body:
+          SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SwitchListTile(
+              title: Text('Equalizer'),
+              value: enabled,
+              activeColor: Theme.of(context).accentColor,
+              onChanged: (value) {
+                enabled = value;
+                Hive.box('settings').put("setEqualizer", value);
+                AudioService.customAction("setEqualizer", value);
+                setState(() {});
+              },
+            ),
+            if (enabled)
+              Container(
+                height: MediaQuery.of(context).size.height / 2,
+                child: EqualizerControls(),
+              ),
+          ],
+        ),
       ),
     );
   }
 }
 
-class EqualizerControls extends StatelessWidget {
-  final AndroidEqualizer equalizer;
+class EqualizerControls extends StatefulWidget {
+  @override
+  _EqualizerControlsState createState() => _EqualizerControlsState();
+}
 
-  const EqualizerControls({
-    Key key,
-    @required this.equalizer,
-  }) : super(key: key);
+class _EqualizerControlsState extends State<EqualizerControls> {
+  Future<Map> getEq() async {
+    final Map parameters =
+        await AudioService.customAction('getEqualizerParams');
+    return parameters;
+  }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<AndroidEqualizerParameters>(
-      future: equalizer.parameters,
+    return FutureBuilder<Map>(
+      future: getEq(),
       builder: (context, snapshot) {
-        final parameters = snapshot.data;
-        if (parameters == null) return SizedBox();
+        if (snapshot.connectionState != ConnectionState.done) return SizedBox();
+        final data = snapshot.data;
+        if (data == null) return SizedBox();
         return Row(
           mainAxisSize: MainAxisSize.max,
           children: [
-            for (var band in parameters.bands)
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  StreamBuilder<double>(
-                    stream: band.gainStream,
-                    builder: (context, snapshot) {
-                      return VerticalSlider(
-                        min: parameters.minDecibels,
-                        max: parameters.maxDecibels,
-                        value: band.gain,
-                        onChanged: band.setGain,
-                      );
-                    },
-                  ),
-                  Text('${band.centerFrequency.round()} Hz'),
-                ],
+            for (Map band in data['bands'])
+              Expanded(
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: VerticalSlider(
+                        min: data['minDecibels'],
+                        max: data['maxDecibels'],
+                        value: band['gain'],
+                        bandIndex: band['index'],
+                      ),
+                    ),
+                    Text(
+                      '${band['centerFrequency'].round()}\nHz',
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
               ),
           ],
         );
@@ -87,19 +99,30 @@ class EqualizerControls extends StatelessWidget {
   }
 }
 
-class VerticalSlider extends StatelessWidget {
+class VerticalSlider extends StatefulWidget {
   final double value;
   final double min;
   final double max;
-  final ValueChanged<double> onChanged;
+  final int bandIndex;
 
   const VerticalSlider({
     Key key,
     @required this.value,
     this.min = 0.0,
     this.max = 1.0,
-    this.onChanged,
+    this.bandIndex,
   }) : super(key: key);
+
+  @override
+  _VerticalSliderState createState() => _VerticalSliderState();
+}
+
+class _VerticalSliderState extends State<VerticalSlider> {
+  double sliderValue;
+
+  void setGain(int bandIndex, double gain) {
+    AudioService.customAction('setBandGain', {'band': bandIndex, 'gain': gain});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -113,11 +136,17 @@ class VerticalSlider extends StatelessWidget {
           height: 400.0,
           alignment: Alignment.center,
           child: Slider(
-            value: value,
-            min: min,
-            max: max,
-            onChanged: onChanged,
-          ),
+              activeColor: Theme.of(context).accentColor,
+              inactiveColor: Theme.of(context).accentColor.withOpacity(0.4),
+              value: sliderValue ?? widget.value,
+              min: widget.min,
+              max: widget.max,
+              onChanged: (double newValue) {
+                setState(() {
+                  sliderValue = newValue;
+                  setGain(widget.bandIndex, newValue);
+                });
+              }),
         ),
       ),
     );

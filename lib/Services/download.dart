@@ -47,6 +47,14 @@ class Download with ChangeNotifier {
     RegExp avoid = RegExp(r'[\.\\\*\:\"\?#/;\|]');
     data['title'] = data['title'].toString().split("(From")[0].trim();
     String filename = data['title'] + " - " + data['artist'];
+
+    if (filename.length > 200) {
+      String temp = filename.substring(0, 200);
+      List tempList = temp.split(", ");
+      tempList.removeLast();
+      filename = tempList.join(", ");
+    }
+
     filename = filename.replaceAll(avoid, "") + ".m4a";
     if (dlPath == '')
       dlPath = await ExtStorage.getExternalStoragePublicDirectory(
@@ -66,8 +74,9 @@ class Download with ChangeNotifier {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Container(
-                  width: 500,
+                  width: 400,
                   child: Row(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
                         '"${data['title']}" already exists.\nDo you want to download it again?',
@@ -184,6 +193,8 @@ class Download with ChangeNotifier {
                 ? 'Downloading "${data['title'].toString()}" in Best Quality Available'
                 : 'Downloading "${data['title'].toString()}" in $preferredDownloadQuality',
             style: TextStyle(color: Colors.white),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
           ),
           action: SnackBarAction(
             textColor: Theme.of(context).accentColor,
@@ -262,6 +273,8 @@ class Download with ChangeNotifier {
         content: Text(
           '"${data['title'].toString()}" has been downloaded',
           style: TextStyle(color: Colors.white),
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
         ),
         action: SnackBarAction(
           textColor: Theme.of(context).accentColor,

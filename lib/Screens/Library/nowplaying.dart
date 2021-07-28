@@ -152,10 +152,9 @@ class _NowPlayingState extends State<NowPlaying> {
                                                                   int
                                                                       newIndex) {
                                                                 setState(() {
-                                                                  if (newIndex >
-                                                                      oldIndex) {
-                                                                    newIndex -=
-                                                                        1;
+                                                                  if (oldIndex <
+                                                                      newIndex) {
+                                                                    newIndex--;
                                                                   }
                                                                   final items =
                                                                       queue.removeAt(
@@ -163,17 +162,12 @@ class _NowPlayingState extends State<NowPlaying> {
                                                                   queue.insert(
                                                                       newIndex,
                                                                       items);
-                                                                  int newMediaIndex =
-                                                                      queue.indexWhere((element) =>
-                                                                          element ==
-                                                                          mediaItem);
                                                                   AudioService
                                                                       .customAction(
                                                                           'reorder',
                                                                           [
                                                                         oldIndex,
                                                                         newIndex,
-                                                                        newMediaIndex
                                                                       ]);
                                                                 });
                                                               },

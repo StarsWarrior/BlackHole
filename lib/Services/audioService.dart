@@ -13,6 +13,8 @@ import 'package:rxdart/rxdart.dart';
 
 class AudioPlayerTask extends BackgroundAudioTask {
   final _equalizer = AndroidEqualizer();
+  AndroidEqualizerParameters _equalizerParams;
+
   AudioPlayer _player;
 
   setAudioPlayer() {
@@ -187,6 +189,19 @@ class AudioPlayerTask extends BackgroundAudioTask {
     await AudioServiceBackground.setQueue(queue);
   }
 
+  Future<void> onAddQueueList(List<MediaItem> mediaItemList) async {
+    await concatenatingAudioSource.addAll(mediaItemList
+        .map((item) => AudioSource.uri(
+            offline
+                ? Uri.file(item.extras['url'])
+                : Uri.parse(item.extras['url'].replaceAll(
+                    "_96.", "_${preferredQuality.replaceAll(' kbps', '')}.")),
+            tag: item))
+        .toList());
+    queue.addAll(mediaItemList);
+    await AudioServiceBackground.setQueue(queue);
+  }
+
   @override
   Future<void> onAddQueueItem(MediaItem mediaItem) async {
     await concatenatingAudioSource.add(AudioSource.uri(
@@ -233,15 +248,52 @@ class AudioPlayerTask extends BackgroundAudioTask {
       }
     }
 
+    if (myFunction == 'addListToQueue') {
+      List temp = myVariable;
+      MediaItemConverter converter = MediaItemConverter();
+      List<MediaItem> mediaItemList =
+          temp.map((item) => converter.mapToMediaItem(item)).toList();
+      onAddQueueList(mediaItemList);
+    }
+
+    if (myFunction == 'setBandGain') {
+      final bandIdx = myVariable['band'] as int;
+      final gain = myVariable['gain'] as double;
+      _equalizerParams.bands[bandIdx].setGain(gain);
+    }
+
     if (myFunction == 'reorder') {
       onReorderQueue(myVariable[0], myVariable[1]);
     }
 
     if (myFunction == 'setEqualizer') {
-      _equalizer.setEnabled((myVariable[0]));
+      _equalizer.setEnabled((myVariable));
+    }
+
+    if (myFunction == 'getEqualizerParams') {
+      return getEqParms();
     }
 
     return Future.value(true);
+  }
+
+  Future<Map> getEqParms() async {
+    if (_equalizerParams == null)
+      _equalizerParams = await _equalizer.parameters;
+    List<AndroidEqualizerBand> bands = _equalizerParams.bands;
+    List<Map> bandList = bands
+        .map((e) => {
+              'centerFrequency': e.centerFrequency,
+              'gain': e.gain,
+              'index': e.index
+            })
+        .toList();
+
+    return {
+      'maxDecibels': _equalizerParams.maxDecibels,
+      'minDecibels': _equalizerParams.minDecibels,
+      'bands': bandList
+    };
   }
 
   @override
