@@ -33,8 +33,10 @@ class _LikeButtonState extends State<LikeButton> {
           liked
               ? removeLiked(widget.mediaItem.id)
               : addPlaylist('Favorite Songs', widget.mediaItem);
-          liked = !liked;
-          setState(() {});
+
+          setState(() {
+            liked = !liked;
+          });
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               duration: Duration(seconds: 2),

@@ -1,5 +1,7 @@
 import 'dart:io';
 import 'package:audio_service/audio_service.dart';
+import 'package:blackhole/CustomWidgets/gradientContainers.dart';
+import 'package:blackhole/Helpers/config.dart';
 import 'package:blackhole/Screens/Player/audioplayer.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
@@ -39,6 +41,25 @@ class _MiniPlayerState extends State<MiniPlayer> {
                         controller: controller,
                         valueNotifier: playerExpandProgress,
                         duration: Duration(milliseconds: 300),
+                        boxDecoration: BoxDecoration(
+                          boxShadow: <BoxShadow>[
+                            BoxShadow(
+                                color: Colors.black45,
+                                blurRadius: 10.0,
+                                offset: Offset(0.0, -12))
+                          ],
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: Theme.of(context).brightness ==
+                                    Brightness.dark
+                                ? currentTheme.getCardGradient(miniplayer: true)
+                                : [
+                                    Colors.white,
+                                    Theme.of(context).canvasColor,
+                                  ],
+                          ),
+                        ),
                         onDismissed: () {
                           AudioService.stop();
                         },
@@ -62,24 +83,9 @@ class _MiniPlayerState extends State<MiniPlayer> {
                                   ))
                               : Align(
                                   alignment: Alignment.bottomCenter,
-                                  child: Container(
-                                      decoration: BoxDecoration(
-                                        gradient: LinearGradient(
-                                          begin: Alignment.topLeft,
-                                          end: Alignment.bottomRight,
-                                          colors: Theme.of(context)
-                                                      .brightness ==
-                                                  Brightness.dark
-                                              ? [
-                                                  Colors.grey[900],
-                                                  Colors.black,
-                                                ]
-                                              : [
-                                                  Colors.white,
-                                                  Theme.of(context).canvasColor,
-                                                ],
-                                        ),
-                                      ),
+                                  child: GradientCard(
+                                      miniplayer: true,
+                                      radius: 0.0,
                                       child: Column(
                                         mainAxisSize: MainAxisSize.min,
                                         children: [

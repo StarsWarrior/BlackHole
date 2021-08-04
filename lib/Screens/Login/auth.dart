@@ -1,10 +1,9 @@
-import 'dart:ui';
 import 'package:blackhole/CustomWidgets/gradientContainers.dart';
-import 'package:firebase_database/firebase_database.dart';
+import 'package:blackhole/Helpers/supabase.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:package_info/package_info.dart';
-import 'package:device_info/device_info.dart';
+import 'package:uuid/uuid.dart';
 
 class AuthScreen extends StatefulWidget {
   @override
@@ -13,10 +12,8 @@ class AuthScreen extends StatefulWidget {
 
 class _AuthScreenState extends State<AuthScreen> {
   String appVersion;
-  Map deviceInfo = {};
-  String gender = "male";
-  final dbRef = FirebaseDatabase.instance.reference().child("Users");
   TextEditingController controller;
+  Uuid uuid = Uuid();
 
   @override
   void initState() {
@@ -33,50 +30,42 @@ class _AuthScreenState extends State<AuthScreen> {
 
   void main() async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
-    DeviceInfoPlugin info = DeviceInfoPlugin();
-    AndroidDeviceInfo androidInfo = await info.androidInfo;
     appVersion = packageInfo.version;
-    deviceInfo.addAll({
-      'Brand': androidInfo.brand,
-      'Manufacturer': androidInfo.manufacturer,
-      'Device': androidInfo.device,
-      'isPhysicalDevice': androidInfo.isPhysicalDevice,
-      'Fingerprint': androidInfo.fingerprint,
-      'Model': androidInfo.model,
-      'Build': androidInfo.display,
-      'Product': androidInfo.product,
-      'androidVersion': androidInfo.version.release,
-      'supportedAbis': androidInfo.supportedAbis,
-    });
-    setState(() {});
   }
 
-  Future _addUserData(String name, String gender) async {
-    DatabaseReference pushedPostRef = dbRef.push();
-    String postId = pushedPostRef.key;
-    pushedPostRef.set({
+  Future _addUserData(String name) async {
+    int status;
+    await Hive.box('settings').put('name', name.trim());
+    DateTime now = DateTime.now();
+    List createDate =
+        now.toUtc().add(Duration(hours: 5, minutes: 30)).toString().split('.')
+          ..removeLast()
+          ..join('.');
+
+    String userId = uuid.v1();
+    status = await SupaBase().createUser({
+      "id": userId,
       "name": name,
-      "email": "",
-      "DOB": "",
-      "gender": gender,
-      "country": "",
-      "streamingQuality": "",
-      "downloadQuality": "",
       "version": appVersion,
-      "darkMode": "",
-      "themeColor": "",
-      "colorHue": "",
-      "lastLogin": "",
-      "accountCreatedOn": DateTime.now()
-          .toUtc()
-          .add(Duration(hours: 5, minutes: 30))
-          .toString()
-          .split('.')
-          .first,
-      "deviceInfo": deviceInfo,
-      "preferredLanguage": ["Hindi"],
+      "accountCreatedOn": "${createDate[0]} IST",
+      "timeZone":
+          "Zone: ${now.timeZoneName} Offset: ${now.timeZoneOffset.toString().replaceAll('.000000', '')}",
+      "lastLogin": "${createDate[0]} IST",
     });
-    Hive.box('settings').put('userID', postId);
+
+    while (status == null || status == 409) {
+      userId = uuid.v1();
+      status = await SupaBase().createUser({
+        "id": userId,
+        "name": name,
+        "version": appVersion,
+        "accountCreatedOn": "${createDate[0]} IST",
+        "timeZone":
+            "Zone: ${now.timeZoneName} Offset: ${now.timeZoneOffset.toString().replaceAll('.000000', '')}",
+        "lastLogin": "${createDate[0]} IST",
+      });
+    }
+    await Hive.box('settings').put('userId', userId);
   }
 
   @override
@@ -99,7 +88,7 @@ class _AuthScreenState extends State<AuthScreen> {
           ),
           Scaffold(
             backgroundColor: Colors.transparent,
-            body: Padding(
+            body: SingleChildScrollView(
               padding: const EdgeInsets.only(left: 15.0, right: 15.0),
               child: Center(
                 child: Column(
@@ -155,51 +144,64 @@ class _AuthScreenState extends State<AuthScreen> {
                     ),
                     Padding(
                       padding: const EdgeInsets.only(left: 10, right: 10),
-                      child: Container(
-                        padding: EdgeInsets.only(
-                            top: 5, bottom: 5, left: 10, right: 10),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10.0),
-                          color: Theme.of(context).cardColor,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black26,
-                              blurRadius: 5.0,
-                              spreadRadius: 0.0,
-                              offset: Offset(0.0, 3.0),
-                            )
-                          ],
-                        ),
-                        child: TextField(
-                            controller: controller,
-                            textAlignVertical: TextAlignVertical.center,
-                            textCapitalization: TextCapitalization.sentences,
-                            keyboardType: TextInputType.name,
-                            decoration: InputDecoration(
-                              focusedBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(
-                                    width: 1.5, color: Colors.transparent),
-                              ),
-                              prefixIcon: Icon(
-                                Icons.person,
-                                color: Theme.of(context).accentColor,
-                              ),
-                              border: InputBorder.none,
-                              hintText: "Your Name",
-                              hintStyle: TextStyle(
-                                color: Colors.white60,
-                              ),
+                      child: Column(
+                        children: [
+                          Container(
+                            padding: EdgeInsets.only(
+                                top: 5, bottom: 5, left: 10, right: 10),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10.0),
+                              color: Theme.of(context).cardColor,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black26,
+                                  blurRadius: 5.0,
+                                  spreadRadius: 0.0,
+                                  offset: Offset(0.0, 3.0),
+                                )
+                              ],
                             ),
-                            onSubmitted: (String value) {
-                              if (value == '') {
-                                Hive.box('settings').put('name', 'Guest');
-                                _addUserData('Guest', gender);
-                              } else {
-                                Hive.box('settings').put('name', value.trim());
-                                _addUserData(value, gender);
-                              }
-                              Navigator.popAndPushNamed(context, '/');
-                            }),
+                            child: TextField(
+                                controller: controller,
+                                textAlignVertical: TextAlignVertical.center,
+                                textCapitalization:
+                                    TextCapitalization.sentences,
+                                keyboardType: TextInputType.name,
+                                decoration: InputDecoration(
+                                  focusedBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(
+                                        width: 1.5, color: Colors.transparent),
+                                  ),
+                                  prefixIcon: Icon(
+                                    Icons.person,
+                                    color: Theme.of(context).accentColor,
+                                  ),
+                                  border: InputBorder.none,
+                                  hintText: "Your Name",
+                                  hintStyle: TextStyle(
+                                    color: Colors.white60,
+                                  ),
+                                ),
+                                onSubmitted: (String value) {
+                                  if (value == '') {
+                                    _addUserData('Guest');
+                                  } else {
+                                    _addUserData(value.trim());
+                                  }
+                                  Hive.box('settings').put('auth', 'done');
+                                  Navigator.popAndPushNamed(context, '/');
+                                }),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(
+                                left: 8.0, right: 8.0, top: 5.0),
+                            child: Text(
+                                "Disclaimer: We respect your privacy more than anything else. Only your name, which you will enter here, will be recorded.",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                    color: Colors.grey.withOpacity(0.7))),
+                          ),
+                        ],
                       ),
                     ),
                   ],

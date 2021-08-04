@@ -44,6 +44,8 @@ class _PlayScreenState extends State<PlayScreen> {
   String preferredDownloadQuality =
       Hive.box('settings').get('downloadQuality') ?? '320 kbps';
   String repeatMode = Hive.box('settings').get('repeatMode') ?? 'None';
+  bool enforceRepeat =
+      Hive.box('settings').get('enforceRepeat', defaultValue: false);
   bool stopServiceOnPause =
       Hive.box('settings').get('stopServiceOnPause') ?? true;
   bool shuffle = Hive.box('settings').get('shuffle') ?? false;
@@ -184,9 +186,11 @@ class _PlayScreenState extends State<PlayScreen> {
         fromMiniplayer = true;
       } else {
         fromMiniplayer = false;
-        repeatMode = 'None';
+        if (!enforceRepeat) {
+          repeatMode = 'None';
+          Hive.box('settings').put('repeatMode', repeatMode);
+        }
         shuffle = false;
-        Hive.box('settings').put('repeatMode', repeatMode);
         Hive.box('settings').put('shuffle', shuffle);
         AudioService.stop();
         if (offline) {
@@ -440,9 +444,7 @@ class _PlayScreenState extends State<PlayScreen> {
                                       child: CupertinoTimerPicker(
                                         mode: CupertinoTimerPickerMode.hm,
                                         onTimerDurationChanged: (value) {
-                                          setState(() {
-                                            _time = value;
-                                          });
+                                          _time = value;
                                         },
                                       ),
                                     ),
@@ -495,8 +497,6 @@ class _PlayScreenState extends State<PlayScreen> {
                                               ),
                                             ),
                                           );
-                                          debugPrint(
-                                              'Sleep after ${_time.inMinutes}');
                                         },
                                       ),
                                       SizedBox(
@@ -712,9 +712,15 @@ class _PlayScreenState extends State<PlayScreen> {
                                                                   'assets/cover.jpg'))
                                                           : offline
                                                               ? Image(
-                                                                  fit: BoxFit
-                                                                      .cover,
+                                                                  fit:
+                                                                      BoxFit
+                                                                          .cover,
                                                                   height: MediaQuery.of(
+                                                                              context)
+                                                                          .size
+                                                                          .width *
+                                                                      0.85,
+                                                                  width: MediaQuery.of(
                                                                               context)
                                                                           .size
                                                                           .width *
@@ -790,7 +796,9 @@ class _PlayScreenState extends State<PlayScreen> {
                                                           : globalQueue[
                                                                   globalIndex]
                                                               .title
-                                                              .split(' (')[0],
+                                                              .split(" (")[0]
+                                                              .split("|")[0]
+                                                              .trim(),
                                                       textAlign:
                                                           TextAlign.center,
                                                       overflow:
@@ -992,6 +1000,10 @@ class _PlayScreenState extends State<PlayScreen> {
                                                                             .size
                                                                             .width *
                                                                         0.85,
+                                                                    width: MediaQuery.of(context)
+                                                                            .size
+                                                                            .width *
+                                                                        0.85,
                                                                     image:
                                                                         FileImage(
                                                                             File(
@@ -1111,7 +1123,11 @@ class _PlayScreenState extends State<PlayScreen> {
                                                               ? Image(
                                                                   fit: BoxFit
                                                                       .cover,
-                                                                  height: MediaQuery.of(
+                                                                  height: MediaQuery.of(context)
+                                                                          .size
+                                                                          .width *
+                                                                      0.85,
+                                                                  width: MediaQuery.of(
                                                                               context)
                                                                           .size
                                                                           .width *
@@ -1457,23 +1473,27 @@ class _PlayScreenState extends State<PlayScreen> {
                                                           .accentColor,
                                                   // Icons.repeat_one_rounded
                                                   onPressed: () {
-                                                    if (repeatMode == 'None') {
-                                                      repeatMode = 'All';
-                                                      AudioService.setRepeatMode(
-                                                          AudioServiceRepeatMode
-                                                              .all);
-                                                    } else {
-                                                      if (repeatMode == 'All') {
+                                                    switch (repeatMode) {
+                                                      case 'None':
+                                                        repeatMode = 'All';
+                                                        AudioService.setRepeatMode(
+                                                            AudioServiceRepeatMode
+                                                                .all);
+                                                        break;
+                                                      case 'All':
                                                         repeatMode = 'One';
                                                         AudioService.setRepeatMode(
                                                             AudioServiceRepeatMode
                                                                 .one);
-                                                      } else {
+                                                        break;
+                                                      case 'One':
                                                         repeatMode = 'None';
                                                         AudioService.setRepeatMode(
                                                             AudioServiceRepeatMode
                                                                 .none);
-                                                      }
+                                                        break;
+                                                      default:
+                                                        break;
                                                     }
                                                     Hive.box('settings').put(
                                                         'repeatMode',
@@ -1755,16 +1775,22 @@ class _PlayScreenState extends State<PlayScreen> {
                                                                           ),
                                                                           queue[index].artUri == null
                                                                               ? SizedBox()
-                                                                              : queue[index].artUri.toString().startsWith('file:')
-                                                                                  ? Image(image: FileImage(File(queue[index].artUri.toFilePath())))
-                                                                                  : CachedNetworkImage(
-                                                                                      errorWidget: (BuildContext context, _, __) => Image(
+                                                                              : SizedBox(
+                                                                                  height: 50.0,
+                                                                                  width: 50.0,
+                                                                                  child: queue[index].artUri.toString().startsWith('file:')
+                                                                                      ? Image(fit: BoxFit.cover, image: FileImage(File(queue[index].artUri.toFilePath())))
+                                                                                      : CachedNetworkImage(
+                                                                                          fit: BoxFit.cover,
+                                                                                          errorWidget: (BuildContext context, _, __) => Image(
                                                                                             image: AssetImage('assets/cover.jpg'),
                                                                                           ),
-                                                                                      placeholder: (BuildContext context, _) => Image(
+                                                                                          placeholder: (BuildContext context, _) => Image(
                                                                                             image: AssetImage('assets/cover.jpg'),
                                                                                           ),
-                                                                                      imageUrl: queue[index].artUri.toString())
+                                                                                          imageUrl: queue[index].artUri.toString(),
+                                                                                        ),
+                                                                                ),
                                                                         ],
                                                                       ),
                                                                     ),
@@ -1858,6 +1884,21 @@ class _PlayScreenState extends State<PlayScreen> {
     await AudioService.updateQueue(globalQueue);
     // await AudioService.skipToQueueItem(globalQueue[globalIndex].id);
     await AudioService.play();
+    if (enforceRepeat) {
+      switch (repeatMode) {
+        case 'None':
+          AudioService.setRepeatMode(AudioServiceRepeatMode.none);
+          break;
+        case 'All':
+          AudioService.setRepeatMode(AudioServiceRepeatMode.all);
+          break;
+        case 'One':
+          AudioService.setRepeatMode(AudioServiceRepeatMode.one);
+          break;
+        default:
+          break;
+      }
+    }
   }
 
   FloatingActionButton playButton() => FloatingActionButton(

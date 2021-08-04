@@ -56,7 +56,7 @@ class SpotifyApi {
     try {
       Uri path = Uri.parse(requestToken);
       final response = await post(path, headers: headers, body: body);
-      print(response.statusCode);
+      // print(response.statusCode);
       if (response.statusCode == 200) {
         final result = jsonDecode(response.body);
         return <String>[result['access_token'], result['refresh_token']];
@@ -89,7 +89,7 @@ class SpotifyApi {
     return [];
   }
 
-  Future<List> getTracksOfPlaylist(
+  Future<Map> getTracksOfPlaylist(
       String accessToken, String playListId, int offset) async {
     try {
       Uri path = Uri.parse(
@@ -105,11 +105,12 @@ class SpotifyApi {
       if (response.statusCode == 200) {
         final result = jsonDecode(response.body);
         List tracks = result['items'].toList();
-        return tracks;
+        int total = result['total'];
+        return {'tracks': tracks, 'total': total};
       }
     } catch (e) {
       print('error ' + e.toString());
     }
-    return [];
+    return {};
   }
 }

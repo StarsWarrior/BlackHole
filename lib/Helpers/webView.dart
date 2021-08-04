@@ -46,8 +46,6 @@ class _SpotifyWebViewState extends State<SpotifyWebView> {
                   if (url.contains("code=")) {
                     code = getCodeParameter(url);
                     Future.delayed(Duration(seconds: 2));
-                    print("code is...");
-                    print(code);
                     Navigator.pop(context, code);
                   }
                 }),

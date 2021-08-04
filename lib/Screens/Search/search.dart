@@ -105,7 +105,7 @@ class _SearchPageState extends State<SearchPage> {
                   height: 52.0,
                   margins: EdgeInsets.fromLTRB(18.0, 8.0, 18.0, 15.0),
                   scrollPadding: EdgeInsets.only(bottom: 50),
-                  backdropColor: Colors.black12,
+                  backdropColor: Colors.black45,
                   transitionCurve: Curves.easeInOut,
                   physics: BouncingScrollPhysics(),
                   axisAlignment: 0.0,
@@ -129,7 +129,7 @@ class _SearchPageState extends State<SearchPage> {
                       searchedData = {};
                       if (search.contains(_query)) search.remove(_query);
                       search.insert(0, _query);
-                      if (search.length > 5) search = search.sublist(0, 5);
+                      if (search.length > 3) search = search.sublist(0, 3);
                       Hive.box('settings').put('search', search);
                     });
                   },

@@ -1,6 +1,7 @@
 import 'package:blackhole/APIs/api.dart';
 import 'package:blackhole/CustomWidgets/gradientContainers.dart';
 import 'package:blackhole/CustomWidgets/collage.dart';
+import 'package:blackhole/CustomWidgets/textinput_dialog.dart';
 import 'package:blackhole/Helpers/import_export_playlist.dart';
 import 'package:blackhole/Helpers/playlist.dart';
 import 'package:blackhole/Helpers/search_add_playlist.dart';
@@ -68,92 +69,21 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                           ),
                         ),
                       ),
-                      onTap: () {
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            final _controller = TextEditingController();
-                            return AlertDialog(
-                              content: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Text(
-                                        'Create new playlist',
-                                        style: TextStyle(
-                                            color:
-                                                Theme.of(context).accentColor),
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(
-                                    height: 10,
-                                  ),
-                                  TextField(
-                                      controller: _controller,
-                                      autofocus: true,
-                                      onSubmitted: (String value) {
-                                        if (value.trim() == '')
-                                          value =
-                                              'Playlist ${playlistNames.length}';
-                                        if (playlistNames.contains(value))
-                                          value = value + ' (1)';
-                                        playlistNames.add(value);
-                                        settingsBox.put(
-                                            'playlistNames', playlistNames);
-                                        Navigator.pop(context);
-                                        setState(() {});
-                                      }),
-                                ],
-                              ),
-                              actions: [
-                                TextButton(
-                                  style: TextButton.styleFrom(
-                                    primary: Theme.of(context).brightness ==
-                                            Brightness.dark
-                                        ? Colors.white
-                                        : Colors.grey[700],
-                                    //       backgroundColor: Theme.of(context).accentColor,
-                                  ),
-                                  child: Text("Cancel"),
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                  },
-                                ),
-                                TextButton(
-                                  style: TextButton.styleFrom(
-                                    primary: Colors.white,
-                                    backgroundColor:
-                                        Theme.of(context).accentColor,
-                                  ),
-                                  child: Text(
-                                    "Ok",
-                                    style: TextStyle(color: Colors.white),
-                                  ),
-                                  onPressed: () {
-                                    if (_controller.text.trim() == '')
-                                      _controller.text =
-                                          'Playlist ${playlistNames.length}';
-
-                                    if (playlistNames
-                                        .contains(_controller.text))
-                                      _controller.text =
-                                          _controller.text + ' (1)';
-                                    playlistNames.add(_controller.text);
-                                    settingsBox.put(
-                                        'playlistNames', playlistNames);
-                                    Navigator.pop(context);
-                                    setState(() {});
-                                  },
-                                ),
-                                SizedBox(
-                                  width: 5,
-                                ),
-                              ],
-                            );
-                          },
-                        );
+                      onTap: () async {
+                        await TextInputDialog().showTextInputDialog(
+                            context,
+                            'Create New playlist',
+                            '',
+                            TextInputType.name, (String value) {
+                          if (value.trim() == '')
+                            value = 'Playlist ${playlistNames.length}';
+                          while (playlistNames.contains(value))
+                            value = value + ' (1)';
+                          playlistNames.add(value);
+                          settingsBox.put('playlistNames', playlistNames);
+                          Navigator.pop(context);
+                        });
+                        setState(() {});
                       },
                     ),
                     ListTile(
@@ -201,13 +131,11 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                           ),
                         ),
                         onTap: () async {
-                          // String code = await SpotifyApi().authenticate();
                           String code = await Navigator.of(context).push(
                             PageRouteBuilder(
                                 opaque: false,
                                 pageBuilder: (_, __, ___) => SpotifyWebView()),
                           );
-                          // print(code);
                           if (code != 'ERROR') {
                             await fetchPlaylists(
                                 code, context, playlistNames, settingsBox);
@@ -236,148 +164,47 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                           ),
                         ),
                         onTap: () async {
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext ctxt) {
-                              final _controller = TextEditingController();
-                              return AlertDialog(
-                                content: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Text(
-                                          'Enter Playlist Link',
-                                          style: TextStyle(
-                                              color: Theme.of(context)
-                                                  .accentColor),
-                                        ),
-                                      ],
-                                    ),
-                                    TextField(
-                                        autofocus: true,
-                                        controller: _controller,
-                                        keyboardType: TextInputType.url,
-                                        textAlignVertical:
-                                            TextAlignVertical.bottom,
-                                        onSubmitted: (value) async {
-                                          String link = value.trim();
-                                          Navigator.pop(context);
-                                          Map data = await SearchAddPlaylist()
-                                              .addYtPlaylist(link);
-                                          if (data.isNotEmpty) {
-                                            playlistNames.add(data['title']);
-                                            print(
-                                                "playlistNames npw is $playlistNames");
-                                            settingsBox.put(
-                                                'playlistNames', playlistNames);
-                                            await SearchAddPlaylist()
-                                                .showProgress(
-                                                    data['count'],
-                                                    context,
-                                                    data['title'],
-                                                    data['image'],
-                                                    data['tracks']);
-                                            setState(() {
-                                              playlistNames = playlistNames;
-                                            });
-                                          } else {
-                                            ScaffoldMessenger.of(context)
-                                                .showSnackBar(
-                                              SnackBar(
-                                                elevation: 6,
-                                                backgroundColor:
-                                                    Colors.grey[900],
-                                                behavior:
-                                                    SnackBarBehavior.floating,
-                                                content: Text(
-                                                  'Failed to Import',
-                                                  style: TextStyle(
-                                                      color: Colors.white),
-                                                ),
-                                                action: SnackBarAction(
-                                                  textColor: Theme.of(context)
-                                                      .accentColor,
-                                                  label: 'Ok',
-                                                  onPressed: () {},
-                                                ),
-                                              ),
-                                            );
-                                          }
-                                        }),
-                                  ],
-                                ),
-                                actions: [
-                                  TextButton(
-                                    style: TextButton.styleFrom(
-                                      primary: Theme.of(context).brightness ==
-                                              Brightness.dark
-                                          ? Colors.white
-                                          : Colors.grey[700],
-                                    ),
-                                    child: Text("Cancel"),
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                    },
-                                  ),
-                                  TextButton(
-                                    style: TextButton.styleFrom(
-                                      primary: Colors.white,
-                                      backgroundColor:
-                                          Theme.of(context).accentColor,
-                                    ),
-                                    child: Text(
-                                      "Ok",
-                                      style: TextStyle(color: Colors.white),
-                                    ),
-                                    onPressed: () async {
-                                      Navigator.pop(context);
-                                      String link = _controller.text.trim();
-                                      Map data = await SearchAddPlaylist()
-                                          .addYtPlaylist(link);
-                                      if (data.isNotEmpty) {
-                                        playlistNames.add(data['title']);
-                                        settingsBox.put(
-                                            'playlistNames', playlistNames);
-                                        await SearchAddPlaylist().showProgress(
-                                            data['count'],
-                                            context,
-                                            data['title'],
-                                            data['image'],
-                                            data['tracks']);
-                                        setState(() {
-                                          playlistNames = playlistNames;
-                                        });
-                                      } else {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          SnackBar(
-                                            elevation: 6,
-                                            backgroundColor: Colors.grey[900],
-                                            behavior: SnackBarBehavior.floating,
-                                            content: Text(
-                                              'Failed to Import',
-                                              style: TextStyle(
-                                                  color: Colors.white),
-                                            ),
-                                            action: SnackBarAction(
-                                              textColor:
-                                                  Theme.of(context).accentColor,
-                                              label: 'Ok',
-                                              onPressed: () {},
-                                            ),
-                                          ),
-                                        );
-                                      }
-                                    },
-                                  ),
-                                  SizedBox(
-                                    width: 5,
-                                  ),
-                                ],
+                          await TextInputDialog().showTextInputDialog(
+                              context,
+                              'Enter Playlist Link',
+                              '',
+                              TextInputType.url, (value) async {
+                            SearchAddPlaylist searchAdd = SearchAddPlaylist();
+                            String link = value.trim();
+                            Navigator.pop(context);
+                            Map data = await searchAdd.addYtPlaylist(link);
+                            if (data.isNotEmpty) {
+                              playlistNames.add(data['title']);
+                              settingsBox.put('playlistNames', playlistNames);
+
+                              await searchAdd.showProgress(
+                                data['count'],
+                                context,
+                                searchAdd.songsAdder(
+                                    data['title'], data['tracks']),
                               );
-                            },
-                          );
+                              setState(() {
+                                playlistNames = playlistNames;
+                              });
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  elevation: 6,
+                                  backgroundColor: Colors.grey[900],
+                                  behavior: SnackBarBehavior.floating,
+                                  content: Text(
+                                    'Failed to Import',
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                  action: SnackBarAction(
+                                    textColor: Theme.of(context).accentColor,
+                                    label: 'Ok',
+                                    onPressed: () {},
+                                  ),
+                                ),
+                              );
+                            }
+                          });
                         }),
                     playlistNames.isEmpty
                         ? SizedBox()
@@ -674,17 +501,95 @@ fetchPlaylists(code, context, playlistNames, settingsBox) async {
         isDismissible: true,
         backgroundColor: Colors.transparent,
         context: context,
-        builder: (BuildContext context) {
+        builder: (BuildContext contxt) {
           return BottomGradientContainer(
             child: ListView.builder(
                 shrinkWrap: true,
                 physics: BouncingScrollPhysics(),
                 padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
                 scrollDirection: Axis.vertical,
-                itemCount: spotifyPlaylists.length,
-                itemBuilder: (context, index) {
-                  String playName = spotifyPlaylists[index]['name'];
-                  int playTotal = spotifyPlaylists[index]['tracks']['total'];
+                itemCount: spotifyPlaylists.length + 1,
+                itemBuilder: (ctxt, idx) {
+                  if (idx == 0)
+                    return ListTile(
+                      title: Text('Import Public Playlist'),
+                      leading: Card(
+                        elevation: 0,
+                        color: Colors.transparent,
+                        child: SizedBox(
+                          width: 50,
+                          height: 50,
+                          child: Center(
+                            child: Icon(
+                              Icons.add_rounded,
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? null
+                                  : Colors.grey[700],
+                            ),
+                          ),
+                        ),
+                      ),
+                      onTap: () async {
+                        await TextInputDialog().showTextInputDialog(
+                            context,
+                            'Enter Playlist Link',
+                            '',
+                            TextInputType.url, (String value) async {
+                          Navigator.pop(context);
+                          value = value.split("?")[0].split('/').last;
+
+                          Map data = await SpotifyApi()
+                              .getTracksOfPlaylist(accessToken, value, 0);
+                          int _total = data['total'];
+
+                          Stream<Map> songsAdder() async* {
+                            int _done = 0;
+                            List tracks = [];
+                            for (int i = 0; i * 100 <= _total; i++) {
+                              Map data = await SpotifyApi().getTracksOfPlaylist(
+                                  accessToken, value, i * 100);
+                              tracks.addAll(data['tracks']);
+                            }
+
+                            String playName = 'Spotify Public';
+                            while (playlistNames.contains(playName))
+                              playName = playName + ' (1)';
+                            playlistNames.add(playName);
+                            settingsBox.put('playlistNames', playlistNames);
+
+                            for (Map track in tracks) {
+                              String trackArtist;
+                              String trackName;
+                              try {
+                                trackArtist = track['track']['artists'][0]
+                                        ['name']
+                                    .toString();
+                                trackName = track['track']['name'].toString();
+                                yield {'done': ++_done, 'name': trackName};
+                              } catch (e) {
+                                yield {'done': ++_done, 'name': ''};
+                              }
+                              try {
+                                List result = await SaavnAPI()
+                                    .fetchTopSearchResult(
+                                        '$trackName by $trackArtist');
+                                addPlaylistMap(playName, result[0]);
+                              } catch (e) {
+                                print('Error in $_done: $e');
+                              }
+                            }
+                          }
+
+                          await SearchAddPlaylist()
+                              .showProgress(_total, ctxt, songsAdder());
+                        });
+                        Navigator.pop(context);
+                      },
+                    );
+
+                  String playName = spotifyPlaylists[idx - 1]['name'];
+                  int playTotal = spotifyPlaylists[idx - 1]['tracks']['total'];
                   return playTotal == 0
                       ? SizedBox()
                       : ListTile(
@@ -702,14 +607,14 @@ fetchPlaylists(code, context, playlistNames, settingsBox) async {
                                 image: AssetImage('assets/cover.jpg'),
                               ),
                               imageUrl:
-                                  '${spotifyPlaylists[index]["images"][0]['url'].replaceAll('http:', 'https:')}',
+                                  '${spotifyPlaylists[idx - 1]["images"][0]['url'].replaceAll('http:', 'https:')}',
                               placeholder: (context, url) => Image(
                                 image: AssetImage('assets/cover.jpg'),
                               ),
                             ),
                           ),
                           onTap: () async {
-                            Navigator.pop(context, index);
+                            Navigator.pop(context, idx - 1);
                           },
                         );
                 }),
@@ -717,15 +622,17 @@ fetchPlaylists(code, context, playlistNames, settingsBox) async {
         });
     String playName = spotifyPlaylists[index]['name'];
     int _total = spotifyPlaylists[index]['tracks']['total'];
+
     Stream<Map> songsAdder() async* {
       int _done = 0;
       List tracks = [];
       for (int i = 0; i * 100 <= _total; i++) {
-        List temp = await SpotifyApi().getTracksOfPlaylist(
+        Map data = await SpotifyApi().getTracksOfPlaylist(
             accessToken, spotifyPlaylists[index]['id'], i * 100);
 
-        tracks.addAll(temp);
+        tracks.addAll(data['tracks']);
       }
+      while (playlistNames.contains(playName)) playName = playName + ' (1)';
       playlistNames.add(playName);
       settingsBox.put('playlistNames', playlistNames);
 
@@ -749,60 +656,7 @@ fetchPlaylists(code, context, playlistNames, settingsBox) async {
       }
     }
 
-    await showModalBottomSheet(
-      isDismissible: false,
-      backgroundColor: Colors.transparent,
-      context: context,
-      builder: (BuildContext context) {
-        return StatefulBuilder(
-            builder: (BuildContext context, StateSetter setStt) {
-          return BottomGradientContainer(
-            child: SizedBox(
-              height: 300,
-              width: 300,
-              child: StreamBuilder<Object>(
-                  stream: songsAdder(),
-                  builder: (context, snapshot) {
-                    Map data = snapshot?.data;
-                    int _done = (data ?? const {})['done'] ?? 0;
-                    String name = (data ?? const {})['name'] ?? '';
-                    if (_done == _total) Navigator.pop(context);
-                    return Stack(
-                      children: [
-                        Center(
-                          child: Text('$_done / $_total'),
-                        ),
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            Center(
-                                child: Text(
-                              'Converting Songs',
-                              style: TextStyle(fontWeight: FontWeight.w600),
-                            )),
-                            SizedBox(
-                              height: 75,
-                              width: 75,
-                              child: CircularProgressIndicator(
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                      Theme.of(context).accentColor),
-                                  value: _done / _total),
-                            ),
-                            Center(
-                                child: Text(
-                              name,
-                              textAlign: TextAlign.center,
-                            )),
-                          ],
-                        ),
-                      ],
-                    );
-                  }),
-            ),
-          );
-        });
-      },
-    );
+    await SearchAddPlaylist().showProgress(_total, context, songsAdder());
   } else {
     print("Failed");
   }

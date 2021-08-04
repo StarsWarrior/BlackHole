@@ -493,18 +493,24 @@ class _LikedSongsState extends State<LikedSongs>
                                                 BorderRadius.circular(7.0),
                                           ),
                                           clipBehavior: Clip.antiAlias,
-                                          child: CachedNetworkImage(
-                                            errorWidget: (context, _, __) =>
-                                                Image(
-                                              image: AssetImage(
-                                                  'assets/cover.jpg'),
-                                            ),
-                                            imageUrl: _songs[index]['image']
-                                                .replaceAll('http:', 'https:'),
-                                            placeholder: (context, url) =>
-                                                Image(
-                                              image: AssetImage(
-                                                  'assets/cover.jpg'),
+                                          child: SizedBox(
+                                            height: 50.0,
+                                            width: 50.0,
+                                            child: CachedNetworkImage(
+                                              fit: BoxFit.cover,
+                                              errorWidget: (context, _, __) =>
+                                                  Image(
+                                                image: AssetImage(
+                                                    'assets/cover.jpg'),
+                                              ),
+                                              imageUrl: _songs[index]['image']
+                                                  .replaceAll(
+                                                      'http:', 'https:'),
+                                              placeholder: (context, url) =>
+                                                  Image(
+                                                image: AssetImage(
+                                                    'assets/cover.jpg'),
+                                              ),
                                             ),
                                           ),
                                         ),

@@ -193,8 +193,14 @@ class MyTheme with ChangeNotifier {
     notifyListeners();
   }
 
-  List<Color> getCardGradient() {
-    return cardOpt[cardGrad];
+  List<Color> getCardGradient({bool miniplayer = false}) {
+    List<Color> output = cardOpt[cardGrad].toList();
+    miniplayer ??= false;
+    if (miniplayer && output.length > 2) {
+      output.removeAt(0);
+    }
+
+    return output;
   }
 
   List<Color> getBackGradient() {

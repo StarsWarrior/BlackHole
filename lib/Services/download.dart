@@ -10,6 +10,7 @@ import 'package:hive/hive.dart';
 import 'package:http/http.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
+// import 'package:flutter_ffmpeg/flutter_ffmpeg.dart';
 
 class Download with ChangeNotifier {
   String preferredDownloadQuality =
@@ -55,7 +56,7 @@ class Download with ChangeNotifier {
       filename = tempList.join(", ");
     }
 
-    filename = filename.replaceAll(avoid, "") + ".m4a";
+    filename = filename.replaceAll(avoid, "").replaceAll("  ", " ") + ".m4a";
     if (dlPath == '')
       dlPath = await ExtStorage.getExternalStoragePublicDirectory(
           ExtStorage.DIRECTORY_MUSIC);
@@ -154,6 +155,7 @@ class Download with ChangeNotifier {
     String filepath2;
     List<int> _bytes = [];
     String lyrics;
+    String downloadFormat = 'm4a';
     final artname = filename.replaceAll(".m4a", "artwork.jpg");
     Directory appDir = await getApplicationDocumentsDirectory();
     String appPath = appDir.path;
@@ -237,8 +239,37 @@ class Download with ChangeNotifier {
         print('Error fetching lyrics: $e');
         lyrics = '';
       }
-      debugPrint("Started tag editing");
 
+      if (filepath.endsWith('.weba')) {
+        // List<String> _argsList;
+        // if (downloadFormat == 'mp3')
+        //   _argsList = [
+        //     "-y",
+        //     "-i",
+        //     "$filepath",
+        //     "-c:a",
+        //     "libmp3lame",
+        //     "-b:a",
+        //     "256k",
+        //     "${filepath.replaceAll('.weba', '.mp3')}"
+        //   ];
+        // if (downloadFormat == 'm4a')
+        //   _argsList = [
+        //     "-y",
+        //     "-i",
+        //     "$filepath",
+        //     "-c:a",
+        //     "aac",
+        //     "-b:a",
+        //     "256k",
+        //     "${filepath.replaceAll('.weba', '.m4a')}"
+        //   ];
+        // await FlutterFFmpeg().executeWithArguments(_argsList);
+
+        // filepath = filepath.replaceAll(".weba", ".$downloadFormat");
+      }
+
+      debugPrint("Started tag editing");
       final Tag tag = Tag(
         title: data['title'],
         artist: data['artist'],

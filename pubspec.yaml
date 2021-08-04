@@ -32,6 +32,7 @@ dependencies:
   
 
   # Productivity
+  uuid: ^3.0.4
   http: ^0.13.3
   dart_des: ^1.0.0
   share_plus: ^2.1.4
@@ -44,6 +45,7 @@ dependencies:
   # flutter_downloader: ^1.6.1
   cached_network_image: ^3.1.0
   youtube_explode_dart: ^1.9.10
+  # flutter_ffmpeg: ^0.4.0
 
 
   # UI related
@@ -59,8 +61,7 @@ dependencies:
   # Database related
   hive: ^2.0.4
   hive_flutter: ^1.0.0
-  firebase_core: ^1.3.0
-  firebase_database: ^7.1.1
+  supabase: ^0.0.7
   
   # Storage related
   ext_storage:

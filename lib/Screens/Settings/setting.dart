@@ -1,10 +1,10 @@
 import 'package:blackhole/Helpers/countrycodes.dart';
 import 'package:blackhole/CustomWidgets/gradientContainers.dart';
+import 'package:blackhole/Helpers/supabase.dart';
 import 'package:blackhole/Helpers/picker.dart';
 import 'package:blackhole/Screens/Top Charts/top.dart' as topScreen;
 import 'package:blackhole/Screens/Home/saavn.dart' as homeScreen;
 import 'package:ext_storage/ext_storage.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:blackhole/Helpers/config.dart';
@@ -25,7 +25,6 @@ class SettingPage extends StatefulWidget {
 
 class _SettingPageState extends State<SettingPage> {
   String appVersion;
-  int appVersionCheck;
   Box settingsBox = Hive.box('settings');
   String name = Hive.box('settings').get('name', defaultValue: 'Guest User');
   String downloadPath = Hive.box('settings')
@@ -79,15 +78,27 @@ class _SettingPageState extends State<SettingPage> {
 
   void main() async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
-    appVersionCheck = int.parse(packageInfo.version.replaceAll('.', ''));
     appVersion = packageInfo.version;
     setState(() {});
   }
 
-  updateUserDetails(String key, dynamic value) {
-    final userID = Hive.box('settings').get('userID');
-    final dbRef = FirebaseDatabase.instance.reference().child("Users");
-    dbRef.child(userID).update({"$key": "$value"});
+  bool compareVersion(String latestVersion, String currentVersion) {
+    bool update = false;
+    List latestList = latestVersion.split('.');
+    List currentList = currentVersion.split('.');
+
+    for (int i = 0; i < latestList.length; i++) {
+      try {
+        if (int.parse(latestList[i]) > int.parse(currentList[i])) {
+          update = true;
+          break;
+        }
+      } catch (e) {
+        break;
+      }
+    }
+
+    return update;
   }
 
   @override
@@ -140,7 +151,7 @@ class _SettingPageState extends State<SettingPage> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.fromLTRB(5.0, 0, 5, 10),
+                padding: const EdgeInsets.fromLTRB(10.0, 0, 10.0, 10.0),
                 child: GradientCard(
                   child: Column(
                     children: [
@@ -155,11 +166,8 @@ class _SettingPageState extends State<SettingPage> {
                               onChanged: (val) {
                                 box.put('darkMode', val);
                                 currentTheme.switchTheme(val);
-                                updateUserDetails('darkMode', val);
                                 themeColor = val ? 'Teal' : 'Light Blue';
                                 colorHue = 400;
-                                updateUserDetails('themeColor', themeColor);
-                                updateUserDetails('colorHue', colorHue);
                               });
                         },
                       ),
@@ -270,11 +278,6 @@ class _SettingPageState extends State<SettingPage> {
                                                   onTap: () {
                                                     themeColor = colors[index];
                                                     colorHue = hue;
-                                                    updateUserDetails(
-                                                        'themeColor',
-                                                        themeColor);
-                                                    updateUserDetails(
-                                                        'colorHue', colorHue);
                                                     currentTheme.switchColor(
                                                         colors[index],
                                                         colorHue);
@@ -678,9 +681,6 @@ class _SettingPageState extends State<SettingPage> {
                             themeColor = 'Teal';
                             colorHue = 400;
                             currentTheme.switchTheme(true);
-                            updateUserDetails('darkMode', true);
-                            updateUserDetails('themeColor', 'Teal');
-                            updateUserDetails('colorHue', 400);
                             setState(() {});
                             widget.callback();
                           }),
@@ -699,7 +699,7 @@ class _SettingPageState extends State<SettingPage> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.fromLTRB(5.0, 0, 5, 10),
+                padding: const EdgeInsets.fromLTRB(10.0, 0, 10.0, 10.0),
                 child: GradientCard(
                   child: Column(
                     children: [
@@ -789,9 +789,6 @@ class _SettingPageState extends State<SettingPage> {
                                                   Hive.box('settings').put(
                                                       'preferredLanguage',
                                                       checked);
-                                                  updateUserDetails(
-                                                      "preferredLanguage",
-                                                      checked);
                                                   homeScreen.fetched = false;
                                                   homeScreen.preferredLanguage =
                                                       preferredLanguage;
@@ -835,7 +832,8 @@ class _SettingPageState extends State<SettingPage> {
                       ),
                       ListTile(
                           title: Text("Spotify Local Charts Location"),
-                          subtitle: Text('Select country for Local Charts'),
+                          subtitle:
+                              Text('Country for Top Spotify Local Charts'),
                           trailing: SizedBox(
                             width: 150,
                             child: Text(
@@ -881,8 +879,7 @@ class _SettingPageState extends State<SettingPage> {
                                                 topScreen.fetched = false;
                                                 Hive.box('settings')
                                                     .put('region', region);
-                                                updateUserDetails(
-                                                    "country", region);
+
                                                 Navigator.pop(context);
                                                 widget.callback();
                                                 setState(() {});
@@ -909,7 +906,6 @@ class _SettingPageState extends State<SettingPage> {
                               streamingQuality = newValue;
                               Hive.box('settings')
                                   .put('streamingQuality', newValue);
-                              updateUserDetails('streamingQuality', newValue);
                             });
                           },
                           items: <String>['96 kbps', '160 kbps', '320 kbps']
@@ -922,9 +918,22 @@ class _SettingPageState extends State<SettingPage> {
                         ),
                         dense: true,
                       ),
+                      SwitchListTile(
+                          activeColor: Theme.of(context).accentColor,
+                          title: Text('Enforce Repeating'),
+                          subtitle: Text(
+                              'Keep the same repeat option for every session'),
+                          dense: true,
+                          value: settingsBox.get('enforceRepeat',
+                              defaultValue: false),
+                          onChanged: (val) {
+                            settingsBox.put('enforceRepeat', val);
+                            setState(() {});
+                          }),
                       ListTile(
                           title: Text('Search Location'),
-                          subtitle: Text('Locations to search for local music'),
+                          subtitle:
+                              Text('Locations to search for offline music'),
                           dense: true,
                           onTap: () {
                             final GlobalKey<AnimatedListState> _listKey =
@@ -1048,7 +1057,7 @@ class _SettingPageState extends State<SettingPage> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.fromLTRB(5.0, 0, 5, 10),
+                padding: const EdgeInsets.fromLTRB(10.0, 0, 10.0, 10.0),
                 child: GradientCard(
                   child: Column(children: [
                     ListTile(
@@ -1067,7 +1076,6 @@ class _SettingPageState extends State<SettingPage> {
                             downloadQuality = newValue;
                             Hive.box('settings')
                                 .put('downloadQuality', newValue);
-                            updateUserDetails('downloadQuality', newValue);
                           });
                         },
                         items: <String>['96 kbps', '160 kbps', '320 kbps']
@@ -1157,7 +1165,7 @@ class _SettingPageState extends State<SettingPage> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.fromLTRB(5.0, 0, 5, 10),
+                padding: const EdgeInsets.fromLTRB(10.0, 0, 10.0, 10.0),
                 child: GradientCard(
                   child: Column(children: [
                     SwitchListTile(
@@ -1169,20 +1177,18 @@ class _SettingPageState extends State<SettingPage> {
                             settingsBox.get('showRecent', defaultValue: true),
                         onChanged: (val) {
                           settingsBox.put('showRecent', val);
-                          updateUserDetails('showRecent', val);
                           setState(() {});
                           widget.callback();
                         }),
                     SwitchListTile(
                         activeColor: Theme.of(context).accentColor,
                         title: Text('Show Search History'),
-                        subtitle: Text('Default: On'),
+                        subtitle: Text('Show Search History below Search Bar'),
                         dense: true,
                         value:
                             settingsBox.get('showHistory', defaultValue: true),
                         onChanged: (val) {
                           settingsBox.put('showHistory', val);
-                          updateUserDetails('showHistory', val);
                           setState(() {});
                         }),
                     SwitchListTile(
@@ -1197,7 +1203,6 @@ class _SettingPageState extends State<SettingPage> {
                           Hive.box('settings')
                               .put('stopForegroundService', val);
                           stopForegroundService = val;
-                          updateUserDetails('stopForegroundService', val);
                           setState(() {});
                         }),
                     SwitchListTile(
@@ -1212,7 +1217,6 @@ class _SettingPageState extends State<SettingPage> {
                         onChanged: (val) {
                           Hive.box('settings').put('stopServiceOnPause', val);
                           stopServiceOnPause = val;
-                          updateUserDetails('stopServiceOnPause', val);
                           setState(() {});
                         }),
                     SwitchListTile(
@@ -1226,7 +1230,6 @@ class _SettingPageState extends State<SettingPage> {
                         onChanged: (val) {
                           Hive.box('settings').put('useProxy', val);
                           useProxy = val;
-                          updateUserDetails('useProxy', val);
                           setState(() {});
                         }),
                     if (useProxy)
@@ -1314,10 +1317,6 @@ class _SettingPageState extends State<SettingPage> {
                                       settingsBox.put('proxyPort',
                                           int.parse(_controller2.text.trim()));
                                       Navigator.pop(context);
-                                      updateUserDetails(
-                                          'proxyIp', _controller.text.trim());
-                                      updateUserDetails('proxyPort',
-                                          _controller2.text.trim());
                                       setState(() {});
                                     },
                                   ),
@@ -1344,7 +1343,7 @@ class _SettingPageState extends State<SettingPage> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.fromLTRB(5.0, 0, 5, 10),
+                padding: const EdgeInsets.fromLTRB(10.0, 0, 10.0, 10.0),
                 child: GradientCard(
                   child: Column(
                     children: [
@@ -1352,14 +1351,9 @@ class _SettingPageState extends State<SettingPage> {
                         title: Text('Version'),
                         subtitle: Text('Tap to check for updates'),
                         onTap: () {
-                          final dbRef = FirebaseDatabase.instance
-                              .reference()
-                              .child("LatestVersion");
-                          dbRef.once().then((DataSnapshot snapshot) {
-                            if (int.parse(snapshot.value
-                                    .toString()
-                                    .replaceAll('.', '')) >
-                                appVersionCheck) {
+                          SupaBase().getUpdate().then((Map value) {
+                            if (compareVersion(
+                                value['LatestVersion'], appVersion)) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   elevation: 6,
@@ -1373,14 +1367,7 @@ class _SettingPageState extends State<SettingPage> {
                                     textColor: Theme.of(context).accentColor,
                                     label: 'Update',
                                     onPressed: () {
-                                      final dLink = FirebaseDatabase.instance
-                                          .reference()
-                                          .child("LatestLink");
-                                      dLink
-                                          .once()
-                                          .then((DataSnapshot linkSnapshot) {
-                                        launch(linkSnapshot.value);
-                                      });
+                                      launch(value['LatestUrl']);
                                     },
                                   ),
                                 ),
@@ -1530,9 +1517,9 @@ class _SettingPageState extends State<SettingPage> {
                         dense: true,
                         isThreeLine: true,
                         onTap: () {
-                          final userID = Hive.box('settings').get('userID');
+                          final userId = Hive.box('settings').get('userId');
                           String upiUrl =
-                              'upi://pay?pa=8570094149@okbizaxis&pn=Ankit%20Sangwan&mc=5732&aid=uGICAgIDn98OpSw&tr=BCR2DN6T37O6DB3Q&cu=INR&tn=$userID';
+                              'upi://pay?pa=8570094149@okbizaxis&pn=Ankit%20Sangwan&mc=5732&aid=uGICAgIDn98OpSw&tr=BCR2DN6T37O6DB3Q&cu=INR&tn=$userId';
                           launch(upiUrl);
                         },
                         onLongPress: () {

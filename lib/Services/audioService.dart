@@ -5,7 +5,6 @@ import 'package:audio_service/audio_service.dart';
 import 'package:blackhole/Helpers/mediaitem_converter.dart';
 import 'package:hive/hive.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:audio_session/audio_session.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
@@ -105,9 +104,6 @@ class AudioPlayerTask extends BackgroundAudioTask {
       recentList = recentList.sublist(0, 30);
     }
     Hive.box('recentlyPlayed').put('recentSongs', recentList);
-    final userID = Hive.box('settings').get('userID');
-    final dbRef = FirebaseDatabase.instance.reference().child("Users");
-    dbRef.child(userID).update({"recentlyPlayed": recentList});
   }
 
   @override

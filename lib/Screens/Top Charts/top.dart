@@ -128,7 +128,7 @@ class TopPage extends StatefulWidget {
 
 class _TopPageState extends State<TopPage> {
   void getData(String region) async {
-    if (region != 'global') fetched = true;
+    fetched = true;
     List temp = await compute(scrapData, region);
     setState(() {
       if (region == 'global') {
@@ -150,7 +150,7 @@ class _TopPageState extends State<TopPage> {
   }
 
   getCachedData(String region) async {
-    if (region != 'global') fetched = true;
+    fetched = true;
     if (region != 'global')
       cachedItems = await Hive.box('cache').get(region) ?? [];
     if (region == 'global')
@@ -174,6 +174,7 @@ class _TopPageState extends State<TopPage> {
 
   @override
   Widget build(BuildContext context) {
+    print("Top charts is build");
     bool isGlobal = widget.region == 'global';
     if (!fetched) {
       getCachedData(widget.region);

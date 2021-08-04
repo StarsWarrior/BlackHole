@@ -277,16 +277,22 @@ class _NowPlayingState extends State<NowPlaying> {
                                                                             ),
                                                                             queue[index].artUri == null
                                                                                 ? SizedBox()
-                                                                                : queue[index].artUri.toString().startsWith('file:')
-                                                                                    ? Image(image: FileImage(File(queue[index].artUri.toFilePath())))
-                                                                                    : CachedNetworkImage(
-                                                                                        errorWidget: (BuildContext context, _, __) => Image(
+                                                                                : SizedBox(
+                                                                                    height: 50.0,
+                                                                                    width: 50.0,
+                                                                                    child: queue[index].artUri.toString().startsWith('file:')
+                                                                                        ? Image(fit: BoxFit.cover, image: FileImage(File(queue[index].artUri.toFilePath())))
+                                                                                        : CachedNetworkImage(
+                                                                                            fit: BoxFit.cover,
+                                                                                            errorWidget: (BuildContext context, _, __) => Image(
                                                                                               image: AssetImage('assets/cover.jpg'),
                                                                                             ),
-                                                                                        placeholder: (BuildContext context, _) => Image(
+                                                                                            placeholder: (BuildContext context, _) => Image(
                                                                                               image: AssetImage('assets/cover.jpg'),
                                                                                             ),
-                                                                                        imageUrl: queue[index].artUri.toString())
+                                                                                            imageUrl: queue[index].artUri.toString(),
+                                                                                          ),
+                                                                                  ),
                                                                           ],
                                                                         ),
                                                                       ),

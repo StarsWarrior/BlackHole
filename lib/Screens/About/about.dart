@@ -151,9 +151,9 @@ class _AboutScreenState extends State<AboutScreen> {
                         width: MediaQuery.of(context).size.width / 2,
                       ),
                       onPressed: () {
-                        final userID = Hive.box('settings').get('userID');
+                        final userId = Hive.box('settings').get('userId');
                         String upiUrl =
-                            'upi://pay?pa=8570094149@okbizaxis&pn=Ankit%20Sangwan&mc=5732&aid=uGICAgIDn98OpSw&tr=BCR2DN6T37O6DB3Q&tn=$userID';
+                            'upi://pay?pa=8570094149@okbizaxis&pn=Ankit%20Sangwan&mc=5732&aid=uGICAgIDn98OpSw&tr=BCR2DN6T37O6DB3Q&tn=$userId';
                         launch(upiUrl);
                       },
                     ),

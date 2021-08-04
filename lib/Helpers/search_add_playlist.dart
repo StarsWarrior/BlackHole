@@ -45,9 +45,9 @@ class SearchAddPlaylist {
     }
   }
 
-  Future<void> showProgress(int _total, BuildContext cxt, String playlistName,
-      String image, List<Video> tracks) async {
-    showModalBottomSheet(
+  Future<void> showProgress(
+      int _total, BuildContext cxt, Stream songAdd) async {
+    await showModalBottomSheet(
       isDismissible: false,
       backgroundColor: Colors.transparent,
       context: cxt,
@@ -59,7 +59,7 @@ class SearchAddPlaylist {
               height: 300,
               width: 300,
               child: StreamBuilder<Object>(
-                  stream: songsAdder(playlistName, tracks),
+                  stream: songAdd,
                   builder: (ctxt, snapshot) {
                     Map data = snapshot?.data;
                     int _done = (data ?? const {})['done'] ?? 0;
