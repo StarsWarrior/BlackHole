@@ -88,7 +88,7 @@ class _AuthScreenState extends State<AuthScreen> {
           ),
           Scaffold(
             backgroundColor: Colors.transparent,
-            body: SingleChildScrollView(
+            body: Padding(
               padding: const EdgeInsets.only(left: 15.0, right: 15.0),
               child: Center(
                 child: Column(

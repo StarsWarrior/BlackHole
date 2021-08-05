@@ -155,7 +155,7 @@ class Download with ChangeNotifier {
     String filepath2;
     List<int> _bytes = [];
     String lyrics;
-    String downloadFormat = 'm4a';
+    // String downloadFormat = 'm4a';
     final artname = filename.replaceAll(".m4a", "artwork.jpg");
     Directory appDir = await getApplicationDocumentsDirectory();
     String appPath = appDir.path;

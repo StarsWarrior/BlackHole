@@ -173,6 +173,8 @@ class AudioPlayerTask extends BackgroundAudioTask {
 
   @override
   Future<void> onAddQueueItemAt(MediaItem mediaItem, int addIndex) async {
+    if (addIndex == -1)
+      addIndex = queue.indexWhere((item) => item == queue[index]) + 1;
     await concatenatingAudioSource.insert(
         addIndex,
         AudioSource.uri(
