@@ -1,4 +1,6 @@
 import 'package:audio_service/audio_service.dart';
+import 'package:blackhole/CustomWidgets/add_playlist.dart';
+import 'package:blackhole/Helpers/playlist.dart';
 import 'package:flutter/material.dart';
 
 class AddListToQueueButton extends StatefulWidget {
@@ -35,8 +37,39 @@ class _AddListToQueueButtonState extends State<AddListToQueueButton> {
                       Spacer(),
                     ],
                   )),
+              PopupMenuItem(
+                  value: 1,
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.favorite_border_rounded,
+                        color: Theme.of(context).iconTheme.color,
+                      ),
+                      Spacer(),
+                      Text('Save Playlist'),
+                      Spacer(),
+                    ],
+                  )),
             ],
         onSelected: (value) {
+          if (value == 1) {
+            addPlaylist(widget.title, widget.data).then(
+                (value) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      duration: Duration(seconds: 2),
+                      elevation: 6,
+                      backgroundColor: Colors.grey[900],
+                      behavior: SnackBarBehavior.floating,
+                      content: Text(
+                        'Added"${widget.title}" to Playlists',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      action: SnackBarAction(
+                        textColor: Theme.of(context).accentColor,
+                        label: 'Ok',
+                        onPressed: () {},
+                      ),
+                    )));
+          }
           if (value == 0) {
             MediaItem event = AudioService.currentMediaItem;
             if (event != null &&

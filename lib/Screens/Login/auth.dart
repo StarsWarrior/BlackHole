@@ -11,13 +11,11 @@ class AuthScreen extends StatefulWidget {
 }
 
 class _AuthScreenState extends State<AuthScreen> {
-  String appVersion;
   TextEditingController controller;
   Uuid uuid = Uuid();
 
   @override
   void initState() {
-    main();
     super.initState();
     controller = TextEditingController();
   }
@@ -26,11 +24,6 @@ class _AuthScreenState extends State<AuthScreen> {
   void dispose() {
     controller.dispose();
     super.dispose();
-  }
-
-  void main() async {
-    PackageInfo packageInfo = await PackageInfo.fromPlatform();
-    appVersion = packageInfo.version;
   }
 
   Future _addUserData(String name) async {
@@ -46,11 +39,9 @@ class _AuthScreenState extends State<AuthScreen> {
     status = await SupaBase().createUser({
       "id": userId,
       "name": name,
-      "version": appVersion,
       "accountCreatedOn": "${createDate[0]} IST",
       "timeZone":
           "Zone: ${now.timeZoneName} Offset: ${now.timeZoneOffset.toString().replaceAll('.000000', '')}",
-      "lastLogin": "${createDate[0]} IST",
     });
 
     while (status == null || status == 409) {
@@ -58,11 +49,9 @@ class _AuthScreenState extends State<AuthScreen> {
       status = await SupaBase().createUser({
         "id": userId,
         "name": name,
-        "version": appVersion,
         "accountCreatedOn": "${createDate[0]} IST",
         "timeZone":
             "Zone: ${now.timeZoneName} Offset: ${now.timeZoneOffset.toString().replaceAll('.000000', '')}",
-        "lastLogin": "${createDate[0]} IST",
       });
     }
     await Hive.box('settings').put('userId', userId);

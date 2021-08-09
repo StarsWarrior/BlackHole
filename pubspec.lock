@@ -358,8 +358,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: HEAD
-      resolved-ref: "8b79f4a66a164f33e3ba8f457db746f2a16343d1"
+      ref: "9ddb87c650dce69bf04d297543b73fac7de462f2"
+      resolved-ref: "9ddb87c650dce69bf04d297543b73fac7de462f2"
       url: "https://github.com/Sangwan5688/miniplayer.git"
     source: git
     version: "1.0.0+2"

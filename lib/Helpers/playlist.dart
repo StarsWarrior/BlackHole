@@ -14,13 +14,13 @@ bool checkPlaylist(String name, String key) {
   return playlistBox.containsKey(key);
 }
 
-void removeLiked(String key) async {
+Future<void> removeLiked(String key) async {
   Box likedBox = Hive.box('Favorite Songs');
   likedBox.delete(key);
   // setState(() {});
 }
 
-void addPlaylistMap(String name, Map info) async {
+Future<void> addMapToPlaylist(String name, Map info) async {
   if (name != 'Favorite Songs') await Hive.openBox(name);
   Box playlistBox = Hive.box(name);
   List _songs = playlistBox.values.toList();
@@ -34,7 +34,7 @@ void addPlaylistMap(String name, Map info) async {
   playlistBox.put(info['id'].toString(), info);
 }
 
-void addPlaylist(String name, MediaItem mediaItem) async {
+Future<void> addItemToPlaylist(String name, MediaItem mediaItem) async {
   if (name != 'Favorite Songs') await Hive.openBox(name);
   Box playlistBox = Hive.box(name);
   Map info = MediaItemConverter().mediaItemtoMap(mediaItem);
@@ -47,4 +47,26 @@ void addPlaylist(String name, MediaItem mediaItem) async {
         : _songs.sublist(0, _songs.length),
   );
   playlistBox.put(mediaItem.id.toString(), info);
+}
+
+Future<void> addPlaylist(String name, List data) async {
+  await Hive.openBox(name);
+  Box playlistBox = Hive.box(name);
+
+  AddSongsCount().addSong(
+    name,
+    data.length,
+    data.length >= 4 ? data.sublist(0, 4) : data.sublist(0, data.length),
+  );
+  Map result =
+      Map.fromIterable(data, key: (v) => v['id'].toString(), value: (v) => v);
+  playlistBox.putAll(result);
+
+  List playlistNames =
+      Hive.box('settings').get('playlistNames')?.toList() ?? [];
+
+  if (name.trim() == '') name = 'Playlist ${playlistNames.length}';
+  while (playlistNames.contains(name)) name = name + ' (1)';
+  playlistNames.add(name);
+  Hive.box('settings').put('playlistNames', playlistNames);
 }

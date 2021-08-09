@@ -21,9 +21,9 @@ class SupaBase {
 
   Future<void> updateUserDetails(
       String userId, String key, String value) async {
-    final response = await client.from('Users').update({key: value},
-        returning: ReturningOption.minimal).match({'id': userId}).execute();
-    print(response.toJson());
+    // final response = await client.from('Users').update({key: value},
+    //     returning: ReturningOption.minimal).match({'id': userId}).execute();
+    // print(response.toJson());
   }
 
   Future<int> createUser(Map data) async {

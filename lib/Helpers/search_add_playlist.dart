@@ -38,7 +38,7 @@ class SearchAddPlaylist {
       try {
         List result =
             await SaavnAPI().fetchTopSearchResult(trackName.split("|")[0]);
-        addPlaylistMap(playName, result[0]);
+        addMapToPlaylist(playName, result[0]);
       } catch (e) {
         print('Error in $_done: $e');
       }

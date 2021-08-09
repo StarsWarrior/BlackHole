@@ -204,6 +204,10 @@ class _SearchPageState extends State<SearchPage> {
                                       .toList()),
                             ),
                           ),
+                        if (showHistory)
+                          SizedBox(
+                            height: 5.0,
+                          ),
                         if (topSearch.isNotEmpty)
                           ClipRRect(
                             borderRadius: BorderRadius.circular(8),

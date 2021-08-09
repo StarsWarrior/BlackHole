@@ -32,7 +32,7 @@ class _LikeButtonState extends State<LikeButton> {
         onPressed: () {
           liked
               ? removeLiked(widget.mediaItem.id)
-              : addPlaylist('Favorite Songs', widget.mediaItem);
+              : addItemToPlaylist('Favorite Songs', widget.mediaItem);
 
           setState(() {
             liked = !liked;
@@ -46,7 +46,7 @@ class _LikeButtonState extends State<LikeButton> {
                   onPressed: () {
                     liked
                         ? removeLiked(widget.mediaItem.id)
-                        : addPlaylist('Favorite Songs', widget.mediaItem);
+                        : addItemToPlaylist('Favorite Songs', widget.mediaItem);
                     liked = !liked;
                     setState(() {});
                   }),

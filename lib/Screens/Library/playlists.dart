@@ -574,7 +574,7 @@ fetchPlaylists(code, context, playlistNames, settingsBox) async {
                                 List result = await SaavnAPI()
                                     .fetchTopSearchResult(
                                         '$trackName by $trackArtist');
-                                addPlaylistMap(playName, result[0]);
+                                addMapToPlaylist(playName, result[0]);
                               } catch (e) {
                                 print('Error in $_done: $e');
                               }
@@ -649,7 +649,7 @@ fetchPlaylists(code, context, playlistNames, settingsBox) async {
         try {
           List result = await SaavnAPI()
               .fetchTopSearchResult('$trackName by $trackArtist');
-          addPlaylistMap(playName, result[0]);
+          addMapToPlaylist(playName, result[0]);
         } catch (e) {
           print('Error in $_done: $e');
         }

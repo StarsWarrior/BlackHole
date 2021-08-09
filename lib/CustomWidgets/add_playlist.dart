@@ -166,7 +166,8 @@ class AddToPlaylist {
                                 ),
                                 onTap: () {
                                   Navigator.pop(context);
-                                  addPlaylist(playlistNames[index], mediaItem);
+                                  addItemToPlaylist(
+                                      playlistNames[index], mediaItem);
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
                                       duration: Duration(seconds: 2),

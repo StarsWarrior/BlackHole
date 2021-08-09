@@ -64,7 +64,6 @@ class _MiniPlayerState extends State<MiniPlayer> {
                           AudioService.stop();
                         },
                         minHeight: 76,
-                        backgroundColor: Colors.transparent,
                         maxHeight: ModalRoute.of(context).settings.name == '/'
                             ? MediaQuery.of(context).size.height - 22
                             : MediaQuery.of(context).size.height,
