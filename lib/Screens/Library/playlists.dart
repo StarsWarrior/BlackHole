@@ -1,3 +1,4 @@
+import 'package:app_links/app_links.dart';
 import 'package:blackhole/APIs/api.dart';
 import 'package:blackhole/CustomWidgets/gradientContainers.dart';
 import 'package:blackhole/CustomWidgets/collage.dart';
@@ -5,7 +6,6 @@ import 'package:blackhole/CustomWidgets/textinput_dialog.dart';
 import 'package:blackhole/Helpers/import_export_playlist.dart';
 import 'package:blackhole/Helpers/playlist.dart';
 import 'package:blackhole/Helpers/search_add_playlist.dart';
-import 'package:blackhole/Helpers/webView.dart';
 import 'package:blackhole/Screens/Library/liked.dart';
 import 'package:blackhole/CustomWidgets/miniplayer.dart';
 import 'package:blackhole/APIs/spotifyApi.dart';
@@ -13,6 +13,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class PlaylistScreen extends StatefulWidget {
   @override
@@ -130,19 +131,24 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                             ),
                           ),
                         ),
-                        onTap: () async {
-                          String code = await Navigator.of(context).push(
-                            PageRouteBuilder(
-                                opaque: false,
-                                pageBuilder: (_, __, ___) => SpotifyWebView()),
+                        onTap: () {
+                          String code;
+                          launch(
+                            SpotifyApi().requestAuthorization(),
+                            forceWebView: false,
                           );
-                          if (code != 'ERROR') {
-                            await fetchPlaylists(
-                                code, context, playlistNames, settingsBox);
-                            setState(() {
-                              playlistNames = playlistNames;
-                            });
-                          }
+
+                          AppLinks(onAppLink: (Uri _, String link) async {
+                            closeWebView();
+                            if (link.contains("code=")) {
+                              code = link.split("code=")[1];
+                              await fetchPlaylists(
+                                  code, context, playlistNames, settingsBox);
+                              setState(() {
+                                playlistNames = playlistNames;
+                              });
+                            }
+                          });
                         }),
                     ListTile(
                         title: Text('Import from YouTube'),

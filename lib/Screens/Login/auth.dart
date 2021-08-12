@@ -2,7 +2,6 @@ import 'package:blackhole/CustomWidgets/gradientContainers.dart';
 import 'package:blackhole/Helpers/supabase.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-import 'package:package_info/package_info.dart';
 import 'package:uuid/uuid.dart';
 
 class AuthScreen extends StatefulWidget {

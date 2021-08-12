@@ -184,7 +184,9 @@ class _HomePageState extends State<HomePage> {
                               ),
                               children: <TextSpan>[
                                 TextSpan(
-                                  text: appVersion==null?"":"\nv$appVersion",
+                                  text: appVersion == null
+                                      ? ""
+                                      : "\nv$appVersion",
                                   style: TextStyle(
                                     fontSize: 7.0,
                                   ),
