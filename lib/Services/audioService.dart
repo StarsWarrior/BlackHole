@@ -15,6 +15,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
   AndroidEqualizerParameters _equalizerParams;
 
   AudioPlayer _player;
+  int count;
 
   setAudioPlayer() {
     _player = AudioPlayer(
@@ -145,11 +146,16 @@ class AudioPlayerTask extends BackgroundAudioTask {
 
   @override
   Future<void> onSkipToQueueItem(String mediaId) async {
+    if (count <= 0) {
+      count = null;
+      onStop();
+    }
     final newIndex = queue.indexWhere((item) => item.id == mediaId);
     if (newIndex == -1) return;
     index = newIndex;
     _player.seek(Duration.zero, index: newIndex);
     if (!offline) addRecentlyPlayed(queue[newIndex]);
+    if (count != null) count--;
   }
 
   @override
@@ -243,6 +249,14 @@ class AudioPlayerTask extends BackgroundAudioTask {
         _sleepTimer = Timer(Duration(minutes: myVariable), () {
           onStop();
         });
+      }
+    }
+
+    if (myFunction == 'sleepCounter') {
+      if (myVariable.runtimeType == int &&
+          myVariable != null &&
+          myVariable > 0) {
+        count = myVariable;
       }
     }
 

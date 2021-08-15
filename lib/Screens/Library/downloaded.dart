@@ -1,19 +1,22 @@
-import 'package:audiotagger/models/audiofile.dart';
-import 'package:audiotagger/models/tag.dart';
-import 'package:blackhole/CustomWidgets/collage.dart';
-import 'package:blackhole/CustomWidgets/custom_physics.dart';
-import 'package:blackhole/Screens/Player/audioplayer.dart';
-import 'package:blackhole/CustomWidgets/gradientContainers.dart';
-import 'package:blackhole/CustomWidgets/emptyScreen.dart';
-import 'package:blackhole/CustomWidgets/miniplayer.dart';
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:audiotagger/audiotagger.dart';
+import 'package:audiotagger/models/audiofile.dart';
+import 'package:audiotagger/models/tag.dart';
 import 'package:ext_storage/ext_storage.dart';
 import 'package:hive/hive.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:audiotagger/audiotagger.dart';
-import 'dart:io';
-import 'showSongs.dart';
+
+import 'package:blackhole/CustomWidgets/collage.dart';
+import 'package:blackhole/CustomWidgets/custom_physics.dart';
+import 'package:blackhole/CustomWidgets/data_search.dart';
+import 'package:blackhole/CustomWidgets/gradientContainers.dart';
+import 'package:blackhole/CustomWidgets/emptyScreen.dart';
+import 'package:blackhole/CustomWidgets/miniplayer.dart';
+import 'package:blackhole/Screens/Library/showSongs.dart';
+import 'package:blackhole/Screens/Player/audioplayer.dart';
 
 class DownloadedSongs extends StatefulWidget {
   final String type;
@@ -407,6 +410,14 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                           ],
                   ),
                   actions: [
+                    IconButton(
+                      icon: Icon(CupertinoIcons.search),
+                      onPressed: () {
+                        showSearch(
+                            context: context,
+                            delegate: DataSearch(_cachedSongs));
+                      },
+                    ),
                     PopupMenuButton(
                         icon: Icon(Icons.sort_rounded),
                         shape: RoundedRectangleBorder(

@@ -130,8 +130,8 @@ class _MyAppState extends State<MyApp> {
 
     return MaterialApp(
       title: 'BlackHole',
-      // debugShowCheckedModeBanner: false,
-      themeMode: currentTheme.currentTheme(), //system,
+      debugShowCheckedModeBanner: false,
+      themeMode: currentTheme.currentTheme(),
       theme: ThemeData(
         textSelectionTheme: TextSelectionThemeData(
           selectionHandleColor: currentTheme.currentColor(),

@@ -10,11 +10,13 @@ import 'package:hive/hive.dart';
 import 'package:http/http.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
-// import 'package:flutter_ffmpeg/flutter_ffmpeg.dart';
+import 'package:flutter_ffmpeg/flutter_ffmpeg.dart';
 
 class Download with ChangeNotifier {
   String preferredDownloadQuality =
       Hive.box('settings').get('downloadQuality') ?? '320 kbps';
+  String downloadFormat = 'm4a';
+  // Hive.box('settings').get('downloadFormat', defaultValue: 'm4a');
   double progress = 0.0;
   String currentDownloadId = '';
   String lastDownloadId = '';
@@ -32,18 +34,20 @@ class Download with ChangeNotifier {
   }
 
   Future<void> prepareDownload(BuildContext context, Map data) async {
-    PermissionStatus status = await Permission.storage.status;
-    if (status.isPermanentlyDenied || status.isDenied) {
-      Map<Permission, PermissionStatus> statuses = await [
-        Permission.storage,
-        Permission.accessMediaLocation,
-        Permission.mediaLibrary,
-      ].request();
-      debugPrint(statuses[Permission.storage].toString());
-    }
-    status = await Permission.storage.status;
-    if (status.isGranted) {
-      print('permission granted');
+    if (!Platform.isWindows) {
+      PermissionStatus status = await Permission.storage.status;
+      if (status.isPermanentlyDenied || status.isDenied) {
+        Map<Permission, PermissionStatus> statuses = await [
+          Permission.storage,
+          Permission.accessMediaLocation,
+          Permission.mediaLibrary,
+        ].request();
+        debugPrint(statuses[Permission.storage].toString());
+      }
+      status = await Permission.storage.status;
+      if (status.isGranted) {
+        print('permission granted');
+      }
     }
     RegExp avoid = RegExp(r'[\.\\\*\:\"\?#/;\|]');
     data['title'] = data['title'].toString().split("(From")[0].trim();
@@ -57,9 +61,14 @@ class Download with ChangeNotifier {
     }
 
     filename = filename.replaceAll(avoid, "").replaceAll("  ", " ") + ".m4a";
-    if (dlPath == '')
-      dlPath = await ExtStorage.getExternalStoragePublicDirectory(
-          ExtStorage.DIRECTORY_MUSIC);
+    if (dlPath == '') {
+      if (Platform.isWindows) {
+        Directory temp = await getDownloadsDirectory();
+        dlPath = temp.path;
+      } else
+        dlPath = await ExtStorage.getExternalStoragePublicDirectory(
+            ExtStorage.DIRECTORY_MUSIC);
+    }
 
     bool exists = await File(dlPath + "/" + filename).exists();
     if (exists) {
@@ -82,7 +91,6 @@ class Download with ChangeNotifier {
                       Text(
                         '"${data['title']}" already exists.\nDo you want to download it again?',
                         softWrap: true,
-                        // style: TextStyle(color: Theme.of(context).accentColor),
                       ),
                     ],
                   ),
@@ -153,12 +161,17 @@ class Download with ChangeNotifier {
     notifyListeners();
     String filepath;
     String filepath2;
+    String appPath;
     List<int> _bytes = [];
     String lyrics;
-    // String downloadFormat = 'm4a';
     final artname = filename.replaceAll(".m4a", "artwork.jpg");
-    Directory appDir = await getApplicationDocumentsDirectory();
-    String appPath = appDir.path;
+    if (!Platform.isWindows) {
+      Directory appDir = await getApplicationDocumentsDirectory();
+      appPath = appDir.path;
+    } else {
+      Directory temp = await getDownloadsDirectory();
+      appPath = temp.path;
+    }
     if (data['url'].toString().contains('google')) {
       filename = filename.replaceAll('.m4a', '.weba');
     }
@@ -241,7 +254,25 @@ class Download with ChangeNotifier {
       }
 
       if (filepath.endsWith('.weba')) {
-        // List<String> _argsList;
+        List<String> _argsList;
+
+        scaffoldMessenger.showSnackBar(SnackBar(
+          elevation: 6,
+          backgroundColor: Colors.grey[900],
+          behavior: SnackBarBehavior.floating,
+          content: Text(
+            'Converting "weba" to "$downloadFormat"',
+            style: TextStyle(color: Colors.white),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+          action: SnackBarAction(
+            textColor: Theme.of(context).accentColor,
+            label: 'Ok',
+            onPressed: () {},
+          ),
+        ));
+
         // if (downloadFormat == 'mp3')
         //   _argsList = [
         //     "-y",
@@ -253,20 +284,20 @@ class Download with ChangeNotifier {
         //     "256k",
         //     "${filepath.replaceAll('.weba', '.mp3')}"
         //   ];
-        // if (downloadFormat == 'm4a')
-        //   _argsList = [
-        //     "-y",
-        //     "-i",
-        //     "$filepath",
-        //     "-c:a",
-        //     "aac",
-        //     "-b:a",
-        //     "256k",
-        //     "${filepath.replaceAll('.weba', '.m4a')}"
-        //   ];
-        // await FlutterFFmpeg().executeWithArguments(_argsList);
+        if (downloadFormat == 'm4a')
+          _argsList = [
+            "-y",
+            "-i",
+            "$filepath",
+            "-c:a",
+            "aac",
+            "-b:a",
+            "256k",
+            "${filepath.replaceAll('.weba', '.m4a')}"
+          ];
+        await FlutterFFmpeg().executeWithArguments(_argsList);
 
-        // filepath = filepath.replaceAll(".weba", ".$downloadFormat");
+        filepath = filepath.replaceAll(".weba", ".$downloadFormat");
       }
 
       debugPrint("Started tag editing");
@@ -282,15 +313,18 @@ class Download with ChangeNotifier {
         lyrics: lyrics,
         comment: 'BlackHole',
       );
-
-      final tagger = Audiotagger();
-      await tagger.writeTags(
-        path: filepath,
-        tag: tag,
-      );
-      await Future.delayed(const Duration(seconds: 1), () {});
-      if (await file2.exists()) {
-        await file2.delete();
+      try {
+        final tagger = Audiotagger();
+        await tagger.writeTags(
+          path: filepath,
+          tag: tag,
+        );
+        await Future.delayed(const Duration(seconds: 1), () {});
+        if (await file2.exists()) {
+          await file2.delete();
+        }
+      } catch (e) {
+        print("Failed to edit tags");
       }
       debugPrint("Done");
       lastDownloadId = data['id'];

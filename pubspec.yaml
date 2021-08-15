@@ -44,7 +44,7 @@ dependencies:
   # flutter_downloader: ^1.6.1
   cached_network_image: ^3.1.0
   youtube_explode_dart: ^1.9.10
-  # flutter_ffmpeg: ^0.4.0
+  flutter_ffmpeg: ^0.4.0
 
 
   # UI related
