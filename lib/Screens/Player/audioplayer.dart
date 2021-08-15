@@ -4,6 +4,7 @@ import 'package:blackhole/CustomWidgets/downloadButton.dart';
 import 'package:blackhole/CustomWidgets/equalizer.dart';
 import 'package:blackhole/CustomWidgets/gradientContainers.dart';
 import 'package:blackhole/CustomWidgets/like_button.dart';
+import 'package:blackhole/CustomWidgets/textinput_dialog.dart';
 import 'package:blackhole/Helpers/lyrics.dart';
 import 'package:blackhole/Helpers/mediaitem_converter.dart';
 import 'package:blackhole/Services/audioService.dart';
@@ -68,6 +69,10 @@ class _PlayScreenState extends State<PlayScreen> {
   // sleepTimer(0) cancels the timer
   void sleepTimer(int time) {
     AudioService.customAction('sleepTimer', time);
+  }
+
+  void sleepCounter(int count) {
+    AudioService.customAction('sleepCounter', count);
   }
 
   Duration _time;
@@ -417,92 +422,34 @@ class _PlayScreenState extends State<PlayScreen> {
                             context: context,
                             builder: (context) {
                               return SimpleDialog(
-                                title: Center(
-                                    child: Text(
-                                  'Select a Duration',
+                                title: Text(
+                                  'Sleep Timer',
                                   style: TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      color: Theme.of(context).accentColor),
-                                )),
+                                    color: Theme.of(context).accentColor,
+                                  ),
+                                ),
+                                contentPadding: const EdgeInsets.all(10.0),
                                 children: [
-                                  Center(
-                                      child: SizedBox(
-                                    height: 200,
-                                    width: 200,
-                                    child: CupertinoTheme(
-                                      data: CupertinoThemeData(
-                                        primaryColor:
-                                            Theme.of(context).accentColor,
-                                        textTheme: CupertinoTextThemeData(
-                                          dateTimePickerTextStyle: TextStyle(
-                                            fontSize: 16,
-                                            color:
-                                                Theme.of(context).accentColor,
-                                          ),
-                                        ),
-                                      ),
-                                      child: CupertinoTimerPicker(
-                                        mode: CupertinoTimerPickerMode.hm,
-                                        onTimerDurationChanged: (value) {
-                                          _time = value;
-                                        },
-                                      ),
-                                    ),
-                                  )),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      TextButton(
-                                        style: TextButton.styleFrom(
-                                          primary:
-                                              Theme.of(context).accentColor,
-                                        ),
-                                        child: Text('Cancel'),
-                                        onPressed: () {
-                                          sleepTimer(0);
-                                          Navigator.pop(context);
-                                        },
-                                      ),
-                                      SizedBox(
-                                        width: 10,
-                                      ),
-                                      TextButton(
-                                        style: TextButton.styleFrom(
-                                          primary: Colors.white,
-                                          backgroundColor:
-                                              Theme.of(context).accentColor,
-                                        ),
-                                        child: Text('Ok'),
-                                        onPressed: () {
-                                          sleepTimer(_time.inMinutes);
-                                          Navigator.pop(context);
-                                          ScaffoldMessenger.of(scaffoldContext)
-                                              .showSnackBar(
-                                            SnackBar(
-                                              duration: Duration(seconds: 2),
-                                              elevation: 6,
-                                              backgroundColor: Colors.grey[900],
-                                              behavior:
-                                                  SnackBarBehavior.floating,
-                                              content: Text(
-                                                'Sleep timer set for ${_time.inMinutes} minutes',
-                                                style: TextStyle(
-                                                    color: Colors.white),
-                                              ),
-                                              action: SnackBarAction(
-                                                textColor: Theme.of(context)
-                                                    .accentColor,
-                                                label: 'Ok',
-                                                onPressed: () {},
-                                              ),
-                                            ),
-                                          );
-                                        },
-                                      ),
-                                      SizedBox(
-                                        width: 20,
-                                      ),
-                                    ],
+                                  ListTile(
+                                    title:
+                                        Text('Sleep after a duration of hh:mm'),
+                                    subtitle: Text(
+                                        'Music will stop after selected duration'),
+                                    dense: true,
+                                    onTap: () {
+                                      Navigator.pop(context);
+                                      setTimer(context, scaffoldContext);
+                                    },
+                                  ),
+                                  ListTile(
+                                    title: Text('Sleep after N Songs'),
+                                    subtitle: Text(
+                                        'Music will stop after playing selected no of songs'),
+                                    dense: true,
+                                    onTap: () {
+                                      Navigator.pop(context);
+                                      setCounter(scaffoldContext);
+                                    },
                                   ),
                                 ],
                               );
@@ -1844,6 +1791,123 @@ class _PlayScreenState extends State<PlayScreen> {
               Navigator.pop(context);
             },
             child: container);
+  }
+
+  Future<dynamic> setTimer(BuildContext context, BuildContext scaffoldContext) {
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return SimpleDialog(
+          title: Center(
+              child: Text(
+            'Select a Duration',
+            style: TextStyle(
+                fontWeight: FontWeight.w600,
+                color: Theme.of(context).accentColor),
+          )),
+          children: [
+            Center(
+                child: SizedBox(
+              height: 200,
+              width: 200,
+              child: CupertinoTheme(
+                data: CupertinoThemeData(
+                  primaryColor: Theme.of(context).accentColor,
+                  textTheme: CupertinoTextThemeData(
+                    dateTimePickerTextStyle: TextStyle(
+                      fontSize: 16,
+                      color: Theme.of(context).accentColor,
+                    ),
+                  ),
+                ),
+                child: CupertinoTimerPicker(
+                  mode: CupertinoTimerPickerMode.hm,
+                  onTimerDurationChanged: (value) {
+                    _time = value;
+                  },
+                ),
+              ),
+            )),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                TextButton(
+                  style: TextButton.styleFrom(
+                    primary: Theme.of(context).accentColor,
+                  ),
+                  child: Text('Cancel'),
+                  onPressed: () {
+                    sleepTimer(0);
+                    Navigator.pop(context);
+                  },
+                ),
+                SizedBox(
+                  width: 10,
+                ),
+                TextButton(
+                  style: TextButton.styleFrom(
+                    primary: Colors.white,
+                    backgroundColor: Theme.of(context).accentColor,
+                  ),
+                  child: Text('Ok'),
+                  onPressed: () {
+                    sleepTimer(_time.inMinutes);
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(scaffoldContext).showSnackBar(
+                      SnackBar(
+                        duration: Duration(seconds: 2),
+                        elevation: 6,
+                        backgroundColor: Colors.grey[900],
+                        behavior: SnackBarBehavior.floating,
+                        content: Text(
+                          'Sleep timer set for ${_time.inMinutes} minutes',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        action: SnackBarAction(
+                          textColor: Theme.of(context).accentColor,
+                          label: 'Ok',
+                          onPressed: () {},
+                        ),
+                      ),
+                    );
+                  },
+                ),
+                SizedBox(
+                  width: 20,
+                ),
+              ],
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<dynamic> setCounter(
+      BuildContext scaffoldContext) async {
+    await TextInputDialog().showTextInputDialog(
+        scaffoldContext, 'Enter no of Songs', '', TextInputType.number,
+        (String value) {
+      sleepCounter(int.parse(value));
+      Navigator.pop(scaffoldContext);
+      ScaffoldMessenger.of(scaffoldContext).showSnackBar(
+        SnackBar(
+          duration: Duration(seconds: 2),
+          elevation: 6,
+          backgroundColor: Colors.grey[900],
+          behavior: SnackBarBehavior.floating,
+          content: Text(
+            'Sleep timer set for $value songs',
+            style: TextStyle(color: Colors.white),
+          ),
+          action: SnackBarAction(
+            textColor: Theme.of(context).accentColor,
+            label: 'Ok',
+            onPressed: () {},
+          ),
+        ),
+      );
+    });
   }
 
   /// A stream reporting the combined state of the current media item and its

@@ -122,6 +122,13 @@ class AudioPlayerTask extends BackgroundAudioTask {
       if (idx != null && queue.isNotEmpty) {
         index = idx;
         AudioServiceBackground.setMediaItem(queue[idx]);
+        if (count != null) {
+          count--;
+          if (count <= 0) {
+            count = null;
+            onStop();
+          }
+        }
       }
     });
 
@@ -146,16 +153,11 @@ class AudioPlayerTask extends BackgroundAudioTask {
 
   @override
   Future<void> onSkipToQueueItem(String mediaId) async {
-    if (count <= 0) {
-      count = null;
-      onStop();
-    }
     final newIndex = queue.indexWhere((item) => item.id == mediaId);
     if (newIndex == -1) return;
     index = newIndex;
     _player.seek(Duration.zero, index: newIndex);
     if (!offline) addRecentlyPlayed(queue[newIndex]);
-    if (count != null) count--;
   }
 
   @override
