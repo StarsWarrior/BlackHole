@@ -1,17 +1,18 @@
 import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 class SeekBar extends StatefulWidget {
   final Duration duration;
   final Duration position;
   final Duration bufferedPosition;
-  final ValueChanged<Duration> onChanged;
-  final ValueChanged<Duration> onChangeEnd;
+  final ValueChanged<Duration>? onChanged;
+  final ValueChanged<Duration>? onChangeEnd;
 
-  SeekBar({
-    @required this.duration,
-    @required this.position,
-    @required this.bufferedPosition,
+  const SeekBar({
+    required this.duration,
+    required this.position,
+    required this.bufferedPosition,
     this.onChanged,
     this.onChangeEnd,
   });
@@ -21,8 +22,8 @@ class SeekBar extends StatefulWidget {
 }
 
 class _SeekBarState extends State<SeekBar> {
-  double _dragValue;
-  SliderThemeData _sliderThemeData;
+  double? _dragValue;
+  late SliderThemeData _sliderThemeData;
 
   @override
   void didChangeDependencies() {
@@ -35,7 +36,7 @@ class _SeekBarState extends State<SeekBar> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: MediaQuery.of(context).size.width * 0.975,
       child: Stack(
         children: [
@@ -47,11 +48,10 @@ class _SeekBarState extends State<SeekBar> {
                   Theme.of(context).accentColor.withOpacity(0.3),
               trackHeight: 4.0,
               // trackShape: RoundedRectSliderTrackShape(),
-              trackShape: RectangularSliderTrackShape(),
+              trackShape: const RectangularSliderTrackShape(),
             ),
             child: ExcludeSemantics(
               child: Slider(
-                min: 0.0,
                 max: widget.duration.inMilliseconds.toDouble(),
                 value: min(widget.bufferedPosition.inMilliseconds.toDouble(),
                     widget.duration.inMilliseconds.toDouble()),
@@ -60,12 +60,12 @@ class _SeekBarState extends State<SeekBar> {
                     _dragValue = value;
                   });
                   if (widget.onChanged != null) {
-                    widget.onChanged(Duration(milliseconds: value.round()));
+                    widget.onChanged!(Duration(milliseconds: value.round()));
                   }
                 },
                 onChangeEnd: (value) {
                   if (widget.onChangeEnd != null) {
-                    widget.onChangeEnd(Duration(milliseconds: value.round()));
+                    widget.onChangeEnd!(Duration(milliseconds: value.round()));
                   }
                   _dragValue = null;
                 },
@@ -80,7 +80,6 @@ class _SeekBarState extends State<SeekBar> {
               trackHeight: 4.0,
             ),
             child: Slider(
-              min: 0.0,
               max: widget.duration.inMilliseconds.toDouble(),
               value: min(
                   _dragValue ?? widget.position.inMilliseconds.toDouble(),
@@ -90,12 +89,12 @@ class _SeekBarState extends State<SeekBar> {
                   _dragValue = value;
                 });
                 if (widget.onChanged != null) {
-                  widget.onChanged(Duration(milliseconds: value.round()));
+                  widget.onChanged!(Duration(milliseconds: value.round()));
                 }
               },
               onChangeEnd: (value) {
                 if (widget.onChangeEnd != null) {
-                  widget.onChangeEnd(Duration(milliseconds: value.round()));
+                  widget.onChangeEnd!(Duration(milliseconds: value.round()));
                 }
                 _dragValue = null;
               },
@@ -106,7 +105,7 @@ class _SeekBarState extends State<SeekBar> {
             bottom: 0.0,
             child: Text(
               RegExp(r'((^0*[1-9]\d*:)?\d{2}:\d{2})\.\d+$')
-                      .firstMatch("$_position")
+                      .firstMatch('$_position')
                       ?.group(1) ??
                   '$_position',
               // style: Theme.of(context).textTheme.caption,
@@ -117,7 +116,7 @@ class _SeekBarState extends State<SeekBar> {
             bottom: 0.0,
             child: Text(
               RegExp(r'((^0*[1-9]\d*:)?\d{2}:\d{2})\.\d+$')
-                      .firstMatch("$_duration")
+                      .firstMatch('$_duration')
                       ?.group(1) ??
                   '$_duration',
               // style: Theme.of(context).textTheme.caption,
@@ -140,16 +139,16 @@ class HiddenThumbComponentShape extends SliderComponentShape {
   void paint(
     PaintingContext context,
     Offset center, {
-    @required Animation<double> activationAnimation,
-    @required Animation<double> enableAnimation,
-    @required bool isDiscrete,
-    @required TextPainter labelPainter,
-    @required RenderBox parentBox,
-    @required SliderThemeData sliderTheme,
-    @required TextDirection textDirection,
-    @required double value,
-    @required double textScaleFactor,
-    @required Size sizeWithOverflow,
+    required Animation<double> activationAnimation,
+    required Animation<double> enableAnimation,
+    required bool isDiscrete,
+    required TextPainter labelPainter,
+    required RenderBox parentBox,
+    required SliderThemeData sliderTheme,
+    required TextDirection textDirection,
+    required double value,
+    required double textScaleFactor,
+    required Size sizeWithOverflow,
   }) {}
 }
 

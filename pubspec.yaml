@@ -15,65 +15,68 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.9.0+11
+version: 1.9.4+15
 
 environment:
-  sdk: ">=2.7.0 <3.0.0"
+  sdk: '>=2.13.0 <3.0.0'
 
 dependencies:
   flutter:
     sdk: flutter
 
+
   # Audio related
-  just_audio: ^0.9.3
   audiotagger: ^2.2.1
-  audio_session: ^0.1.5
   audio_service: ^0.17.1
-  
+  audio_session: ^0.1.5
+  just_audio: ^0.9.5
+
 
   # Productivity
-  uuid: ^3.0.4
-  http: ^0.13.3
-  dart_des: ^1.0.0
   app_links: ^2.2.0
-  share_plus: ^2.1.4
-  device_info: ^2.0.2
-  package_info: ^2.0.2
-  url_launcher: ^6.0.9
-  html_unescape: ^2.0.0
-  # flutter_downloader: ^1.6.1
   cached_network_image: ^3.1.0
+  dart_des: ^1.0.0
+  # flutter_downloader: ^1.6.1
+  flutter_ffmpeg: ^0.4.2
+  html_unescape: ^2.0.0
+  http: ^0.13.3
+  package_info: ^2.0.2
+  share_plus: ^2.1.4
+  url_launcher: ^6.0.9
+  uuid: ^3.0.4
   youtube_explode_dart: ^1.9.10
-  flutter_ffmpeg: ^0.4.0
 
 
   # UI related
   cupertino_icons: ^1.0.3
-  salomon_bottom_bar: ^3.0.0
-  material_floating_search_bar: ^0.3.4
   material_design_icons_flutter: ^5.0.5955-rc.1
+  material_floating_search_bar: ^0.3.4
   miniplayer:
     git:
       url: https://github.com/Sangwan5688/miniplayer.git
       ref: 9ddb87c650dce69bf04d297543b73fac7de462f2
+  salomon_bottom_bar: ^3.1.0
+
 
   # Database related
   hive: ^2.0.4
-  hive_flutter: ^1.0.0
-  supabase: ^0.0.7
-  
+  hive_flutter: ^1.1.0
+  supabase: ^0.2.1
+
+
   # Storage related
   ext_storage:
     git:
       url: git://github.com/GitJournal/ext_storage.git
+  file_picker: ^4.0.0
   path_provider: ^2.0.2
-  permission_handler: ^8.1.1
-  file_picker: ^3.0.3
-  
+  permission_handler: ^8.1.4+2
+
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  lint: ^1.6.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -89,7 +92,6 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/
-  #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

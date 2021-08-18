@@ -1,115 +1,128 @@
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:hive/hive.dart';
 import 'package:http/http.dart';
-import 'package:blackhole/Helpers/format.dart';
 import 'package:http/io_client.dart';
+
+import 'package:blackhole/Helpers/format.dart';
 
 class SaavnAPI {
   List preferredLanguages = Hive.box('settings')
-      .get('preferredLanguage', defaultValue: ['Hindi'])?.toList();
+      .get('preferredLanguage', defaultValue: ['Hindi']) as List;
   Map<String, String> headers = {};
-  String baseUrl = "www.jiosaavn.com";
-  String apiStr = "/api.php?_format=json&_marker=0&api_version=4&ctx=web6dot0";
+  String baseUrl = 'www.jiosaavn.com';
+  String apiStr = '/api.php?_format=json&_marker=0&api_version=4&ctx=web6dot0';
   Box settingsBox = Hive.box('settings');
+  Map<String, String> endpoints = {
+    'homeData': '__call=webapi.getLaunchData',
+    'topSearches': '__call=content.getTopSearches',
+    'getResult': '__call=search.getResults',
+  };
 
   Future<Response> getResponse(String params,
       {bool usev4 = true, bool useProxy = false}) async {
     Uri url;
-    if (!usev4)
+    if (!usev4) {
       url = Uri.https(
-          baseUrl, "$apiStr&$params".replaceAll("&api_version=4", ""));
-    else
-      url = Uri.https(baseUrl, "$apiStr&$params");
+          baseUrl, '$apiStr&$params'.replaceAll('&api_version=4', ''));
+    } else {
+      url = Uri.https(baseUrl, '$apiStr&$params');
+    }
     preferredLanguages =
         preferredLanguages.map((lang) => lang.toLowerCase()).toList();
-    String languageHeader = 'L=' + preferredLanguages.join('%2C');
-    headers = {"cookie": languageHeader, "Accept": "*/*"};
+    final String languageHeader = 'L=${preferredLanguages.join('%2C')}';
+    headers = {'cookie': languageHeader, 'Accept': '*/*'};
 
-    useProxy = useProxy && settingsBox.get('useProxy', defaultValue: false);
-    if (useProxy) {
-      final proxyIP = settingsBox.get("proxyIp");
-      final proxyPort = settingsBox.get("proxyPort");
-      HttpClient httpClient = new HttpClient();
+    if (useProxy && settingsBox.get('useProxy', defaultValue: false) as bool) {
+      final proxyIP = settingsBox.get('proxyIp');
+      final proxyPort = settingsBox.get('proxyPort');
+      final HttpClient httpClient = HttpClient();
       httpClient.findProxy = (uri) {
-        return "PROXY $proxyIP:$proxyPort;";
+        return 'PROXY $proxyIP:$proxyPort;';
       };
       httpClient.badCertificateCallback =
-          ((X509Certificate cert, String host, int port) => Platform.isAndroid);
-      IOClient myClient = IOClient(httpClient);
-      return await myClient.get(url, headers: headers);
+          (X509Certificate cert, String host, int port) => Platform.isAndroid;
+      final IOClient myClient = IOClient(httpClient);
+      return myClient.get(url, headers: headers);
     }
 
-    return await get(url, headers: headers);
+    return get(url, headers: headers);
   }
 
   Future<Map> fetchHomePageData() async {
-    String params = "__call=webapi.getLaunchData";
-    Map result;
+    Map result = {};
     try {
-      final res = await getResponse(params);
+      final res = await getResponse(endpoints['homeData']!);
       if (res.statusCode == 200) {
-        final data = json.decode(res.body);
+        final Map data = json.decode(res.body) as Map;
         result = await FormatResponse().formatHomePageData(data);
       }
     } catch (e) {
-      print(e);
+      // ignore: avoid_print
+      print('Error in fetchHomePageData: $e');
     }
     return result;
   }
 
-  Future<List> getTopSearches() async {
-    List result = [];
-    String params = "__call=content.getTopSearches";
+  Future<List<String>> getTopSearches() async {
+    List<String> result = [];
     try {
-      final res = await getResponse(params, useProxy: true);
+      final res = await getResponse(endpoints['topSearches']!, useProxy: true);
       if (res.statusCode == 200) {
-        final List getMain = json.decode(res.body);
+        final List getMain = json.decode(res.body) as List;
         result = getMain.map((element) {
-          return element["title"];
+          return element['title'].toString();
         }).toList();
       }
-    } catch (e) {}
+    } catch (e) {
+      // ignore: avoid_print
+      print('Error in getTopSearches: $e');
+    }
     return result;
   }
 
   Future<List> fetchSongSearchResults(String searchQuery, String count) async {
     List searchedList = [];
-    String params = "p=1&q=$searchQuery&n=$count&__call=search.getResults";
+    final String params =
+        "p=1&q=$searchQuery&n=$count&${endpoints['getResult']}";
 
     try {
       final res = await getResponse(params, useProxy: true);
       if (res.statusCode == 200) {
-        final getMain = json.decode(res.body);
-        List responseList = getMain["results"];
+        final Map getMain = json.decode(res.body) as Map;
+        final List responseList = getMain['results'] as List;
         searchedList =
             await FormatResponse().formatSongsResponse(responseList, 'song');
       }
-    } catch (e) {}
+    } catch (e) {
+      // ignore: avoid_print
+      print('Error in fetchSongSearchResults: $e');
+    }
     return searchedList;
   }
 
   Future<List<Map>> fetchSearchResults(String searchQuery) async {
-    Map<String, List> result = {};
-    Map<int, String> position = {};
+    final Map<String, List> result = {};
+    final Map<int, String> position = {};
     List searchedAlbumList = [];
     List searchedPlaylistList = [];
     List searchedArtistList = [];
     List searchedTopQueryList = [];
 
-    String params =
-        "__call=autocomplete.get&cc=in&includeMetaTags=1&query=$searchQuery";
+    final String params =
+        '__call=autocomplete.get&cc=in&includeMetaTags=1&query=$searchQuery';
 
     final res = await getResponse(params, usev4: false, useProxy: true);
     if (res.statusCode == 200) {
       final getMain = json.decode(res.body);
-      List albumResponseList = getMain["albums"]["data"];
-      position[getMain["albums"]["position"]] = 'Albums';
-      List playlistResponseList = getMain["playlists"]["data"];
-      position[getMain["playlists"]["position"]] = 'Playlists';
-      List artistResponseList = getMain["artists"]["data"];
-      position[getMain["artists"]["position"]] = 'Artists';
-      List topQuery = getMain["topquery"]["data"];
+      final List albumResponseList = getMain['albums']['data'] as List;
+      position[getMain['albums']['position'] as int] = 'Albums';
+      final List playlistResponseList = getMain['playlists']['data'] as List;
+      position[getMain['playlists']['position'] as int] = 'Playlists';
+      final List artistResponseList = getMain['artists']['data'] as List;
+      position[getMain['artists']['position'] as int] = 'Artists';
+      final List topQuery = getMain['topquery']['data'] as List;
 
       searchedAlbumList = await FormatResponse()
           .formatAlbumResponse(albumResponseList, 'album');
@@ -117,63 +130,68 @@ class SaavnAPI {
 
       searchedPlaylistList = await FormatResponse()
           .formatAlbumResponse(playlistResponseList, 'playlist');
-      if (searchedPlaylistList.isNotEmpty)
+      if (searchedPlaylistList.isNotEmpty) {
         result['Playlists'] = searchedPlaylistList;
+      }
 
       searchedArtistList = await FormatResponse()
           .formatAlbumResponse(artistResponseList, 'artist');
       if (searchedArtistList.isNotEmpty) result['Artists'] = searchedArtistList;
 
       if (topQuery.isNotEmpty &&
-          (topQuery[0]["type"] == 'playlist' ||
-              topQuery[0]["type"] == 'artist' ||
-              topQuery[0]["type"] == 'album')) {
-        position[getMain["topquery"]["position"]] = 'Top Result';
-        position[getMain["songs"]["position"]] = 'Songs';
+          (topQuery[0]['type'] == 'playlist' ||
+              topQuery[0]['type'] == 'artist' ||
+              topQuery[0]['type'] == 'album')) {
+        position[getMain['topquery']['position'] as int] = 'Top Result';
+        position[getMain['songs']['position'] as int] = 'Songs';
 
-        switch (topQuery[0]["type"]) {
-          case ('artist'):
+        switch (topQuery[0]['type'] as String) {
+          case 'artist':
             searchedTopQueryList =
                 await FormatResponse().formatAlbumResponse(topQuery, 'artist');
             break;
-          case ('album'):
+          case 'album':
             searchedTopQueryList =
                 await FormatResponse().formatAlbumResponse(topQuery, 'album');
             break;
-          case ('playlist'):
+          case 'playlist':
             searchedTopQueryList = await FormatResponse()
                 .formatAlbumResponse(topQuery, 'playlist');
             break;
           default:
             break;
         }
-        if (searchedTopQueryList.isNotEmpty)
+        if (searchedTopQueryList.isNotEmpty) {
           result['Top Result'] = searchedTopQueryList;
+        }
       } else {
-        if (topQuery.isNotEmpty && topQuery[0]["type"] == 'song') {
-          position[getMain["topquery"]["position"]] = 'Songs';
+        if (topQuery.isNotEmpty && topQuery[0]['type'] == 'song') {
+          position[getMain['topquery']['position'] as int] = 'Songs';
         } else {
-          position[getMain["songs"]["position"]] = 'Songs';
+          position[getMain['songs']['position'] as int] = 'Songs';
         }
       }
     }
     return [result, position];
   }
 
-  Future<List> fetchAlbums(String searchQuery, String type) async {
-    List searchedList = [];
-    String params;
-    if (type == 'playlist')
-      params = "p=1&q=$searchQuery&n=20&__call=search.getPlaylistResults";
-    if (type == 'album')
-      params = "p=1&q=$searchQuery&n=20&__call=search.getAlbumResults";
-    if (type == 'artist')
-      params = "p=1&q=$searchQuery&n=20&__call=search.getArtistResults";
+  Future<List<Map>> fetchAlbums(String searchQuery, String type) async {
+    List<Map> searchedList = [];
+    String? params;
+    if (type == 'playlist') {
+      params = 'p=1&q=$searchQuery&n=20&__call=search.getPlaylistResults';
+    }
+    if (type == 'album') {
+      params = 'p=1&q=$searchQuery&n=20&__call=search.getAlbumResults';
+    }
+    if (type == 'artist') {
+      params = 'p=1&q=$searchQuery&n=20&__call=search.getArtistResults';
+    }
 
-    final res = await getResponse(params);
+    final res = await getResponse(params!);
     if (res.statusCode == 200) {
       final getMain = json.decode(res.body);
-      List responseList = getMain["results"];
+      final List responseList = getMain['results'] as List;
       searchedList =
           await FormatResponse().formatAlbumResponse(responseList, type);
     }
@@ -182,26 +200,27 @@ class SaavnAPI {
 
   Future<List> fetchAlbumSongs(String albumId) async {
     List searchedList = [];
-    String params = "__call=content.getAlbumDetails&cc=in&albumid=$albumId";
+    final String params =
+        '__call=content.getAlbumDetails&cc=in&albumid=$albumId';
     final res = await getResponse(params);
     if (res.statusCode == 200) {
       final getMain = json.decode(res.body);
-      List responseList = getMain["list"];
+      final List responseList = getMain['list'] as List;
       searchedList =
           await FormatResponse().formatSongsResponse(responseList, 'album');
     }
     return searchedList;
   }
 
-  Future<Map> fetchArtistSongs(String artistToken) async {
-    Map<String, List> data = {};
-    String params =
-        "__call=webapi.get&type=artist&p=&n_song=50&n_album=50&sub_type=&category=&sort_order=&includeMetaTags=0&token=$artistToken";
+  Future<Map<String, List>> fetchArtistSongs(String artistToken) async {
+    final Map<String, List> data = {};
+    final String params =
+        '__call=webapi.get&type=artist&p=&n_song=50&n_album=50&sub_type=&category=&sort_order=&includeMetaTags=0&token=$artistToken';
     final res = await getResponse(params);
     if (res.statusCode == 200) {
       final getMain = json.decode(res.body);
-      List topSongsResponseList = getMain["topSongs"];
-      List topAlbumsResponseList = getMain["topAlbums"];
+      final List topSongsResponseList = getMain['topSongs'] as List;
+      final List topAlbumsResponseList = getMain['topAlbums'] as List;
       // List singlesResponseList = getMain["singles"];
       // List latestReleaseResponseList = getMain["latest_release"];
       // List dedicatedArtistPlaylistResponseList = [];
@@ -215,15 +234,17 @@ class SaavnAPI {
       //       getMain["featured_artist_playlist"];
       // }
 
-      List topSongsSearchedList = await FormatResponse()
+      final List topSongsSearchedList = await FormatResponse()
           .formatSongsResponse(topSongsResponseList, 'song');
-      if (topSongsSearchedList.isNotEmpty)
+      if (topSongsSearchedList.isNotEmpty) {
         data['Top Songs'] = topSongsSearchedList;
+      }
 
-      List topAlbumsSearchedList = await FormatResponse()
+      final List topAlbumsSearchedList = await FormatResponse()
           .formatArtistTopAlbumsResponse(topAlbumsResponseList);
-      if (topAlbumsSearchedList.isNotEmpty)
+      if (topAlbumsSearchedList.isNotEmpty) {
         data['Top Albums'] = topAlbumsSearchedList;
+      }
 
       // List latestReleaseSearchedList = await FormatResponse()
       // .formatSongsResponse(latestReleaseResponseList, 'songs');
@@ -251,11 +272,11 @@ class SaavnAPI {
 
   Future<List> fetchPlaylistSongs(String playlistId) async {
     List searchedList = [];
-    String params = "__call=playlist.getDetails&cc=in&listid=$playlistId";
+    final String params = '__call=playlist.getDetails&cc=in&listid=$playlistId';
     final res = await getResponse(params);
     if (res.statusCode == 200) {
       final getMain = json.decode(res.body);
-      List responseList = getMain["list"];
+      final List responseList = getMain['list'] as List;
       searchedList =
           await FormatResponse().formatSongsResponse(responseList, 'playlist');
     }
@@ -263,30 +284,32 @@ class SaavnAPI {
   }
 
   Future<List> fetchTopSearchResult(String searchQuery) async {
-    List searchedList = [];
-    String params = "p=1&q=$searchQuery&n=10&__call=search.getResults";
+    final String params = 'p=1&q=$searchQuery&n=10&__call=search.getResults';
     final res = await getResponse(params, useProxy: true);
     if (res.statusCode == 200) {
       final getMain = json.decode(res.body);
-      List responseList = getMain["results"];
-      searchedList.add(
-          await FormatResponse().formatSingleSongResponse(responseList[0]));
+      final List responseList = getMain['results'] as List;
+      final List searchedList = [
+        await FormatResponse().formatSingleSongResponse(responseList[0] as Map)
+      ];
+      return searchedList;
     }
-    return searchedList;
+    return List.empty();
   }
 
   Future<Map> fetchSongDetails(String songId) async {
-    Map result;
-    String params = "pids=$songId&__call=song.getDetails";
+    Map result = {};
+    final String params = 'pids=$songId&__call=song.getDetails';
     try {
       final res = await getResponse(params);
       if (res.statusCode == 200) {
-        final data = json.decode(res.body);
-        result =
-            await FormatResponse().formatSingleSongResponse(data["songs"][0]);
+        final Map data = json.decode(res.body) as Map;
+        result = await FormatResponse()
+            .formatSingleSongResponse(data['songs'][0] as Map);
       }
-    } catch (err) {
-      print(err);
+    } catch (e) {
+      // ignore: avoid_print
+      print('Error in fetchSongDetails: $e');
     }
     return result;
   }

@@ -1,8 +1,9 @@
-import 'package:blackhole/CustomWidgets/gradientContainers.dart';
-import 'package:blackhole/Helpers/supabase.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:uuid/uuid.dart';
+
+import 'package:blackhole/CustomWidgets/gradient_containers.dart';
+import 'package:blackhole/Helpers/supabase.dart';
 
 class AuthScreen extends StatefulWidget {
   @override
@@ -10,14 +11,8 @@ class AuthScreen extends StatefulWidget {
 }
 
 class _AuthScreenState extends State<AuthScreen> {
-  TextEditingController controller;
-  Uuid uuid = Uuid();
-
-  @override
-  void initState() {
-    super.initState();
-    controller = TextEditingController();
-  }
+  TextEditingController controller = TextEditingController();
+  Uuid uuid = const Uuid();
 
   @override
   void dispose() {
@@ -26,30 +21,33 @@ class _AuthScreenState extends State<AuthScreen> {
   }
 
   Future _addUserData(String name) async {
-    int status;
+    int? status;
     await Hive.box('settings').put('name', name.trim());
-    DateTime now = DateTime.now();
-    List createDate =
-        now.toUtc().add(Duration(hours: 5, minutes: 30)).toString().split('.')
+    final DateTime now = DateTime.now();
+    final List createDate = now
+        .toUtc()
+        .add(const Duration(hours: 5, minutes: 30))
+        .toString()
+        .split('.')
           ..removeLast()
           ..join('.');
 
     String userId = uuid.v1();
     status = await SupaBase().createUser({
-      "id": userId,
-      "name": name,
-      "accountCreatedOn": "${createDate[0]} IST",
-      "timeZone":
+      'id': userId,
+      'name': name,
+      'accountCreatedOn': '${createDate[0]} IST',
+      'timeZone':
           "Zone: ${now.timeZoneName} Offset: ${now.timeZoneOffset.toString().replaceAll('.000000', '')}",
     });
 
     while (status == null || status == 409) {
       userId = uuid.v1();
       status = await SupaBase().createUser({
-        "id": userId,
-        "name": name,
-        "accountCreatedOn": "${createDate[0]} IST",
-        "timeZone":
+        'id': userId,
+        'name': name,
+        'accountCreatedOn': '${createDate[0]} IST',
+        'timeZone':
             "Zone: ${now.timeZoneName} Offset: ${now.timeZoneOffset.toString().replaceAll('.000000', '')}",
       });
     }
@@ -64,13 +62,13 @@ class _AuthScreenState extends State<AuthScreen> {
           Positioned(
             left: MediaQuery.of(context).size.width / 2,
             top: MediaQuery.of(context).size.width / 5,
-            child: Image(
+            child: const Image(
               image: AssetImage(
                 'assets/icon-white-trans.png',
               ),
             ),
           ),
-          GradientContainer(
+          const GradientContainer(
             child: null,
             opacity: true,
           ),
@@ -82,17 +80,17 @@ class _AuthScreenState extends State<AuthScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    SizedBox(
+                    const SizedBox(
                       height: 40,
                     ),
                     SizedBox(
                       width: MediaQuery.of(context).size.width / 1.1,
-                      child: Image(image: AssetImage('assets/hello.png')),
+                      child: const Image(image: AssetImage('assets/hello.png')),
                     ),
                     Column(
                       children: [
                         RichText(
-                          text: TextSpan(
+                          text: const TextSpan(
                             text: "I'm ",
                             style: TextStyle(
                               fontSize: 25,
@@ -113,7 +111,7 @@ class _AuthScreenState extends State<AuthScreen> {
                         RichText(
                           text: TextSpan(
                               text: 'and ',
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 30,
                                 fontWeight: FontWeight.w600,
                               ),
@@ -135,16 +133,15 @@ class _AuthScreenState extends State<AuthScreen> {
                       child: Column(
                         children: [
                           Container(
-                            padding: EdgeInsets.only(
+                            padding: const EdgeInsets.only(
                                 top: 5, bottom: 5, left: 10, right: 10),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(10.0),
                               color: Theme.of(context).cardColor,
-                              boxShadow: [
+                              boxShadow: const [
                                 BoxShadow(
                                   color: Colors.black26,
                                   blurRadius: 5.0,
-                                  spreadRadius: 0.0,
                                   offset: Offset(0.0, 3.0),
                                 )
                               ],
@@ -156,7 +153,7 @@ class _AuthScreenState extends State<AuthScreen> {
                                     TextCapitalization.sentences,
                                 keyboardType: TextInputType.name,
                                 decoration: InputDecoration(
-                                  focusedBorder: UnderlineInputBorder(
+                                  focusedBorder: const UnderlineInputBorder(
                                     borderSide: BorderSide(
                                         width: 1.5, color: Colors.transparent),
                                   ),
@@ -165,8 +162,8 @@ class _AuthScreenState extends State<AuthScreen> {
                                     color: Theme.of(context).accentColor,
                                   ),
                                   border: InputBorder.none,
-                                  hintText: "Your Name",
-                                  hintStyle: TextStyle(
+                                  hintText: 'Your Name',
+                                  hintStyle: const TextStyle(
                                     color: Colors.white60,
                                   ),
                                 ),
@@ -184,7 +181,7 @@ class _AuthScreenState extends State<AuthScreen> {
                             padding: const EdgeInsets.only(
                                 left: 8.0, right: 8.0, top: 5.0),
                             child: Text(
-                                "Disclaimer: We respect your privacy more than anything else. Only your name, which you will enter here, will be recorded.",
+                                'Disclaimer: We respect your privacy more than anything else. Only your name, which you will enter here, will be recorded.',
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                     color: Colors.grey.withOpacity(0.7))),

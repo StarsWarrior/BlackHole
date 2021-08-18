@@ -1,37 +1,41 @@
 import 'dart:async';
-import 'package:blackhole/CustomWidgets/add_playlist.dart';
-import 'package:blackhole/CustomWidgets/downloadButton.dart';
-import 'package:blackhole/CustomWidgets/equalizer.dart';
-import 'package:blackhole/CustomWidgets/gradientContainers.dart';
-import 'package:blackhole/CustomWidgets/like_button.dart';
-import 'package:blackhole/CustomWidgets/textinput_dialog.dart';
-import 'package:blackhole/Helpers/lyrics.dart';
-import 'package:blackhole/Helpers/mediaitem_converter.dart';
-import 'package:blackhole/Services/audioService.dart';
+import 'dart:io';
+import 'dart:typed_data';
+
+import 'package:audio_service/audio_service.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:audio_service/audio_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show rootBundle;
+import 'package:hive/hive.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:miniplayer/miniplayer.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:rxdart/rxdart.dart';
-import 'dart:io';
-import 'package:hive/hive.dart';
-import 'package:flutter/services.dart' show rootBundle;
-import 'package:blackhole/CustomWidgets/emptyScreen.dart';
-import 'package:blackhole/CustomWidgets/seekBar.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import 'package:blackhole/CustomWidgets/add_playlist.dart';
+import 'package:blackhole/CustomWidgets/download_button.dart';
+import 'package:blackhole/CustomWidgets/empty_screen.dart';
+import 'package:blackhole/CustomWidgets/equalizer.dart';
+import 'package:blackhole/CustomWidgets/gradient_containers.dart';
+import 'package:blackhole/CustomWidgets/like_button.dart';
+import 'package:blackhole/CustomWidgets/seek_bar.dart';
+import 'package:blackhole/CustomWidgets/snackbar.dart';
+import 'package:blackhole/CustomWidgets/textinput_dialog.dart';
+import 'package:blackhole/Helpers/lyrics.dart';
+import 'package:blackhole/Helpers/mediaitem_converter.dart';
+import 'package:blackhole/Services/audio_service.dart';
 
 class PlayScreen extends StatefulWidget {
   final Map data;
-  final controller;
+  final MiniplayerController? controller;
   final bool fromMiniplayer;
-  PlayScreen(
-      {Key key,
-      @required this.data,
-      @required this.fromMiniplayer,
+  const PlayScreen(
+      {Key? key,
+      required this.data,
+      required this.fromMiniplayer,
       this.controller})
       : super(key: key);
   @override
@@ -40,16 +44,17 @@ class PlayScreen extends StatefulWidget {
 
 class _PlayScreenState extends State<PlayScreen> {
   bool fromMiniplayer = false;
-  String preferredQuality =
-      Hive.box('settings').get('streamingQuality') ?? '96 kbps';
-  String preferredDownloadQuality =
-      Hive.box('settings').get('downloadQuality') ?? '320 kbps';
-  String repeatMode = Hive.box('settings').get('repeatMode') ?? 'None';
+  String preferredQuality = Hive.box('settings')
+      .get('streamingQuality', defaultValue: '96 kbps')
+      .toString();
+  String repeatMode =
+      Hive.box('settings').get('repeatMode', defaultValue: 'None').toString();
   bool enforceRepeat =
-      Hive.box('settings').get('enforceRepeat', defaultValue: false);
-  bool stopServiceOnPause =
-      Hive.box('settings').get('stopServiceOnPause') ?? true;
-  bool shuffle = Hive.box('settings').get('shuffle') ?? false;
+      Hive.box('settings').get('enforceRepeat', defaultValue: false) as bool;
+  bool stopServiceOnPause = Hive.box('settings')
+      .get('stopServiceOnPause', defaultValue: true) as bool;
+  bool shuffle =
+      Hive.box('settings').get('shuffle', defaultValue: false) as bool;
   List<MediaItem> globalQueue = [];
   int globalIndex = 0;
   bool same = false;
@@ -58,12 +63,10 @@ class _PlayScreenState extends State<PlayScreen> {
   bool offline = false;
   bool fromYT = false;
   String defaultCover = '';
-  MediaItem playItem;
   static const double minExtent = 0.1;
   static const double maxExtent = 1;
   bool isExpanded = false;
   double initialExtent = minExtent;
-  int oldIndex;
 
   // final _controller = PageController();
   // sleepTimer(0) cancels the timer
@@ -75,9 +78,9 @@ class _PlayScreenState extends State<PlayScreen> {
     AudioService.customAction('sleepCounter', count);
   }
 
-  Duration _time;
+  late Duration _time;
 
-  void main() async {
+  Future<void> main() async {
     await Hive.openBox('Favorite Songs');
   }
 
@@ -88,34 +91,36 @@ class _PlayScreenState extends State<PlayScreen> {
   }
 
   Future<MediaItem> setTags(Map response, Directory tempDir) async {
-    String playTitle = response['title'];
+    String? playTitle = response['title'].toString();
     playTitle == ''
         ? playTitle = response['id']
+            ?.toString()
             .split('/')
             .last
             .replaceAll('.m4a', '')
             .replaceAll('.mp3', '')
-        : playTitle = response['title'];
-    String playArtist = response['artist'];
+        : playTitle = response['title']?.toString();
+    String? playArtist = response['artist']?.toString();
     playArtist == ''
         ? playArtist = response['id']
+            ?.toString()
             .split('/')
             .last
             .replaceAll('.m4a', '')
             .replaceAll('.mp3', '')
-        : playArtist = response['artist'];
+        : playArtist = response['artist']?.toString();
 
-    String playAlbum = response['album'];
-    final playDuration = response['duration'] ?? 180;
-    String filePath;
+    final String playAlbum = response['album'].toString();
+    final int playDuration = response['duration'] as int? ?? 180;
+    String? filePath;
     if (response['image'] != null) {
       try {
-        File file = File(
+        final File file = File(
             '${tempDir.path}/${playTitle.toString().replaceAll('/', '')}-${playArtist.toString().replaceAll('/', '')}.jpg');
         filePath = file.path;
         if (!await file.exists()) {
           await file.create();
-          file.writeAsBytesSync(response['image']);
+          file.writeAsBytesSync(response['image'] as Uint8List);
         }
       } catch (e) {
         filePath = null;
@@ -124,13 +129,13 @@ class _PlayScreenState extends State<PlayScreen> {
       filePath = await getImageFileFromAssets();
     }
 
-    MediaItem tempDict = MediaItem(
-        id: response['id'],
+    final MediaItem tempDict = MediaItem(
+        id: response['id'].toString(),
         album: playAlbum,
         duration: Duration(seconds: playDuration),
-        title: playTitle != null ? playTitle.split("(")[0] : 'Unknown',
+        title: playTitle != null ? playTitle.split('(')[0] : 'Unknown',
         artist: playArtist ?? 'Unknown',
-        artUri: Uri.file(filePath),
+        artUri: Uri.file(filePath!),
         extras: {'url': response['id']});
     return tempDict;
   }
@@ -156,7 +161,7 @@ class _PlayScreenState extends State<PlayScreen> {
             .asUint8List(byteData.offsetInBytes, byteData.lengthInBytes));
       }
       for (int i = 0; i < response.length; i++) {
-        globalQueue.add(await setTags(response[i], tempDir));
+        globalQueue.add(await setTags(response[i] as Map, tempDir));
       }
       setState(() {});
     });
@@ -164,30 +169,33 @@ class _PlayScreenState extends State<PlayScreen> {
 
   void setValues(List response) {
     globalQueue.addAll(
-      response.map((song) => MediaItemConverter().mapToMediaItem(song)),
+      response.map((song) => MediaItemConverter().mapToMediaItem(song as Map)),
     );
     fetched = true;
   }
 
   @override
   Widget build(BuildContext context) {
-    BuildContext scaffoldContext;
-    Map data = widget.data;
+    BuildContext? scaffoldContext;
+    final Map data = widget.data;
     if (response == data['response'] && globalIndex == data['index']) {
       same = true;
     }
-    response = data['response'];
-    globalIndex = data['index'];
-    fromYT = data['fromYT'] ?? false;
+    response = data['response'] as List;
+    globalIndex = data['index'] as int;
+    fromYT = data['fromYT'] as bool? ?? false;
     if (data['offline'] == null) {
-      offline = AudioService.currentMediaItem?.extras['url'].startsWith('http')
-          ? false
-          : true;
+      if (AudioService.currentMediaItem?.extras!['url'].startsWith('http')
+          as bool) {
+        offline = false;
+      } else {
+        offline = true;
+      }
     } else {
-      offline = data['offline'];
+      offline = data['offline'] as bool;
     }
     if (!fetched) {
-      if (response.length == 0 || same) {
+      if (response.isEmpty || same) {
         fromMiniplayer = true;
       } else {
         fromMiniplayer = false;
@@ -206,7 +214,7 @@ class _PlayScreenState extends State<PlayScreen> {
       }
     }
 
-    Widget container = GradientContainer(
+    final Widget container = GradientContainer(
       child: SafeArea(
         child: StreamBuilder<QueueState>(
             stream: _queueStateStream,
@@ -232,12 +240,12 @@ class _PlayScreenState extends State<PlayScreen> {
                   backgroundColor: Colors.transparent,
                   centerTitle: true,
                   leading: IconButton(
-                      icon: Icon(Icons.expand_more_rounded),
+                      icon: const Icon(Icons.expand_more_rounded),
                       color: Theme.of(context).iconTheme.color,
                       tooltip: 'Back',
                       onPressed: () {
                         if (widget.fromMiniplayer) {
-                          widget.controller
+                          widget.controller!
                               .animateToHeight(state: PanelState.MIN);
                         } else {
                           Navigator.pop(context);
@@ -249,20 +257,20 @@ class _PlayScreenState extends State<PlayScreen> {
                         Icons.more_vert_rounded,
                         color: Theme.of(context).iconTheme.color,
                       ),
-                      shape: RoundedRectangleBorder(
+                      shape: const RoundedRectangleBorder(
                           borderRadius: BorderRadius.all(Radius.circular(7.0))),
-                      onSelected: (value) {
+                      onSelected: (int? value) {
                         if (value == 4) {
                           showDialog(
                               context: context,
                               builder: (context) {
-                                return Equalizer();
+                                return const Equalizer();
                               });
                         }
                         if (value == 3) {
                           launch(fromYT
-                              ? 'https://youtube.com/watch?v=${mediaItem.id}'
-                              : 'https://www.youtube.com/results?search_query=${mediaItem.title} by ${mediaItem.artist}');
+                              ? 'https://youtube.com/watch?v=${mediaItem!.id}'
+                              : 'https://www.youtube.com/results?search_query=${mediaItem!.title} by ${mediaItem.artist}');
                         }
                         if (value == 2) {
                           offline
@@ -275,32 +283,35 @@ class _PlayScreenState extends State<PlayScreen> {
                                       padding: EdgeInsets.zero,
                                       child: Center(
                                         child: SingleChildScrollView(
-                                          physics: BouncingScrollPhysics(),
-                                          padding: EdgeInsets.fromLTRB(
+                                          physics:
+                                              const BouncingScrollPhysics(),
+                                          padding: const EdgeInsets.fromLTRB(
                                               10, 30, 10, 30),
                                           child: FutureBuilder(
                                               future: Lyrics().getOffLyrics(
-                                                mediaItem.id.toString(),
+                                                mediaItem!.id.toString(),
                                               ),
                                               builder: (BuildContext context,
-                                                  AsyncSnapshot snapshot) {
+                                                  AsyncSnapshot<String>
+                                                      snapshot) {
                                                 if (snapshot.connectionState ==
                                                     ConnectionState.done) {
-                                                  String lyrics = snapshot.data;
+                                                  final String? lyrics =
+                                                      snapshot.data;
                                                   if (lyrics == '') {
                                                     return EmptyScreen()
                                                         .emptyScreen(
                                                             context,
                                                             0,
-                                                            ":( ",
+                                                            ':( ',
                                                             100.0,
-                                                            "Lyrics",
+                                                            'Lyrics',
                                                             60.0,
-                                                            "Not Available",
+                                                            'Not Available',
                                                             20.0);
                                                   }
                                                   return SelectableText(
-                                                    lyrics,
+                                                    lyrics!,
                                                     textAlign: TextAlign.center,
                                                   );
                                                 }
@@ -321,31 +332,31 @@ class _PlayScreenState extends State<PlayScreen> {
                                   backgroundColor: Colors.transparent,
                                   context: context,
                                   builder: (BuildContext context) {
-                                    String lyrics;
+                                    String? lyrics;
                                     final queueState = snapshot.data;
                                     final mediaItem = queueState?.mediaItem;
 
                                     return mediaItem == null
-                                        ? SizedBox()
+                                        ? const SizedBox()
                                         : BottomGradientContainer(
                                             padding: EdgeInsets.zero,
                                             child: Center(
                                               child: SingleChildScrollView(
                                                 physics:
-                                                    BouncingScrollPhysics(),
-                                                padding: EdgeInsets.fromLTRB(
-                                                    10, 30, 10, 30),
-                                                child: mediaItem.extras["has_lyrics"] ==
-                                                        "true"
+                                                    const BouncingScrollPhysics(),
+                                                padding:
+                                                    const EdgeInsets.fromLTRB(
+                                                        10, 30, 10, 30),
+                                                child: mediaItem.extras?['has_lyrics'] ==
+                                                        'true'
                                                     ? FutureBuilder(
                                                         future: Lyrics()
                                                             .getSaavnLyrics(
                                                                 mediaItem.id
                                                                     .toString()),
-                                                        builder:
-                                                            (BuildContext context,
-                                                                AsyncSnapshot
-                                                                    snapshot) {
+                                                        builder: (BuildContext context,
+                                                            AsyncSnapshot<String>
+                                                                snapshot) {
                                                           if (snapshot
                                                                   .connectionState ==
                                                               ConnectionState
@@ -354,7 +365,7 @@ class _PlayScreenState extends State<PlayScreen> {
                                                                 snapshot.data;
 
                                                             return SelectableText(
-                                                              lyrics,
+                                                              lyrics!,
                                                               textAlign:
                                                                   TextAlign
                                                                       .center,
@@ -369,35 +380,37 @@ class _PlayScreenState extends State<PlayScreen> {
                                                           );
                                                         })
                                                     : FutureBuilder(
-                                                        future: Lyrics().getLyrics(
-                                                            mediaItem.title
-                                                                .toString(),
-                                                            mediaItem.artist
-                                                                .toString()),
+                                                        future: Lyrics()
+                                                            .getLyrics(
+                                                                mediaItem.title
+                                                                    .toString(),
+                                                                mediaItem.artist
+                                                                    .toString()),
                                                         builder:
                                                             (BuildContext context,
-                                                                AsyncSnapshot
+                                                                AsyncSnapshot<String>
                                                                     snapshot) {
                                                           if (snapshot
                                                                   .connectionState ==
                                                               ConnectionState
                                                                   .done) {
-                                                            String lyrics =
+                                                            final String?
+                                                                lyrics =
                                                                 snapshot.data;
                                                             if (lyrics == '') {
                                                               return EmptyScreen()
                                                                   .emptyScreen(
                                                                       context,
                                                                       0,
-                                                                      ":( ",
+                                                                      ':( ',
                                                                       100.0,
-                                                                      "Lyrics",
+                                                                      'Lyrics',
                                                                       60.0,
-                                                                      "Not Available",
+                                                                      'Not Available',
                                                                       20.0);
                                                             }
                                                             return SelectableText(
-                                                              lyrics,
+                                                              lyrics!,
                                                               textAlign:
                                                                   TextAlign
                                                                       .center,
@@ -431,9 +444,9 @@ class _PlayScreenState extends State<PlayScreen> {
                                 contentPadding: const EdgeInsets.all(10.0),
                                 children: [
                                   ListTile(
-                                    title:
-                                        Text('Sleep after a duration of hh:mm'),
-                                    subtitle: Text(
+                                    title: const Text(
+                                        'Sleep after a duration of hh:mm'),
+                                    subtitle: const Text(
                                         'Music will stop after selected duration'),
                                     dense: true,
                                     onTap: () {
@@ -442,13 +455,13 @@ class _PlayScreenState extends State<PlayScreen> {
                                     },
                                   ),
                                   ListTile(
-                                    title: Text('Sleep after N Songs'),
-                                    subtitle: Text(
+                                    title: const Text('Sleep after N Songs'),
+                                    subtitle: const Text(
                                         'Music will stop after playing selected no of songs'),
                                     dense: true,
                                     onTap: () {
                                       Navigator.pop(context);
-                                      setCounter(scaffoldContext);
+                                      setCounter(scaffoldContext!);
                                     },
                                   ),
                                 ],
@@ -471,9 +484,9 @@ class _PlayScreenState extends State<PlayScreen> {
                                         color:
                                             Theme.of(context).iconTheme.color,
                                       ),
-                                      Spacer(),
-                                      Text('Sleep Timer'),
-                                      Spacer(),
+                                      const Spacer(),
+                                      const Text('Sleep Timer'),
+                                      const Spacer(),
                                     ],
                                   )),
                               PopupMenuItem(
@@ -485,9 +498,9 @@ class _PlayScreenState extends State<PlayScreen> {
                                         color:
                                             Theme.of(context).iconTheme.color,
                                       ),
-                                      Spacer(),
-                                      Text('Show Lyrics'),
-                                      Spacer(),
+                                      const Spacer(),
+                                      const Text('Show Lyrics'),
+                                      const Spacer(),
                                     ],
                                   )),
                               PopupMenuItem(
@@ -499,9 +512,9 @@ class _PlayScreenState extends State<PlayScreen> {
                                         color:
                                             Theme.of(context).iconTheme.color,
                                       ),
-                                      Spacer(),
-                                      Text('Equalizer'),
-                                      Spacer(),
+                                      const Spacer(),
+                                      const Text('Equalizer'),
+                                      const Spacer(),
                                     ],
                                   )),
                             ]
@@ -515,9 +528,9 @@ class _PlayScreenState extends State<PlayScreen> {
                                         color:
                                             Theme.of(context).iconTheme.color,
                                       ),
-                                      Spacer(),
-                                      Text('Add to playlist'),
-                                      Spacer(),
+                                      const Spacer(),
+                                      const Text('Add to playlist'),
+                                      const Spacer(),
                                     ],
                                   )),
                               PopupMenuItem(
@@ -529,9 +542,9 @@ class _PlayScreenState extends State<PlayScreen> {
                                         color:
                                             Theme.of(context).iconTheme.color,
                                       ),
-                                      Spacer(),
-                                      Text('Sleep Timer'),
-                                      Spacer(),
+                                      const Spacer(),
+                                      const Text('Sleep Timer'),
+                                      const Spacer(),
                                     ],
                                   )),
                               PopupMenuItem(
@@ -543,9 +556,9 @@ class _PlayScreenState extends State<PlayScreen> {
                                         color:
                                             Theme.of(context).iconTheme.color,
                                       ),
-                                      Spacer(),
-                                      Text('Show Lyrics'),
-                                      Spacer(),
+                                      const Spacer(),
+                                      const Text('Show Lyrics'),
+                                      const Spacer(),
                                     ],
                                   )),
                               PopupMenuItem(
@@ -557,9 +570,9 @@ class _PlayScreenState extends State<PlayScreen> {
                                         color:
                                             Theme.of(context).iconTheme.color,
                                       ),
-                                      Spacer(),
-                                      Text('Equalizer'),
-                                      Spacer(),
+                                      const Spacer(),
+                                      const Text('Equalizer'),
+                                      const Spacer(),
                                     ],
                                   )),
                               PopupMenuItem(
@@ -571,11 +584,11 @@ class _PlayScreenState extends State<PlayScreen> {
                                         color:
                                             Theme.of(context).iconTheme.color,
                                       ),
-                                      Spacer(),
+                                      const Spacer(),
                                       Text(fromYT
                                           ? 'Watch Video'
                                           : 'Search Video'),
-                                      Spacer(),
+                                      const Spacer(),
                                     ],
                                   )),
                             ],
@@ -589,7 +602,7 @@ class _PlayScreenState extends State<PlayScreen> {
                       builder: (context, snapshot) {
                         if (snapshot.connectionState !=
                             ConnectionState.active) {
-                          return SizedBox();
+                          return const SizedBox();
                         }
                         final running = snapshot.data ?? false;
                         return (!running)
@@ -597,20 +610,20 @@ class _PlayScreenState extends State<PlayScreen> {
                                 future: audioPlayerButton(),
                                 builder: (context, AsyncSnapshot spshot) {
                                   if (spshot.hasData) {
-                                    return SizedBox();
+                                    return const SizedBox();
                                   } else {
                                     return Column(
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceEvenly,
                                       children: [
-                                        Container(
+                                        SizedBox(
                                           height: MediaQuery.of(context)
                                                   .size
                                                   .width *
                                               0.9,
                                           child: Align(
                                             alignment: Alignment.topCenter,
-                                            child: Container(
+                                            child: SizedBox(
                                               height: MediaQuery.of(context)
                                                       .size
                                                       .width *
@@ -626,7 +639,7 @@ class _PlayScreenState extends State<PlayScreen> {
                                                         BorderRadius.circular(
                                                             15)),
                                                 clipBehavior: Clip.antiAlias,
-                                                child: Container(
+                                                child: SizedBox(
                                                   height: MediaQuery.of(context)
                                                           .size
                                                           .width *
@@ -644,70 +657,71 @@ class _PlayScreenState extends State<PlayScreen> {
                                                                   .size
                                                                   .width *
                                                               0.85,
-                                                          image: AssetImage(
+                                                          image: const AssetImage(
                                                               'assets/cover.jpg')),
-                                                      globalQueue.length <=
-                                                              globalIndex
-                                                          ? Image(
-                                                              fit: BoxFit.cover,
-                                                              height: MediaQuery.of(
-                                                                          context)
-                                                                      .size
-                                                                      .width *
-                                                                  0.85,
-                                                              image: AssetImage(
-                                                                  'assets/cover.jpg'))
-                                                          : offline
-                                                              ? Image(
-                                                                  fit:
-                                                                      BoxFit
-                                                                          .cover,
-                                                                  height: MediaQuery.of(
-                                                                              context)
-                                                                          .size
-                                                                          .width *
-                                                                      0.85,
-                                                                  width: MediaQuery.of(
-                                                                              context)
-                                                                          .size
-                                                                          .width *
-                                                                      0.85,
-                                                                  image:
-                                                                      FileImage(
-                                                                          File(
-                                                                    globalQueue[
-                                                                            globalIndex]
-                                                                        .artUri
-                                                                        .toFilePath(),
-                                                                  )))
-                                                              : CachedNetworkImage(
-                                                                  fit: BoxFit
-                                                                      .cover,
-                                                                  height: MediaQuery.of(
-                                                                              context)
-                                                                          .size
-                                                                          .width *
-                                                                      0.85,
-                                                                  errorWidget:
-                                                                      (BuildContext context,
-                                                                              _,
-                                                                              __) =>
-                                                                          Image(
-                                                                    image: AssetImage(
-                                                                        'assets/cover.jpg'),
-                                                                  ),
-                                                                  placeholder:
-                                                                      (BuildContext context,
-                                                                              _) =>
-                                                                          Image(
-                                                                    image: AssetImage(
-                                                                        'assets/cover.jpg'),
-                                                                  ),
-                                                                  imageUrl: globalQueue[
+                                                      if (globalQueue.length <=
+                                                          globalIndex)
+                                                        Image(
+                                                            fit: BoxFit.cover,
+                                                            height: MediaQuery.of(
+                                                                        context)
+                                                                    .size
+                                                                    .width *
+                                                                0.85,
+                                                            image: const AssetImage(
+                                                                'assets/cover.jpg'))
+                                                      else
+                                                        offline
+                                                            ? Image(
+                                                                fit: BoxFit
+                                                                    .cover,
+                                                                height: MediaQuery
+                                                                            .of(
+                                                                                context)
+                                                                        .size
+                                                                        .width *
+                                                                    0.85,
+                                                                width: MediaQuery.of(
+                                                                            context)
+                                                                        .size
+                                                                        .width *
+                                                                    0.85,
+                                                                image:
+                                                                    FileImage(
+                                                                        File(
+                                                                  globalQueue[
                                                                           globalIndex]
-                                                                      .artUri
-                                                                      .toString(),
+                                                                      .artUri!
+                                                                      .toFilePath(),
+                                                                )))
+                                                            : CachedNetworkImage(
+                                                                fit: BoxFit
+                                                                    .cover,
+                                                                height: MediaQuery.of(
+                                                                            context)
+                                                                        .size
+                                                                        .width *
+                                                                    0.85,
+                                                                errorWidget: (BuildContext
+                                                                            context,
+                                                                        _,
+                                                                        __) =>
+                                                                    const Image(
+                                                                  image: AssetImage(
+                                                                      'assets/cover.jpg'),
                                                                 ),
+                                                                placeholder: (BuildContext
+                                                                            context,
+                                                                        _) =>
+                                                                    const Image(
+                                                                  image: AssetImage(
+                                                                      'assets/cover.jpg'),
+                                                                ),
+                                                                imageUrl: globalQueue[
+                                                                        globalIndex]
+                                                                    .artUri
+                                                                    .toString(),
+                                                              ),
                                                     ],
                                                   ),
                                                 ),
@@ -715,7 +729,7 @@ class _PlayScreenState extends State<PlayScreen> {
                                             ),
                                           ),
                                         ),
-                                        Container(
+                                        SizedBox(
                                           height: (MediaQuery.of(context)
                                                           .size
                                                           .height *
@@ -736,6 +750,7 @@ class _PlayScreenState extends State<PlayScreen> {
                                                 Expanded(
                                                   flex: 5,
                                                   child: FittedBox(
+                                                    fit: BoxFit.scaleDown,
                                                     child: Text(
                                                       globalQueue.length <=
                                                               globalIndex
@@ -743,8 +758,8 @@ class _PlayScreenState extends State<PlayScreen> {
                                                           : globalQueue[
                                                                   globalIndex]
                                                               .title
-                                                              .split(" (")[0]
-                                                              .split("|")[0]
+                                                              .split(' (')[0]
+                                                              .split('|')[0]
                                                               .trim(),
                                                       textAlign:
                                                           TextAlign.center,
@@ -752,7 +767,7 @@ class _PlayScreenState extends State<PlayScreen> {
                                                           TextOverflow.fade,
                                                       maxLines: 1,
                                                       style: TextStyle(
-                                                          fontSize: 45,
+                                                          fontSize: 40,
                                                           fontWeight:
                                                               FontWeight.bold,
                                                           color:
@@ -763,27 +778,31 @@ class _PlayScreenState extends State<PlayScreen> {
                                                 ),
                                                 Expanded(
                                                   flex: 2,
-                                                  child: Text(
-                                                    globalQueue.length <=
-                                                            globalIndex
-                                                        ? 'Unknown'
-                                                        : globalQueue[
-                                                                globalIndex]
-                                                            .artist,
-                                                    textAlign: TextAlign.center,
-                                                    style: TextStyle(
-                                                        fontSize: 18,
-                                                        fontWeight:
-                                                            FontWeight.w500),
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
+                                                  child: FittedBox(
+                                                    fit: BoxFit.scaleDown,
+                                                    child: Text(
+                                                      globalQueue.length <=
+                                                              globalIndex
+                                                          ? 'Unknown'
+                                                          : globalQueue[
+                                                                  globalIndex]
+                                                              .artist!,
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                      style: const TextStyle(
+                                                          fontSize: 18,
+                                                          fontWeight:
+                                                              FontWeight.w500),
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                    ),
                                                   ),
                                                 ),
                                               ],
                                             ),
                                           ),
                                         ),
-                                        SeekBar(
+                                        const SeekBar(
                                           duration: Duration.zero,
                                           position: Duration.zero,
                                           bufferedPosition: Duration.zero,
@@ -799,8 +818,8 @@ class _PlayScreenState extends State<PlayScreen> {
                                             children: [
                                               Column(
                                                 children: [
-                                                  SizedBox(height: 6.0),
-                                                  IconButton(
+                                                  const SizedBox(height: 6.0),
+                                                  const IconButton(
                                                     icon: Icon(
                                                       Icons.shuffle_rounded,
                                                     ),
@@ -809,7 +828,7 @@ class _PlayScreenState extends State<PlayScreen> {
                                                     onPressed: null,
                                                   ),
                                                   if (!offline)
-                                                    IconButton(
+                                                    const IconButton(
                                                       icon: Icon(
                                                         Icons
                                                             .favorite_border_rounded,
@@ -820,7 +839,7 @@ class _PlayScreenState extends State<PlayScreen> {
                                                     ),
                                                 ],
                                               ),
-                                              IconButton(
+                                              const IconButton(
                                                 icon: Icon(Icons
                                                     .skip_previous_rounded),
                                                 tooltip: 'Skip Previous',
@@ -843,7 +862,7 @@ class _PlayScreenState extends State<PlayScreen> {
                                                     ),
                                                   )),
                                                   Center(
-                                                    child: Container(
+                                                    child: SizedBox(
                                                       height: 65,
                                                       width: 65,
                                                       child: Center(
@@ -857,7 +876,7 @@ class _PlayScreenState extends State<PlayScreen> {
                                                   ),
                                                 ],
                                               ),
-                                              IconButton(
+                                              const IconButton(
                                                 icon: Icon(
                                                     Icons.skip_next_rounded),
                                                 iconSize: 45.0,
@@ -866,8 +885,8 @@ class _PlayScreenState extends State<PlayScreen> {
                                               ),
                                               Column(
                                                 children: [
-                                                  SizedBox(height: 6.0),
-                                                  IconButton(
+                                                  const SizedBox(height: 6.0),
+                                                  const IconButton(
                                                     icon: Icon(
                                                         Icons.repeat_rounded),
                                                     iconSize: 25.0,
@@ -875,7 +894,7 @@ class _PlayScreenState extends State<PlayScreen> {
                                                     onPressed: null,
                                                   ),
                                                   if (!offline)
-                                                    IconButton(
+                                                    const IconButton(
                                                         icon: Icon(
                                                             Icons.save_alt),
                                                         iconSize: 25.0,
@@ -886,7 +905,7 @@ class _PlayScreenState extends State<PlayScreen> {
                                             ],
                                           ),
                                         ),
-                                        SizedBox(
+                                        const SizedBox(
                                           height: 45,
                                         ),
                                       ],
@@ -899,7 +918,7 @@ class _PlayScreenState extends State<PlayScreen> {
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceEvenly,
                                     children: [
-                                      Container(
+                                      SizedBox(
                                         height:
                                             MediaQuery.of(context).size.width *
                                                 0.9,
@@ -907,7 +926,7 @@ class _PlayScreenState extends State<PlayScreen> {
                                                 queue.isEmpty)
                                             ? Align(
                                                 alignment: Alignment.topCenter,
-                                                child: Container(
+                                                child: SizedBox(
                                                   height: MediaQuery.of(context)
                                                           .size
                                                           .width *
@@ -935,58 +954,61 @@ class _PlayScreenState extends State<PlayScreen> {
                                                                     .size
                                                                     .width *
                                                                 0.85,
-                                                            image: AssetImage(
+                                                            image: const AssetImage(
                                                                 'assets/cover.jpg')),
-                                                        (globalQueue.length >
-                                                                globalIndex)
-                                                            ? offline
-                                                                ? Image(
-                                                                    fit: BoxFit
-                                                                        .cover,
-                                                                    height: MediaQuery.of(context)
-                                                                            .size
-                                                                            .width *
-                                                                        0.85,
-                                                                    width: MediaQuery.of(context)
-                                                                            .size
-                                                                            .width *
-                                                                        0.85,
-                                                                    image:
-                                                                        FileImage(
-                                                                            File(
-                                                                      globalQueue[
-                                                                              globalIndex]
-                                                                          .artUri
-                                                                          .toFilePath(),
-                                                                    )))
-                                                                : CachedNetworkImage(
-                                                                    fit: BoxFit
-                                                                        .cover,
-                                                                    errorWidget:
-                                                                        (BuildContext context,
-                                                                                _,
-                                                                                __) =>
-                                                                            Image(
-                                                                      image: AssetImage(
-                                                                          'assets/cover.jpg'),
-                                                                    ),
-                                                                    placeholder:
-                                                                        (BuildContext context,
-                                                                                _) =>
-                                                                            Image(
-                                                                      image: AssetImage(
-                                                                          'assets/cover.jpg'),
-                                                                    ),
-                                                                    imageUrl: globalQueue[
+                                                        if (globalQueue.length >
+                                                            globalIndex)
+                                                          offline
+                                                              ? Image(
+                                                                  fit: BoxFit
+                                                                      .cover,
+                                                                  height: MediaQuery.of(context)
+                                                                          .size
+                                                                          .width *
+                                                                      0.85,
+                                                                  width: MediaQuery.of(
+                                                                              context)
+                                                                          .size
+                                                                          .width *
+                                                                      0.85,
+                                                                  image:
+                                                                      FileImage(
+                                                                          File(
+                                                                    globalQueue[
                                                                             globalIndex]
-                                                                        .artUri
-                                                                        .toString(),
-                                                                    height: MediaQuery.of(context)
-                                                                            .size
-                                                                            .width *
-                                                                        0.85,
-                                                                  )
-                                                            : SizedBox()
+                                                                        .artUri!
+                                                                        .toFilePath(),
+                                                                  )))
+                                                              : CachedNetworkImage(
+                                                                  fit: BoxFit
+                                                                      .cover,
+                                                                  errorWidget: (BuildContext
+                                                                              context,
+                                                                          _,
+                                                                          __) =>
+                                                                      const Image(
+                                                                    image: AssetImage(
+                                                                        'assets/cover.jpg'),
+                                                                  ),
+                                                                  placeholder: (BuildContext
+                                                                              context,
+                                                                          _) =>
+                                                                      const Image(
+                                                                    image: AssetImage(
+                                                                        'assets/cover.jpg'),
+                                                                  ),
+                                                                  imageUrl: globalQueue[
+                                                                          globalIndex]
+                                                                      .artUri
+                                                                      .toString(),
+                                                                  height: MediaQuery.of(
+                                                                              context)
+                                                                          .size
+                                                                          .width *
+                                                                      0.85,
+                                                                )
+                                                        else
+                                                          const SizedBox()
                                                       ],
                                                     ),
                                                   ),
@@ -1034,7 +1056,7 @@ class _PlayScreenState extends State<PlayScreen> {
                                                 child: Align(
                                                   alignment:
                                                       Alignment.topCenter,
-                                                  child: Container(
+                                                  child: SizedBox(
                                                     height:
                                                         MediaQuery.of(context)
                                                                 .size
@@ -1064,55 +1086,59 @@ class _PlayScreenState extends State<PlayScreen> {
                                                                       .size
                                                                       .width *
                                                                   0.85,
-                                                              image: AssetImage(
+                                                              image: const AssetImage(
                                                                   'assets/cover.jpg')),
-                                                          offline
-                                                              ? Image(
-                                                                  fit: BoxFit
-                                                                      .cover,
-                                                                  height: MediaQuery.of(context)
-                                                                          .size
-                                                                          .width *
-                                                                      0.85,
-                                                                  width: MediaQuery.of(
-                                                                              context)
-                                                                          .size
-                                                                          .width *
-                                                                      0.85,
-                                                                  image: FileImage(File(mediaItem
-                                                                      // queue[index %
-                                                                      // queue.length]
-                                                                      .artUri
-                                                                      .toFilePath())))
-                                                              : CachedNetworkImage(
-                                                                  fit: BoxFit
-                                                                      .cover,
-                                                                  errorWidget:
-                                                                      (BuildContext context,
-                                                                              _,
-                                                                              __) =>
-                                                                          Image(
-                                                                    image: AssetImage(
-                                                                        'assets/cover.jpg'),
-                                                                  ),
-                                                                  placeholder:
-                                                                      (BuildContext context,
-                                                                              _) =>
-                                                                          Image(
-                                                                    image: AssetImage(
-                                                                        'assets/cover.jpg'),
-                                                                  ),
-                                                                  imageUrl: mediaItem
-                                                                      // queue[index %
-                                                                      // queue.length]
-                                                                      .artUri
-                                                                      .toString(),
-                                                                  height: MediaQuery.of(
-                                                                              context)
-                                                                          .size
-                                                                          .width *
-                                                                      0.85,
-                                                                )
+                                                          if (offline)
+                                                            Image(
+                                                                fit: BoxFit
+                                                                    .cover,
+                                                                height: MediaQuery
+                                                                            .of(
+                                                                                context)
+                                                                        .size
+                                                                        .width *
+                                                                    0.85,
+                                                                width: MediaQuery.of(
+                                                                            context)
+                                                                        .size
+                                                                        .width *
+                                                                    0.85,
+                                                                image: FileImage(File(mediaItem
+                                                                    // queue[index %
+                                                                    // queue.length]
+                                                                    .artUri!
+                                                                    .toFilePath())))
+                                                          else
+                                                            CachedNetworkImage(
+                                                              fit: BoxFit.cover,
+                                                              errorWidget:
+                                                                  (BuildContext
+                                                                              context,
+                                                                          _,
+                                                                          __) =>
+                                                                      const Image(
+                                                                image: AssetImage(
+                                                                    'assets/cover.jpg'),
+                                                              ),
+                                                              placeholder:
+                                                                  (BuildContext
+                                                                              context,
+                                                                          _) =>
+                                                                      const Image(
+                                                                image: AssetImage(
+                                                                    'assets/cover.jpg'),
+                                                              ),
+                                                              imageUrl: mediaItem
+                                                                  // queue[index %
+                                                                  // queue.length]
+                                                                  .artUri
+                                                                  .toString(),
+                                                              height: MediaQuery.of(
+                                                                          context)
+                                                                      .size
+                                                                      .width *
+                                                                  0.85,
+                                                            )
                                                         ],
                                                       ),
                                                     ),
@@ -1123,7 +1149,7 @@ class _PlayScreenState extends State<PlayScreen> {
                                       // ),
 
                                       /// Title and subtitle
-                                      Container(
+                                      SizedBox(
                                         height: (MediaQuery.of(context)
                                                         .size
                                                         .height *
@@ -1145,11 +1171,12 @@ class _PlayScreenState extends State<PlayScreen> {
                                               Expanded(
                                                 flex: 5,
                                                 child: FittedBox(
+                                                  fit: BoxFit.scaleDown,
                                                   child: Text(
                                                     (mediaItem?.title != null)
-                                                        ? (mediaItem.title
-                                                            .split(" (")[0]
-                                                            .split("|")[0]
+                                                        ? (mediaItem!.title
+                                                            .split(' (')[0]
+                                                            .split('|')[0]
                                                             .trim())
                                                         : ((globalQueue
                                                                     .length <=
@@ -1158,14 +1185,14 @@ class _PlayScreenState extends State<PlayScreen> {
                                                             : globalQueue[
                                                                     globalIndex]
                                                                 .title
-                                                                .split(" (")[0]
-                                                                .split("|")[0]
+                                                                .split(' (')[0]
+                                                                .split('|')[0]
                                                                 .trim()),
                                                     textAlign: TextAlign.center,
                                                     overflow: TextOverflow.fade,
                                                     maxLines: 1,
                                                     style: TextStyle(
-                                                        fontSize: 45,
+                                                        fontSize: 40,
                                                         fontWeight:
                                                             FontWeight.bold,
                                                         color: Theme.of(context)
@@ -1177,22 +1204,26 @@ class _PlayScreenState extends State<PlayScreen> {
                                               /// Subtitle container
                                               Expanded(
                                                 flex: 2,
-                                                child: Text(
-                                                  (mediaItem?.artist != null)
-                                                      ? (mediaItem.artist)
-                                                      : ((globalQueue.length <=
-                                                              globalIndex)
-                                                          ? ''
-                                                          : globalQueue[
-                                                                  globalIndex]
-                                                              .artist),
-                                                  textAlign: TextAlign.center,
-                                                  style: TextStyle(
-                                                      fontSize: 18,
-                                                      fontWeight:
-                                                          FontWeight.w500),
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
+                                                child: FittedBox(
+                                                  fit: BoxFit.scaleDown,
+                                                  child: Text(
+                                                    (mediaItem?.artist != null)
+                                                        ? mediaItem!.artist!
+                                                        : ((globalQueue
+                                                                    .length <=
+                                                                globalIndex)
+                                                            ? ''
+                                                            : globalQueue[
+                                                                    globalIndex]
+                                                                .artist!),
+                                                    textAlign: TextAlign.center,
+                                                    style: const TextStyle(
+                                                        fontSize: 18,
+                                                        fontWeight:
+                                                            FontWeight.w500),
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                  ),
                                                 ),
                                               ),
                                             ],
@@ -1233,9 +1264,9 @@ class _PlayScreenState extends State<PlayScreen> {
                                           children: [
                                             Column(
                                               children: [
-                                                SizedBox(height: 6.0),
+                                                const SizedBox(height: 6.0),
                                                 IconButton(
-                                                  icon: Icon(
+                                                  icon: const Icon(
                                                       Icons.shuffle_rounded),
                                                   iconSize: 25.0,
                                                   tooltip: 'Shuffle',
@@ -1247,19 +1278,20 @@ class _PlayScreenState extends State<PlayScreen> {
                                                     shuffle = !shuffle;
                                                     Hive.box('settings').put(
                                                         'shuffle', shuffle);
-                                                    if (shuffle)
+                                                    if (shuffle) {
                                                       AudioService.setShuffleMode(
                                                           AudioServiceShuffleMode
                                                               .all);
-                                                    else
+                                                    } else {
                                                       AudioService.setShuffleMode(
                                                           AudioServiceShuffleMode
                                                               .none);
+                                                    }
                                                   },
                                                 ),
                                                 if (!offline)
                                                   mediaItem == null
-                                                      ? IconButton(
+                                                      ? const IconButton(
                                                           icon: Icon(Icons
                                                               .favorite_border_rounded),
                                                           iconSize: 25.0,
@@ -1270,38 +1302,38 @@ class _PlayScreenState extends State<PlayScreen> {
                                                           size: 25.0)
                                               ],
                                             ),
-                                            (queue.isNotEmpty)
-                                                ? IconButton(
-                                                    icon: Icon(Icons
-                                                        .skip_previous_rounded),
-                                                    iconSize: 45.0,
-                                                    tooltip: 'Skip Previous',
-                                                    onPressed: (mediaItem !=
-                                                                null &&
-                                                            (mediaItem !=
-                                                                    queue
-                                                                        .first ||
-                                                                repeatMode ==
-                                                                    'All'))
-                                                        ? () {
-                                                            if (mediaItem ==
-                                                                queue.first) {
-                                                              AudioService
-                                                                  .skipToQueueItem(
-                                                                      queue.last
-                                                                          .id);
-                                                            } else {
-                                                              AudioService
-                                                                  .skipToPrevious();
-                                                            }
+                                            if (queue.isNotEmpty)
+                                              IconButton(
+                                                  icon: const Icon(Icons
+                                                      .skip_previous_rounded),
+                                                  iconSize: 45.0,
+                                                  tooltip: 'Skip Previous',
+                                                  onPressed: (mediaItem !=
+                                                              null &&
+                                                          (mediaItem !=
+                                                                  queue.first ||
+                                                              repeatMode ==
+                                                                  'All'))
+                                                      ? () {
+                                                          if (mediaItem ==
+                                                              queue.first) {
+                                                            AudioService
+                                                                .skipToQueueItem(
+                                                                    queue.last
+                                                                        .id);
+                                                          } else {
+                                                            AudioService
+                                                                .skipToPrevious();
                                                           }
-                                                        : null)
-                                                : IconButton(
-                                                    icon: Icon(Icons
-                                                        .skip_previous_rounded),
-                                                    iconSize: 45.0,
-                                                    tooltip: 'Skip Previous',
-                                                    onPressed: null),
+                                                        }
+                                                      : null)
+                                            else
+                                              const IconButton(
+                                                  icon: Icon(Icons
+                                                      .skip_previous_rounded),
+                                                  iconSize: 45.0,
+                                                  tooltip: 'Skip Previous',
+                                                  onPressed: null),
 
                                             /// Play button
                                             Stack(
@@ -1334,7 +1366,7 @@ class _PlayScreenState extends State<PlayScreen> {
                                                                     .accentColor),
                                                               ),
                                                             )
-                                                          : SizedBox();
+                                                          : const SizedBox();
                                                     },
                                                   ),
                                                 ),
@@ -1347,10 +1379,10 @@ class _PlayScreenState extends State<PlayScreen> {
                                                         .distinct(),
                                                     builder:
                                                         (context, snapshot) {
-                                                      final playing =
+                                                      final bool playing =
                                                           snapshot.data ??
                                                               false;
-                                                      return Container(
+                                                      return SizedBox(
                                                         height: 65,
                                                         width: 65,
                                                         child: Center(
@@ -1369,48 +1401,47 @@ class _PlayScreenState extends State<PlayScreen> {
                                               ],
                                             ),
 
-                                            (queue.isNotEmpty)
-                                                ? IconButton(
-                                                    icon: Icon(Icons
-                                                        .skip_next_rounded),
-                                                    iconSize: 45.0,
-                                                    tooltip: 'Skip Next',
-                                                    onPressed: (mediaItem !=
-                                                                null &&
-                                                            (mediaItem !=
-                                                                    queue
-                                                                        .last ||
-                                                                repeatMode ==
-                                                                    'All'))
-                                                        ? () {
-                                                            if (mediaItem ==
-                                                                queue.last) {
-                                                              AudioService
-                                                                  .skipToQueueItem(
-                                                                      queue
-                                                                          .first
-                                                                          .id);
-                                                            } else {
-                                                              AudioService
-                                                                  .skipToNext();
-                                                            }
+                                            if (queue.isNotEmpty)
+                                              IconButton(
+                                                  icon: const Icon(
+                                                      Icons.skip_next_rounded),
+                                                  iconSize: 45.0,
+                                                  tooltip: 'Skip Next',
+                                                  onPressed: (mediaItem !=
+                                                              null &&
+                                                          (mediaItem !=
+                                                                  queue.last ||
+                                                              repeatMode ==
+                                                                  'All'))
+                                                      ? () {
+                                                          if (mediaItem ==
+                                                              queue.last) {
+                                                            AudioService
+                                                                .skipToQueueItem(
+                                                                    queue.first
+                                                                        .id);
+                                                          } else {
+                                                            AudioService
+                                                                .skipToNext();
                                                           }
-                                                        : null)
-                                                : IconButton(
-                                                    icon: Icon(Icons
-                                                        .skip_next_rounded),
-                                                    iconSize: 45.0,
-                                                    tooltip: 'Skip Next',
-                                                    onPressed: null),
+                                                        }
+                                                      : null)
+                                            else
+                                              const IconButton(
+                                                  icon: Icon(
+                                                      Icons.skip_next_rounded),
+                                                  iconSize: 45.0,
+                                                  tooltip: 'Skip Next',
+                                                  onPressed: null),
 
                                             Column(
                                               children: [
-                                                SizedBox(height: 6.0),
+                                                const SizedBox(height: 6.0),
                                                 IconButton(
                                                   icon: repeatMode == 'One'
-                                                      ? Icon(Icons
+                                                      ? const Icon(Icons
                                                           .repeat_one_rounded)
-                                                      : Icon(
+                                                      : const Icon(
                                                           Icons.repeat_rounded),
                                                   iconSize: 25.0,
                                                   tooltip: 'Repeat $repeatMode',
@@ -1466,41 +1497,41 @@ class _PlayScreenState extends State<PlayScreen> {
                                                               .toString(),
                                                           'duration': mediaItem
                                                               .duration
-                                                              .inSeconds
+                                                              ?.inSeconds
                                                               .toString(),
                                                           'title': mediaItem
                                                               .title
                                                               .toString(),
                                                           'url': mediaItem
-                                                              .extras['url']
+                                                              .extras!['url']
                                                               .toString(),
-                                                          "year": mediaItem
-                                                              .extras["year"]
+                                                          'year': mediaItem
+                                                              .extras!['year']
                                                               .toString(),
-                                                          "language": mediaItem
-                                                              .extras[
-                                                                  "language"]
+                                                          'language': mediaItem
+                                                              .extras![
+                                                                  'language']
                                                               .toString(),
-                                                          "genre": mediaItem
+                                                          'genre': mediaItem
                                                               .genre
-                                                              .toString(),
-                                                          "320kbps":
-                                                              mediaItem.extras[
-                                                                  "320kbps"],
-                                                          "has_lyrics":
-                                                              mediaItem.extras[
-                                                                  "has_lyrics"],
-                                                          "release_date":
-                                                              mediaItem.extras[
-                                                                  "release_date"],
-                                                          "album_id":
-                                                              mediaItem.extras[
-                                                                  "album_id"],
-                                                          "subtitle":
-                                                              mediaItem.extras[
-                                                                  "subtitle"]
+                                                              ?.toString(),
+                                                          '320kbps':
+                                                              mediaItem.extras?[
+                                                                  '320kbps'],
+                                                          'has_lyrics':
+                                                              mediaItem.extras?[
+                                                                  'has_lyrics'],
+                                                          'release_date':
+                                                              mediaItem.extras![
+                                                                  'release_date'],
+                                                          'album_id':
+                                                              mediaItem.extras![
+                                                                  'album_id'],
+                                                          'subtitle':
+                                                              mediaItem.extras![
+                                                                  'subtitle']
                                                         })
-                                                      : IconButton(
+                                                      : const IconButton(
                                                           icon: Icon(
                                                             Icons.save_alt,
                                                           ),
@@ -1512,7 +1543,7 @@ class _PlayScreenState extends State<PlayScreen> {
                                           ],
                                         ),
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                         height: 45,
                                       ),
                                     ],
@@ -1527,27 +1558,28 @@ class _PlayScreenState extends State<PlayScreen> {
                                         child: DraggableScrollableSheet(
                                             key: Key(initialExtent.toString()),
                                             minChildSize: minExtent,
-                                            maxChildSize: maxExtent,
                                             initialChildSize: initialExtent,
                                             builder: (BuildContext dragContext,
                                                 ScrollController
                                                     scrollController) {
                                               return BottomGradientContainer(
                                                 padding: EdgeInsets.zero,
-                                                margin: EdgeInsets.only(
+                                                margin: const EdgeInsets.only(
                                                     left: 20, right: 20),
-                                                borderRadius: BorderRadius.only(
+                                                borderRadius: const BorderRadius
+                                                        .only(
                                                     topLeft:
                                                         Radius.circular(15.0),
                                                     topRight:
                                                         Radius.circular(15.0)),
                                                 child: (mediaItem == null ||
                                                         queue.isEmpty)
-                                                    ? SizedBox()
+                                                    ? const SizedBox()
                                                     : ReorderableListView
                                                         .builder(
                                                             header: SizedBox(
-                                                              key: Key('head'),
+                                                              key: const Key(
+                                                                  'head'),
                                                               height: 50,
                                                               child: Center(
                                                                 child: SizedBox
@@ -1562,18 +1594,6 @@ class _PlayScreenState extends State<PlayScreen> {
                                                                         elevation:
                                                                             0.0,
                                                                       ),
-                                                                      child: Text(
-                                                                        'Now Playing',
-                                                                        textAlign:
-                                                                            TextAlign.center,
-                                                                        style:
-                                                                            TextStyle(
-                                                                          fontWeight:
-                                                                              FontWeight.w600,
-                                                                          fontSize:
-                                                                              18,
-                                                                        ),
-                                                                      ),
                                                                       onPressed: () {
                                                                         setState(
                                                                             () {
@@ -1585,7 +1605,19 @@ class _PlayScreenState extends State<PlayScreen> {
                                                                         });
                                                                         DraggableScrollableActuator.reset(
                                                                             dragContext);
-                                                                      }),
+                                                                      },
+                                                                      child: const Text(
+                                                                        'Now Playing',
+                                                                        textAlign:
+                                                                            TextAlign.center,
+                                                                        style:
+                                                                            TextStyle(
+                                                                          fontWeight:
+                                                                              FontWeight.w600,
+                                                                          fontSize:
+                                                                              18,
+                                                                        ),
+                                                                      )),
                                                                 ),
                                                               ),
                                                             ),
@@ -1596,8 +1628,9 @@ class _PlayScreenState extends State<PlayScreen> {
                                                                 int newIndex) {
                                                               setState(() {
                                                                 if (oldIndex <
-                                                                    newIndex)
+                                                                    newIndex) {
                                                                   newIndex--;
+                                                                }
                                                                 final items =
                                                                     queue.removeAt(
                                                                         oldIndex);
@@ -1614,10 +1647,10 @@ class _PlayScreenState extends State<PlayScreen> {
                                                               });
                                                             },
                                                             physics:
-                                                                BouncingScrollPhysics(),
+                                                                const BouncingScrollPhysics(),
                                                             padding:
-                                                                EdgeInsets.only(
-                                                                    top: 0,
+                                                                const EdgeInsets
+                                                                        .only(
                                                                     bottom: 10),
                                                             shrinkWrap: true,
                                                             itemCount:
@@ -1655,7 +1688,8 @@ class _PlayScreenState extends State<PlayScreen> {
                                                                           .accentColor,
                                                                   child:
                                                                       ListTile(
-                                                                    contentPadding: EdgeInsets.only(
+                                                                    contentPadding: const EdgeInsets
+                                                                            .only(
                                                                         left:
                                                                             16.0,
                                                                         right:
@@ -1667,7 +1701,7 @@ class _PlayScreenState extends State<PlayScreen> {
                                                                             mediaItem
                                                                         ? IconButton(
                                                                             icon:
-                                                                                Icon(
+                                                                                const Icon(
                                                                               Icons.bar_chart_rounded,
                                                                             ),
                                                                             tooltip:
@@ -1676,7 +1710,7 @@ class _PlayScreenState extends State<PlayScreen> {
                                                                                 () {},
                                                                           )
                                                                         : offline
-                                                                            ? SizedBox()
+                                                                            ? const SizedBox()
                                                                             : Row(
                                                                                 mainAxisSize: MainAxisSize.min,
                                                                                 children: [
@@ -1688,17 +1722,17 @@ class _PlayScreenState extends State<PlayScreen> {
                                                                                     'artist': queue[index].artist.toString(),
                                                                                     'album': queue[index].album.toString(),
                                                                                     'image': queue[index].artUri.toString(),
-                                                                                    'duration': queue[index].duration.inSeconds.toString(),
+                                                                                    'duration': queue[index].duration!.inSeconds.toString(),
                                                                                     'title': queue[index].title.toString(),
-                                                                                    'url': queue[index].extras['url'].toString(),
-                                                                                    "year": queue[index].extras["year"].toString(),
-                                                                                    "language": queue[index].extras["language"].toString(),
-                                                                                    "genre": queue[index].genre.toString(),
-                                                                                    "320kbps": queue[index].extras["320kbps"],
-                                                                                    "has_lyrics": queue[index].extras["has_lyrics"],
-                                                                                    "release_date": queue[index].extras["release_date"],
-                                                                                    "album_id": queue[index].extras["album_id"],
-                                                                                    "subtitle": queue[index].extras["subtitle"]
+                                                                                    'url': queue[index].extras?['url'].toString(),
+                                                                                    'year': queue[index].extras?['year'].toString(),
+                                                                                    'language': queue[index].extras?['language'].toString(),
+                                                                                    'genre': queue[index].genre?.toString(),
+                                                                                    '320kbps': queue[index].extras?['320kbps'],
+                                                                                    'has_lyrics': queue[index].extras?['has_lyrics'],
+                                                                                    'release_date': queue[index].extras?['release_date'],
+                                                                                    'album_id': queue[index].extras?['album_id'],
+                                                                                    'subtitle': queue[index].extras?['subtitle']
                                                                                   })
                                                                                 ],
                                                                               ),
@@ -1716,33 +1750,36 @@ class _PlayScreenState extends State<PlayScreen> {
                                                                       child:
                                                                           Stack(
                                                                         children: [
-                                                                          Image(
+                                                                          const Image(
                                                                             image:
                                                                                 AssetImage('assets/cover.jpg'),
                                                                           ),
-                                                                          queue[index].artUri == null
-                                                                              ? SizedBox()
-                                                                              : SizedBox(
-                                                                                  height: 50.0,
-                                                                                  width: 50.0,
-                                                                                  child: queue[index].artUri.toString().startsWith('file:')
-                                                                                      ? Image(fit: BoxFit.cover, image: FileImage(File(queue[index].artUri.toFilePath())))
-                                                                                      : CachedNetworkImage(
-                                                                                          fit: BoxFit.cover,
-                                                                                          errorWidget: (BuildContext context, _, __) => Image(
-                                                                                            image: AssetImage('assets/cover.jpg'),
-                                                                                          ),
-                                                                                          placeholder: (BuildContext context, _) => Image(
-                                                                                            image: AssetImage('assets/cover.jpg'),
-                                                                                          ),
-                                                                                          imageUrl: queue[index].artUri.toString(),
-                                                                                        ),
-                                                                                ),
+                                                                          if (queue[index].artUri ==
+                                                                              null)
+                                                                            const SizedBox()
+                                                                          else
+                                                                            SizedBox(
+                                                                              height: 50.0,
+                                                                              width: 50.0,
+                                                                              child: queue[index].artUri.toString().startsWith('file:')
+                                                                                  ? Image(fit: BoxFit.cover, image: FileImage(File(queue[index].artUri!.toFilePath())))
+                                                                                  : CachedNetworkImage(
+                                                                                      fit: BoxFit.cover,
+                                                                                      errorWidget: (BuildContext context, _, __) => const Image(
+                                                                                        image: AssetImage('assets/cover.jpg'),
+                                                                                      ),
+                                                                                      placeholder: (BuildContext context, _) => const Image(
+                                                                                        image: AssetImage('assets/cover.jpg'),
+                                                                                      ),
+                                                                                      imageUrl: queue[index].artUri.toString(),
+                                                                                    ),
+                                                                            ),
                                                                         ],
                                                                       ),
                                                                     ),
                                                                     title: Text(
-                                                                      '${queue[index].title}',
+                                                                      queue[index]
+                                                                          .title,
                                                                       overflow:
                                                                           TextOverflow
                                                                               .ellipsis,
@@ -1753,7 +1790,8 @@ class _PlayScreenState extends State<PlayScreen> {
                                                                     ),
                                                                     subtitle:
                                                                         Text(
-                                                                      '${queue[index].artist}',
+                                                                      queue[index]
+                                                                          .artist!,
                                                                       overflow:
                                                                           TextOverflow
                                                                               .ellipsis,
@@ -1786,14 +1824,15 @@ class _PlayScreenState extends State<PlayScreen> {
         : Dismissible(
             direction: DismissDirection.down,
             background: Container(color: Colors.transparent),
-            key: Key('playScreen'),
+            key: const Key('playScreen'),
             onDismissed: (direction) {
               Navigator.pop(context);
             },
             child: container);
   }
 
-  Future<dynamic> setTimer(BuildContext context, BuildContext scaffoldContext) {
+  Future<dynamic> setTimer(
+      BuildContext context, BuildContext? scaffoldContext) {
     return showDialog(
       context: context,
       builder: (context) {
@@ -1835,13 +1874,13 @@ class _PlayScreenState extends State<PlayScreen> {
                   style: TextButton.styleFrom(
                     primary: Theme.of(context).accentColor,
                   ),
-                  child: Text('Cancel'),
                   onPressed: () {
                     sleepTimer(0);
                     Navigator.pop(context);
                   },
+                  child: const Text('Cancel'),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 10,
                 ),
                 TextButton(
@@ -1849,30 +1888,17 @@ class _PlayScreenState extends State<PlayScreen> {
                     primary: Colors.white,
                     backgroundColor: Theme.of(context).accentColor,
                   ),
-                  child: Text('Ok'),
                   onPressed: () {
                     sleepTimer(_time.inMinutes);
                     Navigator.pop(context);
-                    ScaffoldMessenger.of(scaffoldContext).showSnackBar(
-                      SnackBar(
-                        duration: Duration(seconds: 2),
-                        elevation: 6,
-                        backgroundColor: Colors.grey[900],
-                        behavior: SnackBarBehavior.floating,
-                        content: Text(
-                          'Sleep timer set for ${_time.inMinutes} minutes',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                        action: SnackBarAction(
-                          textColor: Theme.of(context).accentColor,
-                          label: 'Ok',
-                          onPressed: () {},
-                        ),
-                      ),
+                    ShowSnackBar().showSnackBar(
+                      context,
+                      'Sleep timer set for ${_time.inMinutes} minutes',
                     );
                   },
+                  child: const Text('Ok'),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 20,
                 ),
               ],
@@ -1883,29 +1909,15 @@ class _PlayScreenState extends State<PlayScreen> {
     );
   }
 
-  Future<dynamic> setCounter(
-      BuildContext scaffoldContext) async {
+  Future<dynamic> setCounter(BuildContext scaffoldContext) async {
     await TextInputDialog().showTextInputDialog(
         scaffoldContext, 'Enter no of Songs', '', TextInputType.number,
         (String value) {
       sleepCounter(int.parse(value));
       Navigator.pop(scaffoldContext);
-      ScaffoldMessenger.of(scaffoldContext).showSnackBar(
-        SnackBar(
-          duration: Duration(seconds: 2),
-          elevation: 6,
-          backgroundColor: Colors.grey[900],
-          behavior: SnackBarBehavior.floating,
-          content: Text(
-            'Sleep timer set for $value songs',
-            style: TextStyle(color: Colors.white),
-          ),
-          action: SnackBarAction(
-            textColor: Theme.of(context).accentColor,
-            label: 'Ok',
-            onPressed: () {},
-          ),
-        ),
+      ShowSnackBar().showSnackBar(
+        context,
+        'Sleep timer set for $value songs',
       );
     });
   }
@@ -1913,7 +1925,7 @@ class _PlayScreenState extends State<PlayScreen> {
   /// A stream reporting the combined state of the current media item and its
   /// current position.
   Stream<MediaState> get _mediaStateStream =>
-      Rx.combineLatest3<MediaItem, Duration, Duration, MediaState>(
+      Rx.combineLatest3<MediaItem?, Duration, Duration, MediaState>(
           AudioService.currentMediaItemStream,
           AudioService.positionStream,
           AudioService.playbackStateStream
@@ -1925,12 +1937,12 @@ class _PlayScreenState extends State<PlayScreen> {
   /// A stream reporting the combined state of the current queue and the current
   /// media item within that queue.
   Stream<QueueState> get _queueStateStream =>
-      Rx.combineLatest2<List<MediaItem>, MediaItem, QueueState>(
+      Rx.combineLatest2<List<MediaItem>?, MediaItem?, QueueState>(
           AudioService.queueStream,
           AudioService.currentMediaItemStream,
           (queue, mediaItem) => QueueState(queue, mediaItem));
 
-  audioPlayerButton() async {
+  Future<void> audioPlayerButton() async {
     await AudioService.start(
       backgroundTaskEntrypoint: _audioPlayerTaskEntrypoint,
       params: {
@@ -1965,44 +1977,44 @@ class _PlayScreenState extends State<PlayScreen> {
     }
   }
 
-  FloatingActionButton playButton() => FloatingActionButton(
+  FloatingActionButton playButton() => const FloatingActionButton(
         elevation: 10,
         tooltip: 'Play',
+        onPressed: AudioService.play,
         child: Icon(
           Icons.play_arrow_rounded,
           size: 40.0,
           color: Colors.white,
         ),
-        onPressed: AudioService.play,
       );
 
-  FloatingActionButton pauseButton() => FloatingActionButton(
+  FloatingActionButton pauseButton() => const FloatingActionButton(
         elevation: 10,
         tooltip: 'Pause',
+        onPressed: AudioService.pause,
         child: Icon(
           Icons.pause_rounded,
           color: Colors.white,
           size: 40.0,
         ),
-        onPressed: AudioService.pause,
       );
 }
 
 class QueueState {
-  final List<MediaItem> queue;
-  final MediaItem mediaItem;
+  final List<MediaItem>? queue;
+  final MediaItem? mediaItem;
 
   QueueState(this.queue, this.mediaItem);
 }
 
 class MediaState {
-  final MediaItem mediaItem;
+  final MediaItem? mediaItem;
   final Duration position;
   final Duration bufferPosition;
 
   MediaState(this.mediaItem, this.position, this.bufferPosition);
 }
 
-void _audioPlayerTaskEntrypoint() async {
+Future<void> _audioPlayerTaskEntrypoint() async {
   AudioServiceBackground.run(() => AudioPlayerTask());
 }

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:audio_service/audio_service.dart';
 import 'package:blackhole/Helpers/mediaitem_converter.dart';
 import 'package:hive/hive.dart';
@@ -12,90 +13,82 @@ import 'package:rxdart/rxdart.dart';
 
 class AudioPlayerTask extends BackgroundAudioTask {
   final _equalizer = AndroidEqualizer();
-  AndroidEqualizerParameters _equalizerParams;
+  AndroidEqualizerParameters? _equalizerParams;
 
-  AudioPlayer _player;
-  int count;
+  late final AudioPlayer _player = AudioPlayer(
+    audioPipeline: AudioPipeline(
+      androidAudioEffects: [
+        _equalizer,
+      ],
+    ),
+  );
 
-  setAudioPlayer() {
-    _player = AudioPlayer(
-      handleInterruptions: true,
-      androidApplyAudioAttributes: true,
-      handleAudioSessionActivation: true,
-      audioPipeline: AudioPipeline(
-        androidAudioEffects: [
-          _equalizer,
-        ],
-      ),
-    );
-  }
-
-  Timer _sleepTimer;
-  StreamSubscription<PlaybackEvent> _eventSubscription;
-  String preferredQuality;
+  int? count;
+  Timer? _sleepTimer;
+  late StreamSubscription<PlaybackEvent> _eventSubscription;
+  late String preferredQuality;
   List<MediaItem> queue = [];
-  bool shuffle = false;
   List<MediaItem> defaultQueue = [];
-  ConcatenatingAudioSource concatenatingAudioSource;
+  late ConcatenatingAudioSource concatenatingAudioSource;
 
-  int index;
-  bool offline;
-  MediaItem get mediaItem => index == null ? queue[0] : queue[index];
+  int? index;
+  bool offline = false;
+  MediaItem get mediaItem => index == null ? queue[0] : queue[index!];
 
+  @override
   Future<void> onTaskRemoved() async {
-    bool stopForegroundService =
-        Hive.box('settings').get('stopForegroundService') ?? true;
+    final bool stopForegroundService = Hive.box('settings')
+        .get('stopForegroundService', defaultValue: true) as bool;
     if (stopForegroundService) {
       await onStop();
     }
   }
 
-  initiateBox() async {
+  Future<void> initiateBox() async {
     try {
       await Hive.initFlutter();
-    } catch (e) {}
+    } catch (e) {
+      // print('Failed to initiate Hive');
+      // print('Error: $e');
+    }
     try {
       await Hive.openBox('settings');
     } catch (e) {
-      print('Failed to open Settings Box');
-      print("Error: $e");
-      Directory dir = await getApplicationDocumentsDirectory();
-      String dirPath = dir.path;
-      String boxName = "settings";
-      File dbFile = File('$dirPath/$boxName.hive');
-      File lockFile = File('$dirPath/$boxName.lock');
+      // print('Failed to open Settings Box');
+      // print('Error: $e');
+      final Directory dir = await getApplicationDocumentsDirectory();
+      final String dirPath = dir.path;
+      final File dbFile = File('$dirPath/settings.hive');
+      final File lockFile = File('$dirPath/settings.lock');
       await dbFile.delete();
       await lockFile.delete();
-      await Hive.openBox("settings");
+      await Hive.openBox('settings');
     }
     try {
       await Hive.openBox('recentlyPlayed');
     } catch (e) {
-      print('Failed to open Recent Box');
-      print("Error: $e");
-      Directory dir = await getApplicationDocumentsDirectory();
-      String dirPath = dir.path;
-      String boxName = "recentlyPlayed";
-      File dbFile = File('$dirPath/$boxName.hive');
-      File lockFile = File('$dirPath/$boxName.lock');
+      // print('Failed to open Recent Box');
+      // print('Error: $e');
+      final Directory dir = await getApplicationDocumentsDirectory();
+      final String dirPath = dir.path;
+      final File dbFile = File('$dirPath/recentlyPlayed.hive');
+      final File lockFile = File('$dirPath/recentlyPlayed.lock');
       await dbFile.delete();
       await lockFile.delete();
-      await Hive.openBox("recentlyPlayed");
+      await Hive.openBox('recentlyPlayed');
     }
   }
 
-  addRecentlyPlayed(MediaItem mediaitem) async {
-    if (mediaItem.artUri.toString().startsWith('https://img.youtube.com'))
+  Future<void> addRecentlyPlayed(MediaItem mediaitem) async {
+    if (mediaItem.artUri.toString().startsWith('https://img.youtube.com')) {
       return;
-    List recentList;
-    try {
-      recentList = await Hive.box('recentlyPlayed').get('recentSongs').toList();
-    } catch (e) {
-      recentList = null;
     }
+    List recentList;
+    recentList = await Hive.box('recentlyPlayed')
+        .get('recentSongs', defaultValue: [])?.toList() as List;
 
-    Map item = MediaItemConverter().mediaItemtoMap(mediaItem);
-    recentList == null ? recentList = [item] : recentList.insert(0, item);
+    final Map item = MediaItemConverter().mediaItemtoMap(mediaItem);
+    recentList.insert(0, item);
 
     final jsonList = recentList.map((item) => jsonEncode(item)).toList();
     final uniqueJsonList = jsonList.toSet().toList();
@@ -108,23 +101,22 @@ class AudioPlayerTask extends BackgroundAudioTask {
   }
 
   @override
-  Future<void> onStart(Map<String, dynamic> params) async {
-    index = params['index'];
-    offline = params['offline'];
-    preferredQuality = params['quality'];
+  Future<void> onStart(Map<String, dynamic>? params) async {
+    index = params!['index'] as int?;
+    offline = params['offline'] as bool;
+    preferredQuality = params['quality'].toString();
     await initiateBox();
-    await setAudioPlayer();
 
     final session = await AudioSession.instance;
-    await session.configure(AudioSessionConfiguration.music());
+    await session.configure(const AudioSessionConfiguration.music());
 
     _player.currentIndexStream.distinct().listen((idx) {
       if (idx != null && queue.isNotEmpty) {
         index = idx;
         AudioServiceBackground.setMediaItem(queue[idx]);
         if (count != null) {
-          count--;
-          if (count <= 0) {
+          count = count! - 1;
+          if (count! <= 0) {
             count = null;
             onStop();
           }
@@ -163,14 +155,14 @@ class AudioPlayerTask extends BackgroundAudioTask {
   @override
   Future<void> onUpdateQueue(List<MediaItem> _queue) async {
     await AudioServiceBackground.setQueue(_queue);
-    await AudioServiceBackground.setMediaItem(_queue[index]);
+    await AudioServiceBackground.setMediaItem(_queue[index!]);
     concatenatingAudioSource = ConcatenatingAudioSource(
       children: _queue
           .map((item) => AudioSource.uri(
               offline
-                  ? Uri.file(item.extras['url'])
-                  : Uri.parse(item.extras['url'].replaceAll(
-                      "_96.", "_${preferredQuality.replaceAll(' kbps', '')}.")),
+                  ? Uri.file(item.extras!['url'].toString())
+                  : Uri.parse(item.extras!['url'].toString().replaceAll(
+                      '_96.', "_${preferredQuality.replaceAll(' kbps', '')}.")),
               tag: item))
           .toList(),
     );
@@ -180,16 +172,18 @@ class AudioPlayerTask extends BackgroundAudioTask {
   }
 
   @override
-  Future<void> onAddQueueItemAt(MediaItem mediaItem, int addIndex) async {
-    if (addIndex == -1)
+  Future<void> onAddQueueItemAt(MediaItem mediaItem, int index) async {
+    int addIndex = index;
+    if (addIndex == -1) {
       addIndex = queue.indexWhere((item) => item == queue[index]) + 1;
+    }
     await concatenatingAudioSource.insert(
         addIndex,
         AudioSource.uri(
             offline
-                ? Uri.file(mediaItem.extras['url'])
-                : Uri.parse(mediaItem.extras['url'].replaceAll(
-                    "_96.", "_${preferredQuality.replaceAll(' kbps', '')}.")),
+                ? Uri.file(mediaItem.extras!['url'].toString())
+                : Uri.parse(mediaItem.extras!['url'].toString().replaceAll(
+                    '_96.', "_${preferredQuality.replaceAll(' kbps', '')}.")),
             tag: mediaItem));
     queue.insert(addIndex, mediaItem);
     await AudioServiceBackground.setQueue(queue);
@@ -199,9 +193,9 @@ class AudioPlayerTask extends BackgroundAudioTask {
     await concatenatingAudioSource.addAll(mediaItemList
         .map((item) => AudioSource.uri(
             offline
-                ? Uri.file(item.extras['url'])
-                : Uri.parse(item.extras['url'].replaceAll(
-                    "_96.", "_${preferredQuality.replaceAll(' kbps', '')}.")),
+                ? Uri.file(item.extras!['url'].toString())
+                : Uri.parse(item.extras!['url'].toString().replaceAll(
+                    '_96.', "_${preferredQuality.replaceAll(' kbps', '')}.")),
             tag: item))
         .toList());
     queue.addAll(mediaItemList);
@@ -212,9 +206,9 @@ class AudioPlayerTask extends BackgroundAudioTask {
   Future<void> onAddQueueItem(MediaItem mediaItem) async {
     await concatenatingAudioSource.add(AudioSource.uri(
         offline
-            ? Uri.file(mediaItem.extras['url'])
-            : Uri.parse(mediaItem.extras['url'].replaceAll(
-                "_96.", "_${preferredQuality.replaceAll(' kbps', '')}.")),
+            ? Uri.file(mediaItem.extras!['url'].toString())
+            : Uri.parse(mediaItem.extras!['url'].toString().replaceAll(
+                '_96.', "_${preferredQuality.replaceAll(' kbps', '')}.")),
         tag: mediaItem));
     queue.add(mediaItem);
     await AudioServiceBackground.setQueue(queue);
@@ -230,14 +224,14 @@ class AudioPlayerTask extends BackgroundAudioTask {
 
   Future<void> onReorderQueue(int oldIndex, int newIndex) async {
     concatenatingAudioSource.move(oldIndex, newIndex);
-    MediaItem item = queue.removeAt(oldIndex);
+    final MediaItem item = queue.removeAt(oldIndex);
     queue.insert(newIndex, item);
     await AudioServiceBackground.setQueue(queue);
   }
 
   @override
   Future<void> onPlay() async {
-    if (!offline) addRecentlyPlayed(queue[index]);
+    if (!offline) addRecentlyPlayed(queue[index!]);
     _player.play();
   }
 
@@ -247,8 +241,8 @@ class AudioPlayerTask extends BackgroundAudioTask {
       _sleepTimer?.cancel();
       if (myVariable.runtimeType == int &&
           myVariable != null &&
-          myVariable > 0) {
-        _sleepTimer = Timer(Duration(minutes: myVariable), () {
+          myVariable > 0 as bool) {
+        _sleepTimer = Timer(Duration(minutes: myVariable as int), () {
           onStop();
         });
       }
@@ -257,31 +251,31 @@ class AudioPlayerTask extends BackgroundAudioTask {
     if (myFunction == 'sleepCounter') {
       if (myVariable.runtimeType == int &&
           myVariable != null &&
-          myVariable > 0) {
-        count = myVariable;
+          myVariable > 0 as bool) {
+        count = myVariable as int;
       }
     }
 
     if (myFunction == 'addListToQueue') {
-      List temp = myVariable;
-      MediaItemConverter converter = MediaItemConverter();
-      List<MediaItem> mediaItemList =
-          temp.map((item) => converter.mapToMediaItem(item)).toList();
+      final List temp = myVariable as List;
+      final MediaItemConverter converter = MediaItemConverter();
+      final List<MediaItem> mediaItemList =
+          temp.map((item) => converter.mapToMediaItem(item as Map)).toList();
       onAddQueueList(mediaItemList);
     }
 
     if (myFunction == 'setBandGain') {
       final bandIdx = myVariable['band'] as int;
       final gain = myVariable['gain'] as double;
-      _equalizerParams.bands[bandIdx].setGain(gain);
+      _equalizerParams!.bands[bandIdx].setGain(gain);
     }
 
     if (myFunction == 'reorder') {
-      onReorderQueue(myVariable[0], myVariable[1]);
+      onReorderQueue(myVariable[0] as int, myVariable[1] as int);
     }
 
     if (myFunction == 'setEqualizer') {
-      _equalizer.setEnabled((myVariable));
+      _equalizer.setEnabled(myVariable as bool);
     }
 
     if (myFunction == 'getEqualizerParams') {
@@ -292,10 +286,9 @@ class AudioPlayerTask extends BackgroundAudioTask {
   }
 
   Future<Map> getEqParms() async {
-    if (_equalizerParams == null)
-      _equalizerParams = await _equalizer.parameters;
-    List<AndroidEqualizerBand> bands = _equalizerParams.bands;
-    List<Map> bandList = bands
+    _equalizerParams ??= await _equalizer.parameters;
+    final List<AndroidEqualizerBand> bands = _equalizerParams!.bands;
+    final List<Map> bandList = bands
         .map((e) => {
               'centerFrequency': e.centerFrequency,
               'gain': e.gain,
@@ -304,8 +297,8 @@ class AudioPlayerTask extends BackgroundAudioTask {
         .toList();
 
     return {
-      'maxDecibels': _equalizerParams.maxDecibels,
-      'minDecibels': _equalizerParams.minDecibels,
+      'maxDecibels': _equalizerParams!.maxDecibels,
+      'minDecibels': _equalizerParams!.minDecibels,
       'bands': bandList
     };
   }
@@ -346,8 +339,9 @@ class AudioPlayerTask extends BackgroundAudioTask {
             .map((state) => state?.effectiveSequence)
             .distinct()
             .map((sequence) =>
-                sequence.map((source) => source.tag as MediaItem).toList())
-            .listen(AudioServiceBackground.setQueue);
+                sequence!.map((source) => source.tag as MediaItem?).toList())
+            .listen(AudioServiceBackground.setQueue as void Function(
+                List<MediaItem?>)?);
         break;
     }
   }
@@ -368,19 +362,20 @@ class AudioPlayerTask extends BackgroundAudioTask {
     return Future.value();
   }
 
-  BehaviorSubject<int> _tappedMediaActionNumber;
-  Timer _timer;
+  late BehaviorSubject<int> _tappedMediaActionNumber;
+  Timer? _timer;
 
   void _handleMediaActionPressed() {
     if (_timer == null) {
       _tappedMediaActionNumber = BehaviorSubject.seeded(1);
-      _timer = Timer(Duration(milliseconds: 600), () {
+      _timer = Timer(const Duration(milliseconds: 600), () {
         final tappedNumber = _tappedMediaActionNumber.value;
         if (tappedNumber == 1) {
-          if (AudioServiceBackground.state.playing)
+          if (AudioServiceBackground.state.playing) {
             onPause();
-          else
+          } else {
             onPlay();
+          }
         } else if (tappedNumber == 2) {
           onSkipToNext();
         } else {
@@ -388,7 +383,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
         }
 
         _tappedMediaActionNumber.close();
-        _timer.cancel();
+        _timer!.cancel();
         _timer = null;
       });
     } else {
@@ -448,7 +443,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
       case ProcessingState.completed:
         return AudioProcessingState.completed;
       default:
-        throw Exception("Invalid state: ${_player.processingState}");
+        throw Exception('Invalid state: ${_player.processingState}');
     }
   }
 }

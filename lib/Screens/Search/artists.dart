@@ -1,23 +1,25 @@
 import 'dart:ui';
-import 'package:blackhole/CustomWidgets/add_queue.dart';
-import 'package:blackhole/CustomWidgets/downloadButton.dart';
-import 'package:blackhole/Screens/Common/song_list.dart';
-import 'package:blackhole/Screens/Player/audioplayer.dart';
-import 'package:blackhole/CustomWidgets/gradientContainers.dart';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:blackhole/CustomWidgets/emptyScreen.dart';
-import 'package:blackhole/CustomWidgets/miniplayer.dart';
+
 import 'package:blackhole/APIs/api.dart';
+import 'package:blackhole/CustomWidgets/add_queue.dart';
+import 'package:blackhole/CustomWidgets/download_button.dart';
+import 'package:blackhole/CustomWidgets/empty_screen.dart';
+import 'package:blackhole/CustomWidgets/gradient_containers.dart';
+import 'package:blackhole/CustomWidgets/miniplayer.dart';
+import 'package:blackhole/Screens/Common/song_list.dart';
+import 'package:blackhole/Screens/Player/audioplayer.dart';
 
 class ArtistSearchPage extends StatefulWidget {
-  final String artistName;
+  final String? artistName;
   final String artistToken;
-  final String artistImage;
+  final String? artistImage;
 
-  ArtistSearchPage({
-    Key key,
-    @required this.artistToken,
+  const ArtistSearchPage({
+    Key? key,
+    required this.artistToken,
     this.artistName,
     this.artistImage,
   }) : super(key: key);
@@ -28,7 +30,7 @@ class ArtistSearchPage extends StatefulWidget {
 
 class _ArtistSearchPageState extends State<ArtistSearchPage> {
   bool status = false;
-  Map data = {};
+  Map<String, List> data = {};
   bool fetched = false;
 
   @override
@@ -48,9 +50,9 @@ class _ArtistSearchPageState extends State<ArtistSearchPage> {
           child: Scaffold(
             backgroundColor: Colors.transparent,
             body: !fetched
-                ? Container(
+                ? SizedBox(
                     child: Center(
-                      child: Container(
+                      child: SizedBox(
                           height: MediaQuery.of(context).size.width / 7,
                           width: MediaQuery.of(context).size.width / 7,
                           child: CircularProgressIndicator(
@@ -61,16 +63,15 @@ class _ArtistSearchPageState extends State<ArtistSearchPage> {
                     ),
                   )
                 : data.isEmpty
-                    ? EmptyScreen().emptyScreen(context, 0, ":( ", 100, "SORRY",
-                        60, "Results Not Found", 20)
+                    ? EmptyScreen().emptyScreen(context, 0, ':( ', 100, 'SORRY',
+                        60, 'Results Not Found', 20)
                     : CustomScrollView(
-                        physics: BouncingScrollPhysics(),
+                        physics: const BouncingScrollPhysics(),
                         slivers: [
                           SliverAppBar(
                             backgroundColor: Colors.transparent,
                             elevation: 0,
                             stretch: true,
-                            pinned: false,
                             expandedHeight:
                                 MediaQuery.of(context).size.height * 0.4,
                             flexibleSpace: FlexibleSpaceBar(
@@ -79,10 +80,9 @@ class _ArtistSearchPageState extends State<ArtistSearchPage> {
                                 textAlign: TextAlign.center,
                               ),
                               centerTitle: true,
-                              stretchModes: [StretchMode.zoomBackground],
                               background: ShaderMask(
                                 shaderCallback: (rect) {
-                                  return LinearGradient(
+                                  return const LinearGradient(
                                     begin: Alignment.topCenter,
                                     end: Alignment.bottomCenter,
                                     colors: [Colors.black, Colors.transparent],
@@ -92,14 +92,14 @@ class _ArtistSearchPageState extends State<ArtistSearchPage> {
                                 blendMode: BlendMode.dstIn,
                                 child: CachedNetworkImage(
                                   fit: BoxFit.cover,
-                                  errorWidget: (context, _, __) => Image(
+                                  errorWidget: (context, _, __) => const Image(
                                     image: AssetImage('assets/artist.png'),
                                   ),
-                                  imageUrl: widget.artistImage
+                                  imageUrl: widget.artistImage!
                                       .replaceAll('http:', 'https:')
                                       .replaceAll('50x50', '500x500')
                                       .replaceAll('150x150', '500x500'),
-                                  placeholder: (context, url) => Image(
+                                  placeholder: (context, url) => const Image(
                                     image: AssetImage('assets/artist.png'),
                                   ),
                                 ),
@@ -131,21 +131,23 @@ class _ArtistSearchPageState extends State<ArtistSearchPage> {
                                       ),
                                       ListView.builder(
                                         itemCount: entry.value.length,
-                                        physics: NeverScrollableScrollPhysics(),
+                                        physics:
+                                            const NeverScrollableScrollPhysics(),
                                         shrinkWrap: true,
-                                        padding:
-                                            EdgeInsets.fromLTRB(5, 10, 5, 0),
+                                        padding: const EdgeInsets.fromLTRB(
+                                            5, 10, 5, 0),
                                         itemBuilder: (context, index) {
                                           return Padding(
                                             padding: const EdgeInsets.fromLTRB(
                                                 0, 7, 7, 5),
                                             child: ListTile(
                                               contentPadding:
-                                                  EdgeInsets.only(left: 15.0),
+                                                  const EdgeInsets.only(
+                                                      left: 15.0),
                                               title: Text(
                                                 '${entry.value[index]["title"]}',
                                                 overflow: TextOverflow.ellipsis,
-                                                style: TextStyle(
+                                                style: const TextStyle(
                                                     fontWeight:
                                                         FontWeight.w500),
                                               ),
@@ -197,13 +199,14 @@ class _ArtistSearchPageState extends State<ArtistSearchPage> {
                                                           MainAxisSize.min,
                                                       children: [
                                                           DownloadButton(
-                                                            data: entry
-                                                                .value[index],
+                                                            data: entry.value[
+                                                                index] as Map,
                                                             icon: 'download',
                                                           ),
                                                           AddToQueueButton(
                                                               data: entry.value[
-                                                                  index]),
+                                                                      index]
+                                                                  as Map),
                                                         ])
                                                   : null,
                                               onTap: () {
@@ -230,10 +233,12 @@ class _ArtistSearchPageState extends State<ArtistSearchPage> {
                                                           )
                                                         : SongsListPage(
                                                             listImage: entry
-                                                                    .value[
-                                                                index]["image"],
+                                                                .value[index]
+                                                                    ['image']
+                                                                .toString(),
                                                             listItem: entry
-                                                                .value[index]),
+                                                                    .value[
+                                                                index] as Map),
                                                   ),
                                                 );
                                               },

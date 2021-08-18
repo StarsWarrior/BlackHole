@@ -1,6 +1,3 @@
-import 'package:blackhole/CustomWidgets/custom_physics.dart';
-import 'package:blackhole/CustomWidgets/emptyScreen.dart';
-import 'package:blackhole/Screens/Search/search.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -8,16 +5,21 @@ import 'package:html_unescape/html_unescape_small.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart';
 
+import 'package:blackhole/CustomWidgets/custom_physics.dart';
+import 'package:blackhole/CustomWidgets/empty_screen.dart';
+import 'package:blackhole/Screens/Search/search.dart';
+
 List items = [];
 List globalItems = [];
 List cachedItems = [];
 List cachedGlobalItems = [];
 bool fetched = false;
-bool emptyRegional, emptyGlobal = false;
+bool emptyRegional = false;
+bool emptyGlobal = false;
 
 class TopCharts extends StatefulWidget {
   final String region;
-  const TopCharts({Key key, @required this.region}) : super(key: key);
+  const TopCharts({Key? key, required this.region}) : super(key: key);
 
   @override
   _TopChartsState createState() => _TopChartsState();
@@ -37,14 +39,14 @@ class _TopChartsState extends State<TopCharts> {
                   child: Text(
                     'Local',
                     style: TextStyle(
-                        color: Theme.of(context).textTheme.bodyText1.color),
+                        color: Theme.of(context).textTheme.bodyText1!.color),
                   ),
                 ),
                 Tab(
                   child: Text(
                     'Global',
                     style: TextStyle(
-                        color: Theme.of(context).textTheme.bodyText1.color),
+                        color: Theme.of(context).textTheme.bodyText1!.color),
                   ),
                 ),
               ],
@@ -53,7 +55,7 @@ class _TopChartsState extends State<TopCharts> {
               'Spotify Top Charts',
               style: TextStyle(
                 fontSize: 18,
-                color: Theme.of(context).textTheme.bodyText1.color,
+                color: Theme.of(context).textTheme.bodyText1!.color,
               ),
             ),
             centerTitle: true,
@@ -78,12 +80,12 @@ class _TopChartsState extends State<TopCharts> {
             ),
           ),
           body: TabBarView(
-            physics: CustomPhysics(),
+            physics: const CustomPhysics(),
             children: [
               TopPage(
                 region: widget.region,
               ),
-              TopPage(
+              const TopPage(
                 region: 'global',
               ),
             ],
@@ -94,13 +96,13 @@ class _TopChartsState extends State<TopCharts> {
 
 Future<List> scrapData(String region) async {
   // print('starting expensive operation');
-  HtmlUnescape unescape = HtmlUnescape();
-  String authority = "www.spotifycharts.com";
-  String unencodedPath = '/regional/' + region + '/daily/latest/';
-  Response res = await get(Uri.https(authority, unencodedPath));
+  final HtmlUnescape unescape = HtmlUnescape();
+  const String authority = 'www.spotifycharts.com';
+  final String unencodedPath = '/regional/$region/daily/latest/';
+  final Response res = await get(Uri.https(authority, unencodedPath));
 
   if (res.statusCode != 200) return List.empty();
-  List result = RegExp(
+  final List result = RegExp(
           r'\<td class=\"chart-table-image\"\>\n[ ]*?\<a href=\"https:\/\/open\.spotify\.com\/track\/(.*?)\" target=\"_blank\"\>\n[ ]*?\<img src=\"(https:\/\/i\.scdn\.co\/image\/.*?)\"\>\n[ ]*?\<\/a\>\n[ ]*?<\/td\>\n[ ]*?<td class=\"chart-table-position\">([0-9]*?)<\/td>\n[ ]*?<td class=\"chart-table-trend\">[.|\n| ]*<.*\n[ ]*<.*\n[ ]*<.*\n[ ]*<.*\n[ ]*<td class=\"chart-table-track\">\n[ ]*?<strong>(.*?)<\/strong>\n[ ]*?<span>by (.*?)<\/span>\n[ ]*?<\/td>\n[ ]*?<td class="chart-table-streams">(.*?)<\/td>')
       .allMatches(res.body)
       .map((m) {
@@ -108,11 +110,11 @@ Future<List> scrapData(String region) async {
       'id': m[1],
       'image': m[2],
       'position': m[3],
-      'title': unescape.convert(m[4]),
+      'title': unescape.convert(m[4]!),
       'album': '',
-      'artist': unescape.convert(m[5]),
+      'artist': unescape.convert(m[5]!),
       'streams': m[6],
-      "region": region,
+      'region': region,
     };
   }).toList();
   // print('finished expensive operation');
@@ -120,16 +122,16 @@ Future<List> scrapData(String region) async {
 }
 
 class TopPage extends StatefulWidget {
-  final region;
-  TopPage({Key key, @required this.region}) : super(key: key);
+  final String region;
+  const TopPage({Key? key, required this.region}) : super(key: key);
   @override
   _TopPageState createState() => _TopPageState();
 }
 
 class _TopPageState extends State<TopPage> {
-  void getData(String region) async {
+  Future<void> getData(String region) async {
     fetched = true;
-    List temp = await compute(scrapData, region);
+    final List temp = await compute(scrapData, region);
     setState(() {
       if (region == 'global') {
         globalItems = temp;
@@ -149,23 +151,27 @@ class _TopPageState extends State<TopPage> {
     });
   }
 
-  getCachedData(String region) async {
+  Future<void> getCachedData(String region) async {
     fetched = true;
-    if (region != 'global')
-      cachedItems = await Hive.box('cache').get(region) ?? [];
-    if (region == 'global')
-      cachedGlobalItems = await Hive.box('cache').get(region) ?? [];
+    if (region != 'global') {
+      cachedItems =
+          await Hive.box('cache').get(region, defaultValue: []) as List;
+    }
+    if (region == 'global') {
+      cachedGlobalItems =
+          await Hive.box('cache').get(region, defaultValue: []) as List;
+    }
     setState(() {});
   }
 
   @override
   void initState() {
     super.initState();
-    if (widget.region == 'global' && globalItems.length == 0) {
+    if (widget.region == 'global' && globalItems.isEmpty) {
       getCachedData(widget.region);
       getData(widget.region);
     } else {
-      if (items.length == 0) {
+      if (items.isEmpty) {
         getCachedData(widget.region);
         getData(widget.region);
       }
@@ -174,87 +180,86 @@ class _TopPageState extends State<TopPage> {
 
   @override
   Widget build(BuildContext context) {
-    print("Top charts is build");
-    bool isGlobal = widget.region == 'global';
+    final bool isGlobal = widget.region == 'global';
     if (!fetched) {
       getCachedData(widget.region);
       getData(widget.region);
     }
-    List showList = (isGlobal ? cachedGlobalItems : cachedItems);
-    bool isListEmpty = isGlobal ? emptyGlobal : emptyRegional;
+    final List showList = isGlobal ? cachedGlobalItems : cachedItems;
+    final bool isListEmpty = isGlobal ? emptyGlobal : emptyRegional;
     return Column(
       children: [
-        showList.length <= 50
-            ? Expanded(
-                child: isListEmpty != null && isListEmpty
-                    ? EmptyScreen().emptyScreen(context, 0, ":( ", 100, "ERROR",
-                        60, "Service Unavailable", 20)
-                    : Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          SizedBox(
-                              height: MediaQuery.of(context).size.width / 7,
-                              width: MediaQuery.of(context).size.width / 7,
-                              child: CircularProgressIndicator(
-                                valueColor: AlwaysStoppedAnimation<Color>(
-                                    Theme.of(context).accentColor),
-                                strokeWidth: 5,
-                              )),
-                        ],
+        if (showList.length <= 50)
+          Expanded(
+            child: isListEmpty
+                ? EmptyScreen().emptyScreen(context, 0, ':( ', 100, 'ERROR', 60,
+                    'Service Unavailable', 20)
+                : Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                          height: MediaQuery.of(context).size.width / 7,
+                          width: MediaQuery.of(context).size.width / 7,
+                          child: CircularProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                                Theme.of(context).accentColor),
+                            strokeWidth: 5,
+                          )),
+                    ],
+                  ),
+          )
+        else
+          Expanded(
+              child: ListView.builder(
+            physics: const BouncingScrollPhysics(),
+            itemCount: showList.length,
+            itemExtent: 70.0,
+            itemBuilder: (context, index) {
+              return ListTile(
+                leading: Card(
+                  elevation: 5,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(7.0),
+                  ),
+                  clipBehavior: Clip.antiAlias,
+                  child: Stack(
+                    children: [
+                      const Image(
+                        image: AssetImage('assets/cover.jpg'),
                       ),
-              )
-            : Expanded(
-                child: ListView.builder(
-                physics: BouncingScrollPhysics(),
-                itemCount: showList.length,
-                itemExtent: 70.0,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    leading: Card(
-                      elevation: 5,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(7.0),
-                      ),
-                      clipBehavior: Clip.antiAlias,
-                      child: Stack(
-                        children: [
-                          Image(
+                      if (showList[index]['image'] != '')
+                        CachedNetworkImage(
+                          imageUrl: showList[index]['image'].toString(),
+                          errorWidget: (context, _, __) => const Image(
                             image: AssetImage('assets/cover.jpg'),
                           ),
-                          if (showList[index]['image'] != '')
-                            CachedNetworkImage(
-                              imageUrl: showList[index]['image'],
-                              errorWidget: (context, _, __) => Image(
-                                image: AssetImage('assets/cover.jpg'),
-                              ),
-                              placeholder: (context, url) => Image(
-                                image: AssetImage('assets/cover.jpg'),
-                              ),
-                            ),
-                        ],
-                      ),
-                    ),
-                    title: Text(
-                      showList[index]['position'] == null
-                          ? '${showList[index]["title"]}'
-                          : '${showList[index]['position']}. ${showList[index]["title"]}',
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    subtitle: Text(
-                      '${showList[index]['artist']}',
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  SearchPage(query: showList[index]['title'])));
-                    },
-                  );
+                          placeholder: (context, url) => const Image(
+                            image: AssetImage('assets/cover.jpg'),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+                title: Text(
+                  showList[index]['position'] == null
+                      ? '${showList[index]["title"]}'
+                      : '${showList[index]['position']}. ${showList[index]["title"]}',
+                  overflow: TextOverflow.ellipsis,
+                ),
+                subtitle: Text(
+                  '${showList[index]['artist']}',
+                  overflow: TextOverflow.ellipsis,
+                ),
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => SearchPage(
+                              query: showList[index]['title'].toString())));
                 },
-              )),
+              );
+            },
+          )),
       ],
     );
   }

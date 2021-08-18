@@ -1,16 +1,17 @@
-import 'package:blackhole/Helpers/format.dart';
-import 'package:blackhole/Screens/Common/song_list.dart';
-import 'package:blackhole/Screens/Player/audioplayer.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+
 import 'package:blackhole/APIs/api.dart';
+import 'package:blackhole/Helpers/format.dart';
+import 'package:blackhole/Screens/Common/song_list.dart';
+import 'package:blackhole/Screens/Player/audioplayer.dart';
 
 bool fetched = false;
-List preferredLanguage =
-    Hive.box('settings').get('preferredLanguage') ?? ['Hindi'];
-Map data = Hive.box('cache').get('homepage', defaultValue: {});
-List lists = ["recent", ...?data["collections"]];
+List preferredLanguage = Hive.box('settings')
+    .get('preferredLanguage', defaultValue: ['Hindi']) as List;
+Map data = Hive.box('cache').get('homepage', defaultValue: {}) as Map;
+List lists = ['recent', ...?data['collections']];
 
 class SaavnHomePage extends StatefulWidget {
   @override
@@ -19,21 +20,21 @@ class SaavnHomePage extends StatefulWidget {
 
 class _SaavnHomePageState extends State<SaavnHomePage> {
   List recentList =
-      Hive.box('recentlyPlayed').get('recentSongs', defaultValue: []);
+      Hive.box('recentlyPlayed').get('recentSongs', defaultValue: []) as List;
 
-  void getHomePageData() async {
+  Future<void> getHomePageData() async {
     Map recievedData = await SaavnAPI().fetchHomePageData();
-    if (recievedData != null && recievedData.isNotEmpty) {
+    if (recievedData.isNotEmpty) {
       Hive.box('cache').put('homepage', recievedData);
       data = recievedData;
-      lists = ["recent", ...?data["collections"]];
+      lists = ['recent', ...?data['collections']];
     }
     setState(() {});
     recievedData = await FormatResponse().formatPromoLists(data);
-    if (recievedData != null && recievedData.isNotEmpty) {
+    if (recievedData.isNotEmpty) {
       Hive.box('cache').put('homepage', recievedData);
       data = recievedData;
-      lists = ["recent", ...?data["collections"]];
+      lists = ['recent', ...?data['collections']];
     }
     setState(() {});
   }
@@ -43,27 +44,27 @@ class _SaavnHomePageState extends State<SaavnHomePage> {
     if (type == 'charts') {
       return '';
     } else if (type == 'playlist') {
-      return formatString(item['subtitle']);
+      return formatString(item['subtitle']?.toString());
     } else if (type == 'radio_station') {
-      return "Artist Radio";
-    } else if (type == "song") {
-      return formatString(item["artist"]);
+      return 'Artist Radio';
+    } else if (type == 'song') {
+      return formatString(item['artist']?.toString());
     } else {
       final artists = item['more_info']['artistMap']['artists']
           .map((artist) => artist['name'])
           .toList();
-      return formatString(artists.join(', '));
+      return formatString(artists.join(', ')?.toString());
     }
   }
 
-  String formatString(String text) {
+  String formatString(String? text) {
     return text == null
         ? ''
         : text
             .toString()
-            .replaceAll("&amp;", "&")
-            .replaceAll("&#039;", "'")
-            .replaceAll("&quot;", "\"")
+            .replaceAll('&amp;', '&')
+            .replaceAll('&#039;', "'")
+            .replaceAll('&quot;', '"')
             .trim();
   }
 
@@ -74,16 +75,16 @@ class _SaavnHomePageState extends State<SaavnHomePage> {
       fetched = true;
     }
     return ListView.builder(
-        physics: BouncingScrollPhysics(),
+        physics: const BouncingScrollPhysics(),
         shrinkWrap: true,
-        padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
-        scrollDirection: Axis.vertical,
+        padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
         itemCount: data.isEmpty ? 1 : lists.length,
         itemBuilder: (context, idx) {
           if (idx == 0) {
             return (recentList.isEmpty ||
-                    !Hive.box('settings').get('showRecent', defaultValue: true))
-                ? SizedBox()
+                    !(Hive.box('settings').get('showRecent', defaultValue: true)
+                        as bool))
+                ? const SizedBox()
                 : Column(
                     children: [
                       Row(
@@ -104,12 +105,28 @@ class _SaavnHomePageState extends State<SaavnHomePage> {
                       SizedBox(
                         height: MediaQuery.of(context).size.height / 4 + 10,
                         child: ListView.builder(
-                          physics: BouncingScrollPhysics(),
+                          physics: const BouncingScrollPhysics(),
                           scrollDirection: Axis.horizontal,
-                          padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                          padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                           itemCount: recentList.length,
                           itemBuilder: (context, index) {
                             return GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  PageRouteBuilder(
+                                    opaque: false,
+                                    pageBuilder: (_, __, ___) => PlayScreen(
+                                      data: {
+                                        'response': recentList,
+                                        'index': index,
+                                        'offline': false,
+                                      },
+                                      fromMiniplayer: false,
+                                    ),
+                                  ),
+                                );
+                              },
                               child: SizedBox(
                                 width:
                                     MediaQuery.of(context).size.height / 4 - 30,
@@ -123,14 +140,17 @@ class _SaavnHomePageState extends State<SaavnHomePage> {
                                       ),
                                       clipBehavior: Clip.antiAlias,
                                       child: CachedNetworkImage(
-                                        errorWidget: (context, _, __) => Image(
+                                        errorWidget: (context, _, __) =>
+                                            const Image(
                                           image: AssetImage('assets/cover.jpg'),
                                         ),
-                                        imageUrl: recentList[index]["image"]
+                                        imageUrl: recentList[index]['image']
+                                            .toString()
                                             .replaceAll('http:', 'https:')
                                             .replaceAll('50x50', '500x500')
                                             .replaceAll('150x150', '500x500'),
-                                        placeholder: (context, url) => Image(
+                                        placeholder: (context, url) =>
+                                            const Image(
                                           image: AssetImage('assets/cover.jpg'),
                                         ),
                                       ),
@@ -150,28 +170,12 @@ class _SaavnHomePageState extends State<SaavnHomePage> {
                                           fontSize: 11,
                                           color: Theme.of(context)
                                               .textTheme
-                                              .caption
+                                              .caption!
                                               .color),
                                     ),
                                   ],
                                 ),
                               ),
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  PageRouteBuilder(
-                                    opaque: false,
-                                    pageBuilder: (_, __, ___) => PlayScreen(
-                                      data: {
-                                        'response': recentList,
-                                        'index': index,
-                                        'offline': false,
-                                      },
-                                      fromMiniplayer: false,
-                                    ),
-                                  ),
-                                );
-                              },
                             );
                           },
                         ),
@@ -186,7 +190,8 @@ class _SaavnHomePageState extends State<SaavnHomePage> {
                   Padding(
                     padding: const EdgeInsets.fromLTRB(15, 10, 0, 5),
                     child: Text(
-                      '${formatString(data['modules'][lists[idx]]["title"])}',
+                      formatString(
+                          data['modules'][lists[idx]]['title']?.toString()),
                       style: TextStyle(
                         color: Theme.of(context).accentColor,
                         fontSize: 18,
@@ -196,37 +201,131 @@ class _SaavnHomePageState extends State<SaavnHomePage> {
                   ),
                 ],
               ),
-              data[lists[idx]] == null
-                  ? SizedBox(
-                      height: MediaQuery.of(context).size.height / 4 + 5,
-                      child: ListView.builder(
-                        physics: BouncingScrollPhysics(),
-                        scrollDirection: Axis.horizontal,
-                        padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                        itemCount: 10,
-                        itemBuilder: (context, index) {
-                          return SizedBox(
-                            width: MediaQuery.of(context).size.height / 4 - 30,
-                            child: Column(
-                              children: [
-                                Card(
-                                  elevation: 5,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10.0),
-                                  ),
-                                  clipBehavior: Clip.antiAlias,
-                                  child: Image(
+              if (data[lists[idx]] == null)
+                SizedBox(
+                  height: MediaQuery.of(context).size.height / 4 + 5,
+                  child: ListView.builder(
+                    physics: const BouncingScrollPhysics(),
+                    scrollDirection: Axis.horizontal,
+                    padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                    itemCount: 10,
+                    itemBuilder: (context, index) {
+                      return SizedBox(
+                        width: MediaQuery.of(context).size.height / 4 - 30,
+                        child: Column(
+                          children: [
+                            Card(
+                              elevation: 5,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10.0),
+                              ),
+                              clipBehavior: Clip.antiAlias,
+                              child: const Image(
+                                image: AssetImage('assets/cover.jpg'),
+                              ),
+                            ),
+                            const Text(
+                              'Loading ...',
+                              textAlign: TextAlign.center,
+                              softWrap: false,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            Text(
+                              'Please Wait',
+                              textAlign: TextAlign.center,
+                              softWrap: false,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                  fontSize: 11,
+                                  color: Theme.of(context)
+                                      .textTheme
+                                      .caption!
+                                      .color),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                )
+              else
+                SizedBox(
+                  height: MediaQuery.of(context).size.height / 4 + 5,
+                  child: ListView.builder(
+                    physics: const BouncingScrollPhysics(),
+                    scrollDirection: Axis.horizontal,
+                    padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                    itemCount: (data[lists[idx]] as List).length,
+                    itemBuilder: (context, index) {
+                      final Map item = data[lists[idx]][index] as Map;
+                      final currentSongList = data[lists[idx]]
+                          .where((e) => e['type'] == 'song')
+                          .toList();
+                      final subTitle = getSubTitle(item);
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            PageRouteBuilder(
+                              opaque: false,
+                              pageBuilder: (_, __, ___) =>
+                                  item['type'] == 'song'
+                                      ? PlayScreen(
+                                          data: {
+                                            'response': currentSongList,
+                                            'index': currentSongList.indexWhere(
+                                                (e) => e['id'] == item['id']),
+                                            'offline': false,
+                                          },
+                                          fromMiniplayer: false,
+                                        )
+                                      : SongsListPage(
+                                          listImage: item['image'].toString(),
+                                          listItem: item,
+                                        ),
+                            ),
+                          );
+                        },
+                        child: SizedBox(
+                          width: MediaQuery.of(context).size.height / 4 - 30,
+                          child: Column(
+                            children: [
+                              Card(
+                                elevation: 5,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                ),
+                                clipBehavior: Clip.antiAlias,
+                                child: CachedNetworkImage(
+                                  errorWidget: (context, _, __) => const Image(
                                     image: AssetImage('assets/cover.jpg'),
                                   ),
+                                  imageUrl: item['image']
+                                      .toString()
+                                      .replaceAll('http:', 'https:')
+                                      .replaceAll('50x50', '500x500')
+                                      .replaceAll('150x150', '500x500'),
+                                  placeholder: (context, url) => Image(
+                                    image: (item['type'] == 'playlist' ||
+                                            item['type'] == 'album')
+                                        ? const AssetImage('assets/album.png')
+                                        : item['type'] == 'artist'
+                                            ? const AssetImage(
+                                                'assets/artist.png')
+                                            : const AssetImage(
+                                                'assets/cover.jpg'),
+                                  ),
                                 ),
+                              ),
+                              Text(
+                                formatString(item['title']?.toString()),
+                                textAlign: TextAlign.center,
+                                softWrap: false,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              if (subTitle != '')
                                 Text(
-                                  'Loading ...',
-                                  textAlign: TextAlign.center,
-                                  softWrap: false,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                Text(
-                                  'Please Wait',
+                                  subTitle,
                                   textAlign: TextAlign.center,
                                   softWrap: false,
                                   overflow: TextOverflow.ellipsis,
@@ -234,110 +333,18 @@ class _SaavnHomePageState extends State<SaavnHomePage> {
                                       fontSize: 11,
                                       color: Theme.of(context)
                                           .textTheme
-                                          .caption
+                                          .caption!
                                           .color),
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                      ),
-                    )
-                  : SizedBox(
-                      height: MediaQuery.of(context).size.height / 4 + 5,
-                      child: ListView.builder(
-                        physics: BouncingScrollPhysics(),
-                        scrollDirection: Axis.horizontal,
-                        padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                        itemCount: data[lists[idx]].length,
-                        itemBuilder: (context, index) {
-                          final item = data[lists[idx]][index];
-                          final currentSongList = data[lists[idx]]
-                              .where((e) => (e["type"] == 'song'))
-                              .toList();
-                          final subTitle = getSubTitle(item);
-                          return GestureDetector(
-                            child: SizedBox(
-                              width:
-                                  MediaQuery.of(context).size.height / 4 - 30,
-                              child: Column(
-                                children: [
-                                  Card(
-                                    elevation: 5,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10.0),
-                                    ),
-                                    clipBehavior: Clip.antiAlias,
-                                    child: CachedNetworkImage(
-                                      errorWidget: (context, _, __) => Image(
-                                        image: AssetImage('assets/cover.jpg'),
-                                      ),
-                                      imageUrl: item["image"]
-                                          .replaceAll('http:', 'https:')
-                                          .replaceAll('50x50', '500x500')
-                                          .replaceAll('150x150', '500x500'),
-                                      placeholder: (context, url) => Image(
-                                        image: (item["type"] == 'playlist' ||
-                                                item["type"] == 'album')
-                                            ? AssetImage('assets/album.png')
-                                            : item["type"] == 'artist'
-                                                ? AssetImage(
-                                                    'assets/artist.png')
-                                                : AssetImage(
-                                                    'assets/cover.jpg'),
-                                      ),
-                                    ),
-                                  ),
-                                  Text(
-                                    '${formatString(item["title"])}',
-                                    textAlign: TextAlign.center,
-                                    softWrap: false,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  subTitle != ''
-                                      ? Text(
-                                          subTitle,
-                                          textAlign: TextAlign.center,
-                                          softWrap: false,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: TextStyle(
-                                              fontSize: 11,
-                                              color: Theme.of(context)
-                                                  .textTheme
-                                                  .caption
-                                                  .color),
-                                        )
-                                      : SizedBox(),
-                                ],
-                              ),
-                            ),
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                PageRouteBuilder(
-                                  opaque: false,
-                                  pageBuilder: (_, __, ___) => item["type"] ==
-                                          "song"
-                                      ? PlayScreen(
-                                          data: {
-                                            'response': currentSongList,
-                                            'index': currentSongList.indexWhere(
-                                                (e) => (e["id"] == item['id'])),
-                                            'offline': false,
-                                          },
-                                          fromMiniplayer: false,
-                                        )
-                                      : SongsListPage(
-                                          listImage: item["image"],
-                                          listItem: item,
-                                        ),
-                                ),
-                              );
-                            },
-                          );
-                        },
-                      ),
-                    ),
+                                )
+                              else
+                                const SizedBox(),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
             ],
           );
         });

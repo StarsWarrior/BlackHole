@@ -1,25 +1,28 @@
+import 'dart:math';
+
+import 'package:blackhole/CustomWidgets/snackbar.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:package_info/package_info.dart';
+import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
+import 'package:url_launcher/url_launcher.dart';
+
 import 'package:blackhole/CustomWidgets/custom_physics.dart';
+import 'package:blackhole/CustomWidgets/gradient_containers.dart';
+import 'package:blackhole/CustomWidgets/miniplayer.dart';
 import 'package:blackhole/CustomWidgets/textinput_dialog.dart';
 import 'package:blackhole/Helpers/countrycodes.dart';
-import 'package:blackhole/CustomWidgets/gradientContainers.dart';
 import 'package:blackhole/Helpers/supabase.dart';
 import 'package:blackhole/Screens/Home/saavn.dart';
 import 'package:blackhole/Screens/Library/downloaded.dart';
 import 'package:blackhole/Screens/Library/library.dart';
 import 'package:blackhole/Screens/Search/search.dart';
 import 'package:blackhole/Screens/Settings/setting.dart';
-import 'package:blackhole/Screens/YouTube/youTube.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
-import 'package:blackhole/CustomWidgets/miniplayer.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:blackhole/Screens/Top Charts/top.dart';
-import 'dart:math';
-import 'package:hive/hive.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-import 'package:package_info/package_info.dart';
+import 'package:blackhole/Screens/YouTube/youtube_home.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -27,15 +30,14 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  ValueNotifier<int> _selectedIndex = ValueNotifier<int>(0);
-  Box settingsBox;
+  final ValueNotifier<int> _selectedIndex = ValueNotifier<int>(0);
   bool checked = false;
-  bool update = false;
-  String appVersion;
-  String name = Hive.box("settings").get('name', defaultValue: 'Guest');
+  String? appVersion;
+  String name =
+      Hive.box('settings').get('name', defaultValue: 'Guest') as String;
 
   String capitalize(String msg) {
-    return "${msg[0].toUpperCase()}${msg.substring(1)}";
+    return '${msg[0].toUpperCase()}${msg.substring(1)}';
   }
 
   void callback() {
@@ -45,17 +47,18 @@ class _HomePageState extends State<HomePage> {
   void _onItemTapped(int index) {
     _selectedIndex.value = index;
     pageController.animateToPage(index,
-        duration: Duration(milliseconds: 400), curve: Curves.ease);
+        duration: const Duration(milliseconds: 400), curve: Curves.ease);
   }
 
   bool compareVersion(String latestVersion, String currentVersion) {
     bool update = false;
-    List latestList = latestVersion.split('.');
-    List currentList = currentVersion.split('.');
+    final List latestList = latestVersion.split('.');
+    final List currentList = currentVersion.split('.');
 
     for (int i = 0; i < latestList.length; i++) {
       try {
-        if (int.parse(latestList[i]) > int.parse(currentList[i])) {
+        if (int.parse(latestList[i] as String) >
+            int.parse(currentList[i] as String)) {
           update = true;
           break;
         }
@@ -66,23 +69,26 @@ class _HomePageState extends State<HomePage> {
     return update;
   }
 
-  updateUserDetails(String key, dynamic value) {
-    final userId = Hive.box('settings').get('userId');
+  void updateUserDetails(String key, dynamic value) {
+    final userId = Hive.box('settings').get('userId') as String?;
     SupaBase().updateUserDetails(userId, key, value);
   }
 
   Widget checkVersion() {
     if (!checked && Theme.of(context).platform == TargetPlatform.android) {
-      print('Checking for Update');
       checked = true;
-      SupaBase db = SupaBase();
-      DateTime now = DateTime.now();
-      List lastLogin =
-          now.toUtc().add(Duration(hours: 5, minutes: 30)).toString().split('.')
+      final SupaBase db = SupaBase();
+      final DateTime now = DateTime.now();
+      final List lastLogin = now
+          .toUtc()
+          .add(const Duration(hours: 5, minutes: 30))
+          .toString()
+          .split('.')
             ..removeLast()
             ..join('.');
       updateUserDetails('lastLogin', '${lastLogin[0]} IST');
-      String offset = now.timeZoneOffset.toString().replaceAll(".000000", "");
+      final String offset =
+          now.timeZoneOffset.toString().replaceAll('.000000', '');
 
       updateUserDetails(
           'timeZone', 'Zone: ${now.timeZoneName}, Offset: $offset');
@@ -92,44 +98,36 @@ class _HomePageState extends State<HomePage> {
         updateUserDetails('version', packageInfo.version);
 
         db.getUpdate().then((Map value) {
-          if (compareVersion(value['LatestVersion'], appVersion)) {
-            print('UPDATE IS AVAILABLE');
-            return ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                duration: Duration(seconds: 15),
-                margin: EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 5.0),
-                elevation: 6,
-                backgroundColor: Colors.grey[900],
-                behavior: SnackBarBehavior.floating,
-                content: Text(
-                  'Update Available!',
-                  style: TextStyle(color: Colors.white),
-                ),
-                action: SnackBarAction(
-                  textColor: Theme.of(context).accentColor,
-                  label: 'Update',
-                  onPressed: () {
-                    Navigator.pop(context);
-                    launch(value['LatestUrl']);
-                  },
-                ),
+          if (compareVersion(value['LatestVersion'] as String, appVersion!)) {
+            ShowSnackBar().showSnackBar(
+              context,
+              'Update Available!',
+              duration: const Duration(seconds: 15),
+              action: SnackBarAction(
+                textColor: Theme.of(context).accentColor,
+                label: 'Update',
+                onPressed: () {
+                  Navigator.pop(context);
+                  launch(value['LatestUrl'] as String);
+                },
               ),
             );
           }
         });
       });
-      if (Hive.box('settings').get('proxyIp') == null)
-        Hive.box('settings').put('proxyIp', "103.47.67.134");
-      if (Hive.box('settings').get('proxyPort') == null)
+      if (Hive.box('settings').get('proxyIp') == null) {
+        Hive.box('settings').put('proxyIp', '103.47.67.134');
+      }
+      if (Hive.box('settings').get('proxyPort') == null) {
         Hive.box('settings').put('proxyPort', 8080);
-      return SizedBox();
+      }
+      return const SizedBox();
     } else {
-      // print('platform not android or already checked');
-      return SizedBox();
+      return const SizedBox();
     }
   }
 
-  ScrollController _scrollController;
+  final ScrollController _scrollController = ScrollController();
   ValueNotifier<double> _size = ValueNotifier<double>(0.0);
 
   void _scrollListener() {
@@ -138,7 +136,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
-    _scrollController = ScrollController();
     _scrollController.addListener(_scrollListener);
     super.initState();
   }
@@ -149,7 +146,7 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
-  PageController pageController = PageController(initialPage: 0);
+  PageController pageController = PageController();
 
   @override
   Widget build(BuildContext context) {
@@ -164,30 +161,29 @@ class _HomePageState extends State<HomePage> {
                 children: [
                   CustomScrollView(
                     shrinkWrap: true,
-                    physics: BouncingScrollPhysics(),
+                    physics: const BouncingScrollPhysics(),
                     slivers: [
                       SliverAppBar(
                         backgroundColor: Colors.transparent,
                         automaticallyImplyLeading: false,
                         elevation: 0,
                         stretch: true,
-                        pinned: false,
                         expandedHeight:
                             MediaQuery.of(context).size.height * 0.2,
                         flexibleSpace: FlexibleSpaceBar(
                           title: RichText(
                             text: TextSpan(
-                              text: "BlackHole",
-                              style: TextStyle(
+                              text: 'BlackHole',
+                              style: const TextStyle(
                                 fontSize: 30.0,
                                 fontWeight: FontWeight.w500,
                               ),
                               children: <TextSpan>[
                                 TextSpan(
                                   text: appVersion == null
-                                      ? ""
-                                      : "\nv$appVersion",
-                                  style: TextStyle(
+                                      ? ''
+                                      : '\nv$appVersion',
+                                  style: const TextStyle(
                                     fontSize: 7.0,
                                   ),
                                 ),
@@ -195,9 +191,8 @@ class _HomePageState extends State<HomePage> {
                             ),
                             textAlign: TextAlign.end,
                           ),
-                          titlePadding: EdgeInsets.only(bottom: 40.0),
+                          titlePadding: const EdgeInsets.only(bottom: 40.0),
                           centerTitle: true,
-                          stretchModes: [StretchMode.zoomBackground],
                           background: ShaderMask(
                             shaderCallback: (rect) {
                               return LinearGradient(
@@ -232,7 +227,7 @@ class _HomePageState extends State<HomePage> {
                                 ),
                               ),
                               contentPadding:
-                                  EdgeInsets.symmetric(horizontal: 20.0),
+                                  const EdgeInsets.symmetric(horizontal: 20.0),
                               leading: Icon(
                                 Icons.home_rounded,
                                 color: Theme.of(context).accentColor,
@@ -243,9 +238,9 @@ class _HomePageState extends State<HomePage> {
                               },
                             ),
                             ListTile(
-                              title: Text('My Music'),
+                              title: const Text('My Music'),
                               contentPadding:
-                                  EdgeInsets.symmetric(horizontal: 20.0),
+                                  const EdgeInsets.symmetric(horizontal: 20.0),
                               leading: Icon(
                                 MdiIcons.folderMusic,
                                 color: Theme.of(context).iconTheme.color,
@@ -256,13 +251,14 @@ class _HomePageState extends State<HomePage> {
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) =>
-                                            DownloadedSongs(type: 'all')));
+                                            const DownloadedSongs(
+                                                type: 'all')));
                               },
                             ),
                             ListTile(
-                              title: Text('Settings'),
+                              title: const Text('Settings'),
                               contentPadding:
-                                  EdgeInsets.symmetric(horizontal: 20.0),
+                                  const EdgeInsets.symmetric(horizontal: 20.0),
                               leading: Icon(
                                 Icons
                                     .settings_rounded, // miscellaneous_services_rounded,
@@ -278,9 +274,9 @@ class _HomePageState extends State<HomePage> {
                               },
                             ),
                             ListTile(
-                              title: Text('About'),
+                              title: const Text('About'),
                               contentPadding:
-                                  EdgeInsets.symmetric(horizontal: 20.0),
+                                  const EdgeInsets.symmetric(horizontal: 20.0),
                               leading: Icon(
                                 Icons.info_outline_rounded,
                                 color: Theme.of(context).iconTheme.color,
@@ -295,8 +291,8 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ],
                   ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(5, 30, 5, 20),
+                  const Padding(
+                    padding: EdgeInsets.fromLTRB(5, 30, 5, 20),
                     child: Center(
                       child: Text(
                         'Made with ♥ by Ankit Sangwan',
@@ -314,7 +310,7 @@ class _HomePageState extends State<HomePage> {
               children: [
                 Expanded(
                   child: PageView(
-                    physics: CustomPhysics(),
+                    physics: const CustomPhysics(),
                     onPageChanged: (indx) {
                       _selectedIndex.value = indx;
                       if (indx == 0) {
@@ -326,223 +322,214 @@ class _HomePageState extends State<HomePage> {
                       Stack(
                         children: [
                           checkVersion(),
-                          NotificationListener<OverscrollIndicatorNotification>(
-                            onNotification: (overScroll) {
-                              overScroll.disallowGlow();
-                              return;
-                            },
-                            child: NestedScrollView(
-                              physics: BouncingScrollPhysics(),
-                              controller: _scrollController,
-                              headerSliverBuilder: (BuildContext context,
-                                  bool innerBoxScrolled) {
-                                final controller = TextEditingController();
-                                return <Widget>[
-                                  SliverAppBar(
-                                    expandedHeight: 135,
-                                    backgroundColor: Colors.transparent,
-                                    elevation: 0,
-                                    // pinned: true,
-                                    toolbarHeight: 65,
-                                    // floating: true,
-                                    automaticallyImplyLeading: false,
-                                    flexibleSpace: LayoutBuilder(
-                                      builder: (BuildContext context,
-                                          BoxConstraints constraints) {
-                                        return FlexibleSpaceBar(
-                                          // collapseMode: CollapseMode.parallax,
-                                          background: GestureDetector(
-                                            child: Column(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: <Widget>[
-                                                SizedBox(
-                                                  height: 60,
-                                                ),
-                                                Row(
-                                                  children: [
-                                                    Padding(
-                                                      padding:
-                                                          const EdgeInsets.only(
-                                                              left: 15.0),
-                                                      child: Text(
-                                                        'Hi There,',
-                                                        style: TextStyle(
-                                                            letterSpacing: 2,
-                                                            color: Theme.of(
-                                                                    context)
-                                                                .accentColor,
-                                                            fontSize: 30,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .bold),
-                                                      ),
+                          NestedScrollView(
+                            physics: const BouncingScrollPhysics(),
+                            controller: _scrollController,
+                            headerSliverBuilder:
+                                (BuildContext context, bool innerBoxScrolled) {
+                              final controller = TextEditingController();
+                              return <Widget>[
+                                SliverAppBar(
+                                  expandedHeight: 135,
+                                  backgroundColor: Colors.transparent,
+                                  elevation: 0,
+                                  // pinned: true,
+                                  toolbarHeight: 65,
+                                  // floating: true,
+                                  automaticallyImplyLeading: false,
+                                  flexibleSpace: LayoutBuilder(
+                                    builder: (BuildContext context,
+                                        BoxConstraints constraints) {
+                                      return FlexibleSpaceBar(
+                                        // collapseMode: CollapseMode.parallax,
+                                        background: GestureDetector(
+                                          onTap: () async {
+                                            await TextInputDialog()
+                                                .showTextInputDialog(
+                                                    context,
+                                                    'Name',
+                                                    name,
+                                                    TextInputType.name,
+                                                    (value) {
+                                              Hive.box('settings')
+                                                  .put('name', value.trim());
+                                              name = value.trim();
+                                              Navigator.pop(context);
+                                              updateUserDetails(
+                                                  'name', value.trim());
+                                            });
+                                            setState(() {});
+                                          },
+                                          child: Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: <Widget>[
+                                              const SizedBox(
+                                                height: 60,
+                                              ),
+                                              Row(
+                                                children: [
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            left: 15.0),
+                                                    child: Text(
+                                                      'Hi There,',
+                                                      style: TextStyle(
+                                                          letterSpacing: 2,
+                                                          color:
+                                                              Theme.of(context)
+                                                                  .accentColor,
+                                                          fontSize: 30,
+                                                          fontWeight:
+                                                              FontWeight.bold),
                                                     ),
-                                                  ],
-                                                ),
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          left: 15.0),
-                                                  child: Row(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment.end,
-                                                    children: [
-                                                      ValueListenableBuilder(
-                                                          valueListenable:
-                                                              Hive.box(
-                                                                      'settings')
-                                                                  .listenable(),
-                                                          builder: (BuildContext
-                                                                  context,
-                                                              Box box,
-                                                              widget) {
-                                                            return Text(
-                                                              (box.get('name') ==
-                                                                          null ||
-                                                                      box.get('name') ==
-                                                                          '')
-                                                                  ? 'Guest'
-                                                                  : capitalize(box
-                                                                      .get(
-                                                                          'name')
-                                                                      .split(
-                                                                          ' ')[0]),
-                                                              style: TextStyle(
-                                                                  letterSpacing:
-                                                                      2,
-                                                                  fontSize: 20,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w500),
-                                                            );
-                                                          }),
-                                                    ],
                                                   ),
-                                                ),
-                                              ],
-                                            ),
-                                            onTap: () async {
-                                              await TextInputDialog()
-                                                  .showTextInputDialog(
-                                                      context,
-                                                      'Name',
-                                                      name,
-                                                      TextInputType.name,
-                                                      (value) {
-                                                Hive.box('settings')
-                                                    .put('name', value.trim());
-                                                name = value.trim();
-                                                Navigator.pop(context);
-                                                updateUserDetails(
-                                                    'name', value.trim());
-                                              });
-                                              setState(() {});
-                                            },
-                                          ),
-                                        );
-                                      },
-                                    ),
-                                  ),
-                                  SliverAppBar(
-                                    automaticallyImplyLeading: false,
-                                    pinned: true,
-                                    floating: false,
-                                    backgroundColor: Colors.transparent,
-                                    elevation: 0,
-                                    stretch: true,
-                                    toolbarHeight: 65,
-                                    title: Align(
-                                      alignment: Alignment.centerRight,
-                                      child: ValueListenableBuilder(
-                                          valueListenable: _size,
-                                          builder:
-                                              (context, double value, child) {
-                                            return AnimatedContainer(
-                                              width: max(
-                                                  MediaQuery.of(context)
-                                                          .size
-                                                          .width -
-                                                      value,
-                                                  MediaQuery.of(context)
-                                                          .size
-                                                          .width -
-                                                      75),
-                                              duration:
-                                                  Duration(milliseconds: 300),
-                                              padding: EdgeInsets.all(2.0),
-                                              // margin: EdgeInsets.zero,
-                                              decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(10.0),
-                                                color:
-                                                    Theme.of(context).cardColor,
-                                                boxShadow: [
-                                                  BoxShadow(
-                                                    color: Colors.black26,
-                                                    blurRadius: 5.0,
-                                                    spreadRadius: 0.0,
-                                                    offset: Offset(0.0, 3.0),
-                                                    // shadow direction: bottom right
-                                                  )
                                                 ],
                                               ),
-                                              child: TextField(
-                                                controller: controller,
-                                                textAlignVertical:
-                                                    TextAlignVertical.center,
-                                                decoration: InputDecoration(
-                                                  focusedBorder:
-                                                      UnderlineInputBorder(
-                                                    borderSide: BorderSide(
-                                                        width: 1.5,
-                                                        color:
-                                                            Colors.transparent),
-                                                  ),
-                                                  fillColor: Theme.of(context)
-                                                      .accentColor,
-                                                  prefixIcon: Icon(
-                                                    CupertinoIcons.search,
-                                                    color: Theme.of(context)
-                                                        .accentColor,
-                                                  ),
-                                                  border: InputBorder.none,
-                                                  hintText:
-                                                      "Songs, albums or artists",
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                    left: 15.0),
+                                                child: Row(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.end,
+                                                  children: [
+                                                    ValueListenableBuilder(
+                                                        valueListenable:
+                                                            Hive.box('settings')
+                                                                .listenable(),
+                                                        builder: (BuildContext
+                                                                context,
+                                                            Box box,
+                                                            widget) {
+                                                          return Text(
+                                                            (box.get('name') ==
+                                                                        null ||
+                                                                    box.get('name') ==
+                                                                        '')
+                                                                ? 'Guest'
+                                                                : capitalize(box
+                                                                    .get('name')
+                                                                    .split(
+                                                                        ' ')[0]
+                                                                    .toString()),
+                                                            style: const TextStyle(
+                                                                letterSpacing:
+                                                                    2,
+                                                                fontSize: 20,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w500),
+                                                          );
+                                                        }),
+                                                  ],
                                                 ),
-                                                autofocus: false,
-                                                onSubmitted: (query) {
-                                                  if (query.trim() != '') {
-                                                    List search = Hive.box(
-                                                            'settings')
-                                                        .get('search',
-                                                            defaultValue: []);
-                                                    if (search.contains(query))
-                                                      search.remove(query);
-                                                    search.insert(0, query);
-                                                    if (search.length > 3)
-                                                      search =
-                                                          search.sublist(0, 3);
-                                                    Hive.box('settings')
-                                                        .put('search', search);
-                                                    Navigator.push(
-                                                        context,
-                                                        MaterialPageRoute(
-                                                            builder: (context) =>
-                                                                SearchPage(
-                                                                    query:
-                                                                        query)));
-                                                  }
-                                                  controller.text = '';
-                                                },
                                               ),
-                                            );
-                                          }),
-                                    ),
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    },
                                   ),
-                                ];
-                              },
-                              body: SaavnHomePage(),
-                            ),
+                                ),
+                                SliverAppBar(
+                                  automaticallyImplyLeading: false,
+                                  pinned: true,
+                                  backgroundColor: Colors.transparent,
+                                  elevation: 0,
+                                  stretch: true,
+                                  toolbarHeight: 65,
+                                  title: Align(
+                                    alignment: Alignment.centerRight,
+                                    child: ValueListenableBuilder(
+                                        valueListenable: _size,
+                                        builder:
+                                            (context, double value, child) {
+                                          return AnimatedContainer(
+                                            width: max(
+                                                MediaQuery.of(context)
+                                                        .size
+                                                        .width -
+                                                    value,
+                                                MediaQuery.of(context)
+                                                        .size
+                                                        .width -
+                                                    75),
+                                            duration: const Duration(
+                                                milliseconds: 300),
+                                            padding: const EdgeInsets.all(2.0),
+                                            // margin: EdgeInsets.zero,
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(10.0),
+                                              color:
+                                                  Theme.of(context).cardColor,
+                                              boxShadow: const [
+                                                BoxShadow(
+                                                  color: Colors.black26,
+                                                  blurRadius: 5.0,
+                                                  offset: Offset(0.0, 3.0),
+                                                  // shadow direction: bottom right
+                                                )
+                                              ],
+                                            ),
+                                            child: TextField(
+                                              controller: controller,
+                                              textAlignVertical:
+                                                  TextAlignVertical.center,
+                                              decoration: InputDecoration(
+                                                focusedBorder:
+                                                    const UnderlineInputBorder(
+                                                  borderSide: BorderSide(
+                                                      width: 1.5,
+                                                      color:
+                                                          Colors.transparent),
+                                                ),
+                                                fillColor: Theme.of(context)
+                                                    .accentColor,
+                                                prefixIcon: Icon(
+                                                  CupertinoIcons.search,
+                                                  color: Theme.of(context)
+                                                      .accentColor,
+                                                ),
+                                                border: InputBorder.none,
+                                                hintText:
+                                                    'Songs, albums or artists',
+                                              ),
+                                              onSubmitted: (query) {
+                                                if (query.trim() != '') {
+                                                  List search =
+                                                      Hive.box('settings').get(
+                                                              'search',
+                                                              defaultValue: [])
+                                                          as List;
+                                                  if (search.contains(query)) {
+                                                    search.remove(query);
+                                                  }
+                                                  search.insert(0, query);
+                                                  if (search.length > 3) {
+                                                    search =
+                                                        search.sublist(0, 3);
+                                                  }
+                                                  Hive.box('settings')
+                                                      .put('search', search);
+                                                  Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              SearchPage(
+                                                                  query:
+                                                                      query)));
+                                                }
+                                                controller.text = '';
+                                              },
+                                            ),
+                                          );
+                                        }),
+                                  ),
+                                ),
+                              ];
+                            },
+                            body: SaavnHomePage(),
                           ),
                           Builder(
                             builder: (context) => Padding(
@@ -569,10 +556,12 @@ class _HomePageState extends State<HomePage> {
                         ],
                       ),
                       TopCharts(
-                        region: CountryCodes().countryCodes[
-                            Hive.box('settings').get('region') ?? 'India'],
+                        region: CountryCodes()
+                            .countryCodes[Hive.box('settings')
+                                .get('region', defaultValue: 'India')]
+                            .toString(),
                       ),
-                      YouTube(),
+                      const YouTube(),
                       LibraryPage(),
                     ],
                   ),
@@ -583,13 +572,14 @@ class _HomePageState extends State<HomePage> {
           ),
           bottomNavigationBar: ValueListenableBuilder(
               valueListenable: playerExpandProgress,
-              builder: (BuildContext context, double value, Widget child) {
+              builder: (BuildContext context, double value, Widget? child) {
                 return SafeArea(
                   child: ValueListenableBuilder(
                       valueListenable: _selectedIndex,
-                      builder: (context, indexValue, child) {
+                      builder: (BuildContext context, int indexValue,
+                          Widget? child) {
                         return AnimatedContainer(
-                          duration: Duration(milliseconds: 100),
+                          duration: const Duration(milliseconds: 100),
                           height: 60 *
                               (MediaQuery.of(context).size.height - value) /
                               (MediaQuery.of(context).size.height - 76),
@@ -601,24 +591,25 @@ class _HomePageState extends State<HomePage> {
                             items: [
                               /// Home
                               SalomonBottomBarItem(
-                                icon: Icon(Icons.home_rounded),
-                                title: Text("Home"),
+                                icon: const Icon(Icons.home_rounded),
+                                title: const Text('Home'),
                                 selectedColor: Theme.of(context).accentColor,
                               ),
 
                               SalomonBottomBarItem(
-                                icon: Icon(Icons.trending_up_rounded),
-                                title: Text("Spotify Charts"),
+                                icon: const Icon(Icons.trending_up_rounded),
+                                title: const Text('Spotify Charts'),
                                 selectedColor: Theme.of(context).accentColor,
                               ),
                               SalomonBottomBarItem(
-                                icon: Icon(MdiIcons.youtube),
-                                title: Text("YouTube"),
+                                icon: const Icon(MdiIcons.youtube),
+                                title: const Text('YouTube'),
                                 selectedColor: Theme.of(context).accentColor,
                               ),
                               SalomonBottomBarItem(
-                                icon: Icon(Icons.my_library_music_rounded),
-                                title: Text("Library"),
+                                icon:
+                                    const Icon(Icons.my_library_music_rounded),
+                                title: const Text('Library'),
                                 selectedColor: Theme.of(context).accentColor,
                               ),
                             ],

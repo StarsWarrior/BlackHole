@@ -1,6 +1,9 @@
-import 'package:blackhole/Screens/Player/audioplayer.dart';
+import 'dart:typed_data';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
+import 'package:blackhole/Screens/Player/audioplayer.dart';
 
 class DataSearch extends SearchDelegate {
   final List data;
@@ -10,23 +13,24 @@ class DataSearch extends SearchDelegate {
   @override
   List<Widget> buildActions(BuildContext context) {
     return [
-      query.isEmpty
-          ? IconButton(icon: Icon(CupertinoIcons.search), onPressed: () {})
-          : IconButton(
-              onPressed: () {
-                query = "";
-              },
-              icon: Icon(
-                Icons.clear_rounded,
-              ),
-            ),
+      if (query.isEmpty)
+        IconButton(icon: const Icon(CupertinoIcons.search), onPressed: () {})
+      else
+        IconButton(
+          onPressed: () {
+            query = '';
+          },
+          icon: const Icon(
+            Icons.clear_rounded,
+          ),
+        ),
     ];
   }
 
   @override
   Widget buildLeading(BuildContext context) {
     return IconButton(
-      icon: Icon(Icons.arrow_back_rounded),
+      icon: const Icon(Icons.arrow_back_rounded),
       onPressed: () {
         close(context, null);
       },
@@ -44,8 +48,8 @@ class DataSearch extends SearchDelegate {
                 .contains(query.toLowerCase()))
             .toList();
     return ListView.builder(
-      physics: BouncingScrollPhysics(),
-      padding: EdgeInsets.only(top: 10, bottom: 10),
+      physics: const BouncingScrollPhysics(),
+      padding: const EdgeInsets.only(top: 10, bottom: 10),
       shrinkWrap: true,
       itemExtent: 70.0,
       itemCount: suggestionList.length,
@@ -58,31 +62,33 @@ class DataSearch extends SearchDelegate {
           clipBehavior: Clip.antiAlias,
           child: Stack(
             children: [
-              Image(
+              const Image(
                 image: AssetImage('assets/cover.jpg'),
               ),
-              suggestionList[index]['image'] == null
-                  ? SizedBox()
-                  : SizedBox(
-                      height: 50.0,
-                      width: 50.0,
-                      child: Image(
-                        fit: BoxFit.cover,
-                        image: MemoryImage(suggestionList[index]['image']),
-                      ),
-                    )
+              if (suggestionList[index]['image'] == null)
+                const SizedBox()
+              else
+                SizedBox(
+                  height: 50.0,
+                  width: 50.0,
+                  child: Image(
+                    fit: BoxFit.cover,
+                    image: MemoryImage(
+                        suggestionList[index]['image'] as Uint8List),
+                  ),
+                )
             ],
           ),
         ),
         title: Text(
           suggestionList[index]['title'] != null &&
-                  suggestionList[index]['title'].trim() != ""
-              ? suggestionList[index]['title']
-              : '${suggestionList[index]['id'].split('/').last}',
+                  suggestionList[index]['title'].trim() != ''
+              ? suggestionList[index]['title'].toString()
+              : suggestionList[index]['id'].toString().split('/').last,
           overflow: TextOverflow.ellipsis,
         ),
         subtitle: Text(
-          suggestionList[index]['artist'] ?? "",
+          suggestionList[index]['artist']?.toString() ?? '',
           overflow: TextOverflow.ellipsis,
         ),
         onTap: () {
@@ -111,21 +117,20 @@ class DataSearch extends SearchDelegate {
 
   @override
   ThemeData appBarTheme(BuildContext context) {
-    assert(context != null);
     final ThemeData theme = Theme.of(context);
-    assert(theme != null);
     return theme.copyWith(
       primaryColor: Theme.of(context).accentColor,
-      textSelectionTheme: TextSelectionThemeData(cursorColor: Colors.white),
+      textSelectionTheme:
+          const TextSelectionThemeData(cursorColor: Colors.white),
       hintColor: Colors.white70,
       primaryIconTheme: theme.primaryIconTheme.copyWith(color: Colors.white),
       primaryColorBrightness: Brightness.dark,
       textTheme: theme.textTheme.copyWith(
         headline6:
-            TextStyle(fontWeight: FontWeight.normal, color: Colors.white),
+            const TextStyle(fontWeight: FontWeight.normal, color: Colors.white),
       ),
       inputDecorationTheme:
-          InputDecorationTheme(focusedBorder: InputBorder.none),
+          const InputDecorationTheme(focusedBorder: InputBorder.none),
     );
   }
 }

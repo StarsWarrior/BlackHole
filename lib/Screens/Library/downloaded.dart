@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -12,15 +13,16 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:blackhole/CustomWidgets/collage.dart';
 import 'package:blackhole/CustomWidgets/custom_physics.dart';
 import 'package:blackhole/CustomWidgets/data_search.dart';
-import 'package:blackhole/CustomWidgets/gradientContainers.dart';
-import 'package:blackhole/CustomWidgets/emptyScreen.dart';
+import 'package:blackhole/CustomWidgets/empty_screen.dart';
+import 'package:blackhole/CustomWidgets/gradient_containers.dart';
 import 'package:blackhole/CustomWidgets/miniplayer.dart';
-import 'package:blackhole/Screens/Library/showSongs.dart';
+import 'package:blackhole/CustomWidgets/snackbar.dart';
+import 'package:blackhole/Screens/Library/show_songs.dart';
 import 'package:blackhole/Screens/Player/audioplayer.dart';
 
 class DownloadedSongs extends StatefulWidget {
   final String type;
-  DownloadedSongs({Key key, @required this.type}) : super(key: key);
+  const DownloadedSongs({Key? key, required this.type}) : super(key: key);
   @override
   _DownloadedSongsState createState() => _DownloadedSongsState();
 }
@@ -38,18 +40,19 @@ class _DownloadedSongsState extends State<DownloadedSongs>
   List _cachedSongs = [];
   List _cachedVideos = [];
   bool added = false;
-  int sortValue = Hive.box('settings').get('sortValue', defaultValue: 2);
+  int sortValue = Hive.box('settings').get('sortValue', defaultValue: 2) as int;
   int albumSortValue =
-      Hive.box('settings').get('albumSortValue', defaultValue: 2);
-  List dirPaths = Hive.box('settings').get('searchPaths', defaultValue: []);
-  TabController _tcontroller;
+      Hive.box('settings').get('albumSortValue', defaultValue: 2) as int;
+  List dirPaths =
+      Hive.box('settings').get('searchPaths', defaultValue: []) as List;
+  TabController? _tcontroller;
   int currentIndex = 0;
 
   @override
   void initState() {
     _tcontroller =
         TabController(length: widget.type == 'all' ? 5 : 4, vsync: this);
-    _tcontroller.addListener(changeTitle);
+    _tcontroller!.addListener(changeTitle);
     getCached();
     getDownloaded();
     super.initState();
@@ -58,31 +61,36 @@ class _DownloadedSongsState extends State<DownloadedSongs>
   @override
   void dispose() {
     super.dispose();
-    _tcontroller.dispose();
+    _tcontroller!.dispose();
   }
 
   void changeTitle() {
     setState(() {
-      currentIndex = _tcontroller.index;
+      currentIndex = _tcontroller!.index;
     });
   }
 
-  void getCached() async {
+  Future<void> getCached() async {
     if (widget.type == 'all') {
-      _cachedSongs = Hive.box('cache').get('cachedSongs', defaultValue: []);
-      _cachedVideos = Hive.box('cache').get('cachedVideos', defaultValue: []);
-      _cachedAlbums = Hive.box('cache').get('cachedAlbums', defaultValue: {});
-      _cachedArtists = Hive.box('cache').get('cachedArtists', defaultValue: {});
-      _cachedGenres = Hive.box('cache').get('cachedGenres', defaultValue: {});
-    } else {
       _cachedSongs =
-          Hive.box('cache').get('cachedDownloadedSongs', defaultValue: []);
+          Hive.box('cache').get('cachedSongs', defaultValue: []) as List;
+      _cachedVideos =
+          Hive.box('cache').get('cachedVideos', defaultValue: []) as List;
       _cachedAlbums =
-          Hive.box('cache').get('cachedDownloadedAlbums', defaultValue: {});
+          Hive.box('cache').get('cachedAlbums', defaultValue: {}) as Map;
       _cachedArtists =
-          Hive.box('cache').get('cachedDownloadedArtists', defaultValue: {});
+          Hive.box('cache').get('cachedArtists', defaultValue: {}) as Map;
       _cachedGenres =
-          Hive.box('cache').get('cachedDownloadedGenres', defaultValue: {});
+          Hive.box('cache').get('cachedGenres', defaultValue: {}) as Map;
+    } else {
+      _cachedSongs = Hive.box('cache')
+          .get('cachedDownloadedSongs', defaultValue: []) as List;
+      _cachedAlbums = Hive.box('cache')
+          .get('cachedDownloadedAlbums', defaultValue: {}) as Map;
+      _cachedArtists = Hive.box('cache')
+          .get('cachedDownloadedArtists', defaultValue: {}) as Map;
+      _cachedGenres = Hive.box('cache')
+          .get('cachedDownloadedGenres', defaultValue: {}) as Map;
     }
     if (_cachedSongs.isEmpty) return;
     sortSongs(_cachedSongs, _cachedVideos);
@@ -102,38 +110,38 @@ class _DownloadedSongsState extends State<DownloadedSongs>
 
   void sortSongs(List songs, List videos) {
     if (sortValue == 0) {
-      songs.sort((a, b) => a["id"]
+      songs.sort((a, b) => a['id']
           .split('/')
           .last
           .toString()
           .toUpperCase()
-          .compareTo(b["id"].split('/').last.toString().toUpperCase()));
-      videos.sort((a, b) => a["id"]
+          .compareTo(b['id'].split('/').last.toString().toUpperCase()));
+      videos.sort((a, b) => a['id']
           .split('/')
           .last
           .toString()
           .toUpperCase()
-          .compareTo(b["id"].split('/').last.toString().toUpperCase()));
+          .compareTo(b['id'].split('/').last.toString().toUpperCase()));
     }
     if (sortValue == 1) {
-      songs.sort((b, a) => a["id"]
+      songs.sort((b, a) => a['id']
           .split('/')
           .last
           .toString()
           .toUpperCase()
-          .compareTo(b["id"].split('/').last.toString().toUpperCase()));
-      videos.sort((b, a) => a["id"]
+          .compareTo(b['id'].split('/').last.toString().toUpperCase()));
+      videos.sort((b, a) => a['id']
           .split('/')
           .last
           .toString()
           .toUpperCase()
-          .compareTo(b["id"].split('/').last.toString().toUpperCase()));
+          .compareTo(b['id'].split('/').last.toString().toUpperCase()));
     }
     if (sortValue == 2) {
       songs.sort((b, a) =>
-          a["lastModified"].toString().compareTo(b["lastModified"].toString()));
+          a['lastModified'].toString().compareTo(b['lastModified'].toString()));
       videos.sort((b, a) =>
-          a["lastModified"].toString().compareTo(b["lastModified"].toString()));
+          a['lastModified'].toString().compareTo(b['lastModified'].toString()));
     }
     if (sortValue == 3) {
       songs.shuffle();
@@ -160,20 +168,20 @@ class _DownloadedSongsState extends State<DownloadedSongs>
           a.toString().toUpperCase().compareTo(b.toString().toUpperCase()));
     }
     if (albumSortValue == 2) {
-      _sortedAlbumKeysList
-          .sort((b, a) => albums[a].length.compareTo(albums[b].length));
-      _sortedArtistKeysList
-          .sort((b, a) => artists[a].length.compareTo(artists[b].length));
-      _sortedGenreKeysList
-          .sort((b, a) => genres[a].length.compareTo(genres[b].length));
+      _sortedAlbumKeysList.sort((b, a) =>
+          (albums[a] as List).length.compareTo((albums[b] as List).length));
+      _sortedArtistKeysList.sort((b, a) =>
+          (artists[a] as List).length.compareTo((artists[b] as List).length));
+      _sortedGenreKeysList.sort((b, a) =>
+          (genres[a] as List).length.compareTo((genres[b] as List).length));
     }
     if (albumSortValue == 3) {
-      _sortedAlbumKeysList
-          .sort((a, b) => albums[a].length.compareTo(albums[b].length));
-      _sortedArtistKeysList
-          .sort((a, b) => artists[a].length.compareTo(artists[b].length));
-      _sortedGenreKeysList
-          .sort((a, b) => genres[a].length.compareTo(genres[b].length));
+      _sortedAlbumKeysList.sort((a, b) =>
+          (albums[a] as List).length.compareTo((albums[b] as List).length));
+      _sortedArtistKeysList.sort((a, b) =>
+          (artists[a] as List).length.compareTo((artists[b] as List).length));
+      _sortedGenreKeysList.sort((a, b) =>
+          (genres[a] as List).length.compareTo((genres[b] as List).length));
     }
     if (albumSortValue == 4) {
       _sortedAlbumKeysList.shuffle();
@@ -183,68 +191,68 @@ class _DownloadedSongsState extends State<DownloadedSongs>
   }
 
   Future<void> fetchDownloaded() async {
-    List _songs = [];
-    List _videos = [];
+    final List _songs = [];
+    final List _videos = [];
     List sortedAlbumKeysList = [];
     List sortedArtistKeysList = [];
     List sortedGenreKeysList = [];
-    List<FileSystemEntity> _files = [];
-    Map<String, List<Map>> _albums = {};
-    Map<String, List<Map>> _artists = {};
-    Map<String, List<Map>> _genres = {};
-    Audiotagger tagger = Audiotagger();
+    final List<FileSystemEntity> _files = [];
+    final Map<String, List<Map>> _albums = {};
+    final Map<String, List<Map>> _artists = {};
+    final Map<String, List<Map>> _genres = {};
+    final Audiotagger tagger = Audiotagger();
 
-    for (String path in dirPaths) {
+    for (final path in dirPaths) {
       try {
-        Directory dir = Directory(path);
+        final Directory dir = Directory(path.toString());
         _files.addAll(dir.listSync(recursive: true, followLinks: false));
       } catch (e) {
-        print('failed');
+        // print('failed');
       }
     }
 
-    for (FileSystemEntity entity in _files) {
+    for (final FileSystemEntity entity in _files) {
       if (entity.path.endsWith('.mp3') ||
           entity.path.endsWith('.m4a') ||
           entity.path.endsWith('.wav') ||
           entity.path.endsWith('.flac')) {
         try {
-          final Tag tags = await tagger.readTags(path: entity.path);
-          FileStat stats = await entity.stat();
+          final Tag? tags = await tagger.readTags(path: entity.path);
+          final FileStat stats = await entity.stat();
           if (stats.size < 1048576) {
-            print("Size of mediaItem found less than 1 MB");
-            debugPrint("Ignoring media: ${entity.path}");
+            debugPrint('Size of mediaItem found less than 1 MB');
+            debugPrint('Ignoring media: ${entity.path}');
           } else {
-            if (widget.type != 'all' && tags.comment != 'BlackHole') {
+            if (widget.type != 'all' && tags?.comment != 'BlackHole') {
               continue;
             }
-            final AudioFile audioFile =
+            final AudioFile? audioFile =
                 await tagger.readAudioFile(path: entity.path);
-            String albumTag = tags.album;
-            String artistTag = tags.artist;
-            String genreTag = tags.genre;
+            String albumTag = tags?.album ?? '';
+            String artistTag = tags?.artist ?? '';
+            String genreTag = tags?.genre ?? '';
             if (artistTag.trim() == '') artistTag = 'Unknown';
 
             if (albumTag.trim() == '') albumTag = 'Unknown';
 
             if (genreTag.trim() == '') genreTag = 'Unknown';
 
-            Map data = {
+            final Map data = {
               'id': entity.path,
               'image': await tagger.readArtwork(path: entity.path),
-              'title': tags.title,
+              'title': tags?.title ?? '',
               'artist': artistTag,
-              'albumArtist': tags.albumArtist,
+              'albumArtist': tags?.albumArtist,
               'album': albumTag,
               'lastModified': stats.modified,
               'genre': genreTag,
-              'year': tags.year,
-              'duration': audioFile.length,
+              'year': tags?.year,
+              'duration': audioFile?.length,
             };
             _songs.add(data);
 
             if (_albums.containsKey(albumTag)) {
-              List tempAlbum = _albums[albumTag];
+              final List<Map> tempAlbum = _albums[albumTag]!;
               tempAlbum.add(data);
               _albums.addEntries([MapEntry(albumTag, tempAlbum)]);
             } else {
@@ -254,7 +262,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
             }
 
             if (_artists.containsKey(artistTag)) {
-              List tempArtist = _artists[artistTag];
+              final List<Map> tempArtist = _artists[artistTag]!;
               tempArtist.add(data);
               _artists.addEntries([MapEntry(artistTag, tempArtist)]);
             } else {
@@ -264,7 +272,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
             }
 
             if (_genres.containsKey(genreTag)) {
-              List tempGenre = _genres[genreTag];
+              final List<Map> tempGenre = _genres[genreTag]!;
               tempGenre.add(data);
               _genres.addEntries([MapEntry(genreTag, tempGenre)]);
             } else {
@@ -273,7 +281,9 @@ class _DownloadedSongsState extends State<DownloadedSongs>
               ]);
             }
           }
-        } catch (e) {}
+        } catch (e) {
+          // print('Error: $e');
+        }
       }
 
       if (widget.type == 'all' &&
@@ -282,12 +292,12 @@ class _DownloadedSongsState extends State<DownloadedSongs>
               entity.path.endsWith('.webm') ||
               entity.path.endsWith('.opus'))) {
         try {
-          FileStat stats = await entity.stat();
+          final FileStat stats = await entity.stat();
           if (stats.size < 1048576) {
-            print("Size of mediaItem found less than 1 MB");
-            debugPrint("Ignoring media: ${entity.path}");
+            debugPrint('Size of mediaItem found less than 1 MB');
+            debugPrint('Ignoring media: ${entity.path}');
           } else {
-            Map data = {
+            _videos.add({
               'id': entity.path,
               'image': null,
               'title': entity.path.split('/').last.toString(),
@@ -297,10 +307,11 @@ class _DownloadedSongsState extends State<DownloadedSongs>
               'lastModified': stats.modified,
               'year': '',
               'genre': '',
-            };
-            _videos.add(data);
+            });
           }
-        } catch (e) {}
+        } catch (e) {
+          // print('Error: $e');
+        }
       }
     }
     sortSongs(_songs, _videos);
@@ -335,10 +346,10 @@ class _DownloadedSongsState extends State<DownloadedSongs>
     sortedCachedGenreKeysList = sortedGenreKeysList;
   }
 
-  void getDownloaded() async {
+  Future<void> getDownloaded() async {
     PermissionStatus status = await Permission.storage.status;
     if (status.isRestricted || status.isDenied) {
-      Map<Permission, PermissionStatus> statuses = await [
+      final Map<Permission, PermissionStatus> statuses = await [
         Permission.storage,
       ].request();
       debugPrint(statuses[Permission.storage].toString());
@@ -348,10 +359,10 @@ class _DownloadedSongsState extends State<DownloadedSongs>
       return;
     }
     if (dirPaths.isEmpty) {
-      String path = await ExtStorage.getExternalStoragePublicDirectory(
+      final String? path = await ExtStorage.getExternalStoragePublicDirectory(
           ExtStorage.DIRECTORY_MUSIC);
       dirPaths.add(path);
-      String path2 = await ExtStorage.getExternalStoragePublicDirectory(
+      final String? path2 = await ExtStorage.getExternalStoragePublicDirectory(
           ExtStorage.DIRECTORY_DOWNLOADS);
       dirPaths.add(path2);
       Hive.box('settings').put('searchPaths', dirPaths);
@@ -378,40 +389,40 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                     controller: _tcontroller,
                     tabs: widget.type == 'all'
                         ? [
-                            Tab(
+                            const Tab(
                               text: 'Songs',
                             ),
-                            Tab(
+                            const Tab(
                               text: 'Albums',
                             ),
-                            Tab(
+                            const Tab(
                               text: 'Artists',
                             ),
-                            Tab(
+                            const Tab(
                               text: 'Genres',
                             ),
-                            Tab(
+                            const Tab(
                               text: 'Videos',
                             )
                           ]
                         : [
-                            Tab(
+                            const Tab(
                               text: 'Songs',
                             ),
-                            Tab(
+                            const Tab(
                               text: 'Albums',
                             ),
-                            Tab(
+                            const Tab(
                               text: 'Artists',
                             ),
-                            Tab(
+                            const Tab(
                               text: 'Genres',
                             ),
                           ],
                   ),
                   actions: [
                     IconButton(
-                      icon: Icon(CupertinoIcons.search),
+                      icon: const Icon(CupertinoIcons.search),
                       onPressed: () {
                         showSearch(
                             context: context,
@@ -419,8 +430,8 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                       },
                     ),
                     PopupMenuButton(
-                        icon: Icon(Icons.sort_rounded),
-                        shape: RoundedRectangleBorder(
+                        icon: const Icon(Icons.sort_rounded),
+                        shape: const RoundedRectangleBorder(
                             borderRadius:
                                 BorderRadius.all(Radius.circular(7.0))),
                         onSelected: (currentIndex == 0 || currentIndex == 4)
@@ -449,18 +460,19 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                                     value: 0,
                                     child: Row(
                                       children: [
-                                        sortValue == 0
-                                            ? Icon(
-                                                Icons.check_rounded,
-                                                color: Theme.of(context)
-                                                            .brightness ==
+                                        if (sortValue == 0)
+                                          Icon(
+                                            Icons.check_rounded,
+                                            color:
+                                                Theme.of(context).brightness ==
                                                         Brightness.dark
                                                     ? Colors.white
                                                     : Colors.grey[700],
-                                              )
-                                            : SizedBox(),
-                                        SizedBox(width: 10),
-                                        Text(
+                                          )
+                                        else
+                                          const SizedBox(),
+                                        const SizedBox(width: 10),
+                                        const Text(
                                           'A-Z',
                                         ),
                                       ],
@@ -470,18 +482,19 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                                     value: 1,
                                     child: Row(
                                       children: [
-                                        sortValue == 1
-                                            ? Icon(
-                                                Icons.check_rounded,
-                                                color: Theme.of(context)
-                                                            .brightness ==
+                                        if (sortValue == 1)
+                                          Icon(
+                                            Icons.check_rounded,
+                                            color:
+                                                Theme.of(context).brightness ==
                                                         Brightness.dark
                                                     ? Colors.white
                                                     : Colors.grey[700],
-                                              )
-                                            : SizedBox(),
-                                        SizedBox(width: 10),
-                                        Text(
+                                          )
+                                        else
+                                          const SizedBox(),
+                                        const SizedBox(width: 10),
+                                        const Text(
                                           'Z-A',
                                         ),
                                       ],
@@ -491,18 +504,19 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                                     value: 2,
                                     child: Row(
                                       children: [
-                                        sortValue == 2
-                                            ? Icon(
-                                                Icons.check_rounded,
-                                                color: Theme.of(context)
-                                                            .brightness ==
+                                        if (sortValue == 2)
+                                          Icon(
+                                            Icons.check_rounded,
+                                            color:
+                                                Theme.of(context).brightness ==
                                                         Brightness.dark
                                                     ? Colors.white
                                                     : Colors.grey[700],
-                                              )
-                                            : SizedBox(),
-                                        SizedBox(width: 10),
-                                        Text('Last Modified'),
+                                          )
+                                        else
+                                          const SizedBox(),
+                                        const SizedBox(width: 10),
+                                        const Text('Last Modified'),
                                       ],
                                     ),
                                   ),
@@ -510,18 +524,19 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                                     value: 3,
                                     child: Row(
                                       children: [
-                                        sortValue == 3
-                                            ? Icon(
-                                                Icons.shuffle_rounded,
-                                                color: Theme.of(context)
-                                                            .brightness ==
+                                        if (sortValue == 3)
+                                          Icon(
+                                            Icons.shuffle_rounded,
+                                            color:
+                                                Theme.of(context).brightness ==
                                                         Brightness.dark
                                                     ? Colors.white
                                                     : Colors.grey[700],
-                                              )
-                                            : SizedBox(),
-                                        SizedBox(width: 10),
-                                        Text(
+                                          )
+                                        else
+                                          const SizedBox(),
+                                        const SizedBox(width: 10),
+                                        const Text(
                                           'Shuffle',
                                         ),
                                       ],
@@ -533,18 +548,19 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                                     value: 0,
                                     child: Row(
                                       children: [
-                                        albumSortValue == 0
-                                            ? Icon(
-                                                Icons.check_rounded,
-                                                color: Theme.of(context)
-                                                            .brightness ==
+                                        if (albumSortValue == 0)
+                                          Icon(
+                                            Icons.check_rounded,
+                                            color:
+                                                Theme.of(context).brightness ==
                                                         Brightness.dark
                                                     ? Colors.white
                                                     : Colors.grey[700],
-                                              )
-                                            : SizedBox(),
-                                        SizedBox(width: 10),
-                                        Text(
+                                          )
+                                        else
+                                          const SizedBox(),
+                                        const SizedBox(width: 10),
+                                        const Text(
                                           'A-Z',
                                         ),
                                       ],
@@ -554,18 +570,19 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                                     value: 1,
                                     child: Row(
                                       children: [
-                                        albumSortValue == 1
-                                            ? Icon(
-                                                Icons.check_rounded,
-                                                color: Theme.of(context)
-                                                            .brightness ==
+                                        if (albumSortValue == 1)
+                                          Icon(
+                                            Icons.check_rounded,
+                                            color:
+                                                Theme.of(context).brightness ==
                                                         Brightness.dark
                                                     ? Colors.white
                                                     : Colors.grey[700],
-                                              )
-                                            : SizedBox(),
-                                        SizedBox(width: 10),
-                                        Text(
+                                          )
+                                        else
+                                          const SizedBox(),
+                                        const SizedBox(width: 10),
+                                        const Text(
                                           'Z-A',
                                         ),
                                       ],
@@ -575,18 +592,19 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                                     value: 2,
                                     child: Row(
                                       children: [
-                                        albumSortValue == 2
-                                            ? Icon(
-                                                Icons.check_rounded,
-                                                color: Theme.of(context)
-                                                            .brightness ==
+                                        if (albumSortValue == 2)
+                                          Icon(
+                                            Icons.check_rounded,
+                                            color:
+                                                Theme.of(context).brightness ==
                                                         Brightness.dark
                                                     ? Colors.white
                                                     : Colors.grey[700],
-                                              )
-                                            : SizedBox(),
-                                        SizedBox(width: 10),
-                                        Text(
+                                          )
+                                        else
+                                          const SizedBox(),
+                                        const SizedBox(width: 10),
+                                        const Text(
                                           '10-1',
                                         ),
                                       ],
@@ -596,18 +614,19 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                                     value: 3,
                                     child: Row(
                                       children: [
-                                        albumSortValue == 3
-                                            ? Icon(
-                                                Icons.check_rounded,
-                                                color: Theme.of(context)
-                                                            .brightness ==
+                                        if (albumSortValue == 3)
+                                          Icon(
+                                            Icons.check_rounded,
+                                            color:
+                                                Theme.of(context).brightness ==
                                                         Brightness.dark
                                                     ? Colors.white
                                                     : Colors.grey[700],
-                                              )
-                                            : SizedBox(),
-                                        SizedBox(width: 10),
-                                        Text(
+                                          )
+                                        else
+                                          const SizedBox(),
+                                        const SizedBox(width: 10),
+                                        const Text(
                                           '1-10',
                                         ),
                                       ],
@@ -617,18 +636,19 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                                     value: 4,
                                     child: Row(
                                       children: [
-                                        albumSortValue == 4
-                                            ? Icon(
-                                                Icons.shuffle_rounded,
-                                                color: Theme.of(context)
-                                                            .brightness ==
+                                        if (albumSortValue == 4)
+                                          Icon(
+                                            Icons.shuffle_rounded,
+                                            color:
+                                                Theme.of(context).brightness ==
                                                         Brightness.dark
                                                     ? Colors.white
                                                     : Colors.grey[700],
-                                              )
-                                            : SizedBox(),
-                                        SizedBox(width: 10),
-                                        Text(
+                                          )
+                                        else
+                                          const SizedBox(),
+                                        const SizedBox(width: 10),
+                                        const Text(
                                           'Shuffle',
                                         ),
                                       ],
@@ -644,9 +664,9 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                   elevation: 0,
                 ),
                 body: !added
-                    ? Container(
+                    ? SizedBox(
                         child: Center(
-                          child: Container(
+                          child: SizedBox(
                               height: MediaQuery.of(context).size.width / 7,
                               width: MediaQuery.of(context).size.width / 7,
                               child: CircularProgressIndicator(
@@ -657,7 +677,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                         ),
                       )
                     : TabBarView(
-                        physics: CustomPhysics(),
+                        physics: const CustomPhysics(),
                         controller: _tcontroller,
                         children: widget.type == 'all'
                             ? [
@@ -682,13 +702,13 @@ class _DownloadedSongsState extends State<DownloadedSongs>
     );
   }
 
-  songsTab() {
-    return _cachedSongs.length == 0
-        ? EmptyScreen().emptyScreen(context, 3, "Nothing to ", 15.0,
-            "Show Here", 45, "Download Something", 23.0)
+  Widget songsTab() {
+    return _cachedSongs.isEmpty
+        ? EmptyScreen().emptyScreen(context, 3, 'Nothing to ', 15.0,
+            'Show Here', 45, 'Download Something', 23.0)
         : ListView.builder(
-            physics: BouncingScrollPhysics(),
-            padding: EdgeInsets.only(top: 20, bottom: 10),
+            physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.only(top: 20, bottom: 10),
             shrinkWrap: true,
             itemExtent: 70.0,
             itemCount: _cachedSongs.length,
@@ -702,50 +722,51 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                   clipBehavior: Clip.antiAlias,
                   child: Stack(
                     children: [
-                      Image(
+                      const Image(
                         image: AssetImage('assets/cover.jpg'),
                       ),
-                      _cachedSongs[index]['image'] == null
-                          ? SizedBox()
-                          : SizedBox(
-                              height: 50.0,
-                              width: 50.0,
-                              child: Image(
-                                fit: BoxFit.cover,
-                                image:
-                                    MemoryImage(_cachedSongs[index]['image']),
-                              ),
-                            )
+                      if (_cachedSongs[index]['image'] == null)
+                        const SizedBox()
+                      else
+                        SizedBox(
+                          height: 50.0,
+                          width: 50.0,
+                          child: Image(
+                            fit: BoxFit.cover,
+                            image: MemoryImage(
+                                _cachedSongs[index]['image'] as Uint8List),
+                          ),
+                        )
                     ],
                   ),
                 ),
                 title: Text(
                   _cachedSongs[index]['title'] != null &&
-                          _cachedSongs[index]['title'].trim() != ""
-                      ? _cachedSongs[index]['title']
-                      : '${_cachedSongs[index]['id'].split('/').last}',
+                          _cachedSongs[index]['title'].trim() != ''
+                      ? _cachedSongs[index]['title'].toString()
+                      : _cachedSongs[index]['id'].toString().split('/').last,
                   overflow: TextOverflow.ellipsis,
                 ),
                 subtitle: Text(
-                  _cachedSongs[index]['artist'] ?? "",
+                  _cachedSongs[index]['artist']?.toString() ?? '',
                   overflow: TextOverflow.ellipsis,
                 ),
                 trailing: PopupMenuButton(
-                  icon: Icon(Icons.more_vert_rounded),
-                  shape: RoundedRectangleBorder(
+                  icon: const Icon(Icons.more_vert_rounded),
+                  shape: const RoundedRectangleBorder(
                       borderRadius: BorderRadius.all(Radius.circular(7.0))),
-                  onSelected: (value) async {
+                  onSelected: (int? value) async {
                     if (value == 0) {
                       showDialog(
                         context: context,
                         builder: (BuildContext context) {
-                          String fileName = _cachedSongs[index]['id']
+                          final String fileName = _cachedSongs[index]['id']
                               .split('/')
                               .last
                               .toString();
-                          List temp = fileName.split('.');
+                          final List temp = fileName.split('.');
                           temp.removeLast();
-                          String songName = temp.join('.');
+                          final String songName = temp.join('.');
                           final controller =
                               TextEditingController(text: songName);
                           return AlertDialog(
@@ -761,7 +782,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                                     ),
                                   ],
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   height: 10,
                                 ),
                                 TextField(
@@ -777,50 +798,21 @@ class _DownloadedSongsState extends State<DownloadedSongs>
 
                                         while (await File(newName).exists()) {
                                           newName = newName.replaceFirst(
-                                              value, value + ' (1)');
+                                              value, '$value (1)');
                                         }
 
-                                        File(_cachedSongs[index]['id'])
+                                        File(_cachedSongs[index]['id']
+                                                .toString())
                                             .rename(newName);
                                         _cachedSongs[index]['id'] = newName;
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          SnackBar(
-                                            elevation: 6,
-                                            backgroundColor: Colors.grey[900],
-                                            behavior: SnackBarBehavior.floating,
-                                            content: Text(
-                                              'Renamed to ${_cachedSongs[index]['id'].split('/').last}',
-                                              style: TextStyle(
-                                                  color: Colors.white),
-                                            ),
-                                            action: SnackBarAction(
-                                              textColor:
-                                                  Theme.of(context).accentColor,
-                                              label: 'Ok',
-                                              onPressed: () {},
-                                            ),
-                                          ),
+                                        ShowSnackBar().showSnackBar(
+                                          context,
+                                          'Renamed to ${_cachedSongs[index]['id'].split('/').last}',
                                         );
                                       } catch (e) {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          SnackBar(
-                                            elevation: 6,
-                                            backgroundColor: Colors.grey[900],
-                                            behavior: SnackBarBehavior.floating,
-                                            content: Text(
-                                              'Failed to Rename ${_cachedSongs[index]['id'].split('/').last}',
-                                              style: TextStyle(
-                                                  color: Colors.white),
-                                            ),
-                                            action: SnackBarAction(
-                                              textColor:
-                                                  Theme.of(context).accentColor,
-                                              label: 'Ok',
-                                              onPressed: () {},
-                                            ),
-                                          ),
+                                        ShowSnackBar().showSnackBar(
+                                          context,
+                                          'Failed to Rename ${_cachedSongs[index]['id'].split('/').last}',
                                         );
                                       }
                                       setState(() {});
@@ -836,22 +828,18 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                                       : Colors.grey[700],
                                   //       backgroundColor: Theme.of(context).accentColor,
                                 ),
-                                child: Text(
-                                  "Cancel",
-                                ),
                                 onPressed: () {
                                   Navigator.pop(context);
                                 },
+                                child: const Text(
+                                  'Cancel',
+                                ),
                               ),
                               TextButton(
                                 style: TextButton.styleFrom(
                                   primary: Colors.white,
                                   backgroundColor:
                                       Theme.of(context).accentColor,
-                                ),
-                                child: Text(
-                                  "Ok",
-                                  style: TextStyle(color: Colors.white),
                                 ),
                                 onPressed: () async {
                                   try {
@@ -864,52 +852,30 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                                     while (await File(newName).exists()) {
                                       newName = newName.replaceFirst(
                                           controller.text,
-                                          controller.text + ' (1)');
+                                          '${controller.text} (1)');
                                     }
 
-                                    File(_cachedSongs[index]['id'])
+                                    File(_cachedSongs[index]['id'].toString())
                                         .rename(newName);
                                     _cachedSongs[index]['id'] = newName;
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        elevation: 6,
-                                        backgroundColor: Colors.grey[900],
-                                        behavior: SnackBarBehavior.floating,
-                                        content: Text(
-                                          'Renamed to ${_cachedSongs[index]['id'].split('/').last}',
-                                          style: TextStyle(color: Colors.white),
-                                        ),
-                                        action: SnackBarAction(
-                                          textColor:
-                                              Theme.of(context).accentColor,
-                                          label: 'Ok',
-                                          onPressed: () {},
-                                        ),
-                                      ),
+                                    ShowSnackBar().showSnackBar(
+                                      context,
+                                      'Renamed to ${_cachedSongs[index]['id'].split('/').last}',
                                     );
                                   } catch (e) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        elevation: 6,
-                                        backgroundColor: Colors.grey[900],
-                                        behavior: SnackBarBehavior.floating,
-                                        content: Text(
-                                          'Failed to Rename ${_cachedSongs[index]['id'].split('/').last}',
-                                          style: TextStyle(color: Colors.white),
-                                        ),
-                                        action: SnackBarAction(
-                                          textColor:
-                                              Theme.of(context).accentColor,
-                                          label: 'Ok',
-                                          onPressed: () {},
-                                        ),
-                                      ),
+                                    ShowSnackBar().showSnackBar(
+                                      context,
+                                      'Failed to Rename ${_cachedSongs[index]['id'].split('/').last}',
                                     );
                                   }
                                   setState(() {});
                                 },
+                                child: const Text(
+                                  'Ok',
+                                  style: TextStyle(color: Colors.white),
+                                ),
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 width: 5,
                               ),
                             ],
@@ -922,23 +888,24 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                         context: context,
                         builder: (BuildContext context) {
                           final _titlecontroller = TextEditingController(
-                              text: _cachedSongs[index]['title']);
+                              text: _cachedSongs[index]['title'].toString());
                           final _albumcontroller = TextEditingController(
-                              text: _cachedSongs[index]['album']);
+                              text: _cachedSongs[index]['album'].toString());
                           final _artistcontroller = TextEditingController(
-                              text: _cachedSongs[index]['artist']);
+                              text: _cachedSongs[index]['artist'].toString());
                           final _albumArtistController = TextEditingController(
-                              text: _cachedSongs[index]['albumArtist']);
+                              text: _cachedSongs[index]['albumArtist']
+                                  .toString());
                           final _genrecontroller = TextEditingController(
-                              text: _cachedSongs[index]['genre']);
+                              text: _cachedSongs[index]['genre'].toString());
                           final _yearcontroller = TextEditingController(
-                              text: _cachedSongs[index]['year']);
+                              text: _cachedSongs[index]['year'].toString());
                           return AlertDialog(
-                            content: Container(
+                            content: SizedBox(
                               height: 400,
                               width: 300,
                               child: SingleChildScrollView(
-                                physics: BouncingScrollPhysics(),
+                                physics: const BouncingScrollPhysics(),
                                 child: Column(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
@@ -956,7 +923,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                                         autofocus: true,
                                         controller: _titlecontroller,
                                         onSubmitted: (value) {}),
-                                    SizedBox(
+                                    const SizedBox(
                                       height: 30,
                                     ),
                                     Row(
@@ -973,7 +940,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                                         autofocus: true,
                                         controller: _artistcontroller,
                                         onSubmitted: (value) {}),
-                                    SizedBox(
+                                    const SizedBox(
                                       height: 30,
                                     ),
                                     Row(
@@ -990,7 +957,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                                         autofocus: true,
                                         controller: _albumArtistController,
                                         onSubmitted: (value) {}),
-                                    SizedBox(
+                                    const SizedBox(
                                       height: 30,
                                     ),
                                     Row(
@@ -1007,7 +974,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                                         autofocus: true,
                                         controller: _albumcontroller,
                                         onSubmitted: (value) {}),
-                                    SizedBox(
+                                    const SizedBox(
                                       height: 30,
                                     ),
                                     Row(
@@ -1024,7 +991,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                                         autofocus: true,
                                         controller: _genrecontroller,
                                         onSubmitted: (value) {}),
-                                    SizedBox(
+                                    const SizedBox(
                                       height: 30,
                                     ),
                                     Row(
@@ -1053,20 +1020,16 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                                       ? Colors.white
                                       : Colors.grey[700],
                                 ),
-                                child: Text("Cancel"),
                                 onPressed: () {
                                   Navigator.pop(context);
                                 },
+                                child: const Text('Cancel'),
                               ),
                               TextButton(
                                 style: TextButton.styleFrom(
                                   primary: Colors.white,
                                   backgroundColor:
                                       Theme.of(context).accentColor,
-                                ),
-                                child: Text(
-                                  "Ok",
-                                  style: TextStyle(color: Colors.white),
                                 ),
                                 onPressed: () async {
                                   try {
@@ -1094,48 +1057,27 @@ class _DownloadedSongsState extends State<DownloadedSongs>
 
                                     final tagger = Audiotagger();
                                     await tagger.writeTags(
-                                      path: _cachedSongs[index]['id'],
+                                      path:
+                                          _cachedSongs[index]['id'].toString(),
                                       tag: tag,
                                     );
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        elevation: 6,
-                                        backgroundColor: Colors.grey[900],
-                                        behavior: SnackBarBehavior.floating,
-                                        content: Text(
-                                          'Successfully edited tags',
-                                          style: TextStyle(color: Colors.white),
-                                        ),
-                                        action: SnackBarAction(
-                                          textColor:
-                                              Theme.of(context).accentColor,
-                                          label: 'Ok',
-                                          onPressed: () {},
-                                        ),
-                                      ),
+                                    ShowSnackBar().showSnackBar(
+                                      context,
+                                      'Successfully edited tags',
                                     );
                                   } catch (e) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        elevation: 6,
-                                        backgroundColor: Colors.grey[900],
-                                        behavior: SnackBarBehavior.floating,
-                                        content: Text(
-                                          'Failed to edit tags',
-                                          style: TextStyle(color: Colors.white),
-                                        ),
-                                        action: SnackBarAction(
-                                          textColor:
-                                              Theme.of(context).accentColor,
-                                          label: 'Ok',
-                                          onPressed: () {},
-                                        ),
-                                      ),
+                                    ShowSnackBar().showSnackBar(
+                                      context,
+                                      'Failed to edit tags',
                                     );
                                   }
                                 },
+                                child: const Text(
+                                  'Ok',
+                                  style: TextStyle(color: Colors.white),
+                                ),
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 width: 5,
                               ),
                             ],
@@ -1145,64 +1087,43 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                     }
                     if (value == 2) {
                       try {
-                        File(_cachedSongs[index]['id']).delete();
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            elevation: 6,
-                            backgroundColor: Colors.grey[900],
-                            behavior: SnackBarBehavior.floating,
-                            content: Text(
-                              'Deleted ${_cachedSongs[index]['id'].split('/').last}',
-                              style: TextStyle(color: Colors.white),
-                            ),
-                            action: SnackBarAction(
-                              textColor: Theme.of(context).accentColor,
-                              label: 'Ok',
-                              onPressed: () {},
-                            ),
-                          ),
+                        File(_cachedSongs[index]['id'].toString()).delete();
+                        ShowSnackBar().showSnackBar(
+                          context,
+                          'Deleted ${_cachedSongs[index]['id'].split('/').last}',
                         );
                         if (_cachedAlbums[_cachedSongs[index]['album']]
                                 .length ==
-                            1)
+                            1) {
                           sortedCachedAlbumKeysList
                               .remove(_cachedSongs[index]['album']);
+                        }
                         _cachedAlbums[_cachedSongs[index]['album']]
                             .remove(_cachedSongs[index]);
 
                         if (_cachedArtists[_cachedSongs[index]['artist']]
                                 .length ==
-                            1)
+                            1) {
                           sortedCachedArtistKeysList
                               .remove(_cachedSongs[index]['artist']);
+                        }
                         _cachedArtists[_cachedSongs[index]['artist']]
                             .remove(_cachedSongs[index]);
 
                         if (_cachedGenres[_cachedSongs[index]['genre']]
                                 .length ==
-                            1)
+                            1) {
                           sortedCachedGenreKeysList
                               .remove(_cachedSongs[index]['genre']);
+                        }
                         _cachedGenres[_cachedSongs[index]['genre']]
                             .remove(_cachedSongs[index]);
 
                         _cachedSongs.remove(_cachedSongs[index]);
                       } catch (e) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            elevation: 6,
-                            backgroundColor: Colors.grey[900],
-                            behavior: SnackBarBehavior.floating,
-                            content: Text(
-                              'Failed to delete ${_cachedSongs[index]['id']}',
-                              style: TextStyle(color: Colors.white),
-                            ),
-                            action: SnackBarAction(
-                              textColor: Theme.of(context).accentColor,
-                              label: 'Ok',
-                              onPressed: () {},
-                            ),
-                          ),
+                        ShowSnackBar().showSnackBar(
+                          context,
+                          'Failed to delete ${_cachedSongs[index]['id']}',
                         );
                       }
                       setState(() {});
@@ -1212,7 +1133,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                     PopupMenuItem(
                       value: 0,
                       child: Row(
-                        children: [
+                        children: const [
                           Icon(Icons.edit_rounded),
                           Spacer(),
                           Text('Rename'),
@@ -1223,7 +1144,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                     PopupMenuItem(
                       value: 1,
                       child: Row(
-                        children: [
+                        children: const [
                           Icon(
                               // CupertinoIcons.tag
                               Icons.local_offer_rounded),
@@ -1236,7 +1157,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                     PopupMenuItem(
                       value: 2,
                       child: Row(
-                        children: [
+                        children: const [
                           Icon(Icons.delete_rounded),
                           Spacer(),
                           Text('Delete'),
@@ -1265,28 +1186,33 @@ class _DownloadedSongsState extends State<DownloadedSongs>
             });
   }
 
-  albumsTab() {
+  Widget albumsTab() {
     return sortedCachedAlbumKeysList.isEmpty
-        ? EmptyScreen().emptyScreen(context, 3, "Nothing to ", 15.0,
-            "Show Here", 45, "Download Something", 23.0)
+        ? EmptyScreen().emptyScreen(context, 3, 'Nothing to ', 15.0,
+            'Show Here', 45, 'Download Something', 23.0)
         : ListView.builder(
-            physics: BouncingScrollPhysics(),
-            padding: EdgeInsets.only(top: 20, bottom: 10),
+            physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.only(top: 20, bottom: 10),
             shrinkWrap: true,
             itemExtent: 70.0,
             itemCount: sortedCachedAlbumKeysList.length,
             itemBuilder: (context, index) {
               return ListTile(
                 leading: OfflineCollage(
-                  imageList: _cachedAlbums[sortedCachedAlbumKeysList[index]]
+                  imageList: (_cachedAlbums[sortedCachedAlbumKeysList[index]]
+                                  as List)
                               .length >=
                           4
-                      ? _cachedAlbums[sortedCachedAlbumKeysList[index]]
+                      ? (_cachedAlbums[sortedCachedAlbumKeysList[index]]
+                              as List)
                           .sublist(0, 4)
-                      : _cachedAlbums[sortedCachedAlbumKeysList[index]].sublist(
-                          0,
-                          _cachedAlbums[sortedCachedAlbumKeysList[index]]
-                              .length),
+                      : (_cachedAlbums[sortedCachedAlbumKeysList[index]]
+                              as List)
+                          .sublist(
+                              0,
+                              (_cachedAlbums[sortedCachedAlbumKeysList[index]]
+                                      as List)
+                                  .length),
                   placeholderImage: 'assets/album.png',
                 ),
                 title: Text(
@@ -1303,7 +1229,8 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                     PageRouteBuilder(
                       opaque: false, // set to false
                       pageBuilder: (_, __, ___) => SongsList(
-                        data: _cachedAlbums[sortedCachedAlbumKeysList[index]],
+                        data: _cachedAlbums[sortedCachedAlbumKeysList[index]]
+                            as List,
                         offline: true,
                       ),
                     ),
@@ -1313,29 +1240,32 @@ class _DownloadedSongsState extends State<DownloadedSongs>
             });
   }
 
-  artistsTab() {
+  Widget artistsTab() {
     return sortedCachedArtistKeysList.isEmpty
-        ? EmptyScreen().emptyScreen(context, 3, "Nothing to ", 15.0,
-            "Show Here", 45, "Download Something", 23.0)
+        ? EmptyScreen().emptyScreen(context, 3, 'Nothing to ', 15.0,
+            'Show Here', 45, 'Download Something', 23.0)
         : ListView.builder(
-            physics: BouncingScrollPhysics(),
-            padding: EdgeInsets.only(top: 20, bottom: 10),
+            physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.only(top: 20, bottom: 10),
             shrinkWrap: true,
             itemExtent: 70.0,
             itemCount: sortedCachedArtistKeysList.length,
             itemBuilder: (context, index) {
               return ListTile(
                 leading: OfflineCollage(
-                  imageList: _cachedArtists[sortedCachedArtistKeysList[index]]
+                  imageList: (_cachedArtists[sortedCachedArtistKeysList[index]]
+                                  as List)
                               .length >=
                           4
-                      ? _cachedArtists[sortedCachedArtistKeysList[index]]
+                      ? (_cachedArtists[sortedCachedArtistKeysList[index]]
+                              as List)
                           .sublist(0, 4)
-                      : _cachedArtists[
-                              sortedCachedArtistKeysList[index]]
+                      : (_cachedArtists[sortedCachedArtistKeysList[index]]
+                              as List)
                           .sublist(
                               0,
-                              _cachedArtists[sortedCachedArtistKeysList[index]]
+                              (_cachedArtists[sortedCachedArtistKeysList[index]]
+                                      as List)
                                   .length),
                   placeholderImage: 'assets/artist.png',
                 ),
@@ -1353,7 +1283,8 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                     PageRouteBuilder(
                       opaque: false, // set to false
                       pageBuilder: (_, __, ___) => SongsList(
-                        data: _cachedArtists[sortedCachedArtistKeysList[index]],
+                        data: _cachedArtists[sortedCachedArtistKeysList[index]]
+                            as List,
                         offline: true,
                       ),
                     ),
@@ -1363,28 +1294,33 @@ class _DownloadedSongsState extends State<DownloadedSongs>
             });
   }
 
-  genresTab() {
+  Widget genresTab() {
     return sortedCachedGenreKeysList.isEmpty
-        ? EmptyScreen().emptyScreen(context, 3, "Nothing to ", 15.0,
-            "Show Here", 45, "Download Something", 23.0)
+        ? EmptyScreen().emptyScreen(context, 3, 'Nothing to ', 15.0,
+            'Show Here', 45, 'Download Something', 23.0)
         : ListView.builder(
-            physics: BouncingScrollPhysics(),
-            padding: EdgeInsets.only(top: 20, bottom: 10),
+            physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.only(top: 20, bottom: 10),
             shrinkWrap: true,
             itemExtent: 70.0,
             itemCount: sortedCachedGenreKeysList.length,
             itemBuilder: (context, index) {
               return ListTile(
                 leading: OfflineCollage(
-                  imageList: _cachedGenres[sortedCachedGenreKeysList[index]]
+                  imageList: (_cachedGenres[sortedCachedGenreKeysList[index]]
+                                  as List)
                               .length >=
                           4
-                      ? _cachedGenres[sortedCachedGenreKeysList[index]]
+                      ? (_cachedGenres[sortedCachedGenreKeysList[index]]
+                              as List)
                           .sublist(0, 4)
-                      : _cachedGenres[sortedCachedGenreKeysList[index]].sublist(
-                          0,
-                          _cachedGenres[sortedCachedGenreKeysList[index]]
-                              .length),
+                      : (_cachedGenres[sortedCachedGenreKeysList[index]]
+                              as List)
+                          .sublist(
+                              0,
+                              (_cachedGenres[sortedCachedGenreKeysList[index]]
+                                      as List)
+                                  .length),
                   placeholderImage: 'assets/album.png',
                 ),
                 title: Text(
@@ -1401,7 +1337,8 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                     PageRouteBuilder(
                       opaque: false, // set to false
                       pageBuilder: (_, __, ___) => SongsList(
-                        data: _cachedGenres[sortedCachedGenreKeysList[index]],
+                        data: _cachedGenres[sortedCachedGenreKeysList[index]]
+                            as List,
                         offline: true,
                       ),
                     ),
@@ -1411,13 +1348,13 @@ class _DownloadedSongsState extends State<DownloadedSongs>
             });
   }
 
-  videosTab() {
-    return _cachedVideos.length == 0
-        ? EmptyScreen().emptyScreen(context, 3, "Nothing to ", 15.0,
-            "Show Here", 45, "Download Something", 23.0)
+  Widget videosTab() {
+    return _cachedVideos.isEmpty
+        ? EmptyScreen().emptyScreen(context, 3, 'Nothing to ', 15.0,
+            'Show Here', 45, 'Download Something', 23.0)
         : ListView.builder(
-            physics: BouncingScrollPhysics(),
-            padding: EdgeInsets.only(top: 20, bottom: 10),
+            physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.only(top: 20, bottom: 10),
             shrinkWrap: true,
             itemExtent: 70.0,
             itemCount: _cachedVideos.length,
@@ -1431,20 +1368,21 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                   clipBehavior: Clip.antiAlias,
                   child: Stack(
                     children: [
-                      Image(
+                      const Image(
                         image: AssetImage('assets/cover.jpg'),
                       ),
-                      _cachedVideos[index]['image'] == null
-                          ? SizedBox()
-                          : SizedBox(
-                              height: 50.0,
-                              width: 50.0,
-                              child: Image(
-                                fit: BoxFit.cover,
-                                image:
-                                    MemoryImage(_cachedVideos[index]['image']),
-                              ),
-                            ),
+                      if (_cachedVideos[index]['image'] == null)
+                        const SizedBox()
+                      else
+                        SizedBox(
+                          height: 50.0,
+                          width: 50.0,
+                          child: Image(
+                            fit: BoxFit.cover,
+                            image: MemoryImage(
+                                _cachedVideos[index]['image'] as Uint8List),
+                          ),
+                        ),
                     ],
                   ),
                 ),
@@ -1454,21 +1392,21 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                   maxLines: 2,
                 ),
                 trailing: PopupMenuButton(
-                  icon: Icon(Icons.more_vert_rounded),
-                  shape: RoundedRectangleBorder(
+                  icon: const Icon(Icons.more_vert_rounded),
+                  shape: const RoundedRectangleBorder(
                       borderRadius: BorderRadius.all(Radius.circular(7.0))),
-                  onSelected: (value) async {
+                  onSelected: (dynamic value) async {
                     if (value == 0) {
                       showDialog(
                         context: context,
                         builder: (BuildContext context) {
-                          String fileName = _cachedVideos[index]['id']
+                          final String fileName = _cachedVideos[index]['id']
                               .split('/')
                               .last
                               .toString();
-                          List temp = fileName.split('.');
+                          final List temp = fileName.split('.');
                           temp.removeLast();
-                          String videoName = temp.join('.');
+                          final String videoName = temp.join('.');
                           final controller =
                               TextEditingController(text: videoName);
                           return AlertDialog(
@@ -1484,7 +1422,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                                     ),
                                   ],
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   height: 10,
                                 ),
                                 TextField(
@@ -1500,50 +1438,21 @@ class _DownloadedSongsState extends State<DownloadedSongs>
 
                                         while (await File(newName).exists()) {
                                           newName = newName.replaceFirst(
-                                              value, value + ' (1)');
+                                              value, '$value (1)');
                                         }
 
-                                        File(_cachedVideos[index]['id'])
+                                        File(_cachedVideos[index]['id']
+                                                .toString())
                                             .rename(newName);
                                         _cachedVideos[index]['id'] = newName;
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          SnackBar(
-                                            elevation: 6,
-                                            backgroundColor: Colors.grey[900],
-                                            behavior: SnackBarBehavior.floating,
-                                            content: Text(
-                                              'Renamed to ${_cachedVideos[index]['id'].split('/').last}',
-                                              style: TextStyle(
-                                                  color: Colors.white),
-                                            ),
-                                            action: SnackBarAction(
-                                              textColor:
-                                                  Theme.of(context).accentColor,
-                                              label: 'Ok',
-                                              onPressed: () {},
-                                            ),
-                                          ),
+                                        ShowSnackBar().showSnackBar(
+                                          context,
+                                          'Renamed to ${_cachedVideos[index]['id'].split('/').last}',
                                         );
                                       } catch (e) {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          SnackBar(
-                                            elevation: 6,
-                                            backgroundColor: Colors.grey[900],
-                                            behavior: SnackBarBehavior.floating,
-                                            content: Text(
-                                              'Failed to Rename ${_cachedVideos[index]['id'].split('/').last}',
-                                              style: TextStyle(
-                                                  color: Colors.white),
-                                            ),
-                                            action: SnackBarAction(
-                                              textColor:
-                                                  Theme.of(context).accentColor,
-                                              label: 'Ok',
-                                              onPressed: () {},
-                                            ),
-                                          ),
+                                        ShowSnackBar().showSnackBar(
+                                          context,
+                                          'Failed to Rename ${_cachedVideos[index]['id'].split('/').last}',
                                         );
                                       }
                                       setState(() {});
@@ -1559,22 +1468,18 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                                       : Colors.grey[700],
                                   //       backgroundColor: Theme.of(context).accentColor,
                                 ),
-                                child: Text(
-                                  "Cancel",
-                                ),
                                 onPressed: () {
                                   Navigator.pop(context);
                                 },
+                                child: const Text(
+                                  'Cancel',
+                                ),
                               ),
                               TextButton(
                                 style: TextButton.styleFrom(
                                   primary: Colors.white,
                                   backgroundColor:
                                       Theme.of(context).accentColor,
-                                ),
-                                child: Text(
-                                  "Ok",
-                                  style: TextStyle(color: Colors.white),
                                 ),
                                 onPressed: () async {
                                   try {
@@ -1587,52 +1492,30 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                                     while (await File(newName).exists()) {
                                       newName = newName.replaceFirst(
                                           controller.text,
-                                          controller.text + ' (1)');
+                                          '${controller.text} (1)');
                                     }
 
-                                    File(_cachedVideos[index]['id'])
+                                    File(_cachedVideos[index]['id'].toString())
                                         .rename(newName);
                                     _cachedVideos[index]['id'] = newName;
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        elevation: 6,
-                                        backgroundColor: Colors.grey[900],
-                                        behavior: SnackBarBehavior.floating,
-                                        content: Text(
-                                          'Renamed to ${_cachedVideos[index]['id'].split('/').last}',
-                                          style: TextStyle(color: Colors.white),
-                                        ),
-                                        action: SnackBarAction(
-                                          textColor:
-                                              Theme.of(context).accentColor,
-                                          label: 'Ok',
-                                          onPressed: () {},
-                                        ),
-                                      ),
+                                    ShowSnackBar().showSnackBar(
+                                      context,
+                                      'Renamed to ${_cachedVideos[index]['id'].split('/').last}',
                                     );
                                   } catch (e) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        elevation: 6,
-                                        backgroundColor: Colors.grey[900],
-                                        behavior: SnackBarBehavior.floating,
-                                        content: Text(
-                                          'Failed to Rename ${_cachedVideos[index]['id'].split('/').last}',
-                                          style: TextStyle(color: Colors.white),
-                                        ),
-                                        action: SnackBarAction(
-                                          textColor:
-                                              Theme.of(context).accentColor,
-                                          label: 'Ok',
-                                          onPressed: () {},
-                                        ),
-                                      ),
+                                    ShowSnackBar().showSnackBar(
+                                      context,
+                                      'Failed to Rename ${_cachedVideos[index]['id'].split('/').last}',
                                     );
                                   }
                                   setState(() {});
                                 },
+                                child: const Text(
+                                  'Ok',
+                                  style: TextStyle(color: Colors.white),
+                                ),
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 width: 5,
                               ),
                             ],
@@ -1642,40 +1525,16 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                     }
                     if (value == 1) {
                       try {
-                        File(_cachedVideos[index]['id']).delete();
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            elevation: 6,
-                            backgroundColor: Colors.grey[900],
-                            behavior: SnackBarBehavior.floating,
-                            content: Text(
-                              'Deleted ${_cachedVideos[index]['id'].split('/').last}',
-                              style: TextStyle(color: Colors.white),
-                            ),
-                            action: SnackBarAction(
-                              textColor: Theme.of(context).accentColor,
-                              label: 'Ok',
-                              onPressed: () {},
-                            ),
-                          ),
+                        File(_cachedVideos[index]['id'].toString()).delete();
+                        ShowSnackBar().showSnackBar(
+                          context,
+                          'Deleted ${_cachedVideos[index]['id'].split('/').last}',
                         );
                         _cachedVideos.remove(_cachedVideos[index]);
                       } catch (e) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            elevation: 6,
-                            backgroundColor: Colors.grey[900],
-                            behavior: SnackBarBehavior.floating,
-                            content: Text(
-                              'Failed to delete ${_cachedVideos[index]['id']}',
-                              style: TextStyle(color: Colors.white),
-                            ),
-                            action: SnackBarAction(
-                              textColor: Theme.of(context).accentColor,
-                              label: 'Ok',
-                              onPressed: () {},
-                            ),
-                          ),
+                        ShowSnackBar().showSnackBar(
+                          context,
+                          'Failed to delete ${_cachedVideos[index]['id']}',
                         );
                       }
                       setState(() {});
@@ -1685,7 +1544,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                     PopupMenuItem(
                       value: 0,
                       child: Row(
-                        children: [
+                        children: const [
                           Icon(Icons.edit_rounded),
                           Spacer(),
                           Text('Rename'),
@@ -1696,7 +1555,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                     PopupMenuItem(
                       value: 1,
                       child: Row(
-                        children: [
+                        children: const [
                           Icon(Icons.delete_rounded),
                           Spacer(),
                           Text('Delete'),

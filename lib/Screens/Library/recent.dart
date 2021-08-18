@@ -1,10 +1,11 @@
-import 'package:blackhole/CustomWidgets/gradientContainers.dart';
-import 'package:blackhole/CustomWidgets/emptyScreen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:blackhole/Screens/Player/audioplayer.dart';
-import 'package:blackhole/CustomWidgets/miniplayer.dart';
 import 'package:hive/hive.dart';
+
+import 'package:blackhole/CustomWidgets/empty_screen.dart';
+import 'package:blackhole/CustomWidgets/gradient_containers.dart';
+import 'package:blackhole/CustomWidgets/miniplayer.dart';
+import 'package:blackhole/Screens/Player/audioplayer.dart';
 
 class RecentlyPlayed extends StatefulWidget {
   @override
@@ -15,9 +16,10 @@ class _RecentlyPlayedState extends State<RecentlyPlayed> {
   List _songs = [];
   bool added = false;
 
-  void getSongs() async {
+  Future<void> getSongs() async {
     await Hive.openBox('recentlyPlayed');
-    _songs = Hive.box('recentlyPlayed')?.get('recentSongs') ?? [];
+    _songs =
+        Hive.box('recentlyPlayed').get('recentSongs', defaultValue: []) as List;
     added = true;
     setState(() {});
   }
@@ -35,7 +37,7 @@ class _RecentlyPlayedState extends State<RecentlyPlayed> {
             child: Scaffold(
               backgroundColor: Colors.transparent,
               appBar: AppBar(
-                title: Text('Last Session'),
+                title: const Text('Last Session'),
                 centerTitle: true,
                 backgroundColor: Theme.of(context).brightness == Brightness.dark
                     ? Colors.transparent
@@ -44,28 +46,28 @@ class _RecentlyPlayedState extends State<RecentlyPlayed> {
                 actions: [
                   IconButton(
                     onPressed: () {
-                      Hive.box('recentlyPlayed')?.put('recentSongs', []);
+                      Hive.box('recentlyPlayed').put('recentSongs', []);
                       setState(() {
                         _songs = [];
                       });
                     },
                     tooltip: 'Clear All',
-                    icon: Icon(Icons.clear_all_rounded),
+                    icon: const Icon(Icons.clear_all_rounded),
                   ),
                 ],
               ),
               body: _songs.isEmpty
-                  ? EmptyScreen().emptyScreen(context, 3, "Nothing to ", 15,
-                      "Show Here", 50.0, "Go and Play Something", 23.0)
+                  ? EmptyScreen().emptyScreen(context, 3, 'Nothing to ', 15,
+                      'Show Here', 50.0, 'Go and Play Something', 23.0)
                   : ListView.builder(
-                      physics: BouncingScrollPhysics(),
-                      padding: EdgeInsets.only(top: 10, bottom: 10),
+                      physics: const BouncingScrollPhysics(),
+                      padding: const EdgeInsets.only(top: 10, bottom: 10),
                       shrinkWrap: true,
                       itemCount: _songs.length,
                       itemExtent: 70.0,
                       itemBuilder: (context, index) {
-                        return _songs.length == 0
-                            ? SizedBox()
+                        return _songs.isEmpty
+                            ? const SizedBox()
                             : ListTile(
                                 leading: Card(
                                   elevation: 5,
@@ -74,12 +76,14 @@ class _RecentlyPlayedState extends State<RecentlyPlayed> {
                                   ),
                                   clipBehavior: Clip.antiAlias,
                                   child: CachedNetworkImage(
-                                    errorWidget: (context, _, __) => Image(
+                                    errorWidget: (context, _, __) =>
+                                        const Image(
                                       image: AssetImage('assets/cover.jpg'),
                                     ),
-                                    imageUrl: _songs[index]["image"]
+                                    imageUrl: _songs[index]['image']
+                                        .toString()
                                         .replaceAll('http:', 'https:'),
-                                    placeholder: (context, url) => Image(
+                                    placeholder: (context, url) => const Image(
                                       image: AssetImage('assets/cover.jpg'),
                                     ),
                                   ),

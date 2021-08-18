@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
@@ -5,7 +7,7 @@ class Collage extends StatelessWidget {
   final List imageList;
   final String placeholderImage;
   const Collage(
-      {Key key, @required this.imageList, @required this.placeholderImage})
+      {Key? key, required this.imageList, required this.placeholderImage})
       : super(key: key);
 
   @override
@@ -24,8 +26,6 @@ class Collage extends StatelessWidget {
               GridView.count(
                   shrinkWrap: true,
                   crossAxisCount: imageList.length < 3 ? 1 : 2,
-                  mainAxisSpacing: 0,
-                  crossAxisSpacing: 0,
                   children: [
                     for (int _ in [1, 2, 3, 4])
                       Image(
@@ -35,16 +35,15 @@ class Collage extends StatelessWidget {
               GridView.count(
                   shrinkWrap: true,
                   crossAxisCount: imageList.length < 3 ? 1 : 2,
-                  mainAxisSpacing: 0,
-                  crossAxisSpacing: 0,
                   children: imageList
                       .map(
                         (image) => CachedNetworkImage(
                           errorWidget: (context, _, __) => Image(
                             image: AssetImage(placeholderImage),
                           ),
-                          imageUrl:
-                              image['image'].replaceAll('http:', 'https:'),
+                          imageUrl: image['image']
+                              .toString()
+                              .replaceAll('http:', 'https:'),
                           placeholder: (context, _) => Image(
                             image: AssetImage(placeholderImage),
                           ),
@@ -61,7 +60,7 @@ class OfflineCollage extends StatelessWidget {
   final List imageList;
   final String placeholderImage;
   const OfflineCollage(
-      {Key key, @required this.imageList, @required this.placeholderImage})
+      {Key? key, required this.imageList, required this.placeholderImage})
       : super(key: key);
 
   @override
@@ -80,8 +79,6 @@ class OfflineCollage extends StatelessWidget {
               GridView.count(
                   shrinkWrap: true,
                   crossAxisCount: imageList.length < 3 ? 1 : 2,
-                  mainAxisSpacing: 0,
-                  crossAxisSpacing: 0,
                   children: [
                     for (int _ in [1, 2, 3, 4])
                       Image(
@@ -91,15 +88,13 @@ class OfflineCollage extends StatelessWidget {
               GridView.count(
                   shrinkWrap: true,
                   crossAxisCount: imageList.length < 3 ? 1 : 2,
-                  mainAxisSpacing: 0,
-                  crossAxisSpacing: 0,
                   children: imageList.map((image) {
                     return image == null
-                        ? Image(
+                        ? const Image(
                             image: AssetImage('assets/album.png'),
                           )
                         : Image(
-                            image: MemoryImage(image['image']),
+                            image: MemoryImage(image['image'] as Uint8List),
                           );
                   }).toList()),
             ],

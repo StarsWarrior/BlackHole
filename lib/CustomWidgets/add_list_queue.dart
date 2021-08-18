@@ -1,11 +1,14 @@
 import 'package:audio_service/audio_service.dart';
-import 'package:blackhole/Helpers/playlist.dart';
 import 'package:flutter/material.dart';
+
+import 'package:blackhole/CustomWidgets/snackbar.dart';
+import 'package:blackhole/Helpers/playlist.dart';
 
 class AddListToQueueButton extends StatefulWidget {
   final List data;
   final String title;
-  AddListToQueueButton({Key key, @required this.data, @required this.title})
+  const AddListToQueueButton(
+      {Key? key, required this.data, required this.title})
       : super(key: key);
 
   @override
@@ -20,7 +23,7 @@ class _AddListToQueueButtonState extends State<AddListToQueueButton> {
           Icons.more_vert_rounded,
           color: Theme.of(context).iconTheme.color,
         ),
-        shape: RoundedRectangleBorder(
+        shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(7.0))),
         itemBuilder: (context) => [
               PopupMenuItem(
@@ -31,9 +34,9 @@ class _AddListToQueueButtonState extends State<AddListToQueueButton> {
                         Icons.queue_music_rounded,
                         color: Theme.of(context).iconTheme.color,
                       ),
-                      Spacer(),
-                      Text('Add to Queue'),
-                      Spacer(),
+                      const Spacer(),
+                      const Text('Add to Queue'),
+                      const Spacer(),
                     ],
                   )),
               PopupMenuItem(
@@ -44,71 +47,39 @@ class _AddListToQueueButtonState extends State<AddListToQueueButton> {
                         Icons.favorite_border_rounded,
                         color: Theme.of(context).iconTheme.color,
                       ),
-                      Spacer(),
-                      Text('Save Playlist'),
-                      Spacer(),
+                      const Spacer(),
+                      const Text('Save Playlist'),
+                      const Spacer(),
                     ],
                   )),
             ],
-        onSelected: (value) {
+        onSelected: (int? value) {
           if (value == 1) {
             addPlaylist(widget.title, widget.data).then(
-                (value) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      duration: Duration(seconds: 2),
-                      elevation: 6,
-                      backgroundColor: Colors.grey[900],
-                      behavior: SnackBarBehavior.floating,
-                      content: Text(
-                        'Added"${widget.title}" to Playlists',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      action: SnackBarAction(
-                        textColor: Theme.of(context).accentColor,
-                        label: 'Ok',
-                        onPressed: () {},
-                      ),
-                    )));
+              (value) => ShowSnackBar().showSnackBar(
+                context,
+                'Added"${widget.title}" to Playlists',
+              ),
+            );
           }
           if (value == 0) {
-            MediaItem event = AudioService.currentMediaItem;
+            final MediaItem? event = AudioService.currentMediaItem;
             if (event != null &&
-                event.extras['url'].toString().startsWith('http')) {
+                event.extras!['url'].toString().startsWith('http')) {
               // TODO: make sure to check if song is already in queue
               AudioService.customAction('addListToQueue', widget.data);
 
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                duration: Duration(seconds: 2),
-                elevation: 6,
-                backgroundColor: Colors.grey[900],
-                behavior: SnackBarBehavior.floating,
-                content: Text(
-                  'Added "${widget.title}" to Queue',
-                  style: TextStyle(color: Colors.white),
-                ),
-                action: SnackBarAction(
-                  textColor: Theme.of(context).accentColor,
-                  label: 'Ok',
-                  onPressed: () {},
-                ),
-              ));
+              ShowSnackBar().showSnackBar(
+                context,
+                'Added "${widget.title}" to Queue',
+              );
             } else {
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                duration: Duration(seconds: 2),
-                elevation: 6,
-                backgroundColor: Colors.grey[900],
-                behavior: SnackBarBehavior.floating,
-                content: Text(
-                  (event == null)
-                      ? 'Nothing is Playing'
-                      : "Can't add Online Song to Offline Queue",
-                  style: TextStyle(color: Colors.white),
-                ),
-                action: SnackBarAction(
-                  textColor: Theme.of(context).accentColor,
-                  label: 'Ok',
-                  onPressed: () {},
-                ),
-              ));
+              ShowSnackBar().showSnackBar(
+                context,
+                event == null
+                    ? 'Nothing is Playing'
+                    : "Can't add Online Song to Offline Queue",
+              );
             }
           }
         });

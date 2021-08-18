@@ -4,7 +4,7 @@ class TextInputDialog {
   Future<void> showTextInputDialog(
     BuildContext context,
     String title,
-    String initialText,
+    String? initialText,
     TextInputType keyboardType,
     Function(String) onSubmitted,
   ) async {
@@ -42,25 +42,25 @@ class TextInputDialog {
                     ? Colors.white
                     : Colors.grey[700],
               ),
-              child: Text("Cancel"),
               onPressed: () {
                 Navigator.pop(context);
               },
+              child: const Text('Cancel'),
             ),
             TextButton(
               style: TextButton.styleFrom(
                 primary: Colors.white,
                 backgroundColor: Theme.of(context).accentColor,
               ),
-              child: Text(
-                "Ok",
-                style: TextStyle(color: Colors.white),
-              ),
               onPressed: () {
                 onSubmitted(_controller.text.trim());
               },
+              child: const Text(
+                'Ok',
+                style: TextStyle(color: Colors.white),
+              ),
             ),
-            SizedBox(
+            const SizedBox(
               width: 5,
             ),
           ],

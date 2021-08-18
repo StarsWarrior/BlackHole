@@ -1,46 +1,51 @@
-import 'package:blackhole/APIs/api.dart';
-import 'package:blackhole/CustomWidgets/gradientContainers.dart';
-import 'package:blackhole/Helpers/playlist.dart';
-import 'package:blackhole/Services/youtube_services.dart';
 import 'package:flutter/material.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
+
+import 'package:blackhole/APIs/api.dart';
+import 'package:blackhole/CustomWidgets/gradient_containers.dart';
+import 'package:blackhole/Helpers/playlist.dart';
+import 'package:blackhole/Services/youtube_services.dart';
 
 class SearchAddPlaylist {
   Future<Map> addYtPlaylist(String link) async {
     try {
-      RegExpMatch id = RegExp(r'.*list=(.*)').firstMatch(link);
-      Playlist metadata = await YouTubeServices().getPlaylistDetails(id[1]);
-      List<Video> tracks = await YouTubeServices().getPlaylistSongs(id[1]);
-      return {
-        'title': metadata.title,
-        'image': metadata.thumbnails.standardResUrl,
-        'author': metadata.author,
-        'description': metadata.description,
-        'tracks': tracks,
-        'count': tracks.length,
-      };
+      final RegExpMatch? id = RegExp(r'.*list\=(.*)').firstMatch(link);
+      if (id != null) {
+        final Playlist metadata =
+            await YouTubeServices().getPlaylistDetails(id[1]!);
+        final List<Video> tracks =
+            await YouTubeServices().getPlaylistSongs(id[1]!);
+        return {
+          'title': metadata.title,
+          'image': metadata.thumbnails.standardResUrl,
+          'author': metadata.author,
+          'description': metadata.description,
+          'tracks': tracks,
+          'count': tracks.length,
+        };
+      }
+      return {};
     } catch (e) {
-      print("Error: $e");
       return {};
     }
   }
 
-  Stream<Map> songsAdder(String playName, List<Video> tracks) async* {
+  Stream<Map> songsAdder(String playName, List tracks) async* {
     int _done = 0;
-    for (Video track in tracks) {
-      String trackName;
+    for (final track in tracks) {
+      String? trackName;
       try {
-        trackName = track.title;
+        trackName = (track as Video).title;
         yield {'done': ++_done, 'name': trackName};
       } catch (e) {
         yield {'done': ++_done, 'name': ''};
       }
       try {
-        List result =
-            await SaavnAPI().fetchTopSearchResult(trackName.split("|")[0]);
-        addMapToPlaylist(playName, result[0]);
+        final List result =
+            await SaavnAPI().fetchTopSearchResult(trackName!.split('|')[0]);
+        addMapToPlaylist(playName, result[0] as Map);
       } catch (e) {
-        print('Error in $_done: $e');
+        // print('Error in $_done: $e');
       }
     }
   }
@@ -59,11 +64,12 @@ class SearchAddPlaylist {
               height: 300,
               width: 300,
               child: StreamBuilder<Object>(
-                  stream: songAdd,
-                  builder: (ctxt, snapshot) {
-                    Map data = snapshot?.data;
-                    int _done = (data ?? const {})['done'] ?? 0;
-                    String name = (data ?? const {})['name'] ?? '';
+                  stream: songAdd as Stream<Object>?,
+                  builder: (ctxt, AsyncSnapshot snapshot) {
+                    final Map? data = snapshot.data as Map?;
+                    final int _done = (data ?? const {})['done'] as int? ?? 0;
+                    final String name =
+                        (data ?? const {})['name'] as String? ?? '';
                     if (_done == _total) Navigator.pop(ctxt);
                     return Stack(
                       children: [
@@ -73,7 +79,7 @@ class SearchAddPlaylist {
                         Column(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            Center(
+                            const Center(
                                 child: Text(
                               'Converting Songs',
                               style: TextStyle(fontWeight: FontWeight.w600),

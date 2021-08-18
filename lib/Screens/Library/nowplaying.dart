@@ -1,13 +1,14 @@
 import 'dart:io';
 
 import 'package:audio_service/audio_service.dart';
-import 'package:blackhole/CustomWidgets/downloadButton.dart';
-import 'package:blackhole/CustomWidgets/emptyScreen.dart';
-import 'package:blackhole/CustomWidgets/gradientContainers.dart';
-import 'package:blackhole/CustomWidgets/like_button.dart';
-import 'package:blackhole/CustomWidgets/miniplayer.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+
+import 'package:blackhole/CustomWidgets/download_button.dart';
+import 'package:blackhole/CustomWidgets/empty_screen.dart';
+import 'package:blackhole/CustomWidgets/gradient_containers.dart';
+import 'package:blackhole/CustomWidgets/like_button.dart';
+import 'package:blackhole/CustomWidgets/miniplayer.dart';
 
 class NowPlaying extends StatefulWidget {
   @override
@@ -25,7 +26,7 @@ class _NowPlayingState extends State<NowPlaying> {
                 stream: AudioService.runningStream,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState != ConnectionState.active) {
-                    return SizedBox();
+                    return const SizedBox();
                   }
                   final running = snapshot.data ?? false;
                   return Scaffold(
@@ -33,7 +34,7 @@ class _NowPlayingState extends State<NowPlaying> {
                     appBar: running
                         ? null
                         : AppBar(
-                            title: Text('Now Playing'),
+                            title: const Text('Now Playing'),
                             centerTitle: true,
                             backgroundColor:
                                 Theme.of(context).brightness == Brightness.dark
@@ -42,32 +43,31 @@ class _NowPlayingState extends State<NowPlaying> {
                             elevation: 0,
                           ),
                     body: !running
-                        ? EmptyScreen().emptyScreen(context, 3, "Nothing is ",
-                            18.0, "PLAYING", 60, "Go and Play Something", 23.0)
-                        : StreamBuilder<List<MediaItem>>(
+                        ? EmptyScreen().emptyScreen(context, 3, 'Nothing is ',
+                            18.0, 'PLAYING', 60, 'Go and Play Something', 23.0)
+                        : StreamBuilder<List<MediaItem>?>(
                             stream: AudioService.queueStream,
                             builder: (context, snapshot) {
                               final queue = snapshot.data;
                               return queue == null
-                                  ? SizedBox()
-                                  : StreamBuilder<MediaItem>(
+                                  ? const SizedBox()
+                                  : StreamBuilder<MediaItem?>(
                                       stream:
                                           AudioService.currentMediaItemStream,
                                       builder: (context, snapshot) {
                                         final mediaItem = snapshot.data;
                                         return (mediaItem == null ||
                                                 queue.isEmpty)
-                                            ? SizedBox()
+                                            ? const SizedBox()
                                             : CustomScrollView(
                                                 physics:
-                                                    BouncingScrollPhysics(),
+                                                    const BouncingScrollPhysics(),
                                                 slivers: [
                                                     SliverAppBar(
                                                       backgroundColor:
                                                           Colors.transparent,
                                                       elevation: 0,
                                                       stretch: true,
-                                                      pinned: false,
                                                       // floating: true,
                                                       expandedHeight:
                                                           MediaQuery.of(context)
@@ -76,20 +76,16 @@ class _NowPlayingState extends State<NowPlaying> {
                                                               0.4,
                                                       flexibleSpace:
                                                           FlexibleSpaceBar(
-                                                        title: Text(
+                                                        title: const Text(
                                                           'Now Playing',
                                                           textAlign:
                                                               TextAlign.center,
                                                         ),
                                                         centerTitle: true,
-                                                        stretchModes: [
-                                                          StretchMode
-                                                              .zoomBackground
-                                                        ],
                                                         background: ShaderMask(
                                                             shaderCallback:
                                                                 (rect) {
-                                                              return LinearGradient(
+                                                              return const LinearGradient(
                                                                 begin: Alignment
                                                                     .topCenter,
                                                                 end: Alignment
@@ -114,10 +110,9 @@ class _NowPlayingState extends State<NowPlaying> {
                                                                     .startsWith(
                                                                         'file:')
                                                                 ? Image(
-                                                                    image: FileImage(File(
-                                                                        mediaItem
-                                                                            .artUri
-                                                                            .toFilePath())),
+                                                                    image: FileImage(File(mediaItem
+                                                                        .artUri!
+                                                                        .toFilePath())),
                                                                     fit: BoxFit
                                                                         .cover,
                                                                   )
@@ -128,13 +123,13 @@ class _NowPlayingState extends State<NowPlaying> {
                                                                         (BuildContext context,
                                                                                 _,
                                                                                 __) =>
-                                                                            Image(
+                                                                            const Image(
                                                                               image: AssetImage('assets/cover.jpg'),
                                                                             ),
                                                                     placeholder:
                                                                         (BuildContext context,
                                                                                 _) =>
-                                                                            Image(
+                                                                            const Image(
                                                                               image: AssetImage('assets/cover.jpg'),
                                                                             ),
                                                                     imageUrl: mediaItem
@@ -172,9 +167,10 @@ class _NowPlayingState extends State<NowPlaying> {
                                                                 });
                                                               },
                                                               physics:
-                                                                  BouncingScrollPhysics(),
-                                                              padding: EdgeInsets
-                                                                  .only(
+                                                                  const BouncingScrollPhysics(),
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                          .only(
                                                                       top: 10,
                                                                       bottom:
                                                                           10),
@@ -214,7 +210,8 @@ class _NowPlayingState extends State<NowPlaying> {
                                                                             .accentColor,
                                                                     child:
                                                                         ListTile(
-                                                                      contentPadding: EdgeInsets.only(
+                                                                      contentPadding: const EdgeInsets
+                                                                              .only(
                                                                           left:
                                                                               16.0,
                                                                           right:
@@ -225,14 +222,14 @@ class _NowPlayingState extends State<NowPlaying> {
                                                                       trailing: queue[index] ==
                                                                               mediaItem
                                                                           ? IconButton(
-                                                                              icon: Icon(
+                                                                              icon: const Icon(
                                                                                 Icons.bar_chart_rounded,
                                                                               ),
                                                                               tooltip: 'Now Playing',
                                                                               onPressed: () {},
                                                                             )
                                                                           : queue[index].artUri.toString().startsWith('file:')
-                                                                              ? SizedBox()
+                                                                              ? const SizedBox()
                                                                               : Row(
                                                                                   mainAxisSize: MainAxisSize.min,
                                                                                   children: [
@@ -244,17 +241,17 @@ class _NowPlayingState extends State<NowPlaying> {
                                                                                       'artist': queue[index].artist.toString(),
                                                                                       'album': queue[index].album.toString(),
                                                                                       'image': queue[index].artUri.toString(),
-                                                                                      'duration': queue[index].duration.inSeconds.toString(),
+                                                                                      'duration': queue[index].duration?.inSeconds.toString(),
                                                                                       'title': queue[index].title.toString(),
-                                                                                      'url': queue[index].extras['url'].toString(),
-                                                                                      "year": queue[index].extras["year"].toString(),
-                                                                                      "language": queue[index].extras["language"].toString(),
-                                                                                      "genre": queue[index].genre.toString(),
-                                                                                      "320kbps": queue[index].extras["320kbps"],
-                                                                                      "has_lyrics": queue[index].extras["has_lyrics"],
-                                                                                      "release_date": queue[index].extras["release_date"],
-                                                                                      "album_id": queue[index].extras["album_id"],
-                                                                                      "subtitle": queue[index].extras["subtitle"]
+                                                                                      'url': queue[index].extras?['url'].toString(),
+                                                                                      'year': queue[index].extras?['year'].toString(),
+                                                                                      'language': queue[index].extras?['language'].toString(),
+                                                                                      'genre': queue[index].genre.toString(),
+                                                                                      '320kbps': queue[index].extras?['320kbps'],
+                                                                                      'has_lyrics': queue[index].extras?['has_lyrics'],
+                                                                                      'release_date': queue[index].extras?['release_date'],
+                                                                                      'album_id': queue[index].extras?['album_id'],
+                                                                                      'subtitle': queue[index].extras?['subtitle']
                                                                                     })
                                                                                   ],
                                                                                 ),
@@ -272,33 +269,36 @@ class _NowPlayingState extends State<NowPlaying> {
                                                                         child:
                                                                             Stack(
                                                                           children: [
-                                                                            Image(
+                                                                            const Image(
                                                                               image: AssetImage('assets/cover.jpg'),
                                                                             ),
-                                                                            queue[index].artUri == null
-                                                                                ? SizedBox()
-                                                                                : SizedBox(
-                                                                                    height: 50.0,
-                                                                                    width: 50.0,
-                                                                                    child: queue[index].artUri.toString().startsWith('file:')
-                                                                                        ? Image(fit: BoxFit.cover, image: FileImage(File(queue[index].artUri.toFilePath())))
-                                                                                        : CachedNetworkImage(
-                                                                                            fit: BoxFit.cover,
-                                                                                            errorWidget: (BuildContext context, _, __) => Image(
-                                                                                              image: AssetImage('assets/cover.jpg'),
-                                                                                            ),
-                                                                                            placeholder: (BuildContext context, _) => Image(
-                                                                                              image: AssetImage('assets/cover.jpg'),
-                                                                                            ),
-                                                                                            imageUrl: queue[index].artUri.toString(),
-                                                                                          ),
-                                                                                  ),
+                                                                            if (queue[index].artUri ==
+                                                                                null)
+                                                                              const SizedBox()
+                                                                            else
+                                                                              SizedBox(
+                                                                                height: 50.0,
+                                                                                width: 50.0,
+                                                                                child: queue[index].artUri.toString().startsWith('file:')
+                                                                                    ? Image(fit: BoxFit.cover, image: FileImage(File(queue[index].artUri!.toFilePath())))
+                                                                                    : CachedNetworkImage(
+                                                                                        fit: BoxFit.cover,
+                                                                                        errorWidget: (BuildContext context, _, __) => const Image(
+                                                                                          image: AssetImage('assets/cover.jpg'),
+                                                                                        ),
+                                                                                        placeholder: (BuildContext context, _) => const Image(
+                                                                                          image: AssetImage('assets/cover.jpg'),
+                                                                                        ),
+                                                                                        imageUrl: queue[index].artUri.toString(),
+                                                                                      ),
+                                                                              ),
                                                                           ],
                                                                         ),
                                                                       ),
                                                                       title:
                                                                           Text(
-                                                                        '${queue[index].title}',
+                                                                        queue[index]
+                                                                            .title,
                                                                         overflow:
                                                                             TextOverflow.ellipsis,
                                                                         style: TextStyle(
@@ -308,7 +308,8 @@ class _NowPlayingState extends State<NowPlaying> {
                                                                       ),
                                                                       subtitle:
                                                                           Text(
-                                                                        '${queue[index].artist}',
+                                                                        queue[index].artist ??
+                                                                            '',
                                                                         overflow:
                                                                             TextOverflow.ellipsis,
                                                                       ),

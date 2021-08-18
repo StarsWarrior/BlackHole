@@ -1,23 +1,25 @@
 import 'dart:ui';
-import 'package:blackhole/CustomWidgets/add_queue.dart';
-import 'package:blackhole/CustomWidgets/downloadButton.dart';
-import 'package:blackhole/Screens/Common/song_list.dart';
-import 'package:blackhole/Screens/Player/audioplayer.dart';
-import 'package:blackhole/CustomWidgets/gradientContainers.dart';
-import 'package:blackhole/Screens/Search/albums.dart';
-import 'package:blackhole/Screens/Search/artists.dart';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:blackhole/CustomWidgets/emptyScreen.dart';
-import 'package:blackhole/CustomWidgets/miniplayer.dart';
-import 'package:blackhole/APIs/api.dart';
 import 'package:hive/hive.dart';
 import 'package:material_floating_search_bar/material_floating_search_bar.dart';
 
+import 'package:blackhole/APIs/api.dart';
+import 'package:blackhole/CustomWidgets/add_queue.dart';
+import 'package:blackhole/CustomWidgets/download_button.dart';
+import 'package:blackhole/CustomWidgets/empty_screen.dart';
+import 'package:blackhole/CustomWidgets/gradient_containers.dart';
+import 'package:blackhole/CustomWidgets/miniplayer.dart';
+import 'package:blackhole/Screens/Common/song_list.dart';
+import 'package:blackhole/Screens/Player/audioplayer.dart';
+import 'package:blackhole/Screens/Search/albums.dart';
+import 'package:blackhole/Screens/Search/artists.dart';
+
 class SearchPage extends StatefulWidget {
   final String query;
-  SearchPage({Key key, @required this.query}) : super(key: key);
+  const SearchPage({Key? key, required this.query}) : super(key: key);
 
   @override
   _SearchPageState createState() => _SearchPageState();
@@ -26,16 +28,16 @@ class SearchPage extends StatefulWidget {
 class _SearchPageState extends State<SearchPage> {
   String query = '';
   bool status = false;
-  Map<String, List> searchedData = {};
-  Map<int, String> position = {};
-  List<int> sortedKeys = [];
-  List topSearch = [];
+  Map searchedData = {};
+  Map position = {};
+  List sortedKeys = [];
+  List<String> topSearch = [];
   bool fetched = false;
   bool albumFetched = false;
-  List search = Hive.box('settings').get('search', defaultValue: []);
+  List search = Hive.box('settings').get('search', defaultValue: []) as List;
   bool showHistory =
-      Hive.box('settings').get('showHistory', defaultValue: true);
-  FloatingSearchBarController _controller = FloatingSearchBarController();
+      Hive.box('settings').get('showHistory', defaultValue: true) as bool;
+  final FloatingSearchBarController _controller = FloatingSearchBarController();
 
   @override
   void dispose() {
@@ -52,7 +54,7 @@ class _SearchPageState extends State<SearchPage> {
           .fetchSongSearchResults(query == '' ? widget.query : query, '5')
           .then((value) {
         setState(() {
-          searchedData["Songs"] = value;
+          searchedData['Songs'] = value;
           fetched = true;
         });
       });
@@ -85,7 +87,6 @@ class _SearchPageState extends State<SearchPage> {
                   insets: EdgeInsets.zero,
                   leadingActions: [
                     FloatingSearchBarAction.icon(
-                      showIfClosed: true,
                       showIfOpened: true,
                       size: 20.0,
                       icon: Icon(
@@ -103,15 +104,14 @@ class _SearchPageState extends State<SearchPage> {
                   ],
                   hint: 'Songs, albums or artists',
                   height: 52.0,
-                  margins: EdgeInsets.fromLTRB(18.0, 8.0, 18.0, 15.0),
-                  scrollPadding: EdgeInsets.only(bottom: 50),
+                  margins: const EdgeInsets.fromLTRB(18.0, 8.0, 18.0, 15.0),
+                  scrollPadding: const EdgeInsets.only(bottom: 50),
                   backdropColor: Colors.black45,
                   transitionCurve: Curves.easeInOut,
-                  physics: BouncingScrollPhysics(),
-                  axisAlignment: 0.0,
+                  physics: const BouncingScrollPhysics(),
                   openAxisAlignment: 0.0,
                   clearQueryOnClose: false,
-                  debounceDelay: Duration(milliseconds: 500),
+                  debounceDelay: const Duration(milliseconds: 500),
                   // onQueryChanged: (_query) {
                   // print(_query);
                   // },
@@ -138,9 +138,8 @@ class _SearchPageState extends State<SearchPage> {
                       SlideFadeFloatingSearchBarTransition(),
                   actions: [
                     FloatingSearchBarAction(
-                      showIfOpened: false,
                       child: CircularButton(
-                        icon: Icon(CupertinoIcons.search),
+                        icon: const Icon(CupertinoIcons.search),
                         onPressed: () {},
                       ),
                     ),
@@ -148,7 +147,7 @@ class _SearchPageState extends State<SearchPage> {
                       showIfOpened: true,
                       showIfClosed: false,
                       child: CircularButton(
-                        icon: Icon(
+                        icon: const Icon(
                           CupertinoIcons.clear,
                           size: 20.0,
                         ),
@@ -171,10 +170,11 @@ class _SearchPageState extends State<SearchPage> {
                                       .map((e) => ListTile(
                                           // dense: true,
                                           horizontalTitleGap: 0.0,
-                                          title: Text(e),
-                                          leading: Icon(CupertinoIcons.search),
+                                          title: Text(e.toString()),
+                                          leading:
+                                              const Icon(CupertinoIcons.search),
                                           trailing: IconButton(
-                                              icon: Icon(
+                                              icon: const Icon(
                                                 CupertinoIcons.clear,
                                                 size: 15.0,
                                               ),
@@ -191,7 +191,7 @@ class _SearchPageState extends State<SearchPage> {
 
                                             setState(() {
                                               fetched = false;
-                                              query = e;
+                                              query = e.toString();
                                               status = false;
                                               searchedData = {};
 
@@ -205,7 +205,7 @@ class _SearchPageState extends State<SearchPage> {
                             ),
                           ),
                         if (showHistory)
-                          SizedBox(
+                          const SizedBox(
                             height: 5.0,
                           ),
                         if (topSearch.isNotEmpty)
@@ -218,8 +218,8 @@ class _SearchPageState extends State<SearchPage> {
                                       .map((e) => ListTile(
                                           horizontalTitleGap: 0.0,
                                           title: Text(e),
-                                          leading:
-                                              Icon(Icons.trending_up_rounded),
+                                          leading: const Icon(
+                                              Icons.trending_up_rounded),
                                           onTap: () {
                                             _controller.close();
                                             setState(() {
@@ -239,9 +239,9 @@ class _SearchPageState extends State<SearchPage> {
                     );
                   },
                   body: !fetched
-                      ? Container(
+                      ? SizedBox(
                           child: Center(
-                            child: Container(
+                            child: SizedBox(
                                 height: MediaQuery.of(context).size.width / 7,
                                 width: MediaQuery.of(context).size.width / 7,
                                 child: CircularProgressIndicator(
@@ -252,24 +252,27 @@ class _SearchPageState extends State<SearchPage> {
                           ),
                         )
                       : (searchedData.isEmpty)
-                          ? EmptyScreen().emptyScreen(context, 0, ":( ", 100,
-                              "SORRY", 60, "Results Not Found", 20)
+                          ? EmptyScreen().emptyScreen(context, 0, ':( ', 100,
+                              'SORRY', 60, 'Results Not Found', 20)
                           : SingleChildScrollView(
-                              padding: EdgeInsets.only(top: 80),
-                              physics: BouncingScrollPhysics(),
+                              padding: const EdgeInsets.only(top: 80),
+                              physics: const BouncingScrollPhysics(),
                               child: Column(
                                   children: sortedKeys.map(
                                 (e) {
-                                  String key = position[e];
-                                  List value = searchedData[key];
-                                  bool first = e == sortedKeys[0];
-                                  if (value == null) return SizedBox();
+                                  final String key = position[e].toString();
+                                  final List? value =
+                                      searchedData[key] as List?;
+                                  final bool first = e == sortedKeys[0];
+                                  if (value == null) return const SizedBox();
                                   return Column(
                                     children: [
                                       Padding(
                                         padding: first
-                                            ? EdgeInsets.fromLTRB(25, 0, 0, 0)
-                                            : EdgeInsets.fromLTRB(25, 30, 0, 0),
+                                            ? const EdgeInsets.fromLTRB(
+                                                25, 0, 0, 0)
+                                            : const EdgeInsets.fromLTRB(
+                                                25, 30, 0, 0),
                                         child: Row(
                                           children: [
                                             Text(
@@ -286,31 +289,34 @@ class _SearchPageState extends State<SearchPage> {
                                       ),
                                       ListView.builder(
                                         itemCount: value.length,
-                                        physics: NeverScrollableScrollPhysics(),
+                                        physics:
+                                            const NeverScrollableScrollPhysics(),
                                         shrinkWrap: true,
-                                        padding:
-                                            EdgeInsets.fromLTRB(5, 0, 10, 0),
+                                        padding: const EdgeInsets.fromLTRB(
+                                            5, 0, 10, 0),
                                         itemBuilder: (context, index) {
-                                          int count =
-                                              value[index]["count"] ?? 0;
+                                          final int count =
+                                              value[index]['count'] as int? ??
+                                                  0;
                                           String countText =
-                                              value[index]["artist"];
+                                              value[index]['artist'].toString();
                                           count > 1
                                               ? countText = '$count Songs'
                                               : countText = '$count Song';
                                           return ListTile(
                                             contentPadding:
-                                                EdgeInsets.only(left: 15.0),
+                                                const EdgeInsets.only(
+                                                    left: 15.0),
                                             title: Text(
                                               '${value[index]["title"]}',
-                                              style: TextStyle(
+                                              style: const TextStyle(
                                                   fontWeight: FontWeight.w500),
                                               overflow: TextOverflow.ellipsis,
                                             ),
                                             subtitle: Text(
                                               key == 'Albums' ||
                                                       (key == 'Top Result' &&
-                                                          value[0]["type"] ==
+                                                          value[0]['type'] ==
                                                               'album')
                                                   ? '$countText\n${value[index]["subtitle"]}'
                                                   : '${value[index]["subtitle"]}',
@@ -318,7 +324,7 @@ class _SearchPageState extends State<SearchPage> {
                                             ),
                                             isThreeLine: key == 'Albums' ||
                                                 (key == 'Top Result' &&
-                                                    value[0]["type"] ==
+                                                    value[0]['type'] ==
                                                         'album'),
                                             leading: Card(
                                               elevation: 8,
@@ -328,7 +334,7 @@ class _SearchPageState extends State<SearchPage> {
                                                                   'Artists' ||
                                                               (key == 'Top Result' &&
                                                                   value[0][
-                                                                          "type"] ==
+                                                                          'type'] ==
                                                                       'artist')
                                                           ? 50.0
                                                           : 7.0)),
@@ -340,7 +346,7 @@ class _SearchPageState extends State<SearchPage> {
                                                               'Artists' ||
                                                           (key == 'Top Result' &&
                                                               value[0][
-                                                                      "type"] ==
+                                                                      'type'] ==
                                                                   'artist')
                                                       ? 'assets/artist.png'
                                                       : key == 'Songs'
@@ -355,7 +361,7 @@ class _SearchPageState extends State<SearchPage> {
                                                               'Artists' ||
                                                           (key == 'Top Result' &&
                                                               value[0][
-                                                                      "type"] ==
+                                                                      'type'] ==
                                                                   'artist')
                                                       ? 'assets/artist.png'
                                                       : key == 'Songs'
@@ -371,20 +377,23 @@ class _SearchPageState extends State<SearchPage> {
                                                             MainAxisSize.min,
                                                         children: [
                                                             DownloadButton(
-                                                              data:
-                                                                  value[index],
+                                                              data: value[index]
+                                                                  as Map,
                                                               icon: 'download',
                                                             ),
                                                             AddToQueueButton(
-                                                                data: value[
-                                                                    index]),
+                                                                data:
+                                                                    value[index]
+                                                                        as Map),
                                                           ])
                                                     : null
                                                 : AlbumDownloadButton(
                                                     albumName: value[index]
-                                                        ['title'],
-                                                    albumId: value[index]
-                                                        ['id']),
+                                                            ['title']
+                                                        .toString(),
+                                                    albumId: value[index]['id']
+                                                        .toString(),
+                                                  ),
                                             onTap: () {
                                               Navigator.push(
                                                 context,
@@ -394,24 +403,27 @@ class _SearchPageState extends State<SearchPage> {
                                                               'Artists' ||
                                                           (key == 'Top Result' &&
                                                               value[0][
-                                                                      "type"] ==
+                                                                      'type'] ==
                                                                   'artist')
                                                       ? ArtistSearchPage(
                                                           artistName:
                                                               value[index]
-                                                                  ['title'],
+                                                                      ['title']
+                                                                  .toString(),
                                                           artistToken: value[
-                                                                  index]
-                                                              ['artistToken'],
+                                                                      index][
+                                                                  'artistToken']
+                                                              .toString(),
                                                           artistImage: value[
                                                                       index]
                                                                   ['image']
+                                                              .toString()
                                                               .replaceAll(
-                                                                  "150x150",
-                                                                  "500x500")
+                                                                  '150x150',
+                                                                  '500x500')
                                                               .replaceAll(
                                                                   '50x50',
-                                                                  "500x500"),
+                                                                  '500x500'),
                                                         )
                                                       : key == 'Songs'
                                                           ? PlayScreen(
@@ -426,11 +438,13 @@ class _SearchPageState extends State<SearchPage> {
                                                               fromMiniplayer:
                                                                   false)
                                                           : SongsListPage(
-                                                              listImage:
-                                                                  value[index]
-                                                                      ["image"],
+                                                              listImage: value[
+                                                                          index]
+                                                                      ['image']
+                                                                  .toString(),
                                                               listItem:
-                                                                  value[index]),
+                                                                  value[index]
+                                                                      as Map),
                                                 ),
                                               );
                                             },
@@ -439,40 +453,17 @@ class _SearchPageState extends State<SearchPage> {
                                       ),
                                       if (key != 'Top Result')
                                         Padding(
-                                          padding:
-                                              EdgeInsets.fromLTRB(25, 0, 25, 0),
+                                          padding: const EdgeInsets.fromLTRB(
+                                              25, 0, 25, 0),
                                           child: Row(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.end,
                                             children: [
                                               GestureDetector(
-                                                child: Row(
-                                                  children: [
-                                                    Text(
-                                                      "View All",
-                                                      style: TextStyle(
-                                                        color: Theme.of(context)
-                                                            .textTheme
-                                                            .caption
-                                                            .color,
-                                                        fontWeight:
-                                                            FontWeight.w800,
-                                                      ),
-                                                    ),
-                                                    Icon(
-                                                      Icons
-                                                          .chevron_right_rounded,
-                                                      color: Theme.of(context)
-                                                          .textTheme
-                                                          .caption
-                                                          .color,
-                                                    ),
-                                                  ],
-                                                ),
                                                 onTap: () {
                                                   if (key == 'Albums' ||
                                                       key == 'Playlists' ||
-                                                      key == 'Artists')
+                                                      key == 'Artists') {
                                                     Navigator.push(
                                                         context,
                                                         PageRouteBuilder(
@@ -486,7 +477,8 @@ class _SearchPageState extends State<SearchPage> {
                                                             type: key,
                                                           ),
                                                         ));
-                                                  if (key == 'Songs')
+                                                  }
+                                                  if (key == 'Songs') {
                                                     Navigator.push(
                                                         context,
                                                         PageRouteBuilder(
@@ -495,16 +487,40 @@ class _SearchPageState extends State<SearchPage> {
                                                                   ___) =>
                                                               SongsListPage(
                                                                   listItem: {
-                                                                "id": query ==
+                                                                'id': query ==
                                                                         ''
                                                                     ? widget
                                                                         .query
                                                                     : query,
-                                                                "title": key,
-                                                                "type": "songs",
+                                                                'title': key,
+                                                                'type': 'songs',
                                                               }),
                                                         ));
+                                                  }
                                                 },
+                                                child: Row(
+                                                  children: [
+                                                    Text(
+                                                      'View All',
+                                                      style: TextStyle(
+                                                        color: Theme.of(context)
+                                                            .textTheme
+                                                            .caption!
+                                                            .color,
+                                                        fontWeight:
+                                                            FontWeight.w800,
+                                                      ),
+                                                    ),
+                                                    Icon(
+                                                      Icons
+                                                          .chevron_right_rounded,
+                                                      color: Theme.of(context)
+                                                          .textTheme
+                                                          .caption!
+                                                          .color,
+                                                    ),
+                                                  ],
+                                                ),
                                               ),
                                             ],
                                           ),

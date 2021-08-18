@@ -1,23 +1,25 @@
 import 'dart:ui';
-import 'package:blackhole/CustomWidgets/add_list_queue.dart';
-import 'package:blackhole/CustomWidgets/add_queue.dart';
-import 'package:blackhole/CustomWidgets/downloadButton.dart';
-import 'package:blackhole/Screens/Player/audioplayer.dart';
-import 'package:blackhole/CustomWidgets/gradientContainers.dart';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:blackhole/CustomWidgets/emptyScreen.dart';
-import 'package:blackhole/CustomWidgets/miniplayer.dart';
-import 'package:blackhole/APIs/api.dart';
 import 'package:html_unescape/html_unescape_small.dart';
+
+import 'package:blackhole/APIs/api.dart';
+import 'package:blackhole/CustomWidgets/add_list_queue.dart';
+import 'package:blackhole/CustomWidgets/add_queue.dart';
+import 'package:blackhole/CustomWidgets/download_button.dart';
+import 'package:blackhole/CustomWidgets/empty_screen.dart';
+import 'package:blackhole/CustomWidgets/gradient_containers.dart';
+import 'package:blackhole/CustomWidgets/miniplayer.dart';
+import 'package:blackhole/Screens/Player/audioplayer.dart';
 
 class SongsListPage extends StatefulWidget {
   final Map listItem;
-  final String listImage;
+  final String? listImage;
 
-  SongsListPage({
-    Key key,
-    @required this.listItem,
+  const SongsListPage({
+    Key? key,
+    required this.listItem,
     this.listImage,
   }) : super(key: key);
 
@@ -35,10 +37,10 @@ class _SongsListPageState extends State<SongsListPage> {
   Widget build(BuildContext context) {
     if (!status) {
       status = true;
-      switch (widget.listItem['type']) {
+      switch (widget.listItem['type'].toString()) {
         case 'songs':
           SaavnAPI()
-              .fetchSongSearchResults(widget.listItem['id'], '20')
+              .fetchSongSearchResults(widget.listItem['id'].toString(), '20')
               .then((value) {
             setState(() {
               songList = value;
@@ -47,7 +49,9 @@ class _SongsListPageState extends State<SongsListPage> {
           });
           break;
         case 'album':
-          SaavnAPI().fetchAlbumSongs(widget.listItem['id']).then((value) {
+          SaavnAPI()
+              .fetchAlbumSongs(widget.listItem['id'].toString())
+              .then((value) {
             setState(() {
               songList = value;
               fetched = true;
@@ -55,7 +59,9 @@ class _SongsListPageState extends State<SongsListPage> {
           });
           break;
         case 'playlist':
-          SaavnAPI().fetchPlaylistSongs(widget.listItem['id']).then((value) {
+          SaavnAPI()
+              .fetchPlaylistSongs(widget.listItem['id'].toString())
+              .then((value) {
             setState(() {
               songList = value;
               fetched = true;
@@ -73,9 +79,9 @@ class _SongsListPageState extends State<SongsListPage> {
             child: Scaffold(
                 backgroundColor: Colors.transparent,
                 body: !fetched
-                    ? Container(
+                    ? SizedBox(
                         child: Center(
-                          child: Container(
+                          child: SizedBox(
                               height: MediaQuery.of(context).size.width / 7,
                               width: MediaQuery.of(context).size.width / 7,
                               child: CircularProgressIndicator(
@@ -86,37 +92,37 @@ class _SongsListPageState extends State<SongsListPage> {
                         ),
                       )
                     : songList.isEmpty
-                        ? EmptyScreen().emptyScreen(context, 0, ":( ", 100,
-                            "SORRY", 60, "Results Not Found", 20)
+                        ? EmptyScreen().emptyScreen(context, 0, ':( ', 100,
+                            'SORRY', 60, 'Results Not Found', 20)
                         : CustomScrollView(
-                            physics: BouncingScrollPhysics(),
+                            physics: const BouncingScrollPhysics(),
                             slivers: [
                                 SliverAppBar(
                                   backgroundColor: Colors.transparent,
                                   elevation: 0,
                                   stretch: true,
-                                  pinned: false,
                                   // floating: true,
                                   expandedHeight:
                                       MediaQuery.of(context).size.height * 0.4,
                                   actions: [
                                     AddListToQueueButton(
                                         data: songList,
-                                        title:
-                                            widget.listItem['title'] ?? 'Songs')
+                                        title: widget.listItem['title']
+                                                as String? ??
+                                            'Songs')
                                   ],
                                   flexibleSpace: FlexibleSpaceBar(
                                     title: Text(
                                       unescape.convert(
-                                        widget.listItem['title'] ?? 'Songs',
+                                        widget.listItem['title'] as String? ??
+                                            'Songs',
                                       ),
                                       textAlign: TextAlign.center,
                                     ),
                                     centerTitle: true,
-                                    stretchModes: [StretchMode.zoomBackground],
                                     background: ShaderMask(
                                       shaderCallback: (rect) {
-                                        return LinearGradient(
+                                        return const LinearGradient(
                                           begin: Alignment.topCenter,
                                           end: Alignment.bottomCenter,
                                           colors: [
@@ -128,25 +134,25 @@ class _SongsListPageState extends State<SongsListPage> {
                                       },
                                       blendMode: BlendMode.dstIn,
                                       child: widget.listImage == null
-                                          ? Image(
+                                          ? const Image(
                                               fit: BoxFit.cover,
                                               image: AssetImage(
                                                   'assets/cover.jpg'))
                                           : CachedNetworkImage(
                                               fit: BoxFit.cover,
                                               errorWidget: (context, _, __) =>
-                                                  Image(
+                                                  const Image(
                                                 image: AssetImage(
                                                     'assets/album.png'),
                                               ),
-                                              imageUrl: widget.listImage
+                                              imageUrl: widget.listImage!
                                                   .replaceAll('http:', 'https:')
                                                   .replaceAll(
                                                       '50x50', '500x500')
                                                   .replaceAll(
                                                       '150x150', '500x500'),
                                               placeholder: (context, url) =>
-                                                  Image(
+                                                  const Image(
                                                 image: AssetImage(
                                                     'assets/album.png'),
                                               ),
@@ -162,11 +168,11 @@ class _SongsListPageState extends State<SongsListPage> {
                                         const EdgeInsets.fromLTRB(0, 7, 7, 5),
                                     child: ListTile(
                                       contentPadding:
-                                          EdgeInsets.only(left: 15.0),
+                                          const EdgeInsets.only(left: 15.0),
                                       title: Text(
                                         '${entry["title"]}',
                                         overflow: TextOverflow.ellipsis,
-                                        style: TextStyle(
+                                        style: const TextStyle(
                                             fontWeight: FontWeight.w500),
                                       ),
                                       subtitle: Text(
@@ -181,13 +187,14 @@ class _SongsListPageState extends State<SongsListPage> {
                                         clipBehavior: Clip.antiAlias,
                                         child: CachedNetworkImage(
                                           errorWidget: (context, _, __) =>
-                                              Image(
+                                              const Image(
                                             image:
                                                 AssetImage('assets/cover.jpg'),
                                           ),
                                           imageUrl:
                                               '${entry["image"].replaceAll('http:', 'https:')}',
-                                          placeholder: (context, url) => Image(
+                                          placeholder: (context, url) =>
+                                              const Image(
                                             image:
                                                 AssetImage('assets/cover.jpg'),
                                           ),
@@ -197,7 +204,7 @@ class _SongsListPageState extends State<SongsListPage> {
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
                                           DownloadButton(
-                                            data: entry,
+                                            data: entry as Map,
                                             icon: 'download',
                                           ),
                                           AddToQueueButton(data: entry),

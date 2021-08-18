@@ -1,57 +1,60 @@
 import 'dart:convert';
+
 import 'package:http/http.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
 class YouTubeServices {
-  String searchAuthority = "www.youtube.com";
+  String searchAuthority = 'www.youtube.com';
   Map paths = {
-    "search": "/results",
-    "channel": "/channel",
-    "music": "/music",
-    "playlist": "/playlist"
+    'search': '/results',
+    'channel': '/channel',
+    'music': '/music',
+    'playlist': '/playlist'
   };
   Future<List<Video>> getPlaylistSongs(String id) async {
-    YoutubeExplode yt = YoutubeExplode();
-    List<Video> results = await yt.playlists.getVideos(id).toList();
+    final YoutubeExplode yt = YoutubeExplode();
+    final List<Video> results = await yt.playlists.getVideos(id).toList();
     yt.close();
     return results;
   }
 
   Future<Playlist> getPlaylistDetails(String id) async {
-    YoutubeExplode yt = YoutubeExplode();
-    Playlist metadata = await yt.playlists.get(id);
+    final YoutubeExplode yt = YoutubeExplode();
+    final Playlist metadata = await yt.playlists.get(id);
     return metadata;
   }
 
   Future<List> getChannelSongs(String id) async {
-    Uri link = Uri.https(
+    final Uri link = Uri.https(
       searchAuthority,
-      paths["music"],
+      paths['music'].toString(),
     );
     final Response response = await get(link);
     if (response.statusCode != 200) {
       return List.empty();
     }
-    String searchResults = RegExp(r'"contents":({.*?}),"header"', dotAll: true)
-        .firstMatch(response.body)[1];
-    Map data = json.decode(searchResults);
-    List result = data["twoColumnBrowseResultsRenderer"]["tabs"][0]
-        ["tabRenderer"]["content"]["sectionListRenderer"]["contents"];
+    final String searchResults =
+        RegExp(r'\"contents\":({.*?}),\"header\"', dotAll: true)
+            .firstMatch(response.body)![1]!;
+    final Map data = json.decode(searchResults) as Map;
+    final List result = data['twoColumnBrowseResultsRenderer']['tabs'][0]
+        ['tabRenderer']['content']['sectionListRenderer']['contents'] as List;
 
-    List shelfRenderer = result.map((element) {
-      return element["itemSectionRenderer"]["contents"][0]["shelfRenderer"];
+    final List shelfRenderer = result.map((element) {
+      return element['itemSectionRenderer']['contents'][0]['shelfRenderer'];
     }).toList();
 
-    List finalResult = shelfRenderer.map((element) {
-      if (element["title"]["runs"][0]["text"] != 'Charts' &&
-          element["title"]["runs"][0]["text"] != 'New Music Videos')
+    final List finalResult = shelfRenderer.map((element) {
+      if (element['title']['runs'][0]['text'] != 'Charts' &&
+          element['title']['runs'][0]['text'] != 'New Music Videos') {
         return {
-          "title": element["title"]["runs"][0]["text"],
-          "playlists": formatItems(
-              element["content"]["horizontalListRenderer"]["items"]),
+          'title': element['title']['runs'][0]['text'],
+          'playlists': formatItems(
+              element['content']['horizontalListRenderer']['items'] as List),
         };
-      else
+      } else {
         return null;
+      }
     }).toList();
 
     finalResult.removeWhere((element) => element == null);
@@ -60,55 +63,55 @@ class YouTubeServices {
   }
 
   List formatItems(List itemsList) {
-    List result = itemsList.map((e) {
+    final List result = itemsList.map((e) {
       return {
-        "title": e["compactStationRenderer"]["title"]["simpleText"],
-        "type": "playlist",
-        "description": e["compactStationRenderer"]["description"]["simpleText"],
-        "count": e["compactStationRenderer"]["videoCountText"]["runs"][0]
-            ["text"],
-        "playlistId": e["compactStationRenderer"]["navigationEndpoint"]
-            ["watchEndpoint"]["playlistId"],
-        "firstItemId": e["compactStationRenderer"]["navigationEndpoint"]
-            ["watchEndpoint"]["videoId"],
-        "image": e["compactStationRenderer"]["thumbnail"]["thumbnails"][0]
-            ["url"],
-        "imageMedium": e["compactStationRenderer"]["thumbnail"]["thumbnails"][0]
-            ["url"],
-        "imageStandard": e["compactStationRenderer"]["thumbnail"]["thumbnails"]
-            [1]["url"],
-        "imageMax": e["compactStationRenderer"]["thumbnail"]["thumbnails"][2]
-            ["url"],
+        'title': e['compactStationRenderer']['title']['simpleText'],
+        'type': 'playlist',
+        'description': e['compactStationRenderer']['description']['simpleText'],
+        'count': e['compactStationRenderer']['videoCountText']['runs'][0]
+            ['text'],
+        'playlistId': e['compactStationRenderer']['navigationEndpoint']
+            ['watchEndpoint']['playlistId'],
+        'firstItemId': e['compactStationRenderer']['navigationEndpoint']
+            ['watchEndpoint']['videoId'],
+        'image': e['compactStationRenderer']['thumbnail']['thumbnails'][0]
+            ['url'],
+        'imageMedium': e['compactStationRenderer']['thumbnail']['thumbnails'][0]
+            ['url'],
+        'imageStandard': e['compactStationRenderer']['thumbnail']['thumbnails']
+            [1]['url'],
+        'imageMax': e['compactStationRenderer']['thumbnail']['thumbnails'][2]
+            ['url'],
       };
     }).toList();
 
     return result;
   }
 
-  Future<Map> formatVideo(Video video) async {
-    if (video?.duration?.inSeconds == null) return null;
+  Future<Map?> formatVideo(Video video) async {
+    if (video.duration?.inSeconds == null) return null;
     return {
       'id': video.id.value,
-      'album': video?.author,
-      'duration': video?.duration?.inSeconds.toString(),
+      'album': video.author,
+      'duration': video.duration?.inSeconds.toString(),
       'title': video.title,
       'artist': video.author,
-      'image': video?.thumbnails?.maxResUrl.toString(),
-      'secondImage': video?.thumbnails?.highResUrl.toString(),
+      'image': video.thumbnails.maxResUrl.toString(),
+      'secondImage': video.thumbnails.highResUrl.toString(),
       'language': '',
       'url': await getUri(video),
-      'year': video?.uploadDate?.year.toString(),
+      'year': video.uploadDate?.year.toString(),
       '320kbps': 'false',
       'has_lyrics': 'false',
-      'release_date': video?.publishDate.toString(),
-      'album_id': video?.channelId?.value,
-      'subtitle': video?.author,
+      'release_date': video.publishDate.toString(),
+      'album_id': video.channelId.value,
+      'subtitle': video.author,
     };
   }
 
   Future<List<Video>> fetchSearchResults(String query) async {
-    YoutubeExplode yt = YoutubeExplode();
-    List<Video> searchResults = await yt.search.getVideos(query);
+    final YoutubeExplode yt = YoutubeExplode();
+    final List<Video> searchResults = await yt.search.getVideos(query);
 
     // Uri link = Uri.https(searchAuthority, searchPath, {"search_query": query});
     // final Response response = await get(link);
@@ -158,10 +161,11 @@ class YouTubeServices {
   }
 
   Future<String> getUri(Video video) async {
-    YoutubeExplode yt = YoutubeExplode();
-    StreamManifest manifest =
+    final YoutubeExplode yt = YoutubeExplode();
+    final StreamManifest manifest =
         await yt.videos.streamsClient.getManifest(video.id);
-    AudioOnlyStreamInfo streamInfo = manifest.audioOnly.withHighestBitrate();
+    final AudioOnlyStreamInfo streamInfo =
+        manifest.audioOnly.withHighestBitrate();
     yt.close();
     return streamInfo.url.toString();
   }

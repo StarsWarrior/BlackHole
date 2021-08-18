@@ -1,15 +1,19 @@
-import 'package:blackhole/Screens/Player/audioplayer.dart';
-import 'package:blackhole/CustomWidgets/gradientContainers.dart';
-import 'package:blackhole/CustomWidgets/miniplayer.dart';
+import 'dart:typed_data';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 
+import 'package:blackhole/CustomWidgets/gradient_containers.dart';
+import 'package:blackhole/CustomWidgets/miniplayer.dart';
+import 'package:blackhole/Screens/Player/audioplayer.dart';
+
 class SongsList extends StatefulWidget {
   final List data;
   final bool offline;
-  final String title;
-  SongsList({Key key, @required this.data, @required this.offline, this.title})
+  final String? title;
+  const SongsList(
+      {Key? key, required this.data, required this.offline, this.title})
       : super(key: key);
   @override
   _SongsListState createState() => _SongsListState();
@@ -18,16 +22,16 @@ class SongsList extends StatefulWidget {
 class _SongsListState extends State<SongsList> {
   List _songs = [];
   List original = [];
-  bool offline;
+  bool? offline;
   bool added = false;
   bool processStatus = false;
-  int sortValue = Hive.box('settings').get('sortValue') ?? 2;
+  int sortValue = Hive.box('settings').get('sortValue', defaultValue: 2) as int;
 
-  void getSongs() async {
+  Future<void> getSongs() async {
     added = true;
     _songs = widget.data;
     offline = widget.offline;
-    if (!offline) original = List.from(_songs);
+    if (!offline!) original = List.from(_songs);
 
     sortSongs();
 
@@ -35,19 +39,24 @@ class _SongsListState extends State<SongsList> {
     setState(() {});
   }
 
-  sortSongs() {
+  void sortSongs() {
     if (sortValue == 0) {
-      _songs.sort((a, b) =>
-          a["title"].toUpperCase().compareTo(b["title"].toUpperCase()));
+      _songs.sort((a, b) => a['title']
+          .toString()
+          .toUpperCase()
+          .compareTo(b['title'].toString().toUpperCase()));
     }
     if (sortValue == 1) {
-      _songs.sort((b, a) =>
-          a["title"].toUpperCase().compareTo(b["title"].toUpperCase()));
+      _songs.sort((b, a) => a['title']
+          .toString()
+          .toUpperCase()
+          .compareTo(b['title'].toString().toUpperCase()));
     }
     if (sortValue == 2) {
-      offline
-          ? _songs
-              .sort((b, a) => a["lastModified"].compareTo(b["lastModified"]))
+      offline!
+          ? _songs.sort((b, a) => a['lastModified']
+              .toString()
+              .compareTo(b['lastModified'].toString()))
           : _songs = List.from(original);
     }
     if (sortValue == 3) {
@@ -70,10 +79,10 @@ class _SongsListState extends State<SongsList> {
                 title: Text(widget.title ?? 'Songs'),
                 actions: [
                   PopupMenuButton(
-                      icon: Icon(Icons.sort_rounded),
-                      shape: RoundedRectangleBorder(
+                      icon: const Icon(Icons.sort_rounded),
+                      shape: const RoundedRectangleBorder(
                           borderRadius: BorderRadius.all(Radius.circular(7.0))),
-                      onSelected: (value) {
+                      onSelected: (int value) {
                         sortValue = value;
                         Hive.box('settings').put('sortValue', value);
                         sortSongs();
@@ -84,17 +93,18 @@ class _SongsListState extends State<SongsList> {
                               value: 0,
                               child: Row(
                                 children: [
-                                  sortValue == 0
-                                      ? Icon(
-                                          Icons.check_rounded,
-                                          color: Theme.of(context).brightness ==
-                                                  Brightness.dark
-                                              ? Colors.white
-                                              : Colors.grey[700],
-                                        )
-                                      : SizedBox(),
-                                  SizedBox(width: 10),
-                                  Text(
+                                  if (sortValue == 0)
+                                    Icon(
+                                      Icons.check_rounded,
+                                      color: Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? Colors.white
+                                          : Colors.grey[700],
+                                    )
+                                  else
+                                    const SizedBox(),
+                                  const SizedBox(width: 10),
+                                  const Text(
                                     'A-Z',
                                   ),
                                 ],
@@ -104,17 +114,18 @@ class _SongsListState extends State<SongsList> {
                               value: 1,
                               child: Row(
                                 children: [
-                                  sortValue == 1
-                                      ? Icon(
-                                          Icons.check_rounded,
-                                          color: Theme.of(context).brightness ==
-                                                  Brightness.dark
-                                              ? Colors.white
-                                              : Colors.grey[700],
-                                        )
-                                      : SizedBox(),
-                                  SizedBox(width: 10),
-                                  Text(
+                                  if (sortValue == 1)
+                                    Icon(
+                                      Icons.check_rounded,
+                                      color: Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? Colors.white
+                                          : Colors.grey[700],
+                                    )
+                                  else
+                                    const SizedBox(),
+                                  const SizedBox(width: 10),
+                                  const Text(
                                     'Z-A',
                                   ),
                                 ],
@@ -124,18 +135,20 @@ class _SongsListState extends State<SongsList> {
                               value: 2,
                               child: Row(
                                 children: [
-                                  sortValue == 2
-                                      ? Icon(
-                                          Icons.check_rounded,
-                                          color: Theme.of(context).brightness ==
-                                                  Brightness.dark
-                                              ? Colors.white
-                                              : Colors.grey[700],
-                                        )
-                                      : SizedBox(),
-                                  SizedBox(width: 10),
-                                  Text(
-                                      offline ? 'Last Modified' : 'Last Added'),
+                                  if (sortValue == 2)
+                                    Icon(
+                                      Icons.check_rounded,
+                                      color: Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? Colors.white
+                                          : Colors.grey[700],
+                                    )
+                                  else
+                                    const SizedBox(),
+                                  const SizedBox(width: 10),
+                                  Text(offline!
+                                      ? 'Last Modified'
+                                      : 'Last Added'),
                                 ],
                               ),
                             ),
@@ -143,17 +156,18 @@ class _SongsListState extends State<SongsList> {
                               value: 3,
                               child: Row(
                                 children: [
-                                  sortValue == 3
-                                      ? Icon(
-                                          Icons.shuffle_rounded,
-                                          color: Theme.of(context).brightness ==
-                                                  Brightness.dark
-                                              ? Colors.white
-                                              : Colors.grey[700],
-                                        )
-                                      : SizedBox(),
-                                  SizedBox(width: 10),
-                                  Text(
+                                  if (sortValue == 3)
+                                    Icon(
+                                      Icons.shuffle_rounded,
+                                      color: Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? Colors.white
+                                          : Colors.grey[700],
+                                    )
+                                  else
+                                    const SizedBox(),
+                                  const SizedBox(width: 10),
+                                  const Text(
                                     'Shuffle',
                                   ),
                                 ],
@@ -168,9 +182,9 @@ class _SongsListState extends State<SongsList> {
                 elevation: 0,
               ),
               body: !processStatus
-                  ? Container(
+                  ? SizedBox(
                       child: Center(
-                        child: Container(
+                        child: SizedBox(
                             height: MediaQuery.of(context).size.width / 7,
                             width: MediaQuery.of(context).size.width / 7,
                             child: CircularProgressIndicator(
@@ -181,14 +195,14 @@ class _SongsListState extends State<SongsList> {
                       ),
                     )
                   : ListView.builder(
-                      physics: BouncingScrollPhysics(),
-                      padding: EdgeInsets.only(top: 10, bottom: 10),
+                      physics: const BouncingScrollPhysics(),
+                      padding: const EdgeInsets.only(top: 10, bottom: 10),
                       shrinkWrap: true,
                       itemCount: _songs.length,
                       itemExtent: 70.0,
                       itemBuilder: (context, index) {
-                        return _songs.length == 0
-                            ? SizedBox()
+                        return _songs.isEmpty
+                            ? const SizedBox()
                             : ListTile(
                                 leading: Card(
                                   elevation: 5,
@@ -196,36 +210,39 @@ class _SongsListState extends State<SongsList> {
                                     borderRadius: BorderRadius.circular(7.0),
                                   ),
                                   clipBehavior: Clip.antiAlias,
-                                  child: offline
+                                  child: offline!
                                       ? Stack(
                                           children: [
-                                            Image(
+                                            const Image(
                                               image: AssetImage(
                                                   'assets/cover.jpg'),
                                             ),
-                                            _songs[index]['image'] == null
-                                                ? SizedBox()
-                                                : SizedBox(
-                                                    height: 50.0,
-                                                    width: 50.0,
-                                                    child: Image(
-                                                      fit: BoxFit.cover,
-                                                      image: MemoryImage(
-                                                          _songs[index]
-                                                              ['image']),
-                                                    ),
-                                                  ),
+                                            if (_songs[index]['image'] == null)
+                                              const SizedBox()
+                                            else
+                                              SizedBox(
+                                                height: 50.0,
+                                                width: 50.0,
+                                                child: Image(
+                                                  fit: BoxFit.cover,
+                                                  image: MemoryImage(
+                                                      _songs[index]['image']
+                                                          as Uint8List),
+                                                ),
+                                              ),
                                           ],
                                         )
                                       : CachedNetworkImage(
                                           errorWidget: (context, _, __) =>
-                                              Image(
+                                              const Image(
                                             image:
                                                 AssetImage('assets/cover.jpg'),
                                           ),
                                           imageUrl: _songs[index]['image']
+                                              .toString()
                                               .replaceAll('http:', 'https:'),
-                                          placeholder: (context, url) => Image(
+                                          placeholder: (context, url) =>
+                                              const Image(
                                             image:
                                                 AssetImage('assets/cover.jpg'),
                                           ),

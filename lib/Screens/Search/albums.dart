@@ -1,22 +1,24 @@
 import 'dart:ui';
-import 'package:blackhole/CustomWidgets/downloadButton.dart';
-import 'package:blackhole/CustomWidgets/gradientContainers.dart';
-import 'package:blackhole/Screens/Common/song_list.dart';
-import 'package:blackhole/Screens/Search/artists.dart';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:blackhole/CustomWidgets/emptyScreen.dart';
-import 'package:blackhole/CustomWidgets/miniplayer.dart';
+
 import 'package:blackhole/APIs/api.dart';
+import 'package:blackhole/CustomWidgets/download_button.dart';
+import 'package:blackhole/CustomWidgets/empty_screen.dart';
+import 'package:blackhole/CustomWidgets/gradient_containers.dart';
+import 'package:blackhole/CustomWidgets/miniplayer.dart';
+import 'package:blackhole/Screens/Common/song_list.dart';
+import 'package:blackhole/Screens/Search/artists.dart';
 
 class AlbumSearchPage extends StatefulWidget {
   final String query;
   final String type;
 
-  AlbumSearchPage({
-    Key key,
-    @required this.query,
-    @required this.type,
+  const AlbumSearchPage({
+    Key? key,
+    required this.query,
+    required this.type,
   }) : super(key: key);
 
   @override
@@ -25,7 +27,7 @@ class AlbumSearchPage extends StatefulWidget {
 
 class _AlbumSearchPageState extends State<AlbumSearchPage> {
   bool status = false;
-  List searchedList = [];
+  List<Map> searchedList = [];
   bool fetched = false;
 
   @override
@@ -68,9 +70,9 @@ class _AlbumSearchPageState extends State<AlbumSearchPage> {
             child: Scaffold(
               backgroundColor: Colors.transparent,
               body: !fetched
-                  ? Container(
+                  ? SizedBox(
                       child: Center(
-                        child: Container(
+                        child: SizedBox(
                             height: MediaQuery.of(context).size.width / 7,
                             width: MediaQuery.of(context).size.width / 7,
                             child: CircularProgressIndicator(
@@ -81,16 +83,15 @@ class _AlbumSearchPageState extends State<AlbumSearchPage> {
                       ),
                     )
                   : searchedList.isEmpty
-                      ? EmptyScreen().emptyScreen(context, 0, ":( ", 100,
-                          "SORRY", 60, "Results Not Found", 20)
+                      ? EmptyScreen().emptyScreen(context, 0, ':( ', 100,
+                          'SORRY', 60, 'Results Not Found', 20)
                       : CustomScrollView(
-                          physics: BouncingScrollPhysics(),
+                          physics: const BouncingScrollPhysics(),
                           slivers: [
                             SliverAppBar(
                               backgroundColor: Colors.transparent,
                               elevation: 0,
                               stretch: true,
-                              pinned: false,
                               // floating: true,
                               expandedHeight:
                                   MediaQuery.of(context).size.height * 0.4,
@@ -100,10 +101,9 @@ class _AlbumSearchPageState extends State<AlbumSearchPage> {
                                   textAlign: TextAlign.center,
                                 ),
                                 centerTitle: true,
-                                stretchModes: [StretchMode.zoomBackground],
                                 background: ShaderMask(
                                     shaderCallback: (rect) {
-                                      return LinearGradient(
+                                      return const LinearGradient(
                                         begin: Alignment.topCenter,
                                         end: Alignment.bottomCenter,
                                         colors: [
@@ -125,16 +125,17 @@ class _AlbumSearchPageState extends State<AlbumSearchPage> {
                             SliverList(
                                 delegate:
                                     SliverChildListDelegate(searchedList.map(
-                              (entry) {
+                              (Map entry) {
                                 return Padding(
                                   padding:
                                       const EdgeInsets.fromLTRB(0, 7, 7, 5),
                                   child: ListTile(
-                                    contentPadding: EdgeInsets.only(left: 15.0),
+                                    contentPadding:
+                                        const EdgeInsets.only(left: 15.0),
                                     title: Text(
                                       '${entry["title"]}',
                                       overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                           fontWeight: FontWeight.w500),
                                     ),
                                     subtitle: Text(
@@ -169,8 +170,9 @@ class _AlbumSearchPageState extends State<AlbumSearchPage> {
                                     trailing: widget.type != 'Albums'
                                         ? null
                                         : AlbumDownloadButton(
-                                            albumName: entry['title'],
-                                            albumId: entry['id'],
+                                            albumName:
+                                                entry['title'].toString(),
+                                            albumId: entry['id'].toString(),
                                           ),
                                     onTap: () {
                                       Navigator.push(
@@ -181,12 +183,16 @@ class _AlbumSearchPageState extends State<AlbumSearchPage> {
                                                       .type ==
                                                   'Artists'
                                               ? ArtistSearchPage(
-                                                  artistName: entry['title'],
+                                                  artistName:
+                                                      entry['title'].toString(),
                                                   artistToken:
-                                                      entry['artistToken'],
-                                                  artistImage: entry["image"])
+                                                      entry['artistToken']
+                                                          .toString(),
+                                                  artistImage:
+                                                      entry['image'].toString())
                                               : SongsListPage(
-                                                  listImage: entry["image"],
+                                                  listImage:
+                                                      entry['image'].toString(),
                                                   listItem: entry),
                                         ),
                                       );

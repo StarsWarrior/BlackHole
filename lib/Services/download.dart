@@ -1,7 +1,7 @@
 import 'dart:io';
+
 import 'package:audiotagger/audiotagger.dart';
 import 'package:audiotagger/models/tag.dart';
-import 'package:blackhole/Helpers/lyrics.dart';
 import 'package:ext_storage/ext_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -12,32 +12,40 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_ffmpeg/flutter_ffmpeg.dart';
 
+import 'package:blackhole/CustomWidgets/snackbar.dart';
+import 'package:blackhole/Helpers/lyrics.dart';
+
 class Download with ChangeNotifier {
-  String preferredDownloadQuality =
-      Hive.box('settings').get('downloadQuality') ?? '320 kbps';
+  String preferredDownloadQuality = Hive.box('settings')
+      .get('downloadQuality', defaultValue: '320 kbps') as String;
   String downloadFormat = 'm4a';
   // Hive.box('settings').get('downloadFormat', defaultValue: 'm4a');
-  double progress = 0.0;
-  String currentDownloadId = '';
+  bool createDownloadFolder = Hive.box('settings')
+      .get('createDownloadFolder', defaultValue: false) as bool;
+  bool createYoutubeFolder = Hive.box('settings')
+      .get('createYoutubeFolder', defaultValue: false) as bool;
+  double? progress = 0.0;
   String lastDownloadId = '';
-  String dlPath = Hive.box('settings').get('downloadPath', defaultValue: '');
+  String dlPath =
+      Hive.box('settings').get('downloadPath', defaultValue: '') as String;
   bool downloadLyrics =
-      Hive.box('settings').get('downloadLyrics', defaultValue: false);
+      Hive.box('settings').get('downloadLyrics', defaultValue: false) as bool;
 
   Future<String> getLyrics(Map data) async {
-    if (data["has_lyrics"] == "true") {
-      return Lyrics().getSaavnLyrics(data["id"]);
+    if (data['has_lyrics'] == 'true') {
+      return Lyrics().getSaavnLyrics(data['id'].toString());
     } else {
       return Lyrics()
           .getLyrics(data['title'].toString(), data['artist'].toString());
     }
   }
 
-  Future<void> prepareDownload(BuildContext context, Map data) async {
+  Future<void> prepareDownload(BuildContext context, Map data,
+      {bool createFolder = false, String? folderName}) async {
     if (!Platform.isWindows) {
       PermissionStatus status = await Permission.storage.status;
       if (status.isPermanentlyDenied || status.isDenied) {
-        Map<Permission, PermissionStatus> statuses = await [
+        final Map<Permission, PermissionStatus> statuses = await [
           Permission.storage,
           Permission.accessMediaLocation,
           Permission.mediaLibrary,
@@ -45,45 +53,58 @@ class Download with ChangeNotifier {
         debugPrint(statuses[Permission.storage].toString());
       }
       status = await Permission.storage.status;
-      if (status.isGranted) {
-        print('permission granted');
-      }
     }
-    RegExp avoid = RegExp(r'[\.\\\*\:\"\?#/;\|]');
-    data['title'] = data['title'].toString().split("(From")[0].trim();
-    String filename = data['title'] + " - " + data['artist'];
+    final RegExp avoid = RegExp(r'[\.\\\*\:\"\?#/;\|]');
+    data['title'] = data['title'].toString().split('(From')[0].trim();
+    String filename = '${data["title"]} - ${data["artist"]}';
 
     if (filename.length > 200) {
-      String temp = filename.substring(0, 200);
-      List tempList = temp.split(", ");
+      final String temp = filename.substring(0, 200);
+      final List tempList = temp.split(', ');
       tempList.removeLast();
-      filename = tempList.join(", ");
+      filename = tempList.join(', ');
     }
 
-    filename = filename.replaceAll(avoid, "").replaceAll("  ", " ") + ".m4a";
+    filename = '${filename.replaceAll(avoid, "").replaceAll("  ", " ")}.m4a';
     if (dlPath == '') {
       if (Platform.isWindows) {
-        Directory temp = await getDownloadsDirectory();
-        dlPath = temp.path;
-      } else
-        dlPath = await ExtStorage.getExternalStoragePublicDirectory(
+        final Directory? temp = await getDownloadsDirectory();
+        dlPath = temp!.path;
+      } else {
+        final String? temp = await ExtStorage.getExternalStoragePublicDirectory(
             ExtStorage.DIRECTORY_MUSIC);
+        dlPath = temp!;
+      }
+    }
+    if (data['url'].toString().contains('google') && createYoutubeFolder) {
+      dlPath = '$dlPath/YouTube';
+      if (!await Directory(dlPath).exists()) {
+        await Directory(dlPath).create();
+      }
     }
 
-    bool exists = await File(dlPath + "/" + filename).exists();
+    if (createFolder && createDownloadFolder && folderName != null) {
+      final String foldername = folderName.replaceAll(avoid, '');
+      dlPath = '$dlPath/$foldername';
+      if (!await Directory(dlPath).exists()) {
+        await Directory(dlPath).create();
+      }
+    }
+
+    final bool exists = await File('$dlPath/$filename').exists();
     if (exists) {
       showDialog(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
             title: Text(
-              "Already Exists",
+              'Already Exists',
               style: TextStyle(color: Theme.of(context).accentColor),
             ),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Container(
+                SizedBox(
                   width: 400,
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -95,7 +116,7 @@ class Download with ChangeNotifier {
                     ],
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
               ],
@@ -107,14 +128,14 @@ class Download with ChangeNotifier {
                       ? Colors.white
                       : Colors.grey[700],
                 ),
-                child: Text(
-                  "No",
-                  style: TextStyle(color: Colors.white),
-                ),
                 onPressed: () {
-                  lastDownloadId = data['id'];
+                  lastDownloadId = data['id'].toString();
                   Navigator.pop(context);
                 },
+                child: const Text(
+                  'No',
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
               TextButton(
                 style: TextButton.styleFrom(
@@ -122,27 +143,27 @@ class Download with ChangeNotifier {
                       ? Colors.white
                       : Colors.grey[700],
                 ),
-                child: Text("Yes, but Replace Old"),
                 onPressed: () async {
                   Navigator.pop(context);
                   downloadSong(context, dlPath, filename, data);
                 },
+                child: const Text('Yes, but Replace Old'),
               ),
               TextButton(
                 style: TextButton.styleFrom(
                   primary: Colors.white,
                   backgroundColor: Theme.of(context).accentColor,
                 ),
-                child: Text("Yes"),
                 onPressed: () async {
                   Navigator.pop(context);
-                  while (await File(dlPath + "/" + filename).exists()) {
+                  while (await File('$dlPath/$filename').exists()) {
                     filename = filename.replaceAll('.m4a', ' (1).m4a');
                   }
                   downloadSong(context, dlPath, filename, data);
                 },
+                child: const Text('Yes'),
               ),
-              SizedBox(
+              const SizedBox(
                 width: 5,
               ),
             ],
@@ -155,77 +176,63 @@ class Download with ChangeNotifier {
   }
 
   Future<void> downloadSong(
-      BuildContext context, String dlPath, String filename, Map data) async {
-    ScaffoldMessengerState scaffoldMessenger = ScaffoldMessenger.of(context);
+      BuildContext context, String? dlPath, String fileName, Map data) async {
     progress = null;
     notifyListeners();
-    String filepath;
-    String filepath2;
+    String filename = fileName;
+    String? filepath;
+    late String filepath2;
     String appPath;
-    List<int> _bytes = [];
+    final List<int> _bytes = [];
     String lyrics;
-    final artname = filename.replaceAll(".m4a", "artwork.jpg");
+    final artname = filename.replaceAll('.m4a', 'artwork.jpg');
     if (!Platform.isWindows) {
-      Directory appDir = await getApplicationDocumentsDirectory();
+      final Directory appDir = await getApplicationDocumentsDirectory();
       appPath = appDir.path;
     } else {
-      Directory temp = await getDownloadsDirectory();
-      appPath = temp.path;
+      final Directory? temp = await getDownloadsDirectory();
+      appPath = temp!.path;
     }
     if (data['url'].toString().contains('google')) {
       filename = filename.replaceAll('.m4a', '.weba');
     }
     try {
-      await File(dlPath + "/" + filename)
+      await File('$dlPath/$filename')
           .create(recursive: true)
           .then((value) => filepath = value.path);
-      print("created audio file");
-      await File(appPath + "/" + artname)
+      // print('created audio file');
+      await File('$appPath/$artname')
           .create(recursive: true)
           .then((value) => filepath2 = value.path);
     } catch (e) {
       await [
         Permission.manageExternalStorage,
       ].request();
-      await File(dlPath + "/" + filename)
+      await File('$dlPath/$filename')
           .create(recursive: true)
           .then((value) => filepath = value.path);
-      print("created audio file");
-      await File(appPath + "/" + artname)
+      // print('created audio file');
+      await File('$appPath/$artname')
           .create(recursive: true)
           .then((value) => filepath2 = value.path);
     }
     debugPrint('Audio path $filepath');
     debugPrint('Image path $filepath2');
     try {
-      scaffoldMessenger.showSnackBar(
-        SnackBar(
-          elevation: 6,
-          backgroundColor: Colors.grey[900],
-          behavior: SnackBarBehavior.floating,
-          content: Text(
-            filepath.endsWith('.weba')
-                ? 'Downloading "${data['title'].toString()}" in Best Quality Available'
-                : 'Downloading "${data['title'].toString()}" in $preferredDownloadQuality',
-            style: TextStyle(color: Colors.white),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-          action: SnackBarAction(
-            textColor: Theme.of(context).accentColor,
-            label: 'Ok',
-            onPressed: () {},
-          ),
-        ),
+      ShowSnackBar().showSnackBar(
+        context,
+        filepath!.endsWith('.weba')
+            ? 'Downloading "${data['title'].toString()}" in Best Quality Available'
+            : 'Downloading "${data['title'].toString()}" in $preferredDownloadQuality',
       );
     } catch (e) {
-      print("Failed to show Snackbar: $e");
+      // print('Failed to show Snackbar: $e');
     }
 
-    String kUrl = data['url'].replaceAll(
-        "_96.", "_${preferredDownloadQuality.replaceAll(' kbps', '')}.");
+    final String kUrl = data['url'].toString().replaceAll(
+        '_96.', "_${preferredDownloadQuality.replaceAll(' kbps', '')}.");
     final response = await Client().send(Request('GET', Uri.parse(kUrl)));
-    int total = response.contentLength ?? 0;
+    final int total = response.contentLength ?? 0;
     int recieved = 0;
     response.stream.asBroadcastStream();
     response.stream.listen((value) {
@@ -234,44 +241,33 @@ class Download with ChangeNotifier {
         recieved += value.length;
         progress = recieved / total;
         notifyListeners();
-      } catch (e) {}
+      } catch (e) {
+        // print('Error: $e');
+      }
     }).onDone(() async {
-      final file = File("${(filepath)}");
+      final file = File(filepath!);
       await file.writeAsBytes(_bytes);
 
-      HttpClientRequest request2 =
-          await HttpClient().getUrl(Uri.parse(data['image']));
-      HttpClientResponse response2 = await request2.close();
+      final HttpClientRequest request2 =
+          await HttpClient().getUrl(Uri.parse(data['image'].toString()));
+      final HttpClientResponse response2 = await request2.close();
       final bytes2 = await consolidateHttpClientResponseBytes(response2);
-      File file2 = File(filepath2);
+      final File file2 = File(filepath2);
 
       await file2.writeAsBytes(bytes2);
       try {
         lyrics = downloadLyrics ? await getLyrics(data) : '';
       } catch (e) {
-        print('Error fetching lyrics: $e');
+        // print('Error fetching lyrics: $e');
         lyrics = '';
       }
 
-      if (filepath.endsWith('.weba')) {
-        List<String> _argsList;
-
-        scaffoldMessenger.showSnackBar(SnackBar(
-          elevation: 6,
-          backgroundColor: Colors.grey[900],
-          behavior: SnackBarBehavior.floating,
-          content: Text(
-            'Converting "weba" to "$downloadFormat"',
-            style: TextStyle(color: Colors.white),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-          action: SnackBarAction(
-            textColor: Theme.of(context).accentColor,
-            label: 'Ok',
-            onPressed: () {},
-          ),
-        ));
+      if (filepath!.endsWith('.weba')) {
+        List<String>? _argsList;
+        ShowSnackBar().showSnackBar(
+          context,
+          'Converting "weba" to "$downloadFormat"',
+        );
 
         // if (downloadFormat == 'mp3')
         //   _argsList = [
@@ -284,39 +280,40 @@ class Download with ChangeNotifier {
         //     "256k",
         //     "${filepath.replaceAll('.weba', '.mp3')}"
         //   ];
-        if (downloadFormat == 'm4a')
+        if (downloadFormat == 'm4a') {
           _argsList = [
-            "-y",
-            "-i",
-            "$filepath",
-            "-c:a",
-            "aac",
-            "-b:a",
-            "256k",
-            "${filepath.replaceAll('.weba', '.m4a')}"
+            '-y',
+            '-i',
+            filepath!,
+            '-c:a',
+            'aac',
+            '-b:a',
+            '256k',
+            filepath!.replaceAll('.weba', '.m4a')
           ];
+        }
         await FlutterFFmpeg().executeWithArguments(_argsList);
-
-        filepath = filepath.replaceAll(".weba", ".$downloadFormat");
+        await File(filepath!).delete();
+        filepath = filepath!.replaceAll('.weba', '.$downloadFormat');
       }
 
-      debugPrint("Started tag editing");
+      debugPrint('Started tag editing');
       final Tag tag = Tag(
-        title: data['title'],
-        artist: data['artist'],
-        albumArtist:
-            data['album_artist'] ?? data['artist'].toString()?.split(', ')[0],
+        title: data['title'].toString(),
+        artist: data['artist'].toString(),
+        albumArtist: data['album_artist']?.toString() ??
+            data['artist']?.toString().split(', ')[0],
         artwork: filepath2.toString(),
-        album: data['album'],
-        genre: data['language'],
-        year: data['year'],
+        album: data['album'].toString(),
+        genre: data['language'].toString(),
+        year: data['year'].toString(),
         lyrics: lyrics,
         comment: 'BlackHole',
       );
       try {
         final tagger = Audiotagger();
         await tagger.writeTags(
-          path: filepath,
+          path: filepath!,
           tag: tag,
         );
         await Future.delayed(const Duration(seconds: 1), () {});
@@ -324,29 +321,16 @@ class Download with ChangeNotifier {
           await file2.delete();
         }
       } catch (e) {
-        print("Failed to edit tags");
+        // print('Failed to edit tags');
       }
-      debugPrint("Done");
-      lastDownloadId = data['id'];
+      debugPrint('Done');
+      lastDownloadId = data['id'].toString();
       progress = 0.0;
       notifyListeners();
-
-      scaffoldMessenger.showSnackBar(SnackBar(
-        elevation: 6,
-        backgroundColor: Colors.grey[900],
-        behavior: SnackBarBehavior.floating,
-        content: Text(
-          '"${data['title'].toString()}" has been downloaded',
-          style: TextStyle(color: Colors.white),
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-        ),
-        action: SnackBarAction(
-          textColor: Theme.of(context).accentColor,
-          label: 'Ok',
-          onPressed: () {},
-        ),
-      ));
+      ShowSnackBar().showSnackBar(
+        context,
+        '"${data['title'].toString()}" has been downloaded',
+      );
     });
   }
 }

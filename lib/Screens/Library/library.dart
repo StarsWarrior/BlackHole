@@ -1,8 +1,9 @@
-import 'package:blackhole/Screens/Library/downloaded.dart';
-import 'package:blackhole/Screens/Library/liked.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+
+import 'package:blackhole/Screens/Library/downloaded.dart';
+import 'package:blackhole/Screens/Library/liked.dart';
 
 class LibraryPage extends StatefulWidget {
   @override
@@ -10,7 +11,7 @@ class LibraryPage extends StatefulWidget {
 }
 
 class _LibraryPageState extends State<LibraryPage> {
-  Box likedBox;
+  Box? likedBox;
 
   @override
   void initState() {
@@ -21,10 +22,10 @@ class _LibraryPageState extends State<LibraryPage> {
   @override
   Widget build(BuildContext context) {
     return ListView(
-      physics: BouncingScrollPhysics(),
+      physics: const BouncingScrollPhysics(),
       children: [
         AppBar(
-          title: Text(
+          title: const Text(
             'Library',
           ),
           centerTitle: true,
@@ -51,7 +52,7 @@ class _LibraryPageState extends State<LibraryPage> {
           ),
         ),
         ListTile(
-          title: Text('Now Playing'),
+          title: const Text('Now Playing'),
           leading: Icon(
             Icons.queue_music_rounded,
             color: Theme.of(context).brightness == Brightness.dark
@@ -63,7 +64,7 @@ class _LibraryPageState extends State<LibraryPage> {
           },
         ),
         ListTile(
-          title: Text('Last Session'),
+          title: const Text('Last Session'),
           leading: Icon(
             Icons.history_rounded,
             color: Theme.of(context).brightness == Brightness.dark
@@ -75,7 +76,7 @@ class _LibraryPageState extends State<LibraryPage> {
           },
         ),
         ListTile(
-          title: Text('Favorites'),
+          title: const Text('Favorites'),
           leading: Icon(
             Icons.favorite_rounded,
             color: Theme.of(context).brightness == Brightness.dark
@@ -88,11 +89,11 @@ class _LibraryPageState extends State<LibraryPage> {
                 context,
                 MaterialPageRoute(
                     builder: (context) =>
-                        LikedSongs(playlistName: 'Favorite Songs')));
+                        const LikedSongs(playlistName: 'Favorite Songs')));
           },
         ),
         ListTile(
-          title: Text('My Music'),
+          title: const Text('My Music'),
           leading: Icon(
             MdiIcons.folderMusic,
             color: Theme.of(context).brightness == Brightness.dark
@@ -103,11 +104,11 @@ class _LibraryPageState extends State<LibraryPage> {
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => DownloadedSongs(type: 'all')));
+                    builder: (context) => const DownloadedSongs(type: 'all')));
           },
         ),
         ListTile(
-          title: Text('Downloads'),
+          title: const Text('Downloads'),
           leading: Icon(
             Icons.download_done_rounded,
             color: Theme.of(context).brightness == Brightness.dark
@@ -118,11 +119,12 @@ class _LibraryPageState extends State<LibraryPage> {
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => DownloadedSongs(type: 'downloaded')));
+                    builder: (context) =>
+                        const DownloadedSongs(type: 'downloaded')));
           },
         ),
         ListTile(
-          title: Text('Playlists'),
+          title: const Text('Playlists'),
           leading: Icon(
             Icons.playlist_play_rounded,
             color: Theme.of(context).brightness == Brightness.dark

@@ -1,8 +1,9 @@
-import 'package:blackhole/CustomWidgets/gradientContainers.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:package_info/package_info.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import 'package:blackhole/CustomWidgets/gradient_containers.dart';
 
 class AboutScreen extends StatefulWidget {
   @override
@@ -10,7 +11,7 @@ class AboutScreen extends StatefulWidget {
 }
 
 class _AboutScreenState extends State<AboutScreen> {
-  String appVersion;
+  String? appVersion;
 
   @override
   void initState() {
@@ -18,8 +19,8 @@ class _AboutScreenState extends State<AboutScreen> {
     super.initState();
   }
 
-  void main() async {
-    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+  Future<void> main() async {
+    final PackageInfo packageInfo = await PackageInfo.fromPlatform();
     setState(() {
       appVersion = packageInfo.version;
     });
@@ -33,9 +34,9 @@ class _AboutScreenState extends State<AboutScreen> {
           Positioned(
             left: MediaQuery.of(context).size.width / 2,
             top: MediaQuery.of(context).size.width / 5,
-            child: Container(
+            child: SizedBox(
               width: MediaQuery.of(context).size.width,
-              child: Image(
+              child: const Image(
                 fit: BoxFit.fill,
                 image: AssetImage(
                   'assets/icon-white-trans.png',
@@ -43,7 +44,7 @@ class _AboutScreenState extends State<AboutScreen> {
               ),
             ),
           ),
-          GradientContainer(
+          const GradientContainer(
             child: null,
             opacity: true,
           ),
@@ -53,7 +54,7 @@ class _AboutScreenState extends State<AboutScreen> {
                   ? Colors.transparent
                   : Theme.of(context).accentColor,
               elevation: 0,
-              title: Text(
+              title: const Text(
                 'About',
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
@@ -67,15 +68,15 @@ class _AboutScreenState extends State<AboutScreen> {
               children: [
                 Column(
                   children: [
-                    SizedBox(
+                    const SizedBox(
                       height: 20,
                     ),
-                    SizedBox(
+                    const SizedBox(
                         width: 150,
                         child:
                             Image(image: AssetImage('assets/ic_launcher.png'))),
-                    SizedBox(height: 20),
-                    Text(
+                    const SizedBox(height: 20),
+                    const Text(
                       'BlackHole',
                       style:
                           TextStyle(fontSize: 35, fontWeight: FontWeight.bold),
@@ -87,26 +88,27 @@ class _AboutScreenState extends State<AboutScreen> {
                   padding: const EdgeInsets.fromLTRB(20.0, 20.0, 20.0, 0.0),
                   child: Column(
                     children: [
-                      Text(
+                      const Text(
                         'This is an open-source project and can be found on',
                         textAlign: TextAlign.center,
                         style: TextStyle(fontSize: 16),
                       ),
                       TextButton(
-                          child: Container(
+                          onPressed: () {
+                            launch('https://github.com/Sangwan5688/BlackHole');
+                          },
+                          child: SizedBox(
                             width: MediaQuery.of(context).size.width / 4,
                             child: Image(
                               image: Theme.of(context).brightness ==
                                       Brightness.dark
-                                  ? AssetImage('assets/GitHub_Logo_White.png')
-                                  : AssetImage('assets/GitHub_Logo.png'),
+                                  ? const AssetImage(
+                                      'assets/GitHub_Logo_White.png')
+                                  : const AssetImage('assets/GitHub_Logo.png'),
                             ),
-                          ),
-                          onPressed: () {
-                            launch("https://github.com/Sangwan5688/BlackHole");
-                          }),
-                      Text(
-                        "If you liked my work\nshow some ♥ and ⭐ the repo",
+                          )),
+                      const Text(
+                        'If you liked my work\nshow some ♥ and ⭐ the repo',
                         textAlign: TextAlign.center,
                         style: TextStyle(fontSize: 16),
                       ),
@@ -120,18 +122,18 @@ class _AboutScreenState extends State<AboutScreen> {
                         backgroundColor: Colors.transparent,
                         primary: Colors.transparent,
                       ),
-                      child: Container(
-                        child: Image(
+                      onPressed: () {
+                        launch('https://www.buymeacoffee.com/ankitsangwan');
+                      },
+                      child: SizedBox(
+                        width: MediaQuery.of(context).size.width / 2,
+                        child: const Image(
                           image: AssetImage('assets/black-button.png'),
                         ),
-                        width: MediaQuery.of(context).size.width / 2,
                       ),
-                      onPressed: () {
-                        launch("https://www.buymeacoffee.com/ankitsangwan");
-                      },
                     ),
-                    Text(
-                      "OR",
+                    const Text(
+                      'OR',
                       textAlign: TextAlign.center,
                       style: TextStyle(fontSize: 12),
                     ),
@@ -141,31 +143,31 @@ class _AboutScreenState extends State<AboutScreen> {
                         backgroundColor: Colors.transparent,
                         primary: Colors.transparent,
                       ),
-                      child: Container(
+                      onPressed: () {
+                        final userId = Hive.box('settings').get('userId');
+                        final String upiUrl =
+                            'upi://pay?pa=8570094149@okbizaxis&pn=Ankit%20Sangwan&mc=5732&aid=uGICAgIDn98OpSw&tr=BCR2DN6T37O6DB3Q&tn=$userId';
+                        launch(upiUrl);
+                      },
+                      child: SizedBox(
+                        width: MediaQuery.of(context).size.width / 2,
                         child: Image(
                           image: AssetImage(
                               Theme.of(context).brightness == Brightness.dark
                                   ? 'assets/gpay-white.png'
                                   : 'assets/gpay-white.png'),
                         ),
-                        width: MediaQuery.of(context).size.width / 2,
                       ),
-                      onPressed: () {
-                        final userId = Hive.box('settings').get('userId');
-                        String upiUrl =
-                            'upi://pay?pa=8570094149@okbizaxis&pn=Ankit%20Sangwan&mc=5732&aid=uGICAgIDn98OpSw&tr=BCR2DN6T37O6DB3Q&tn=$userId';
-                        launch(upiUrl);
-                      },
                     ),
-                    Text(
-                      "Sponsor this project",
+                    const Text(
+                      'Sponsor this project',
                       textAlign: TextAlign.center,
                       style: TextStyle(fontSize: 12),
                     ),
                   ],
                 ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(5, 30, 5, 20),
+                const Padding(
+                  padding: EdgeInsets.fromLTRB(5, 30, 5, 20),
                   child: Center(
                     child: Text(
                       'Made with ♥ by Ankit Sangwan',
