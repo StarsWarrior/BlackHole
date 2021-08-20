@@ -65,10 +65,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                           child: Center(
                             child: Icon(
                               Icons.add_rounded,
-                              color: Theme.of(context).brightness ==
-                                      Brightness.dark
-                                  ? null
-                                  : Colors.grey[700],
+                              color: Theme.of(context).iconTheme.color,
                             ),
                           ),
                         ),
@@ -104,10 +101,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                             child: Center(
                               child: Icon(
                                 MdiIcons.import,
-                                color: Theme.of(context).brightness ==
-                                        Brightness.dark
-                                    ? null
-                                    : Colors.grey[700],
+                                color: Theme.of(context).iconTheme.color,
                               ),
                             ),
                           ),
@@ -129,10 +123,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                             child: Center(
                               child: Icon(
                                 MdiIcons.spotify,
-                                color: Theme.of(context).brightness ==
-                                        Brightness.dark
-                                    ? null
-                                    : Colors.grey[700],
+                                color: Theme.of(context).iconTheme.color,
                               ),
                             ),
                           ),
@@ -150,7 +141,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                               await fetchPlaylists(
                                   code, context, playlistNames, settingsBox);
                               setState(() {
-                                playlistNames = playlistNames;
+                                playlistNames = List.from(playlistNames);
                               });
                             }
                           });
@@ -166,10 +157,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                             child: Center(
                               child: Icon(
                                 MdiIcons.youtube,
-                                color: Theme.of(context).brightness ==
-                                        Brightness.dark
-                                    ? null
-                                    : Colors.grey[700],
+                                color: Theme.of(context).iconTheme.color,
                               ),
                             ),
                           ),
@@ -348,10 +336,8 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                                             TextButton(
                                               style: TextButton.styleFrom(
                                                 primary: Theme.of(context)
-                                                            .brightness ==
-                                                        Brightness.dark
-                                                    ? Colors.white
-                                                    : Colors.grey[700],
+                                                    .iconTheme
+                                                    .color,
                                               ),
                                               onPressed: () {
                                                 Navigator.pop(context);
@@ -509,10 +495,7 @@ Future<void> fetchPlaylists(String code, BuildContext context,
                           child: Center(
                             child: Icon(
                               Icons.add_rounded,
-                              color: Theme.of(context).brightness ==
-                                      Brightness.dark
-                                  ? null
-                                  : Colors.grey[700],
+                              color: Theme.of(context).iconTheme.color,
                             ),
                           ),
                         ),
@@ -572,15 +555,16 @@ Future<void> fetchPlaylists(String code, BuildContext context,
                           }
 
                           await SearchAddPlaylist()
-                              .showProgress(_total, ctxt, songsAdder());
+                              .showProgress(_total, context, songsAdder());
                         });
                         Navigator.pop(context);
                       },
                     );
                   }
 
-                  final String playName =
-                      spotifyPlaylists[idx - 1]['name'].toString();
+                  final String playName = spotifyPlaylists[idx - 1]['name']
+                      .toString()
+                      .replaceAll('/', ' ');
                   final int playTotal =
                       spotifyPlaylists[idx - 1]['tracks']['total'] as int;
                   return playTotal == 0
@@ -613,46 +597,49 @@ Future<void> fetchPlaylists(String code, BuildContext context,
                 }),
           );
         });
-    String playName = spotifyPlaylists[index!]['name'].toString();
-    final int _total = spotifyPlaylists[index]['tracks']['total'] as int;
+    if (index != null) {
+      String playName =
+          spotifyPlaylists[index]['name'].toString().replaceAll('/', ' ');
+      final int _total = spotifyPlaylists[index]['tracks']['total'] as int;
 
-    Stream<Map> songsAdder() async* {
-      int _done = 0;
-      final List tracks = [];
-      for (int i = 0; i * 100 <= _total; i++) {
-        final Map data = await SpotifyApi().getTracksOfPlaylist(
-            accessToken, spotifyPlaylists[index]['id'].toString(), i * 100);
+      Stream<Map> songsAdder() async* {
+        int _done = 0;
+        final List tracks = [];
+        for (int i = 0; i * 100 <= _total; i++) {
+          final Map data = await SpotifyApi().getTracksOfPlaylist(
+              accessToken, spotifyPlaylists[index]['id'].toString(), i * 100);
 
-        tracks.addAll(data['tracks'] as List);
-      }
-      while (playlistNames.contains(playName)) {
-        // ignore: use_string_buffers
-        playName = '$playName (1)';
-      }
-      playlistNames.add(playName);
-      settingsBox.put('playlistNames', playlistNames);
-
-      for (final track in tracks) {
-        String? trackArtist;
-        String? trackName;
-        try {
-          trackArtist = track['track']['artists'][0]['name'].toString();
-          trackName = track['track']['name'].toString();
-          yield {'done': ++_done, 'name': trackName};
-        } catch (e) {
-          yield {'done': ++_done, 'name': ''};
+          tracks.addAll(data['tracks'] as List);
         }
-        try {
-          final List result = await SaavnAPI()
-              .fetchTopSearchResult('$trackName by $trackArtist');
-          addMapToPlaylist(playName, result[0] as Map);
-        } catch (e) {
-          // print('Error in $_done: $e');
+        while (playlistNames.contains(playName)) {
+          // ignore: use_string_buffers
+          playName = '$playName (1)';
+        }
+        playlistNames.add(playName);
+        settingsBox.put('playlistNames', playlistNames);
+
+        for (final track in tracks) {
+          String? trackArtist;
+          String? trackName;
+          try {
+            trackArtist = track['track']['artists'][0]['name'].toString();
+            trackName = track['track']['name'].toString();
+            yield {'done': ++_done, 'name': trackName};
+          } catch (e) {
+            yield {'done': ++_done, 'name': ''};
+          }
+          try {
+            final List result = await SaavnAPI()
+                .fetchTopSearchResult('$trackName by $trackArtist');
+            addMapToPlaylist(playName, result[0] as Map);
+          } catch (e) {
+            // print('Error in $_done: $e');
+          }
         }
       }
+
+      await SearchAddPlaylist().showProgress(_total, context, songsAdder());
     }
-
-    await SearchAddPlaylist().showProgress(_total, context, songsAdder());
   } else {
     // print('Failed');
   }

@@ -112,6 +112,8 @@ class _MyAppState extends State<MyApp> {
                   BorderSide(width: 1.5, color: currentTheme.currentColor())),
         ),
         visualDensity: VisualDensity.adaptivePlatformDensity,
+        iconTheme: IconThemeData(color: Colors.grey[800]),
+        disabledColor: Colors.grey[600],
         brightness: Brightness.light,
         accentColor: currentTheme.currentColor(),
       ),

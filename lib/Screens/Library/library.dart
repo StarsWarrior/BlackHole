@@ -36,9 +36,7 @@ class _LibraryPageState extends State<LibraryPage> {
               return Transform.rotate(
                 angle: 22 / 7 * 2,
                 child: IconButton(
-                  color: Theme.of(context).brightness == Brightness.dark
-                      ? null
-                      : Colors.grey[700],
+                  color: Theme.of(context).iconTheme.color,
                   icon: const Icon(
                       Icons.horizontal_split_rounded), // line_weight_rounded),
                   onPressed: () {
@@ -51,38 +49,23 @@ class _LibraryPageState extends State<LibraryPage> {
             },
           ),
         ),
-        ListTile(
-          title: const Text('Now Playing'),
-          leading: Icon(
-            Icons.queue_music_rounded,
-            color: Theme.of(context).brightness == Brightness.dark
-                ? null
-                : Colors.grey[700],
-          ),
-          onTap: () async {
+        LibraryTile(
+          title: 'Now Playing',
+          icon: Icons.queue_music_rounded,
+          onTap: () {
             Navigator.pushNamed(context, '/nowplaying');
           },
         ),
-        ListTile(
-          title: const Text('Last Session'),
-          leading: Icon(
-            Icons.history_rounded,
-            color: Theme.of(context).brightness == Brightness.dark
-                ? null
-                : Colors.grey[700],
-          ),
-          onTap: () async {
+        LibraryTile(
+          title: 'Last Session',
+          icon: Icons.history_rounded,
+          onTap: () {
             Navigator.pushNamed(context, '/recent');
           },
         ),
-        ListTile(
-          title: const Text('Favorites'),
-          leading: Icon(
-            Icons.favorite_rounded,
-            color: Theme.of(context).brightness == Brightness.dark
-                ? null
-                : Colors.grey[700],
-          ),
+        LibraryTile(
+          title: 'Favorites',
+          icon: Icons.favorite_rounded,
           onTap: () async {
             await Hive.openBox('Favorite Songs');
             Navigator.push(
@@ -92,14 +75,9 @@ class _LibraryPageState extends State<LibraryPage> {
                         const LikedSongs(playlistName: 'Favorite Songs')));
           },
         ),
-        ListTile(
-          title: const Text('My Music'),
-          leading: Icon(
-            MdiIcons.folderMusic,
-            color: Theme.of(context).brightness == Brightness.dark
-                ? null
-                : Colors.grey[700],
-          ),
+        LibraryTile(
+          title: 'My Music',
+          icon: MdiIcons.folderMusic,
           onTap: () {
             Navigator.push(
                 context,
@@ -107,14 +85,9 @@ class _LibraryPageState extends State<LibraryPage> {
                     builder: (context) => const DownloadedSongs(type: 'all')));
           },
         ),
-        ListTile(
-          title: const Text('Downloads'),
-          leading: Icon(
-            Icons.download_done_rounded,
-            color: Theme.of(context).brightness == Brightness.dark
-                ? null
-                : Colors.grey[700],
-          ),
+        LibraryTile(
+          title: 'Downloads',
+          icon: Icons.download_done_rounded,
           onTap: () {
             Navigator.push(
                 context,
@@ -123,19 +96,44 @@ class _LibraryPageState extends State<LibraryPage> {
                         const DownloadedSongs(type: 'downloaded')));
           },
         ),
-        ListTile(
-          title: const Text('Playlists'),
-          leading: Icon(
-            Icons.playlist_play_rounded,
-            color: Theme.of(context).brightness == Brightness.dark
-                ? null
-                : Colors.grey[700],
-          ),
+        LibraryTile(
+          title: 'Playlists',
+          icon: Icons.playlist_play_rounded,
           onTap: () {
             Navigator.pushNamed(context, '/playlists');
           },
         ),
       ],
+    );
+  }
+}
+
+class LibraryTile extends StatelessWidget {
+  const LibraryTile({
+    Key? key,
+    required this.icon,
+    required this.title,
+    required this.onTap,
+  }) : super(key: key);
+
+  final String title;
+  final IconData icon;
+  final Function() onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      title: Text(
+        title,
+        style: TextStyle(
+          color: Theme.of(context).iconTheme.color,
+        ),
+      ),
+      leading: Icon(
+        icon,
+        color: Theme.of(context).iconTheme.color,
+      ),
+      onTap: onTap,
     );
   }
 }

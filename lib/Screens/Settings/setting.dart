@@ -1375,7 +1375,7 @@ class _SettingPageState extends State<SettingPage> {
                       //   endIndent: 15,
                       // ),
                       ListTile(
-                        title: const Text('Share'),
+                        title: const Text('Share App'),
                         subtitle: const Text('Let you friends know about us'),
                         onTap: () {
                           Share.share(
@@ -1384,94 +1384,6 @@ class _SettingPageState extends State<SettingPage> {
                         dense: true,
                       ),
 
-                      ListTile(
-                        title: const Text('Contact Us'),
-                        subtitle: const Text('Feedbacks appreciated'),
-                        dense: true,
-                        onTap: () {
-                          showModalBottomSheet(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return Container(
-                                  decoration: BoxDecoration(
-                                    gradient: LinearGradient(
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
-                                      // stops: [0, 0.2, 0.8, 1],
-                                      colors: Theme.of(context).brightness ==
-                                              Brightness.dark
-                                          ? [
-                                              Colors.grey[850]!,
-                                              Colors.grey[850]!,
-                                              Colors.grey[900]!,
-                                            ]
-                                          : [
-                                              Colors.white,
-                                              Theme.of(context).canvasColor,
-                                            ],
-                                    ),
-                                  ),
-                                  // color: Colors.black,
-                                  height: 100,
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    children: [
-                                      Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          IconButton(
-                                            icon: const Icon(MdiIcons.gmail),
-                                            iconSize: 40,
-                                            tooltip: 'Gmail',
-                                            onPressed: () {
-                                              Navigator.pop(context);
-                                              launch(
-                                                  'https://mail.google.com/mail/?extsrc=mailto&url=mailto%3A%3Fto%3Dblackholeyoucantescape%40gmail.com%26subject%3DRegarding%2520Mobile%2520App');
-                                            },
-                                          ),
-                                          const Text('Gmail'),
-                                        ],
-                                      ),
-                                      Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          IconButton(
-                                            icon: const Icon(MdiIcons.telegram),
-                                            iconSize: 40,
-                                            tooltip: 'Telegram',
-                                            onPressed: () {
-                                              Navigator.pop(context);
-                                              launch(
-                                                  'https://t.me/joinchat/fHDC1AWnOhw0ZmI9');
-                                            },
-                                          ),
-                                          const Text('Telegram'),
-                                        ],
-                                      ),
-                                      Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          IconButton(
-                                            icon:
-                                                const Icon(MdiIcons.instagram),
-                                            iconSize: 40,
-                                            tooltip: 'Instagram',
-                                            onPressed: () {
-                                              Navigator.pop(context);
-                                              launch(
-                                                  'https://instagram.com/sangwan5688');
-                                            },
-                                          ),
-                                          const Text('Instagram'),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              });
-                        },
-                      ),
                       ListTile(
                         title: const Text('Liked my work?'),
                         subtitle: const Text('Buy me a coffee'),
@@ -1526,11 +1438,132 @@ class _SettingPageState extends State<SettingPage> {
                         ),
                       ),
                       ListTile(
+                        title: const Text('Contact Us'),
+                        subtitle: const Text('Feedbacks Appreciated!'),
+                        dense: true,
+                        onTap: () {
+                          showModalBottomSheet(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return SizedBox(
+                                  height: 100,
+                                  child: GradientContainer(
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            IconButton(
+                                              icon: const Icon(MdiIcons.gmail),
+                                              iconSize: 40,
+                                              tooltip: 'Gmail',
+                                              onPressed: () {
+                                                Navigator.pop(context);
+                                                launch(
+                                                    'https://mail.google.com/mail/?extsrc=mailto&url=mailto%3A%3Fto%3Dblackholeyoucantescape%40gmail.com%26subject%3DRegarding%2520Mobile%2520App');
+                                              },
+                                            ),
+                                            const Text('Gmail'),
+                                          ],
+                                        ),
+                                        Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            IconButton(
+                                              icon:
+                                                  const Icon(MdiIcons.telegram),
+                                              iconSize: 40,
+                                              tooltip: 'Telegram',
+                                              onPressed: () {
+                                                Navigator.pop(context);
+                                                launch(
+                                                    'https://t.me/joinchat/fHDC1AWnOhw0ZmI9');
+                                              },
+                                            ),
+                                            const Text('Telegram'),
+                                          ],
+                                        ),
+                                        Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            IconButton(
+                                              icon: const Icon(
+                                                  MdiIcons.instagram),
+                                              iconSize: 40,
+                                              tooltip: 'Instagram',
+                                              onPressed: () {
+                                                Navigator.pop(context);
+                                                launch(
+                                                    'https://instagram.com/sangwan5688');
+                                              },
+                                            ),
+                                            const Text('Instagram'),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              });
+                        },
+                      ),
+
+                      ListTile(
                         title: const Text('Join us on Telegram'),
                         // subtitle: Text(
                         //     'Stay updated with the project, test beta versions, and much more :)'),
                         onTap: () {
-                          launch('https://t.me/joinchat/fHDC1AWnOhw0ZmI9');
+                          showModalBottomSheet(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return SizedBox(
+                                  height: 100,
+                                  child: GradientContainer(
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            IconButton(
+                                              icon:
+                                                  const Icon(MdiIcons.telegram),
+                                              iconSize: 40,
+                                              tooltip: 'Telegram Group',
+                                              onPressed: () {
+                                                Navigator.pop(context);
+                                                launch(
+                                                    'https://t.me/joinchat/fHDC1AWnOhw0ZmI9');
+                                              },
+                                            ),
+                                            const Text('Group'),
+                                          ],
+                                        ),
+                                        Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            IconButton(
+                                              icon:
+                                                  const Icon(MdiIcons.telegram),
+                                              iconSize: 40,
+                                              tooltip: 'Telegram Channel',
+                                              onPressed: () {
+                                                Navigator.pop(context);
+                                                launch(
+                                                    'https://t.me/blackhole_official');
+                                              },
+                                            ),
+                                            const Text('Channel'),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              });
                         },
                         dense: true,
                       ),

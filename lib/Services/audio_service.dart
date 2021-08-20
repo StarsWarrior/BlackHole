@@ -274,6 +274,10 @@ class AudioPlayerTask extends BackgroundAudioTask {
       onReorderQueue(myVariable[0] as int, myVariable[1] as int);
     }
 
+    if (myFunction == 'setVolume') {
+      onSetVolume(myVariable as double);
+    }
+
     if (myFunction == 'setEqualizer') {
       _equalizer.setEnabled(myVariable as bool);
     }
@@ -339,11 +343,16 @@ class AudioPlayerTask extends BackgroundAudioTask {
             .map((state) => state?.effectiveSequence)
             .distinct()
             .map((sequence) =>
-                sequence!.map((source) => source.tag as MediaItem?).toList())
-            .listen(AudioServiceBackground.setQueue as void Function(
-                List<MediaItem?>)?);
+                sequence!.map((source) => source.tag as MediaItem).toList())
+            .listen(AudioServiceBackground.setQueue);
         break;
     }
+  }
+
+  Future<void> onSetVolume(
+    double volume,
+  ) async {
+    await _player.setVolume(volume);
   }
 
   @override

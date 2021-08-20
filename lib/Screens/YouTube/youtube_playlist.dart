@@ -280,9 +280,13 @@ class _YouTubePlaylistState extends State<YouTubePlaylist> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceEvenly,
                                 children: [
-                                  const Text(
-                                      'Use Main Section for Better Quality and Download Support',
-                                      textAlign: TextAlign.center),
+                                  const Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 8.0),
+                                    child: Text(
+                                        'Use Main Section for Better Quality and Download Support',
+                                        textAlign: TextAlign.center),
+                                  ),
                                   SizedBox(
                                       height:
                                           MediaQuery.of(context).size.width / 7,

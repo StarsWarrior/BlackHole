@@ -74,11 +74,8 @@ class _YouTubeState extends State<YouTube> {
             size: 20.0,
             icon: Transform.rotate(
               angle: 22 / 7 * 2,
-              child: Icon(
+              child: const Icon(
                 Icons.horizontal_split_rounded,
-                color: Theme.of(context).brightness == Brightness.dark
-                    ? null
-                    : Colors.grey[700],
               ),
             ),
             onTap: () {

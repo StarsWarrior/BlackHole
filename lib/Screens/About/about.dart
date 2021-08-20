@@ -71,10 +71,17 @@ class _AboutScreenState extends State<AboutScreen> {
                     const SizedBox(
                       height: 20,
                     ),
-                    const SizedBox(
-                        width: 150,
-                        child:
-                            Image(image: AssetImage('assets/ic_launcher.png'))),
+                    Card(
+                      elevation: 15,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(100.0),
+                      ),
+                      clipBehavior: Clip.antiAlias,
+                      child: const SizedBox(
+                          width: 150,
+                          child: Image(
+                              image: AssetImage('assets/ic_launcher.png'))),
+                    ),
                     const SizedBox(height: 20),
                     const Text(
                       'BlackHole',

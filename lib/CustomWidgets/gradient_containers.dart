@@ -23,8 +23,8 @@ class _GradientContainerState extends State<GradientContainer> {
                   ? currentTheme.getTransBackGradient()
                   : currentTheme.getBackGradient())
               : [
+                  const Color(0xfff5f9ff),
                   Colors.white,
-                  Theme.of(context).canvasColor,
                 ],
         ),
       ),

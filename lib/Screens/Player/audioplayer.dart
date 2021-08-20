@@ -44,6 +44,8 @@ class PlayScreen extends StatefulWidget {
 
 class _PlayScreenState extends State<PlayScreen> {
   bool fromMiniplayer = false;
+  final ValueNotifier<bool> dragging = ValueNotifier<bool>(false);
+  final ValueNotifier<double> volume = ValueNotifier<double>(1.0);
   String preferredQuality = Hive.box('settings')
       .get('streamingQuality', defaultValue: '96 kbps')
       .toString();
@@ -777,7 +779,7 @@ class _PlayScreenState extends State<PlayScreen> {
                                                   ),
                                                 ),
                                                 Expanded(
-                                                  flex: 2,
+                                                  flex: 3,
                                                   child: FittedBox(
                                                     fit: BoxFit.scaleDown,
                                                     child: Text(
@@ -1053,6 +1055,67 @@ class _PlayScreenState extends State<PlayScreen> {
                                                     AudioService.play();
                                                   }
                                                 },
+                                                onHorizontalDragEnd:
+                                                    (DragEndDetails details) {
+                                                  if ((details.primaryVelocity ??
+                                                              0) >
+                                                          100 &&
+                                                      (mediaItem !=
+                                                              queue.first ||
+                                                          repeatMode ==
+                                                              'All')) {
+                                                    if (mediaItem ==
+                                                        queue.first) {
+                                                      AudioService
+                                                          .skipToQueueItem(
+                                                              queue.last.id);
+                                                    } else {
+                                                      AudioService
+                                                          .skipToPrevious();
+                                                    }
+                                                  }
+
+                                                  if ((details.primaryVelocity ??
+                                                              0) <
+                                                          -100 &&
+                                                      (mediaItem !=
+                                                              queue.last ||
+                                                          repeatMode ==
+                                                              'All')) {
+                                                    if (mediaItem ==
+                                                        queue.last) {
+                                                      AudioService
+                                                          .skipToQueueItem(
+                                                              queue.first.id);
+                                                    } else {
+                                                      AudioService.skipToNext();
+                                                    }
+                                                  }
+                                                },
+                                                onVerticalDragStart: (_) {
+                                                  dragging.value = true;
+                                                },
+                                                onVerticalDragEnd: (_) {
+                                                  dragging.value = false;
+                                                },
+                                                onVerticalDragUpdate:
+                                                    (DragUpdateDetails
+                                                        details) {
+                                                  if (details.delta.dy != 0.0) {
+                                                    volume.value -=
+                                                        details.delta.dy / 100;
+                                                    if (volume.value < 0) {
+                                                      volume.value = 0.0;
+                                                    }
+                                                    if (volume.value > 1.0) {
+                                                      volume.value = 1.0;
+                                                    }
+                                                    AudioService.customAction(
+                                                      'setVolume',
+                                                      volume.value,
+                                                    );
+                                                  }
+                                                },
                                                 child: Align(
                                                   alignment:
                                                       Alignment.topCenter,
@@ -1067,80 +1130,154 @@ class _PlayScreenState extends State<PlayScreen> {
                                                                 .size
                                                                 .width *
                                                             0.85,
-                                                    child: Card(
-                                                      elevation: 10.0,
-                                                      shape:
-                                                          RoundedRectangleBorder(
+                                                    child: Stack(
+                                                      children: [
+                                                        Card(
+                                                          elevation: 10.0,
+                                                          shape: RoundedRectangleBorder(
                                                               borderRadius:
                                                                   BorderRadius
                                                                       .circular(
                                                                           15.0)),
-                                                      clipBehavior:
-                                                          Clip.antiAlias,
-                                                      child: Stack(
-                                                        children: [
-                                                          Image(
-                                                              fit: BoxFit.cover,
-                                                              height: MediaQuery.of(
-                                                                          context)
-                                                                      .size
-                                                                      .width *
-                                                                  0.85,
-                                                              image: const AssetImage(
-                                                                  'assets/cover.jpg')),
-                                                          if (offline)
-                                                            Image(
-                                                                fit: BoxFit
-                                                                    .cover,
-                                                                height: MediaQuery
-                                                                            .of(
-                                                                                context)
-                                                                        .size
-                                                                        .width *
-                                                                    0.85,
-                                                                width: MediaQuery.of(
-                                                                            context)
-                                                                        .size
-                                                                        .width *
-                                                                    0.85,
-                                                                image: FileImage(File(mediaItem
-                                                                    // queue[index %
-                                                                    // queue.length]
-                                                                    .artUri!
-                                                                    .toFilePath())))
-                                                          else
-                                                            CachedNetworkImage(
-                                                              fit: BoxFit.cover,
-                                                              errorWidget:
-                                                                  (BuildContext
+                                                          clipBehavior:
+                                                              Clip.antiAlias,
+                                                          child: Stack(
+                                                            children: [
+                                                              Image(
+                                                                  fit: BoxFit
+                                                                      .cover,
+                                                                  height: MediaQuery.of(
+                                                                              context)
+                                                                          .size
+                                                                          .width *
+                                                                      0.85,
+                                                                  image: const AssetImage(
+                                                                      'assets/cover.jpg')),
+                                                              if (offline)
+                                                                Image(
+                                                                    fit: BoxFit
+                                                                        .cover,
+                                                                    height: MediaQuery.of(context)
+                                                                            .size
+                                                                            .width *
+                                                                        0.85,
+                                                                    width: MediaQuery.of(context)
+                                                                            .size
+                                                                            .width *
+                                                                        0.85,
+                                                                    image: FileImage(File(mediaItem
+                                                                        // queue[index %
+                                                                        // queue.length]
+                                                                        .artUri!
+                                                                        .toFilePath())))
+                                                              else
+                                                                CachedNetworkImage(
+                                                                  fit: BoxFit
+                                                                      .cover,
+                                                                  errorWidget: (BuildContext
                                                                               context,
                                                                           _,
                                                                           __) =>
                                                                       const Image(
-                                                                image: AssetImage(
-                                                                    'assets/cover.jpg'),
-                                                              ),
-                                                              placeholder:
-                                                                  (BuildContext
+                                                                    image: AssetImage(
+                                                                        'assets/cover.jpg'),
+                                                                  ),
+                                                                  placeholder: (BuildContext
                                                                               context,
                                                                           _) =>
                                                                       const Image(
-                                                                image: AssetImage(
-                                                                    'assets/cover.jpg'),
-                                                              ),
-                                                              imageUrl: mediaItem
-                                                                  // queue[index %
-                                                                  // queue.length]
-                                                                  .artUri
-                                                                  .toString(),
-                                                              height: MediaQuery.of(
-                                                                          context)
-                                                                      .size
-                                                                      .width *
-                                                                  0.85,
-                                                            )
-                                                        ],
-                                                      ),
+                                                                    image: AssetImage(
+                                                                        'assets/cover.jpg'),
+                                                                  ),
+                                                                  imageUrl: mediaItem
+                                                                      // queue[index %
+                                                                      // queue.length]
+                                                                      .artUri
+                                                                      .toString(),
+                                                                  height: MediaQuery.of(
+                                                                              context)
+                                                                          .size
+                                                                          .width *
+                                                                      0.85,
+                                                                )
+                                                            ],
+                                                          ),
+                                                        ),
+                                                        ValueListenableBuilder(
+                                                            valueListenable:
+                                                                dragging,
+                                                            builder:
+                                                                (BuildContext
+                                                                        context,
+                                                                    bool value,
+                                                                    Widget?
+                                                                        child) {
+                                                              return Visibility(
+                                                                visible: value,
+                                                                child:
+                                                                    ValueListenableBuilder(
+                                                                        valueListenable:
+                                                                            volume,
+                                                                        builder: (BuildContext context,
+                                                                            double
+                                                                                volumeValue,
+                                                                            Widget?
+                                                                                child) {
+                                                                          return Center(
+                                                                            child:
+                                                                                SizedBox(
+                                                                              width: 60.0,
+                                                                              height: MediaQuery.of(context).size.width * 0.7,
+                                                                              child: Card(
+                                                                                color: Colors.black87,
+                                                                                shape: RoundedRectangleBorder(
+                                                                                  borderRadius: BorderRadius.circular(7.0),
+                                                                                ),
+                                                                                clipBehavior: Clip.antiAlias,
+                                                                                child: Column(
+                                                                                  mainAxisAlignment: MainAxisAlignment.center,
+                                                                                  mainAxisSize: MainAxisSize.min,
+                                                                                  children: [
+                                                                                    Expanded(
+                                                                                      child: FittedBox(
+                                                                                        fit: BoxFit.fitHeight,
+                                                                                        child: RotatedBox(
+                                                                                          quarterTurns: -1,
+                                                                                          child: SliderTheme(
+                                                                                            data: SliderTheme.of(context).copyWith(
+                                                                                              thumbShape: HiddenThumbComponentShape(),
+                                                                                              activeTrackColor: Theme.of(context).accentColor,
+                                                                                              inactiveTrackColor: Theme.of(context).accentColor.withOpacity(0.4),
+                                                                                              // trackHeight: 4.0,
+                                                                                              trackShape: const RoundedRectSliderTrackShape(),
+                                                                                            ),
+                                                                                            child: ExcludeSemantics(
+                                                                                              child: Slider(
+                                                                                                value: volumeValue,
+                                                                                                onChanged: (_) {},
+                                                                                              ),
+                                                                                            ),
+                                                                                          ),
+                                                                                        ),
+                                                                                      ),
+                                                                                    ),
+                                                                                    Padding(
+                                                                                      padding: const EdgeInsets.only(bottom: 20.0),
+                                                                                      child: Icon(volumeValue == 0
+                                                                                          ? Icons.volume_off_rounded
+                                                                                          : volumeValue > 0.6
+                                                                                              ? Icons.volume_up_rounded
+                                                                                              : Icons.volume_down_rounded),
+                                                                                    ),
+                                                                                  ],
+                                                                                ),
+                                                                              ),
+                                                                            ),
+                                                                          );
+                                                                        }),
+                                                              );
+                                                            }),
+                                                      ],
                                                     ),
                                                   ),
                                                 ),
@@ -1203,7 +1340,7 @@ class _PlayScreenState extends State<PlayScreen> {
 
                                               /// Subtitle container
                                               Expanded(
-                                                flex: 2,
+                                                flex: 3,
                                                 child: FittedBox(
                                                   fit: BoxFit.scaleDown,
                                                   child: Text(

@@ -128,15 +128,9 @@ class _HomePageState extends State<HomePage> {
   }
 
   final ScrollController _scrollController = ScrollController();
-  ValueNotifier<double> _size = ValueNotifier<double>(0.0);
-
-  void _scrollListener() {
-    _size.value = _scrollController.offset.roundToDouble();
-  }
 
   @override
   void initState() {
-    _scrollController.addListener(_scrollListener);
     super.initState();
   }
 
@@ -313,9 +307,6 @@ class _HomePageState extends State<HomePage> {
                     physics: const CustomPhysics(),
                     onPageChanged: (indx) {
                       _selectedIndex.value = indx;
-                      if (indx == 0) {
-                        _size = ValueNotifier<double>(0.0);
-                      }
                     },
                     controller: pageController,
                     children: [
@@ -440,22 +431,32 @@ class _HomePageState extends State<HomePage> {
                                   toolbarHeight: 65,
                                   title: Align(
                                     alignment: Alignment.centerRight,
-                                    child: ValueListenableBuilder(
-                                        valueListenable: _size,
-                                        builder:
-                                            (context, double value, child) {
+                                    child: AnimatedBuilder(
+                                        animation: _scrollController,
+                                        builder: (context, child) {
                                           return AnimatedContainer(
-                                            width: max(
-                                                MediaQuery.of(context)
-                                                        .size
-                                                        .width -
-                                                    value,
-                                                MediaQuery.of(context)
-                                                        .size
-                                                        .width -
-                                                    75),
+                                            width: (!_scrollController
+                                                        .hasClients ||
+                                                    _scrollController
+                                                            // ignore: invalid_use_of_protected_member
+                                                            .positions
+                                                            .length >
+                                                        1)
+                                                ? MediaQuery.of(context)
+                                                    .size
+                                                    .width
+                                                : max(
+                                                    MediaQuery.of(context)
+                                                            .size
+                                                            .width -
+                                                        _scrollController.offset
+                                                            .roundToDouble(),
+                                                    MediaQuery.of(context)
+                                                            .size
+                                                            .width -
+                                                        75),
                                             duration: const Duration(
-                                                milliseconds: 300),
+                                                milliseconds: 150),
                                             padding: const EdgeInsets.all(2.0),
                                             // margin: EdgeInsets.zero,
                                             decoration: BoxDecoration(
@@ -467,7 +468,7 @@ class _HomePageState extends State<HomePage> {
                                                 BoxShadow(
                                                   color: Colors.black26,
                                                   blurRadius: 5.0,
-                                                  offset: Offset(0.0, 3.0),
+                                                  offset: Offset(1.5, 1.5),
                                                   // shadow direction: bottom right
                                                 )
                                               ],
@@ -540,10 +541,7 @@ class _HomePageState extends State<HomePage> {
                                 child: IconButton(
                                   icon: const Icon(
                                       Icons.horizontal_split_rounded),
-                                  color: Theme.of(context).brightness ==
-                                          Brightness.dark
-                                      ? null
-                                      : Colors.grey[700],
+                                  color: Theme.of(context).iconTheme.color,
                                   onPressed: () {
                                     Scaffold.of(context).openDrawer();
                                   },

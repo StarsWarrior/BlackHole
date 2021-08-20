@@ -48,6 +48,7 @@ class _DownloadButtonState extends State<DownloadButton> {
                               ? Icons.download_rounded
                               : Icons.save_alt),
                           iconSize: 25.0,
+                          color: Theme.of(context).iconTheme.color,
                           tooltip: 'Download',
                           onPressed: () {
                             down.prepareDownload(context, widget.data);
@@ -125,6 +126,7 @@ class _MultiDownloadButtonState extends State<MultiDownloadButton> {
                             Icons.save_alt_rounded,
                           ),
                           iconSize: 25.0,
+                          color: Theme.of(context).iconTheme.color,
                           tooltip: 'Download',
                           onPressed: () async {
                             for (final items in widget.data) {
@@ -230,6 +232,7 @@ class _AlbumDownloadButtonState extends State<AlbumDownloadButton> {
                             Icons.download_rounded,
                           ),
                           iconSize: 25.0,
+                          color: Theme.of(context).iconTheme.color,
                           tooltip: 'Download',
                           onPressed: () async {
                             ShowSnackBar().showSnackBar(

@@ -457,6 +457,7 @@ class FormatResponse {
         'charts',
         'new_albums',
         'top_playlists',
+        // 'radio',
         // 'city_mod',
         // 'artist_recos',
         ...promoList

@@ -293,7 +293,10 @@ class _SaavnHomePageState extends State<SaavnHomePage> {
                               Card(
                                 elevation: 5,
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10.0),
+                                  borderRadius: BorderRadius.circular(
+                                      item['type'] == 'radio_station'
+                                          ? 100.0
+                                          : 10.0),
                                 ),
                                 clipBehavior: Clip.antiAlias,
                                 child: CachedNetworkImage(

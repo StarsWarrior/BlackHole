@@ -45,30 +45,27 @@ class _SearchPageState extends State<SearchPage> {
     super.dispose();
   }
 
+  Future<void> fetchResults() async {
+    // this fetches top 5 songs results
+    searchedData['Songs'] = await SaavnAPI()
+        .fetchSongSearchResults(query == '' ? widget.query : query, '5');
+    fetched = true;
+    // this fetches albums, playlists, artists, etc
+    final List<Map> value =
+        await SaavnAPI().fetchSearchResults(query == '' ? widget.query : query);
+
+    searchedData.addEntries(value[0].entries);
+    position = value[1];
+    sortedKeys = position.keys.toList()..sort();
+    albumFetched = true;
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     if (!status) {
       status = true;
-      // this fetches top 5 songs results
-      SaavnAPI()
-          .fetchSongSearchResults(query == '' ? widget.query : query, '5')
-          .then((value) {
-        setState(() {
-          searchedData['Songs'] = value;
-          fetched = true;
-        });
-      });
-      // this fetches albums, playlists, artists, etc
-      SaavnAPI()
-          .fetchSearchResults(query == '' ? widget.query : query)
-          .then((value) {
-        setState(() {
-          searchedData.addEntries(value[0].entries);
-          position = value[1];
-          sortedKeys = position.keys.toList()..sort();
-          albumFetched = true;
-        });
-      });
+      fetchResults();
     }
     return GradientContainer(
       child: SafeArea(
@@ -89,11 +86,8 @@ class _SearchPageState extends State<SearchPage> {
                     FloatingSearchBarAction.icon(
                       showIfOpened: true,
                       size: 20.0,
-                      icon: Icon(
+                      icon: const Icon(
                         Icons.arrow_back_rounded,
-                        color: Theme.of(context).brightness == Brightness.dark
-                            ? null
-                            : Colors.grey[700],
                       ),
                       onTap: () {
                         _controller.isOpen
