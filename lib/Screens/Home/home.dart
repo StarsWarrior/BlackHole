@@ -35,6 +35,8 @@ class _HomePageState extends State<HomePage> {
   String? appVersion;
   String name =
       Hive.box('settings').get('name', defaultValue: 'Guest') as String;
+  bool checkUpdate =
+      Hive.box('settings').get('checkUpdate', defaultValue: false) as bool;
 
   String capitalize(String msg) {
     return '${msg[0].toUpperCase()}${msg.substring(1)}';
@@ -97,23 +99,25 @@ class _HomePageState extends State<HomePage> {
         appVersion = packageInfo.version;
         updateUserDetails('version', packageInfo.version);
 
-        db.getUpdate().then((Map value) {
-          if (compareVersion(value['LatestVersion'] as String, appVersion!)) {
-            ShowSnackBar().showSnackBar(
-              context,
-              'Update Available!',
-              duration: const Duration(seconds: 15),
-              action: SnackBarAction(
-                textColor: Theme.of(context).accentColor,
-                label: 'Update',
-                onPressed: () {
-                  Navigator.pop(context);
-                  launch(value['LatestUrl'] as String);
-                },
-              ),
-            );
-          }
-        });
+        if (checkUpdate) {
+          db.getUpdate().then((Map value) {
+            if (compareVersion(value['LatestVersion'] as String, appVersion!)) {
+              ShowSnackBar().showSnackBar(
+                context,
+                'Update Available!',
+                duration: const Duration(seconds: 15),
+                action: SnackBarAction(
+                  textColor: Theme.of(context).accentColor,
+                  label: 'Update',
+                  onPressed: () {
+                    Navigator.pop(context);
+                    launch(value['LatestUrl'] as String);
+                  },
+                ),
+              );
+            }
+          });
+        }
       });
       if (Hive.box('settings').get('proxyIp') == null) {
         Hive.box('settings').put('proxyIp', '103.47.67.134');

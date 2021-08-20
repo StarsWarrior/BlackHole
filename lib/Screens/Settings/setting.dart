@@ -1207,6 +1207,14 @@ class _SettingPageState extends State<SettingPage> {
                       keyName: 'stopServiceOnPause',
                       defaultValue: true,
                     ),
+                    const BoxSwitchTile(
+                      title: Text('Auto check for Updates'),
+                      subtitle: Text(
+                          "If you download BlackHole from any software repository like 'F-Droid', 'IzzyOnDroid', etc keep this OFF. Whereas, If you download it from 'GitHub' or any other source which doesn't provide auto updates then turn this ON, so as to recieve update alerts"),
+                      keyName: 'checkUpdate',
+                      isThreeLine: true,
+                      defaultValue: false,
+                    ),
                     BoxSwitchTile(
                       title: const Text('Use Proxy'),
                       subtitle: const Text(

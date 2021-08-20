@@ -26,8 +26,6 @@ class Download with ChangeNotifier {
       .get('createYoutubeFolder', defaultValue: false) as bool;
   double? progress = 0.0;
   String lastDownloadId = '';
-  String dlPath =
-      Hive.box('settings').get('downloadPath', defaultValue: '') as String;
   bool downloadLyrics =
       Hive.box('settings').get('downloadLyrics', defaultValue: false) as bool;
 
@@ -57,7 +55,8 @@ class Download with ChangeNotifier {
     final RegExp avoid = RegExp(r'[\.\\\*\:\"\?#/;\|]');
     data['title'] = data['title'].toString().split('(From')[0].trim();
     String filename = '${data["title"]} - ${data["artist"]}';
-
+    String dlPath =
+        Hive.box('settings').get('downloadPath', defaultValue: '') as String;
     if (filename.length > 200) {
       final String temp = filename.substring(0, 200);
       final List tempList = temp.split(', ');
