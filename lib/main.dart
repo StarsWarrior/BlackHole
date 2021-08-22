@@ -18,6 +18,7 @@
 import 'dart:io';
 
 import 'package:audio_service/audio_service.dart';
+import 'package:blackhole/Screens/Login/pref.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
@@ -118,6 +119,13 @@ class _MyAppState extends State<MyApp> {
         accentColor: currentTheme.currentColor(),
       ),
       darkTheme: ThemeData(
+        textButtonTheme: TextButtonThemeData(
+          style: TextButton.styleFrom(
+            primary: Colors.white,
+            backgroundColor: Colors.transparent,
+            elevation: 0.0,
+          ),
+        ),
         textSelectionTheme: TextSelectionThemeData(
           selectionHandleColor: currentTheme.currentColor(),
           cursorColor: currentTheme.currentColor(),
@@ -138,6 +146,7 @@ class _MyAppState extends State<MyApp> {
       ),
       routes: {
         '/': (context) => initialFuntion(),
+        '/pref': (context) => const PrefScreen(),
         '/setting': (context) => const SettingPage(),
         '/about': (context) => AboutScreen(),
         '/playlists': (context) => PlaylistScreen(),

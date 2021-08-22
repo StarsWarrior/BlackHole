@@ -45,7 +45,8 @@ class PlayScreen extends StatefulWidget {
 class _PlayScreenState extends State<PlayScreen> {
   bool fromMiniplayer = false;
   final ValueNotifier<bool> dragging = ValueNotifier<bool>(false);
-  final ValueNotifier<double> volume = ValueNotifier<double>(1.0);
+  final ValueNotifier<double> volume = ValueNotifier<double>(
+      Hive.box('settings').get('volume', defaultValue: 1.0) as double);
   String preferredQuality = Hive.box('settings')
       .get('streamingQuality', defaultValue: '96 kbps')
       .toString();
@@ -1114,6 +1115,8 @@ class _PlayScreenState extends State<PlayScreen> {
                                                       'setVolume',
                                                       volume.value,
                                                     );
+                                                    Hive.box('settings')
+                                                        .put('volume', volume);
                                                   }
                                                 },
                                                 child: Align(
