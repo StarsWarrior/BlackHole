@@ -69,9 +69,10 @@ class _ArtistSearchPageState extends State<ArtistSearchPage> {
                         physics: const BouncingScrollPhysics(),
                         slivers: [
                           SliverAppBar(
-                            backgroundColor: Colors.transparent,
+                            // backgroundColor: Colors.transparent,
                             elevation: 0,
                             stretch: true,
+                            pinned: true,
                             expandedHeight:
                                 MediaQuery.of(context).size.height * 0.4,
                             flexibleSpace: FlexibleSpaceBar(
@@ -83,7 +84,7 @@ class _ArtistSearchPageState extends State<ArtistSearchPage> {
                               background: ShaderMask(
                                 shaderCallback: (rect) {
                                   return const LinearGradient(
-                                    begin: Alignment.topCenter,
+                                    begin: Alignment.center,
                                     end: Alignment.bottomCenter,
                                     colors: [Colors.black, Colors.transparent],
                                   ).createShader(Rect.fromLTRB(

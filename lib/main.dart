@@ -113,6 +113,9 @@ class _MyAppState extends State<MyApp> {
                   BorderSide(width: 1.5, color: currentTheme.currentColor())),
         ),
         visualDensity: VisualDensity.adaptivePlatformDensity,
+        appBarTheme: AppBarTheme(
+          backgroundColor: currentTheme.currentColor(),
+        ),
         iconTheme: IconThemeData(color: Colors.grey[800]),
         disabledColor: Colors.grey[600],
         brightness: Brightness.light,
@@ -138,7 +141,9 @@ class _MyAppState extends State<MyApp> {
         ),
         visualDensity: VisualDensity.adaptivePlatformDensity,
         brightness: Brightness.dark,
-        appBarTheme: AppBarTheme(color: currentTheme.getCanvasColor()),
+        appBarTheme: AppBarTheme(
+          color: currentTheme.getCanvasColor(),
+        ),
         canvasColor: currentTheme.getCanvasColor(),
         cardColor: currentTheme.getCardColor(),
         dialogBackgroundColor: currentTheme.getCardColor(),

@@ -29,7 +29,7 @@ dependencies:
   audiotagger: ^2.2.1
   audio_service: ^0.17.1
   audio_session: ^0.1.5
-  just_audio: ^0.9.7
+  just_audio: ^0.9.3
   
 
   # Productivity

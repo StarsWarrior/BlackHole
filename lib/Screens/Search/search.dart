@@ -40,6 +40,12 @@ class _SearchPageState extends State<SearchPage> {
   final FloatingSearchBarController _controller = FloatingSearchBarController();
 
   @override
+  void initState() {
+    _controller.query = widget.query;
+    super.initState();
+  }
+
+  @override
   void dispose() {
     _controller.dispose();
     super.dispose();
@@ -186,6 +192,7 @@ class _SearchPageState extends State<SearchPage> {
                                             setState(() {
                                               fetched = false;
                                               query = e.toString();
+                                              _controller.query = query;
                                               status = false;
                                               searchedData = {};
 
@@ -219,6 +226,7 @@ class _SearchPageState extends State<SearchPage> {
                                             setState(() {
                                               fetched = false;
                                               query = e;
+                                              _controller.query = query;
                                               status = false;
                                               searchedData = {};
                                               search.insert(0, e);

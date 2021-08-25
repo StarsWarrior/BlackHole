@@ -34,6 +34,12 @@ class _YouTubeSearchPageState extends State<YouTubeSearchPage> {
   final FloatingSearchBarController _controller = FloatingSearchBarController();
 
   @override
+  void initState() {
+    _controller.query = query ?? widget.query;
+    super.initState();
+  }
+
+  @override
   void dispose() {
     _controller.dispose();
     super.dispose();
@@ -99,6 +105,7 @@ class _YouTubeSearchPageState extends State<YouTubeSearchPage> {
                     setState(() {
                       fetched = false;
                       query = _query;
+                      _controller.query = _query;
                       status = false;
                       searchedList = [];
                       if (ytSearch.contains(_query)) ytSearch.remove(_query);
@@ -164,6 +171,7 @@ class _YouTubeSearchPageState extends State<YouTubeSearchPage> {
                                             setState(() {
                                               fetched = false;
                                               query = e.toString();
+                                              _controller.query = e.toString();
                                               status = false;
                                               searchedList = [];
                                               ytSearch.remove(e);

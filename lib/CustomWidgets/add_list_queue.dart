@@ -19,9 +19,8 @@ class _AddListToQueueButtonState extends State<AddListToQueueButton> {
   @override
   Widget build(BuildContext context) {
     return PopupMenuButton(
-        icon: Icon(
+        icon: const Icon(
           Icons.more_vert_rounded,
-          color: Theme.of(context).iconTheme.color,
         ),
         shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(7.0))),

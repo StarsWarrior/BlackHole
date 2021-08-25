@@ -89,9 +89,10 @@ class _AlbumSearchPageState extends State<AlbumSearchPage> {
                           physics: const BouncingScrollPhysics(),
                           slivers: [
                             SliverAppBar(
-                              backgroundColor: Colors.transparent,
+                              // backgroundColor: Colors.transparent,
                               elevation: 0,
                               stretch: true,
+                              pinned: true,
                               // floating: true,
                               expandedHeight:
                                   MediaQuery.of(context).size.height * 0.4,
@@ -104,7 +105,7 @@ class _AlbumSearchPageState extends State<AlbumSearchPage> {
                                 background: ShaderMask(
                                     shaderCallback: (rect) {
                                       return const LinearGradient(
-                                        begin: Alignment.topCenter,
+                                        begin: Alignment.center,
                                         end: Alignment.bottomCenter,
                                         colors: [
                                           Colors.black,

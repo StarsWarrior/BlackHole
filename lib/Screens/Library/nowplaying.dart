@@ -64,10 +64,11 @@ class _NowPlayingState extends State<NowPlaying> {
                                                     const BouncingScrollPhysics(),
                                                 slivers: [
                                                     SliverAppBar(
-                                                      backgroundColor:
-                                                          Colors.transparent,
+                                                      // backgroundColor:
+                                                      // Colors.transparent,
                                                       elevation: 0,
                                                       stretch: true,
+                                                      pinned: true,
                                                       // floating: true,
                                                       expandedHeight:
                                                           MediaQuery.of(context)
@@ -87,7 +88,7 @@ class _NowPlayingState extends State<NowPlaying> {
                                                                 (rect) {
                                                               return const LinearGradient(
                                                                 begin: Alignment
-                                                                    .topCenter,
+                                                                    .center,
                                                                 end: Alignment
                                                                     .bottomCenter,
                                                                 colors: [

@@ -1116,7 +1116,7 @@ class _PlayScreenState extends State<PlayScreen> {
                                                       volume.value,
                                                     );
                                                     Hive.box('settings')
-                                                        .put('volume', volume);
+                                                        .put('volume', volume.value);
                                                   }
                                                 },
                                                 child: Align(
@@ -1693,7 +1693,7 @@ class _PlayScreenState extends State<PlayScreen> {
                                     child: SizedBox(
                                       height: 500,
                                       width: MediaQuery.of(context).size.width *
-                                          0.95,
+                                          0.985,
                                       child: DraggableScrollableActuator(
                                         child: DraggableScrollableSheet(
                                             key: Key(initialExtent.toString()),

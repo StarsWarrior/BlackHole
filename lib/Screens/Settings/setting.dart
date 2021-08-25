@@ -1,3 +1,4 @@
+import 'package:blackhole/CustomWidgets/textinput_dialog.dart';
 import 'package:ext_storage/ext_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -1177,6 +1178,24 @@ class _SettingPageState extends State<SettingPage> {
                 padding: const EdgeInsets.fromLTRB(10.0, 0, 10.0, 10.0),
                 child: GradientCard(
                   child: Column(children: [
+                    ListTile(
+                        title: const Text('Min File size to search music'),
+                        subtitle: const Text(
+                            'Files with size lesser than this will not be shown in music list'),
+                        dense: true,
+                        onTap: () {
+                          TextInputDialog().showTextInputDialog(
+                              context,
+                              'Min File Size (in KB)',
+                              (Hive.box('settings').get('minSize',
+                                      defaultValue: 1024) as int)
+                                  .toString(),
+                              TextInputType.number, (String value) {
+                            Hive.box('settings')
+                                .put('minSize', int.parse(value));
+                            Navigator.pop(context);
+                          });
+                        }),
                     BoxSwitchTile(
                         title: const Text('Show Last Session on Home Screen'),
                         subtitle: const Text('Default: On'),

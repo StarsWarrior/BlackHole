@@ -1,12 +1,13 @@
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:audiotagger/audiotagger.dart';
 import 'package:audiotagger/models/audiofile.dart';
 import 'package:audiotagger/models/tag.dart';
 import 'package:ext_storage/ext_storage.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -17,6 +18,7 @@ import 'package:blackhole/CustomWidgets/empty_screen.dart';
 import 'package:blackhole/CustomWidgets/gradient_containers.dart';
 import 'package:blackhole/CustomWidgets/miniplayer.dart';
 import 'package:blackhole/CustomWidgets/snackbar.dart';
+import 'package:blackhole/Helpers/picker.dart';
 import 'package:blackhole/Screens/Library/show_songs.dart';
 import 'package:blackhole/Screens/Player/audioplayer.dart';
 
@@ -45,6 +47,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
       Hive.box('settings').get('albumSortValue', defaultValue: 2) as int;
   List dirPaths =
       Hive.box('settings').get('searchPaths', defaultValue: []) as List;
+  int minSize = Hive.box('settings').get('minSize', defaultValue: 1024) as int;
   TabController? _tcontroller;
   int currentIndex = 0;
 
@@ -219,10 +222,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
         try {
           final Tag? tags = await tagger.readTags(path: entity.path);
           final FileStat stats = await entity.stat();
-          if (stats.size < 1048576) {
-            debugPrint('Size of mediaItem found less than 1 MB');
-            debugPrint('Ignoring media: ${entity.path}');
-          } else {
+          if (stats.size > 1024 * minSize) {
             if (widget.type != 'all' && tags?.comment != 'BlackHole') {
               continue;
             }
@@ -293,10 +293,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
               entity.path.endsWith('.opus'))) {
         try {
           final FileStat stats = await entity.stat();
-          if (stats.size < 1048576) {
-            debugPrint('Size of mediaItem found less than 1 MB');
-            debugPrint('Ignoring media: ${entity.path}');
-          } else {
+          if (stats.size > 1024 * minSize) {
             _videos.add({
               'id': entity.path,
               'image': null,
@@ -887,6 +884,9 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                       showDialog(
                         context: context,
                         builder: (BuildContext context) {
+                          Uint8List? _imageByte =
+                              _cachedSongs[index]['image'] as Uint8List?;
+                          String _imagePath = '';
                           final _titlecontroller = TextEditingController(
                               text: _cachedSongs[index]['title'].toString());
                           final _albumcontroller = TextEditingController(
@@ -900,6 +900,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                               text: _cachedSongs[index]['genre'].toString());
                           final _yearcontroller = TextEditingController(
                               text: _cachedSongs[index]['year'].toString());
+                          final tagger = Audiotagger();
                           return AlertDialog(
                             content: SizedBox(
                               height: 400,
@@ -909,6 +910,71 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                                 child: Column(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
+                                    GestureDetector(
+                                      onTap: () async {
+                                        final String filePath = await Picker()
+                                            .selectFile(
+                                                context,
+                                                ['png', 'jpg', 'jpeg'],
+                                                'Pick Image');
+                                        if (filePath != '') {
+                                          _imagePath = filePath;
+                                          final Uri myUri = Uri.parse(filePath);
+                                          final Uint8List imageBytes =
+                                              await File.fromUri(myUri)
+                                                  .readAsBytes();
+                                          _imageByte = imageBytes;
+                                          final Tag tag = Tag(
+                                            artwork: _imagePath,
+                                          );
+                                          try {
+                                            await [
+                                              Permission.manageExternalStorage,
+                                            ].request();
+                                            await tagger.writeTags(
+                                              path: _cachedSongs[index]['id']
+                                                  .toString(),
+                                              tag: tag,
+                                            );
+                                          } catch (e) {
+                                            await tagger.writeTags(
+                                              path: _cachedSongs[index]['id']
+                                                  .toString(),
+                                              tag: tag,
+                                            );
+                                          }
+                                        }
+                                      },
+                                      child: Card(
+                                        elevation: 5,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(7.0),
+                                        ),
+                                        clipBehavior: Clip.antiAlias,
+                                        child: SizedBox(
+                                          height: MediaQuery.of(context)
+                                                  .size
+                                                  .width /
+                                              2,
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width /
+                                              2,
+                                          child: _imageByte == null
+                                              ? const Image(
+                                                  fit: BoxFit.cover,
+                                                  image: AssetImage(
+                                                      'assets/cover.jpg'),
+                                                )
+                                              : Image(
+                                                  fit: BoxFit.cover,
+                                                  image:
+                                                      MemoryImage(_imageByte!)),
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 20.0),
                                     Row(
                                       children: [
                                         Text(
@@ -1032,39 +1098,48 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                                       Theme.of(context).accentColor,
                                 ),
                                 onPressed: () async {
+                                  Navigator.pop(context);
+                                  _cachedSongs[index]['title'] =
+                                      _titlecontroller.text;
+                                  _cachedSongs[index]['album'] =
+                                      _albumcontroller.text;
+                                  _cachedSongs[index]['artist'] =
+                                      _artistcontroller.text;
+                                  _cachedSongs[index]['albumArtist'] =
+                                      _albumArtistController.text;
+                                  _cachedSongs[index]['genre'] =
+                                      _genrecontroller.text;
+                                  _cachedSongs[index]['year'] =
+                                      _yearcontroller.text;
+                                  final tag = Tag(
+                                    title: _titlecontroller.text,
+                                    artist: _artistcontroller.text,
+                                    album: _albumcontroller.text,
+                                    genre: _genrecontroller.text,
+                                    year: _yearcontroller.text,
+                                    albumArtist: _albumArtistController.text,
+                                  );
                                   try {
-                                    Navigator.pop(context);
-                                    _cachedSongs[index]['title'] =
-                                        _titlecontroller.text;
-                                    _cachedSongs[index]['album'] =
-                                        _albumcontroller.text;
-                                    _cachedSongs[index]['artist'] =
-                                        _artistcontroller.text;
-                                    _cachedSongs[index]['albumArtist'] =
-                                        _albumArtistController.text;
-                                    _cachedSongs[index]['genre'] =
-                                        _genrecontroller.text;
-                                    _cachedSongs[index]['year'] =
-                                        _yearcontroller.text;
-                                    final tag = Tag(
-                                      title: _titlecontroller.text,
-                                      artist: _artistcontroller.text,
-                                      album: _albumcontroller.text,
-                                      genre: _genrecontroller.text,
-                                      year: _yearcontroller.text,
-                                      albumArtist: _albumArtistController.text,
-                                    );
-
-                                    final tagger = Audiotagger();
-                                    await tagger.writeTags(
-                                      path:
-                                          _cachedSongs[index]['id'].toString(),
-                                      tag: tag,
-                                    );
-                                    ShowSnackBar().showSnackBar(
-                                      context,
-                                      'Successfully edited tags',
-                                    );
+                                    try {
+                                      await [
+                                        Permission.manageExternalStorage,
+                                      ].request();
+                                      tagger.writeTags(
+                                        path: _cachedSongs[index]['id']
+                                            .toString(),
+                                        tag: tag,
+                                      );
+                                    } catch (e) {
+                                      await tagger.writeTags(
+                                        path: _cachedSongs[index]['id']
+                                            .toString(),
+                                        tag: tag,
+                                      );
+                                      ShowSnackBar().showSnackBar(
+                                        context,
+                                        'Successfully edited tags',
+                                      );
+                                    }
                                   } catch (e) {
                                     ShowSnackBar().showSnackBar(
                                       context,
