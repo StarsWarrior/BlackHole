@@ -9,6 +9,12 @@ Awesome Music Player made with Flutter!
 
 [![GitHub stars](https://img.shields.io/github/stars/Sangwan5688/BlackHole.svg?style=social&label=Star)](https://github.com//Sangwan5688/BlackHole) ![GitHub forks](https://img.shields.io/github/forks/Sangwan5688/BlackHole.svg?style=social&label=Forks) ![GitHub followers](https://img.shields.io/github/followers/Sangwan5688.svg?style=social&label=Follow)
 
+[<img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png"
+     alt="Get it on F-Droid"
+     height="80">](https://f-droid.org/packages/com.shadow.blackhole/)
+
+Or [Download from Github](https://github.com/Sangwan5688/BlackHole/releases)
+
 ## Translations
 
 - [Spanish :es:](/README.ES.md)
@@ -40,17 +46,15 @@ Awesome Music Player made with Flutter!
 * No Subscription
 * No Ads
 * YouTube Search Support
-* Youtube Playlists
+* Promoted Youtube Playlists
 * Tag Editing Support
 
 and much more...
 Check it yourself :)
 
-<h3 align="center">Preview</h3>
+<h2 align="center">Preview</h2>
 
 <img src="https://github.com/Sangwan5688/BlackHole/blob/main/Screenshots/home.png?raw=true" width="32%"> <img src="https://github.com/Sangwan5688/BlackHole/blob/main/Screenshots/play.png?raw=true" width="32%"> <img src="https://github.com/Sangwan5688/BlackHole/blob/main/Screenshots/artist.png?raw=true" width="32%"> <img src="https://github.com/Sangwan5688/BlackHole/blob/main/Screenshots/topCharts.png?raw=true" width="32%"> <img src="https://github.com/Sangwan5688/BlackHole/blob/main/Screenshots/youtube.png?raw=true" width="32%"> <img src="https://github.com/Sangwan5688/BlackHole/blob/main/Screenshots/playlist.png?raw=true" width="32%">
-
-## [Download Latest Version](https://github.com/Sangwan5688/BlackHole/releases)
 
 ## License
 ```
@@ -92,9 +96,9 @@ Contributions are welcomed. Please read our [contributing guidelines](https://gi
 
 Have a look at some [common Issues](https://github.com/Sangwan5688/BlackHole/wiki/Common-Issues) that you might face. If your problem is not there, feel free to open an Issue :)
 
-## Need help?
+## Want to test Beta Versions? Need help??
 
-You can join our [Telegram Group](https://t.me/joinchat/fHDC1AWnOhw0ZmI9) if you have any query, or need help with something as well as to stay updated with the project and contact me.
+You can join our [Telegram Channel](https://t.me/blackhole_official) or [Telegram Group](https://t.me/joinchat/fHDC1AWnOhw0ZmI9), if you have any query, or need help with something as well as to get beta updates of the project.
 
 ## Liked my work?
 
@@ -102,27 +106,28 @@ You can join our [Telegram Group](https://t.me/joinchat/fHDC1AWnOhw0ZmI9) if you
 
 # What's New
 
-## v1.8
+## v1.10.1
 
-* YouTube support added
-* Major UI Changes
-* Playlist and Artist Search Added
-* Added Promoted Playlists
-* Search History
-* Trending Searches
-* New Theme Options
-* Hide Last Session Songs
-* Proxy Support Added (beta)
-* Changed Default Theme
-* Add song to Queue
-* Flac and Wav Support Added for Offline Songs
-* Made UI more responsive for different screen sizes
-* Added more lyrics support
-* Removed the slight gap when rearranging queue
-* Duplicate song now doesn't replace the old one
-* Playlist rename option added
-* Added selected-language specific search results
-* Added SD Card Support
-* Bug Fixes
+* Added Promoted YouTube playlists
+* Added option to save playlists
+* Add whole playlist to queue
+* Added basic Equalizer
+* Fixed some UI issues
+* Talkback Support (for visually impaired)
+* Improved performance
+* Added Spotify Import via links
+* Added Play next option
+* Added FFmpeg support to convert youtube 'weba' to 'aac' [Caused increase in app size :( ]
+* Replaced web-view with browser for Spotify login
+* Added offline search option
+* Migrated to null safety
+* Added option to download albums/playlists songs in a common folder
+* Added option to download youtube songs in a different folder
+* Completely removed firebase
+* Added option to enforce repeat mode
+* Minor UI changes
+* Fixed Download issue with some songs.
+* Fixed issue when skipped before loading.
+and much more :)
 
 To read full changelog visit the [wiki page](https://github.com/Sangwan5688/BlackHole/wiki/Changelog)
