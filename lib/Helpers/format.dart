@@ -457,9 +457,9 @@ class FormatResponse {
         'charts',
         'new_albums',
         'top_playlists',
-        // 'radio',
-        // 'city_mod',
-        // 'artist_recos',
+        'radio',
+        'city_mod',
+        'artist_recos',
         ...promoList
       ];
       data['collections_temp'] = promoListTemp;

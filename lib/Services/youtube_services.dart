@@ -24,7 +24,7 @@ class YouTubeServices {
     return metadata;
   }
 
-  Future<List> getChannelSongs(String id) async {
+  Future<List> getMusicHome() async {
     final Uri link = Uri.https(
       searchAuthority,
       paths['music'].toString(),

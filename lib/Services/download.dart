@@ -10,7 +10,8 @@ import 'package:hive/hive.dart';
 import 'package:http/http.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:flutter_ffmpeg/flutter_ffmpeg.dart';
+// import 'package:flutter_downloader/flutter_downloader.dart';
+// import 'package:flutter_ffmpeg/flutter_ffmpeg.dart';
 
 import 'package:blackhole/CustomWidgets/snackbar.dart';
 import 'package:blackhole/Helpers/lyrics.dart';
@@ -193,7 +194,7 @@ class Download with ChangeNotifier {
       appPath = temp!.path;
     }
     if (data['url'].toString().contains('google')) {
-      filename = filename.replaceAll('.m4a', '.weba');
+      filename = filename.replaceAll('.m4a', '.opus');
     }
     try {
       await File('$dlPath/$filename')
@@ -220,7 +221,7 @@ class Download with ChangeNotifier {
     try {
       ShowSnackBar().showSnackBar(
         context,
-        filepath!.endsWith('.weba')
+        filepath!.endsWith('.opus')
             ? 'Downloading "${data['title'].toString()}" in Best Quality Available'
             : 'Downloading "${data['title'].toString()}" in $preferredDownloadQuality',
       );
@@ -261,12 +262,12 @@ class Download with ChangeNotifier {
         lyrics = '';
       }
 
-      if (filepath!.endsWith('.weba')) {
-        List<String>? _argsList;
-        ShowSnackBar().showSnackBar(
-          context,
-          'Converting "weba" to "$downloadFormat"',
-        );
+      if (filepath!.endsWith('.opus')) {
+        // List<String>? _argsList;
+        // ShowSnackBar().showSnackBar(
+        //   context,
+        //   'Converting "opus" to "$downloadFormat"',
+        // );
 
         // if (downloadFormat == 'mp3')
         //   _argsList = [
@@ -277,23 +278,23 @@ class Download with ChangeNotifier {
         //     "libmp3lame",
         //     "-b:a",
         //     "256k",
-        //     "${filepath.replaceAll('.weba', '.mp3')}"
+        //     "${filepath.replaceAll('.opus', '.mp3')}"
         //   ];
-        if (downloadFormat == 'm4a') {
-          _argsList = [
-            '-y',
-            '-i',
-            filepath!,
-            '-c:a',
-            'aac',
-            '-b:a',
-            '256k',
-            filepath!.replaceAll('.weba', '.m4a')
-          ];
-        }
-        await FlutterFFmpeg().executeWithArguments(_argsList);
-        await File(filepath!).delete();
-        filepath = filepath!.replaceAll('.weba', '.$downloadFormat');
+        // if (downloadFormat == 'm4a') {
+        //   _argsList = [
+        //     '-y',
+        //     '-i',
+        //     filepath!,
+        //     '-c:a',
+        //     'aac',
+        //     '-b:a',
+        //     '256k',
+        //     filepath!.replaceAll('.opus', '.m4a')
+        //   ];
+        // }
+        // await FlutterFFmpeg().executeWithArguments(_argsList);
+        // await File(filepath!).delete();
+        // filepath = filepath!.replaceAll('.opus', '.$downloadFormat');
       }
 
       debugPrint('Started tag editing');

@@ -48,8 +48,9 @@ class _HomePageState extends State<HomePage> {
 
   void _onItemTapped(int index) {
     _selectedIndex.value = index;
-    pageController.animateToPage(index,
-        duration: const Duration(milliseconds: 400), curve: Curves.ease);
+    pageController.jumpToPage(
+      index,
+    );
   }
 
   bool compareVersion(String latestVersion, String currentVersion) {

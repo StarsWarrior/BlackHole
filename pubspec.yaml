@@ -20,6 +20,9 @@ version: 1.10.1+17
 environment:
   sdk: '>=2.13.0 <3.0.0'
 
+dependency_overrides: 
+  freezed_annotation: 0.14.2
+
 dependencies:
   flutter:
     sdk: flutter
@@ -29,7 +32,8 @@ dependencies:
   audiotagger: ^2.2.1
   audio_service: ^0.17.1
   audio_session: ^0.1.5
-  just_audio: ^0.9.3
+  just_audio: ^0.9.7
+  on_audio_query: ^2.2.0
   
 
   # Productivity
@@ -37,14 +41,15 @@ dependencies:
   cached_network_image: ^3.1.0
   dart_des: ^1.0.0
   # flutter_downloader: ^1.6.1
-  flutter_ffmpeg: ^0.4.2
+  # flutter_ffmpeg: ^0.4.2
   html_unescape: ^2.0.0
   http: ^0.13.3
+  # logging: ^1.0.1
   package_info: ^2.0.2
   share_plus: ^2.1.4
   url_launcher: ^6.0.9
   uuid: ^3.0.4
-  youtube_explode_dart: ^1.9.10
+  youtube_explode_dart: ^1.10.4
 
   
   # UI related

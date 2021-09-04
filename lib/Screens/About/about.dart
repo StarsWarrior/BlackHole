@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
 import 'package:package_info/package_info.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -151,9 +150,8 @@ class _AboutScreenState extends State<AboutScreen> {
                         primary: Colors.transparent,
                       ),
                       onPressed: () {
-                        final userId = Hive.box('settings').get('userId');
-                        final String upiUrl =
-                            'upi://pay?pa=8570094149@okbizaxis&pn=Ankit%20Sangwan&mc=5732&aid=uGICAgIDn98OpSw&tr=BCR2DN6T37O6DB3Q&tn=$userId';
+                        const String upiUrl =
+                            'upi://pay?pa=8570094149@okbizaxis&pn=BlackHole&mc=5732&aid=uGICAgIDn98OpSw&tr=BCR2DN6T37O6DB3Q';
                         launch(upiUrl);
                       },
                       child: SizedBox(

@@ -66,10 +66,6 @@ class _PlayScreenState extends State<PlayScreen> {
   bool offline = false;
   bool fromYT = false;
   String defaultCover = '';
-  static const double minExtent = 0.1;
-  static const double maxExtent = 1;
-  bool isExpanded = false;
-  double initialExtent = minExtent;
 
   // final _controller = PageController();
   // sleepTimer(0) cancels the timer
@@ -96,25 +92,15 @@ class _PlayScreenState extends State<PlayScreen> {
   Future<MediaItem> setTags(Map response, Directory tempDir) async {
     String? playTitle = response['title'].toString();
     playTitle == ''
-        ? playTitle = response['id']
-            ?.toString()
-            .split('/')
-            .last
-            .replaceAll('.m4a', '')
-            .replaceAll('.mp3', '')
+        ? playTitle = response['_display_name_wo_ext']?.toString()
         : playTitle = response['title']?.toString();
     String? playArtist = response['artist']?.toString();
-    playArtist == ''
-        ? playArtist = response['id']
-            ?.toString()
-            .split('/')
-            .last
-            .replaceAll('.m4a', '')
-            .replaceAll('.mp3', '')
+    playArtist == '<unknown>'
+        ? playArtist = 'Unknown'
         : playArtist = response['artist']?.toString();
 
     final String playAlbum = response['album'].toString();
-    final int playDuration = response['duration'] as int? ?? 180;
+    final int playDuration = response['duration'] as int? ?? 180000;
     String? filePath;
     if (response['image'] != null) {
       try {
@@ -133,13 +119,13 @@ class _PlayScreenState extends State<PlayScreen> {
     }
 
     final MediaItem tempDict = MediaItem(
-        id: response['id'].toString(),
+        id: response['_data'].toString(),
         album: playAlbum,
-        duration: Duration(seconds: playDuration),
+        duration: Duration(milliseconds: playDuration),
         title: playTitle != null ? playTitle.split('(')[0] : 'Unknown',
         artist: playArtist ?? 'Unknown',
         artUri: Uri.file(filePath!),
-        extras: {'url': response['id']});
+        extras: {'url': response['_data']});
     return tempDict;
   }
 
@@ -506,20 +492,22 @@ class _PlayScreenState extends State<PlayScreen> {
                                       const Spacer(),
                                     ],
                                   )),
-                              PopupMenuItem(
-                                  value: 4,
-                                  child: Row(
-                                    children: [
-                                      Icon(
-                                        Icons.equalizer_rounded,
-                                        color:
-                                            Theme.of(context).iconTheme.color,
-                                      ),
-                                      const Spacer(),
-                                      const Text('Equalizer'),
-                                      const Spacer(),
-                                    ],
-                                  )),
+                              if (Hive.box('settings')
+                                  .get('supportEq', defaultValue: true) as bool)
+                                PopupMenuItem(
+                                    value: 4,
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          Icons.equalizer_rounded,
+                                          color:
+                                              Theme.of(context).iconTheme.color,
+                                        ),
+                                        const Spacer(),
+                                        const Text('Equalizer'),
+                                        const Spacer(),
+                                      ],
+                                    )),
                             ]
                           : [
                               PopupMenuItem(
@@ -564,20 +552,22 @@ class _PlayScreenState extends State<PlayScreen> {
                                       const Spacer(),
                                     ],
                                   )),
-                              PopupMenuItem(
-                                  value: 4,
-                                  child: Row(
-                                    children: [
-                                      Icon(
-                                        Icons.equalizer_rounded,
-                                        color:
-                                            Theme.of(context).iconTheme.color,
-                                      ),
-                                      const Spacer(),
-                                      const Text('Equalizer'),
-                                      const Spacer(),
-                                    ],
-                                  )),
+                              if (Hive.box('settings')
+                                  .get('supportEq', defaultValue: true) as bool)
+                                PopupMenuItem(
+                                    value: 4,
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          Icons.equalizer_rounded,
+                                          color:
+                                              Theme.of(context).iconTheme.color,
+                                        ),
+                                        const Spacer(),
+                                        const Text('Equalizer'),
+                                        const Spacer(),
+                                      ],
+                                    )),
                               PopupMenuItem(
                                   value: 3,
                                   child: Row(
@@ -619,116 +609,93 @@ class _PlayScreenState extends State<PlayScreen> {
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceEvenly,
                                       children: [
-                                        SizedBox(
-                                          height: MediaQuery.of(context)
-                                                  .size
-                                                  .width *
-                                              0.9,
-                                          child: Align(
-                                            alignment: Alignment.topCenter,
-                                            child: SizedBox(
-                                              height: MediaQuery.of(context)
-                                                      .size
-                                                      .width *
-                                                  0.85,
-                                              width: MediaQuery.of(context)
-                                                      .size
-                                                      .width *
-                                                  0.85,
-                                              child: Card(
-                                                elevation: 10,
-                                                shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            15)),
-                                                clipBehavior: Clip.antiAlias,
-                                                child: SizedBox(
-                                                  height: MediaQuery.of(context)
-                                                          .size
-                                                          .width *
-                                                      0.85,
-                                                  width: MediaQuery.of(context)
-                                                          .size
-                                                          .width *
-                                                      0.85,
-                                                  child: Stack(
-                                                    children: [
-                                                      Image(
+                                        Card(
+                                          elevation: 10,
+                                          shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(15)),
+                                          clipBehavior: Clip.antiAlias,
+                                          child: SizedBox(
+                                            height: MediaQuery.of(context)
+                                                    .size
+                                                    .width *
+                                                0.85,
+                                            width: MediaQuery.of(context)
+                                                    .size
+                                                    .width *
+                                                0.85,
+                                            child: Stack(
+                                              children: [
+                                                Image(
+                                                    fit: BoxFit.cover,
+                                                    height:
+                                                        MediaQuery.of(context)
+                                                                .size
+                                                                .width *
+                                                            0.85,
+                                                    image: const AssetImage(
+                                                        'assets/cover.jpg')),
+                                                if (globalQueue.length <=
+                                                    globalIndex)
+                                                  Image(
+                                                      fit: BoxFit.cover,
+                                                      height:
+                                                          MediaQuery.of(context)
+                                                                  .size
+                                                                  .width *
+                                                              0.85,
+                                                      image: const AssetImage(
+                                                          'assets/cover.jpg'))
+                                                else
+                                                  offline
+                                                      ? Image(
                                                           fit: BoxFit.cover,
                                                           height: MediaQuery.of(
                                                                       context)
                                                                   .size
                                                                   .width *
                                                               0.85,
-                                                          image: const AssetImage(
-                                                              'assets/cover.jpg')),
-                                                      if (globalQueue.length <=
-                                                          globalIndex)
-                                                        Image(
-                                                            fit: BoxFit.cover,
-                                                            height: MediaQuery.of(
-                                                                        context)
-                                                                    .size
-                                                                    .width *
-                                                                0.85,
-                                                            image: const AssetImage(
-                                                                'assets/cover.jpg'))
-                                                      else
-                                                        offline
-                                                            ? Image(
-                                                                fit: BoxFit
-                                                                    .cover,
-                                                                height: MediaQuery
-                                                                            .of(
-                                                                                context)
-                                                                        .size
-                                                                        .width *
-                                                                    0.85,
-                                                                width: MediaQuery.of(
-                                                                            context)
-                                                                        .size
-                                                                        .width *
-                                                                    0.85,
-                                                                image:
-                                                                    FileImage(
-                                                                        File(
-                                                                  globalQueue[
-                                                                          globalIndex]
-                                                                      .artUri!
-                                                                      .toFilePath(),
-                                                                )))
-                                                            : CachedNetworkImage(
-                                                                fit: BoxFit
-                                                                    .cover,
-                                                                height: MediaQuery.of(
-                                                                            context)
-                                                                        .size
-                                                                        .width *
-                                                                    0.85,
-                                                                errorWidget: (BuildContext
-                                                                            context,
-                                                                        _,
-                                                                        __) =>
-                                                                    const Image(
-                                                                  image: AssetImage(
-                                                                      'assets/cover.jpg'),
-                                                                ),
-                                                                placeholder: (BuildContext
-                                                                            context,
-                                                                        _) =>
-                                                                    const Image(
-                                                                  image: AssetImage(
-                                                                      'assets/cover.jpg'),
-                                                                ),
-                                                                imageUrl: globalQueue[
-                                                                        globalIndex]
-                                                                    .artUri
-                                                                    .toString(),
-                                                              ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ),
+                                                          width: MediaQuery.of(
+                                                                      context)
+                                                                  .size
+                                                                  .width *
+                                                              0.85,
+                                                          image: FileImage(File(
+                                                            globalQueue[
+                                                                    globalIndex]
+                                                                .artUri!
+                                                                .toFilePath(),
+                                                          )))
+                                                      : CachedNetworkImage(
+                                                          fit: BoxFit.cover,
+                                                          height: MediaQuery.of(
+                                                                      context)
+                                                                  .size
+                                                                  .width *
+                                                              0.85,
+                                                          errorWidget:
+                                                              (BuildContext
+                                                                          context,
+                                                                      _,
+                                                                      __) =>
+                                                                  const Image(
+                                                            image: AssetImage(
+                                                                'assets/cover.jpg'),
+                                                          ),
+                                                          placeholder:
+                                                              (BuildContext
+                                                                          context,
+                                                                      _) =>
+                                                                  const Image(
+                                                            image: AssetImage(
+                                                                'assets/cover.jpg'),
+                                                          ),
+                                                          imageUrl: globalQueue[
+                                                                  globalIndex]
+                                                              .artUri
+                                                              .toString(),
+                                                        ),
+                                              ],
                                             ),
                                           ),
                                         ),
@@ -915,793 +882,748 @@ class _PlayScreenState extends State<PlayScreen> {
                                     );
                                   }
                                 })
-                            : Stack(
+                            : Column(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
                                 children: [
-                                  Column(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    children: [
-                                      SizedBox(
-                                        height:
-                                            MediaQuery.of(context).size.width *
-                                                0.9,
-                                        child: (mediaItem == null ||
-                                                queue.isEmpty)
-                                            ? Align(
-                                                alignment: Alignment.topCenter,
-                                                child: SizedBox(
-                                                  height: MediaQuery.of(context)
-                                                          .size
-                                                          .width *
-                                                      0.85,
-                                                  width: MediaQuery.of(context)
-                                                          .size
-                                                          .width *
-                                                      0.85,
-                                                  child: Card(
-                                                    elevation: 10.0,
-                                                    shape:
-                                                        RoundedRectangleBorder(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        15.0)),
-                                                    clipBehavior:
-                                                        Clip.antiAlias,
-                                                    child: Stack(
-                                                      children: [
-                                                        Image(
-                                                            fit: BoxFit.cover,
-                                                            height: MediaQuery.of(
-                                                                        context)
-                                                                    .size
-                                                                    .width *
-                                                                0.85,
-                                                            image: const AssetImage(
-                                                                'assets/cover.jpg')),
-                                                        if (globalQueue.length >
-                                                            globalIndex)
-                                                          offline
-                                                              ? Image(
-                                                                  fit: BoxFit
-                                                                      .cover,
-                                                                  height: MediaQuery.of(context)
-                                                                          .size
-                                                                          .width *
-                                                                      0.85,
-                                                                  width: MediaQuery.of(
-                                                                              context)
-                                                                          .size
-                                                                          .width *
-                                                                      0.85,
-                                                                  image:
-                                                                      FileImage(
-                                                                          File(
-                                                                    globalQueue[
-                                                                            globalIndex]
-                                                                        .artUri!
-                                                                        .toFilePath(),
-                                                                  )))
-                                                              : CachedNetworkImage(
-                                                                  fit: BoxFit
-                                                                      .cover,
-                                                                  errorWidget: (BuildContext
+                                  SizedBox(
+                                    height:
+                                        MediaQuery.of(context).size.width * 0.9,
+                                    child: (mediaItem == null || queue.isEmpty)
+                                        ? Align(
+                                            alignment: Alignment.topCenter,
+                                            child: SizedBox(
+                                              height: MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.85,
+                                              width: MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.85,
+                                              child: Card(
+                                                elevation: 10.0,
+                                                shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            15.0)),
+                                                clipBehavior: Clip.antiAlias,
+                                                child: Stack(
+                                                  children: [
+                                                    Image(
+                                                        fit: BoxFit.cover,
+                                                        height: MediaQuery.of(
+                                                                    context)
+                                                                .size
+                                                                .width *
+                                                            0.85,
+                                                        image: const AssetImage(
+                                                            'assets/cover.jpg')),
+                                                    if (globalQueue.length >
+                                                        globalIndex)
+                                                      offline
+                                                          ? Image(
+                                                              fit: BoxFit.cover,
+                                                              height: MediaQuery.of(
+                                                                          context)
+                                                                      .size
+                                                                      .width *
+                                                                  0.85,
+                                                              width: MediaQuery.of(
+                                                                          context)
+                                                                      .size
+                                                                      .width *
+                                                                  0.85,
+                                                              image: FileImage(
+                                                                  File(
+                                                                globalQueue[
+                                                                        globalIndex]
+                                                                    .artUri!
+                                                                    .toFilePath(),
+                                                              )))
+                                                          : CachedNetworkImage(
+                                                              fit: BoxFit.cover,
+                                                              errorWidget:
+                                                                  (BuildContext
                                                                               context,
                                                                           _,
                                                                           __) =>
                                                                       const Image(
-                                                                    image: AssetImage(
-                                                                        'assets/cover.jpg'),
-                                                                  ),
-                                                                  placeholder: (BuildContext
+                                                                image: AssetImage(
+                                                                    'assets/cover.jpg'),
+                                                              ),
+                                                              placeholder:
+                                                                  (BuildContext
                                                                               context,
                                                                           _) =>
                                                                       const Image(
-                                                                    image: AssetImage(
-                                                                        'assets/cover.jpg'),
-                                                                  ),
-                                                                  imageUrl: globalQueue[
-                                                                          globalIndex]
-                                                                      .artUri
-                                                                      .toString(),
-                                                                  height: MediaQuery.of(
-                                                                              context)
-                                                                          .size
-                                                                          .width *
-                                                                      0.85,
-                                                                )
-                                                        else
-                                                          const SizedBox()
-                                                      ],
-                                                    ),
-                                                  ),
+                                                                image: AssetImage(
+                                                                    'assets/cover.jpg'),
+                                                              ),
+                                                              imageUrl: globalQueue[
+                                                                      globalIndex]
+                                                                  .artUri
+                                                                  .toString(),
+                                                              height: MediaQuery.of(
+                                                                          context)
+                                                                      .size
+                                                                      .width *
+                                                                  0.85,
+                                                            )
+                                                    else
+                                                      const SizedBox()
+                                                  ],
                                                 ),
-                                              )
-                                            :
-                                            // PageView.builder(
-                                            //     controller: _controller,
-                                            //     itemCount:
-                                            //         repeatMode != 'All'
-                                            //             ? queue.length
-                                            //             : null,
-                                            //     scrollBehavior:
-                                            //         ScrollBehavior(),
-                                            //     onPageChanged: (indx) {
-                                            //       if (queue.isNotEmpty &&
-                                            //           mediaItem != null) {
-                                            //         if (repeatMode ==
-                                            //                 'All' ||
-                                            //             queue[indx] !=
-                                            //                 mediaItem) {
-                                            //           AudioService
-                                            //           .skipToQueueItem(
-                                            //               queue[indx %
-                                            //                       queue
-                                            //                           .length]
-                                            //                   .id);
-                                            //     }
-                                            //   }
-                                            // },
-                                            // physics:
-                                            //     BouncingScrollPhysics(),
-                                            // itemBuilder:
-                                            //     (context, index) =>
-                                            GestureDetector(
-                                                onTap: () {
-                                                  if (AudioService.playbackState
-                                                          .playing ==
-                                                      true) {
-                                                    AudioService.pause();
-                                                  } else {
-                                                    AudioService.play();
-                                                  }
-                                                },
-                                                onHorizontalDragEnd:
-                                                    (DragEndDetails details) {
-                                                  if ((details.primaryVelocity ??
-                                                              0) >
-                                                          100 &&
-                                                      (mediaItem !=
-                                                              queue.first ||
-                                                          repeatMode ==
-                                                              'All')) {
-                                                    if (mediaItem ==
-                                                        queue.first) {
-                                                      AudioService
-                                                          .skipToQueueItem(
-                                                              queue.last.id);
-                                                    } else {
-                                                      AudioService
-                                                          .skipToPrevious();
-                                                    }
-                                                  }
+                                              ),
+                                            ),
+                                          )
+                                        :
+                                        // PageView.builder(
+                                        //     controller: _controller,
+                                        //     itemCount:
+                                        //         repeatMode != 'All'
+                                        //             ? queue.length
+                                        //             : null,
+                                        //     scrollBehavior:
+                                        //         ScrollBehavior(),
+                                        //     onPageChanged: (indx) {
+                                        //       if (queue.isNotEmpty &&
+                                        //           mediaItem != null) {
+                                        //         if (repeatMode ==
+                                        //                 'All' ||
+                                        //             queue[indx] !=
+                                        //                 mediaItem) {
+                                        //           AudioService
+                                        //           .skipToQueueItem(
+                                        //               queue[indx %
+                                        //                       queue
+                                        //                           .length]
+                                        //                   .id);
+                                        //     }
+                                        //   }
+                                        // },
+                                        // physics:
+                                        //     BouncingScrollPhysics(),
+                                        // itemBuilder:
+                                        //     (context, index) =>
+                                        GestureDetector(
+                                            onTap: () {
+                                              if (AudioService
+                                                      .playbackState.playing ==
+                                                  true) {
+                                                AudioService.pause();
+                                              } else {
+                                                AudioService.play();
+                                              }
+                                            },
+                                            onHorizontalDragEnd:
+                                                (DragEndDetails details) {
+                                              if ((details.primaryVelocity ??
+                                                          0) >
+                                                      100 &&
+                                                  (mediaItem != queue.first ||
+                                                      repeatMode == 'All')) {
+                                                if (mediaItem == queue.first) {
+                                                  AudioService.skipToQueueItem(
+                                                      queue.last.id);
+                                                } else {
+                                                  AudioService.skipToPrevious();
+                                                }
+                                              }
 
-                                                  if ((details.primaryVelocity ??
-                                                              0) <
-                                                          -100 &&
-                                                      (mediaItem !=
-                                                              queue.last ||
-                                                          repeatMode ==
-                                                              'All')) {
-                                                    if (mediaItem ==
-                                                        queue.last) {
-                                                      AudioService
-                                                          .skipToQueueItem(
-                                                              queue.first.id);
-                                                    } else {
-                                                      AudioService.skipToNext();
-                                                    }
-                                                  }
-                                                },
-                                                onVerticalDragStart: (_) {
-                                                  dragging.value = true;
-                                                },
-                                                onVerticalDragEnd: (_) {
-                                                  dragging.value = false;
-                                                },
-                                                onVerticalDragUpdate:
-                                                    (DragUpdateDetails
-                                                        details) {
-                                                  if (details.delta.dy != 0.0) {
-                                                    volume.value -=
-                                                        details.delta.dy / 100;
-                                                    if (volume.value < 0) {
-                                                      volume.value = 0.0;
-                                                    }
-                                                    if (volume.value > 1.0) {
-                                                      volume.value = 1.0;
-                                                    }
-                                                    AudioService.customAction(
-                                                      'setVolume',
-                                                      volume.value,
-                                                    );
-                                                    Hive.box('settings')
-                                                        .put('volume', volume.value);
-                                                  }
-                                                },
-                                                child: Align(
-                                                  alignment:
-                                                      Alignment.topCenter,
-                                                  child: SizedBox(
-                                                    height:
-                                                        MediaQuery.of(context)
-                                                                .size
-                                                                .width *
-                                                            0.85,
-                                                    width:
-                                                        MediaQuery.of(context)
-                                                                .size
-                                                                .width *
-                                                            0.85,
-                                                    child: Stack(
-                                                      children: [
-                                                        Card(
-                                                          elevation: 10.0,
-                                                          shape: RoundedRectangleBorder(
+                                              if ((details.primaryVelocity ??
+                                                          0) <
+                                                      -100 &&
+                                                  (mediaItem != queue.last ||
+                                                      repeatMode == 'All')) {
+                                                if (mediaItem == queue.last) {
+                                                  AudioService.skipToQueueItem(
+                                                      queue.first.id);
+                                                } else {
+                                                  AudioService.skipToNext();
+                                                }
+                                              }
+                                            },
+                                            onVerticalDragStart: (_) {
+                                              dragging.value = true;
+                                            },
+                                            onVerticalDragEnd: (_) {
+                                              dragging.value = false;
+                                            },
+                                            onVerticalDragUpdate:
+                                                (DragUpdateDetails details) {
+                                              if (details.delta.dy != 0.0) {
+                                                volume.value -=
+                                                    details.delta.dy / 100;
+                                                if (volume.value < 0) {
+                                                  volume.value = 0.0;
+                                                }
+                                                if (volume.value > 1.0) {
+                                                  volume.value = 1.0;
+                                                }
+                                                AudioService.customAction(
+                                                  'setVolume',
+                                                  volume.value,
+                                                );
+                                                Hive.box('settings').put(
+                                                    'volume', volume.value);
+                                              }
+                                            },
+                                            child: Align(
+                                              alignment: Alignment.topCenter,
+                                              child: SizedBox(
+                                                height: MediaQuery.of(context)
+                                                        .size
+                                                        .width *
+                                                    0.85,
+                                                width: MediaQuery.of(context)
+                                                        .size
+                                                        .width *
+                                                    0.85,
+                                                child: Stack(
+                                                  children: [
+                                                    Card(
+                                                      elevation: 10.0,
+                                                      shape:
+                                                          RoundedRectangleBorder(
                                                               borderRadius:
                                                                   BorderRadius
                                                                       .circular(
                                                                           15.0)),
-                                                          clipBehavior:
-                                                              Clip.antiAlias,
-                                                          child: Stack(
-                                                            children: [
-                                                              Image(
-                                                                  fit: BoxFit
-                                                                      .cover,
-                                                                  height: MediaQuery.of(
-                                                                              context)
-                                                                          .size
-                                                                          .width *
-                                                                      0.85,
-                                                                  image: const AssetImage(
-                                                                      'assets/cover.jpg')),
-                                                              if (offline)
-                                                                Image(
-                                                                    fit: BoxFit
-                                                                        .cover,
-                                                                    height: MediaQuery.of(context)
-                                                                            .size
-                                                                            .width *
-                                                                        0.85,
-                                                                    width: MediaQuery.of(context)
-                                                                            .size
-                                                                            .width *
-                                                                        0.85,
-                                                                    image: FileImage(File(mediaItem
-                                                                        // queue[index %
-                                                                        // queue.length]
-                                                                        .artUri!
-                                                                        .toFilePath())))
-                                                              else
-                                                                CachedNetworkImage(
-                                                                  fit: BoxFit
-                                                                      .cover,
-                                                                  errorWidget: (BuildContext
+                                                      clipBehavior:
+                                                          Clip.antiAlias,
+                                                      child: Stack(
+                                                        children: [
+                                                          Image(
+                                                              fit: BoxFit.cover,
+                                                              height: MediaQuery.of(
+                                                                          context)
+                                                                      .size
+                                                                      .width *
+                                                                  0.85,
+                                                              image: const AssetImage(
+                                                                  'assets/cover.jpg')),
+                                                          if (offline)
+                                                            Image(
+                                                                fit: BoxFit
+                                                                    .cover,
+                                                                height: MediaQuery
+                                                                            .of(
+                                                                                context)
+                                                                        .size
+                                                                        .width *
+                                                                    0.85,
+                                                                width: MediaQuery.of(
+                                                                            context)
+                                                                        .size
+                                                                        .width *
+                                                                    0.85,
+                                                                image: FileImage(File(mediaItem
+                                                                    // queue[index %
+                                                                    // queue.length]
+                                                                    .artUri!
+                                                                    .toFilePath())))
+                                                          else
+                                                            CachedNetworkImage(
+                                                              fit: BoxFit.cover,
+                                                              errorWidget:
+                                                                  (BuildContext
                                                                               context,
                                                                           _,
                                                                           __) =>
                                                                       const Image(
-                                                                    image: AssetImage(
-                                                                        'assets/cover.jpg'),
-                                                                  ),
-                                                                  placeholder: (BuildContext
+                                                                image: AssetImage(
+                                                                    'assets/cover.jpg'),
+                                                              ),
+                                                              placeholder:
+                                                                  (BuildContext
                                                                               context,
                                                                           _) =>
                                                                       const Image(
-                                                                    image: AssetImage(
-                                                                        'assets/cover.jpg'),
-                                                                  ),
-                                                                  imageUrl: mediaItem
-                                                                      // queue[index %
-                                                                      // queue.length]
-                                                                      .artUri
-                                                                      .toString(),
-                                                                  height: MediaQuery.of(
-                                                                              context)
-                                                                          .size
-                                                                          .width *
-                                                                      0.85,
-                                                                )
-                                                            ],
-                                                          ),
-                                                        ),
-                                                        ValueListenableBuilder(
-                                                            valueListenable:
-                                                                dragging,
-                                                            builder:
-                                                                (BuildContext
-                                                                        context,
-                                                                    bool value,
-                                                                    Widget?
-                                                                        child) {
-                                                              return Visibility(
-                                                                visible: value,
-                                                                child:
-                                                                    ValueListenableBuilder(
-                                                                        valueListenable:
-                                                                            volume,
-                                                                        builder: (BuildContext context,
-                                                                            double
-                                                                                volumeValue,
-                                                                            Widget?
-                                                                                child) {
-                                                                          return Center(
+                                                                image: AssetImage(
+                                                                    'assets/cover.jpg'),
+                                                              ),
+                                                              imageUrl: mediaItem
+                                                                  // queue[index %
+                                                                  // queue.length]
+                                                                  .artUri
+                                                                  .toString(),
+                                                              height: MediaQuery.of(
+                                                                          context)
+                                                                      .size
+                                                                      .width *
+                                                                  0.85,
+                                                            )
+                                                        ],
+                                                      ),
+                                                    ),
+                                                    ValueListenableBuilder(
+                                                        valueListenable:
+                                                            dragging,
+                                                        builder: (BuildContext
+                                                                context,
+                                                            bool value,
+                                                            Widget? child) {
+                                                          return Visibility(
+                                                            visible: value,
+                                                            child:
+                                                                ValueListenableBuilder(
+                                                                    valueListenable:
+                                                                        volume,
+                                                                    builder: (BuildContext
+                                                                            context,
+                                                                        double
+                                                                            volumeValue,
+                                                                        Widget?
+                                                                            child) {
+                                                                      return Center(
+                                                                        child:
+                                                                            SizedBox(
+                                                                          width:
+                                                                              60.0,
+                                                                          height:
+                                                                              MediaQuery.of(context).size.width * 0.7,
+                                                                          child:
+                                                                              Card(
+                                                                            color:
+                                                                                Colors.black87,
+                                                                            shape:
+                                                                                RoundedRectangleBorder(
+                                                                              borderRadius: BorderRadius.circular(7.0),
+                                                                            ),
+                                                                            clipBehavior:
+                                                                                Clip.antiAlias,
                                                                             child:
-                                                                                SizedBox(
-                                                                              width: 60.0,
-                                                                              height: MediaQuery.of(context).size.width * 0.7,
-                                                                              child: Card(
-                                                                                color: Colors.black87,
-                                                                                shape: RoundedRectangleBorder(
-                                                                                  borderRadius: BorderRadius.circular(7.0),
-                                                                                ),
-                                                                                clipBehavior: Clip.antiAlias,
-                                                                                child: Column(
-                                                                                  mainAxisAlignment: MainAxisAlignment.center,
-                                                                                  mainAxisSize: MainAxisSize.min,
-                                                                                  children: [
-                                                                                    Expanded(
-                                                                                      child: FittedBox(
-                                                                                        fit: BoxFit.fitHeight,
-                                                                                        child: RotatedBox(
-                                                                                          quarterTurns: -1,
-                                                                                          child: SliderTheme(
-                                                                                            data: SliderTheme.of(context).copyWith(
-                                                                                              thumbShape: HiddenThumbComponentShape(),
-                                                                                              activeTrackColor: Theme.of(context).accentColor,
-                                                                                              inactiveTrackColor: Theme.of(context).accentColor.withOpacity(0.4),
-                                                                                              // trackHeight: 4.0,
-                                                                                              trackShape: const RoundedRectSliderTrackShape(),
-                                                                                            ),
-                                                                                            child: ExcludeSemantics(
-                                                                                              child: Slider(
-                                                                                                value: volumeValue,
-                                                                                                onChanged: (_) {},
-                                                                                              ),
-                                                                                            ),
+                                                                                Column(
+                                                                              mainAxisAlignment: MainAxisAlignment.center,
+                                                                              mainAxisSize: MainAxisSize.min,
+                                                                              children: [
+                                                                                Expanded(
+                                                                                  child: FittedBox(
+                                                                                    fit: BoxFit.fitHeight,
+                                                                                    child: RotatedBox(
+                                                                                      quarterTurns: -1,
+                                                                                      child: SliderTheme(
+                                                                                        data: SliderTheme.of(context).copyWith(
+                                                                                          thumbShape: HiddenThumbComponentShape(),
+                                                                                          activeTrackColor: Theme.of(context).accentColor,
+                                                                                          inactiveTrackColor: Theme.of(context).accentColor.withOpacity(0.4),
+                                                                                          // trackHeight: 4.0,
+                                                                                          trackShape: const RoundedRectSliderTrackShape(),
+                                                                                        ),
+                                                                                        child: ExcludeSemantics(
+                                                                                          child: Slider(
+                                                                                            value: volumeValue,
+                                                                                            onChanged: (_) {},
                                                                                           ),
                                                                                         ),
                                                                                       ),
                                                                                     ),
-                                                                                    Padding(
-                                                                                      padding: const EdgeInsets.only(bottom: 20.0),
-                                                                                      child: Icon(volumeValue == 0
-                                                                                          ? Icons.volume_off_rounded
-                                                                                          : volumeValue > 0.6
-                                                                                              ? Icons.volume_up_rounded
-                                                                                              : Icons.volume_down_rounded),
-                                                                                    ),
-                                                                                  ],
+                                                                                  ),
                                                                                 ),
-                                                                              ),
+                                                                                Padding(
+                                                                                  padding: const EdgeInsets.only(bottom: 20.0),
+                                                                                  child: Icon(volumeValue == 0
+                                                                                      ? Icons.volume_off_rounded
+                                                                                      : volumeValue > 0.6
+                                                                                          ? Icons.volume_up_rounded
+                                                                                          : Icons.volume_down_rounded),
+                                                                                ),
+                                                                              ],
                                                                             ),
-                                                                          );
-                                                                        }),
-                                                              );
-                                                            }),
-                                                      ],
-                                                    ),
-                                                  ),
+                                                                          ),
+                                                                        ),
+                                                                      );
+                                                                    }),
+                                                          );
+                                                        }),
+                                                  ],
                                                 ),
                                               ),
-                                      ),
-                                      // ),
+                                            ),
+                                          ),
+                                  ),
+                                  // ),
 
-                                      /// Title and subtitle
-                                      SizedBox(
-                                        height: (MediaQuery.of(context)
-                                                        .size
-                                                        .height *
-                                                    0.875 -
-                                                MediaQuery.of(context)
-                                                        .size
-                                                        .width *
-                                                    0.925) *
-                                            1 /
-                                            4.5,
-                                        child: Padding(
-                                          padding: const EdgeInsets.fromLTRB(
-                                              35, 5, 35, 0),
-                                          child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.end,
-                                            children: [
-                                              /// Title container
-                                              Expanded(
-                                                flex: 5,
-                                                child: FittedBox(
-                                                  fit: BoxFit.scaleDown,
-                                                  child: Text(
-                                                    (mediaItem?.title != null)
-                                                        ? (mediaItem!.title
+                                  /// Title and subtitle
+                                  SizedBox(
+                                    height: (MediaQuery.of(context)
+                                                    .size
+                                                    .height *
+                                                0.875 -
+                                            MediaQuery.of(context).size.width *
+                                                0.925) *
+                                        1 /
+                                        4.5,
+                                    child: Padding(
+                                      padding: const EdgeInsets.fromLTRB(
+                                          35, 5, 35, 0),
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        children: [
+                                          /// Title container
+                                          Expanded(
+                                            flex: 5,
+                                            child: FittedBox(
+                                              fit: BoxFit.scaleDown,
+                                              child: Text(
+                                                (mediaItem?.title != null)
+                                                    ? (mediaItem!.title
+                                                        .split(' (')[0]
+                                                        .split('|')[0]
+                                                        .trim())
+                                                    : ((globalQueue.length <=
+                                                            globalIndex)
+                                                        ? 'Title'
+                                                        : globalQueue[
+                                                                globalIndex]
+                                                            .title
                                                             .split(' (')[0]
                                                             .split('|')[0]
-                                                            .trim())
-                                                        : ((globalQueue
-                                                                    .length <=
-                                                                globalIndex)
-                                                            ? 'Title'
-                                                            : globalQueue[
-                                                                    globalIndex]
-                                                                .title
-                                                                .split(' (')[0]
-                                                                .split('|')[0]
-                                                                .trim()),
-                                                    textAlign: TextAlign.center,
-                                                    overflow: TextOverflow.fade,
-                                                    maxLines: 1,
-                                                    style: TextStyle(
-                                                        fontSize: 40,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        color: Theme.of(context)
-                                                            .accentColor),
-                                                  ),
-                                                ),
+                                                            .trim()),
+                                                textAlign: TextAlign.center,
+                                                overflow: TextOverflow.fade,
+                                                maxLines: 1,
+                                                style: TextStyle(
+                                                    fontSize: 40,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Theme.of(context)
+                                                        .accentColor),
                                               ),
-
-                                              /// Subtitle container
-                                              Expanded(
-                                                flex: 3,
-                                                child: FittedBox(
-                                                  fit: BoxFit.scaleDown,
-                                                  child: Text(
-                                                    (mediaItem?.artist != null)
-                                                        ? mediaItem!.artist!
-                                                        : ((globalQueue
-                                                                    .length <=
-                                                                globalIndex)
-                                                            ? ''
-                                                            : globalQueue[
-                                                                    globalIndex]
-                                                                .artist!),
-                                                    textAlign: TextAlign.center,
-                                                    style: const TextStyle(
-                                                        fontSize: 18,
-                                                        fontWeight:
-                                                            FontWeight.w500),
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-
-                                      /// Seekbar starts from here
-                                      StreamBuilder<MediaState>(
-                                        stream: _mediaStateStream,
-                                        builder: (context, snapshot) {
-                                          final mediaState = snapshot.data;
-                                          return SeekBar(
-                                            duration: mediaState
-                                                    ?.mediaItem?.duration ??
-                                                Duration.zero,
-                                            position: mediaState?.position ??
-                                                Duration.zero,
-                                            bufferedPosition:
-                                                mediaState?.bufferPosition ??
-                                                    Duration.zero,
-                                            onChangeEnd: (newPosition) {
-                                              AudioService.seekTo(newPosition);
-                                            },
-                                          );
-                                        },
-                                      ),
-
-                                      /// Final row starts from here
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 5.0),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceAround,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Column(
-                                              children: [
-                                                const SizedBox(height: 6.0),
-                                                IconButton(
-                                                  icon: const Icon(
-                                                      Icons.shuffle_rounded),
-                                                  iconSize: 25.0,
-                                                  tooltip: 'Shuffle',
-                                                  color: shuffle
-                                                      ? Theme.of(context)
-                                                          .accentColor
-                                                      : null,
-                                                  onPressed: () {
-                                                    shuffle = !shuffle;
-                                                    Hive.box('settings').put(
-                                                        'shuffle', shuffle);
-                                                    if (shuffle) {
-                                                      AudioService.setShuffleMode(
-                                                          AudioServiceShuffleMode
-                                                              .all);
-                                                    } else {
-                                                      AudioService.setShuffleMode(
-                                                          AudioServiceShuffleMode
-                                                              .none);
-                                                    }
-                                                  },
-                                                ),
-                                                if (!offline)
-                                                  mediaItem == null
-                                                      ? const IconButton(
-                                                          icon: Icon(Icons
-                                                              .favorite_border_rounded),
-                                                          iconSize: 25.0,
-                                                          tooltip: 'Like',
-                                                          onPressed: null)
-                                                      : LikeButton(
-                                                          mediaItem: mediaItem,
-                                                          size: 25.0)
-                                              ],
                                             ),
-                                            if (queue.isNotEmpty)
-                                              IconButton(
-                                                  icon: const Icon(Icons
-                                                      .skip_previous_rounded),
-                                                  iconSize: 45.0,
-                                                  tooltip: 'Skip Previous',
-                                                  onPressed: (mediaItem !=
-                                                              null &&
-                                                          (mediaItem !=
-                                                                  queue.first ||
-                                                              repeatMode ==
-                                                                  'All'))
-                                                      ? () {
-                                                          if (mediaItem ==
-                                                              queue.first) {
-                                                            AudioService
-                                                                .skipToQueueItem(
-                                                                    queue.last
-                                                                        .id);
-                                                          } else {
-                                                            AudioService
-                                                                .skipToPrevious();
-                                                          }
-                                                        }
-                                                      : null)
-                                            else
-                                              const IconButton(
-                                                  icon: Icon(Icons
-                                                      .skip_previous_rounded),
-                                                  iconSize: 45.0,
-                                                  tooltip: 'Skip Previous',
-                                                  onPressed: null),
+                                          ),
 
-                                            /// Play button
-                                            Stack(
-                                              children: [
-                                                Center(
-                                                  child: StreamBuilder<
-                                                      AudioProcessingState>(
-                                                    stream: AudioService
-                                                        .playbackStateStream
-                                                        .map((state) => state
-                                                            .processingState)
-                                                        .distinct(),
-                                                    builder:
-                                                        (context, snapshot) {
-                                                      final processingState =
-                                                          snapshot.data ??
-                                                              AudioProcessingState
-                                                                  .none;
-                                                      return describeEnum(
-                                                                  processingState) !=
-                                                              'ready'
-                                                          ? SizedBox(
-                                                              height: 65,
-                                                              width: 65,
-                                                              child:
-                                                                  CircularProgressIndicator(
-                                                                valueColor: AlwaysStoppedAnimation<
+                                          /// Subtitle container
+                                          Expanded(
+                                            flex: 3,
+                                            child: FittedBox(
+                                              fit: BoxFit.scaleDown,
+                                              child: Text(
+                                                (mediaItem?.artist != null)
+                                                    ? mediaItem!.artist!
+                                                    : ((globalQueue.length <=
+                                                            globalIndex)
+                                                        ? 'Unknown'
+                                                        : globalQueue[
+                                                                globalIndex]
+                                                            .artist!),
+                                                textAlign: TextAlign.center,
+                                                style: const TextStyle(
+                                                    fontSize: 18,
+                                                    fontWeight:
+                                                        FontWeight.w500),
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+
+                                  /// Seekbar starts from here
+                                  StreamBuilder<MediaState>(
+                                    stream: _mediaStateStream,
+                                    builder: (context, snapshot) {
+                                      final mediaState = snapshot.data;
+                                      return SeekBar(
+                                        duration:
+                                            mediaState?.mediaItem?.duration ??
+                                                Duration.zero,
+                                        position: mediaState?.position ??
+                                            Duration.zero,
+                                        bufferedPosition:
+                                            mediaState?.bufferPosition ??
+                                                Duration.zero,
+                                        onChangeEnd: (newPosition) {
+                                          AudioService.seekTo(newPosition);
+                                        },
+                                      );
+                                    },
+                                  ),
+
+                                  /// Final row starts from here
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 5.0),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceAround,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Column(
+                                          children: [
+                                            const SizedBox(height: 6.0),
+                                            IconButton(
+                                              icon: const Icon(
+                                                  Icons.shuffle_rounded),
+                                              iconSize: 25.0,
+                                              tooltip: 'Shuffle',
+                                              color: shuffle
+                                                  ? Theme.of(context)
+                                                      .accentColor
+                                                  : null,
+                                              onPressed: () {
+                                                shuffle = !shuffle;
+                                                Hive.box('settings')
+                                                    .put('shuffle', shuffle);
+                                                if (shuffle) {
+                                                  AudioService.setShuffleMode(
+                                                      AudioServiceShuffleMode
+                                                          .all);
+                                                } else {
+                                                  AudioService.setShuffleMode(
+                                                      AudioServiceShuffleMode
+                                                          .none);
+                                                }
+                                              },
+                                            ),
+                                            if (!offline)
+                                              mediaItem == null
+                                                  ? const IconButton(
+                                                      icon: Icon(Icons
+                                                          .favorite_border_rounded),
+                                                      iconSize: 25.0,
+                                                      tooltip: 'Like',
+                                                      onPressed: null)
+                                                  : LikeButton(
+                                                      mediaItem: mediaItem,
+                                                      size: 25.0)
+                                          ],
+                                        ),
+                                        if (queue.isNotEmpty)
+                                          IconButton(
+                                              icon: const Icon(
+                                                  Icons.skip_previous_rounded),
+                                              iconSize: 45.0,
+                                              tooltip: 'Skip Previous',
+                                              onPressed: (mediaItem != null &&
+                                                      (mediaItem !=
+                                                              queue.first ||
+                                                          repeatMode == 'All'))
+                                                  ? () {
+                                                      if (mediaItem ==
+                                                          queue.first) {
+                                                        AudioService
+                                                            .skipToQueueItem(
+                                                                queue.last.id);
+                                                      } else {
+                                                        AudioService
+                                                            .skipToPrevious();
+                                                      }
+                                                    }
+                                                  : null)
+                                        else
+                                          const IconButton(
+                                              icon: Icon(
+                                                  Icons.skip_previous_rounded),
+                                              iconSize: 45.0,
+                                              tooltip: 'Skip Previous',
+                                              onPressed: null),
+
+                                        /// Play button
+                                        Stack(
+                                          children: [
+                                            Center(
+                                              child: StreamBuilder<
+                                                  AudioProcessingState>(
+                                                stream: AudioService
+                                                    .playbackStateStream
+                                                    .map((state) =>
+                                                        state.processingState)
+                                                    .distinct(),
+                                                builder: (context, snapshot) {
+                                                  final processingState =
+                                                      snapshot.data ??
+                                                          AudioProcessingState
+                                                              .none;
+                                                  return describeEnum(
+                                                              processingState) !=
+                                                          'ready'
+                                                      ? SizedBox(
+                                                          height: 65,
+                                                          width: 65,
+                                                          child:
+                                                              CircularProgressIndicator(
+                                                            valueColor:
+                                                                AlwaysStoppedAnimation<
                                                                     Color>(Theme.of(
                                                                         context)
                                                                     .accentColor),
-                                                              ),
-                                                            )
-                                                          : const SizedBox();
-                                                    },
-                                                  ),
-                                                ),
-                                                Center(
-                                                  child: StreamBuilder<bool>(
-                                                    stream: AudioService
-                                                        .playbackStateStream
-                                                        .map((state) =>
-                                                            state.playing)
-                                                        .distinct(),
-                                                    builder:
-                                                        (context, snapshot) {
-                                                      final bool playing =
-                                                          snapshot.data ??
-                                                              false;
-                                                      return SizedBox(
-                                                        height: 65,
-                                                        width: 65,
-                                                        child: Center(
-                                                          child: SizedBox(
-                                                            height: 59,
-                                                            width: 59,
-                                                            child: playing
-                                                                ? pauseButton()
-                                                                : playButton(),
                                                           ),
-                                                        ),
-                                                      );
-                                                    },
-                                                  ),
-                                                ),
-                                              ],
+                                                        )
+                                                      : const SizedBox();
+                                                },
+                                              ),
                                             ),
-
-                                            if (queue.isNotEmpty)
-                                              IconButton(
-                                                  icon: const Icon(
-                                                      Icons.skip_next_rounded),
-                                                  iconSize: 45.0,
-                                                  tooltip: 'Skip Next',
-                                                  onPressed: (mediaItem !=
-                                                              null &&
-                                                          (mediaItem !=
-                                                                  queue.last ||
-                                                              repeatMode ==
-                                                                  'All'))
-                                                      ? () {
-                                                          if (mediaItem ==
-                                                              queue.last) {
-                                                            AudioService
-                                                                .skipToQueueItem(
-                                                                    queue.first
-                                                                        .id);
-                                                          } else {
-                                                            AudioService
-                                                                .skipToNext();
-                                                          }
-                                                        }
-                                                      : null)
-                                            else
-                                              const IconButton(
-                                                  icon: Icon(
-                                                      Icons.skip_next_rounded),
-                                                  iconSize: 45.0,
-                                                  tooltip: 'Skip Next',
-                                                  onPressed: null),
-
-                                            Column(
-                                              children: [
-                                                const SizedBox(height: 6.0),
-                                                IconButton(
-                                                  icon: repeatMode == 'One'
-                                                      ? const Icon(Icons
-                                                          .repeat_one_rounded)
-                                                      : const Icon(
-                                                          Icons.repeat_rounded),
-                                                  iconSize: 25.0,
-                                                  tooltip: 'Repeat $repeatMode',
-                                                  color: repeatMode == 'None'
-                                                      ? null
-                                                      : Theme.of(context)
-                                                          .accentColor,
-                                                  // Icons.repeat_one_rounded
-                                                  onPressed: () {
-                                                    switch (repeatMode) {
-                                                      case 'None':
-                                                        repeatMode = 'All';
-                                                        AudioService.setRepeatMode(
-                                                            AudioServiceRepeatMode
-                                                                .all);
-                                                        break;
-                                                      case 'All':
-                                                        repeatMode = 'One';
-                                                        AudioService.setRepeatMode(
-                                                            AudioServiceRepeatMode
-                                                                .one);
-                                                        break;
-                                                      case 'One':
-                                                        repeatMode = 'None';
-                                                        AudioService.setRepeatMode(
-                                                            AudioServiceRepeatMode
-                                                                .none);
-                                                        break;
-                                                      default:
-                                                        break;
-                                                    }
-                                                    Hive.box('settings').put(
-                                                        'repeatMode',
-                                                        repeatMode);
-
-                                                    setState(() {});
-                                                  },
-                                                ),
-                                                if (!offline)
-                                                  (mediaItem != null &&
-                                                          queue.isNotEmpty)
-                                                      ? DownloadButton(data: {
-                                                          'id': mediaItem.id
-                                                              .toString(),
-                                                          'artist': mediaItem
-                                                              .artist
-                                                              .toString(),
-                                                          'album': mediaItem
-                                                              .album
-                                                              .toString(),
-                                                          'image': mediaItem
-                                                              .artUri
-                                                              .toString(),
-                                                          'duration': mediaItem
-                                                              .duration
-                                                              ?.inSeconds
-                                                              .toString(),
-                                                          'title': mediaItem
-                                                              .title
-                                                              .toString(),
-                                                          'url': mediaItem
-                                                              .extras!['url']
-                                                              .toString(),
-                                                          'year': mediaItem
-                                                              .extras!['year']
-                                                              .toString(),
-                                                          'language': mediaItem
-                                                              .extras![
-                                                                  'language']
-                                                              .toString(),
-                                                          'genre': mediaItem
-                                                              .genre
-                                                              ?.toString(),
-                                                          '320kbps':
-                                                              mediaItem.extras?[
-                                                                  '320kbps'],
-                                                          'has_lyrics':
-                                                              mediaItem.extras?[
-                                                                  'has_lyrics'],
-                                                          'release_date':
-                                                              mediaItem.extras![
-                                                                  'release_date'],
-                                                          'album_id':
-                                                              mediaItem.extras![
-                                                                  'album_id'],
-                                                          'subtitle':
-                                                              mediaItem.extras![
-                                                                  'subtitle']
-                                                        })
-                                                      : const IconButton(
-                                                          icon: Icon(
-                                                            Icons.save_alt,
-                                                          ),
-                                                          iconSize: 25.0,
-                                                          tooltip: 'Download',
-                                                          onPressed: null),
-                                              ],
+                                            Center(
+                                              child: StreamBuilder<bool>(
+                                                stream: AudioService
+                                                    .playbackStateStream
+                                                    .map((state) =>
+                                                        state.playing)
+                                                    .distinct(),
+                                                builder: (context, snapshot) {
+                                                  final bool playing =
+                                                      snapshot.data ?? false;
+                                                  return SizedBox(
+                                                    height: 65,
+                                                    width: 65,
+                                                    child: Center(
+                                                      child: SizedBox(
+                                                        height: 59,
+                                                        width: 59,
+                                                        child: playing
+                                                            ? pauseButton()
+                                                            : playButton(),
+                                                      ),
+                                                    ),
+                                                  );
+                                                },
+                                              ),
                                             ),
                                           ],
                                         ),
-                                      ),
-                                      const SizedBox(
-                                        height: 45,
-                                      ),
-                                    ],
+
+                                        if (queue.isNotEmpty)
+                                          IconButton(
+                                              icon: const Icon(
+                                                  Icons.skip_next_rounded),
+                                              iconSize: 45.0,
+                                              tooltip: 'Skip Next',
+                                              onPressed: (mediaItem != null &&
+                                                      (mediaItem !=
+                                                              queue.last ||
+                                                          repeatMode == 'All'))
+                                                  ? () {
+                                                      if (mediaItem ==
+                                                          queue.last) {
+                                                        AudioService
+                                                            .skipToQueueItem(
+                                                                queue.first.id);
+                                                      } else {
+                                                        AudioService
+                                                            .skipToNext();
+                                                      }
+                                                    }
+                                                  : null)
+                                        else
+                                          const IconButton(
+                                              icon:
+                                                  Icon(Icons.skip_next_rounded),
+                                              iconSize: 45.0,
+                                              tooltip: 'Skip Next',
+                                              onPressed: null),
+
+                                        Column(
+                                          children: [
+                                            const SizedBox(height: 6.0),
+                                            IconButton(
+                                              icon: repeatMode == 'One'
+                                                  ? const Icon(
+                                                      Icons.repeat_one_rounded)
+                                                  : const Icon(
+                                                      Icons.repeat_rounded),
+                                              iconSize: 25.0,
+                                              tooltip: 'Repeat $repeatMode',
+                                              color: repeatMode == 'None'
+                                                  ? null
+                                                  : Theme.of(context)
+                                                      .accentColor,
+                                              // Icons.repeat_one_rounded
+                                              onPressed: () {
+                                                switch (repeatMode) {
+                                                  case 'None':
+                                                    repeatMode = 'All';
+                                                    AudioService.setRepeatMode(
+                                                        AudioServiceRepeatMode
+                                                            .all);
+                                                    break;
+                                                  case 'All':
+                                                    repeatMode = 'One';
+                                                    AudioService.setRepeatMode(
+                                                        AudioServiceRepeatMode
+                                                            .one);
+                                                    break;
+                                                  case 'One':
+                                                    repeatMode = 'None';
+                                                    AudioService.setRepeatMode(
+                                                        AudioServiceRepeatMode
+                                                            .none);
+                                                    break;
+                                                  default:
+                                                    break;
+                                                }
+                                                Hive.box('settings').put(
+                                                    'repeatMode', repeatMode);
+
+                                                setState(() {});
+                                              },
+                                            ),
+                                            if (!offline)
+                                              (mediaItem != null &&
+                                                      queue.isNotEmpty)
+                                                  ? DownloadButton(data: {
+                                                      'id': mediaItem.id
+                                                          .toString(),
+                                                      'artist': mediaItem.artist
+                                                          .toString(),
+                                                      'album': mediaItem.album
+                                                          .toString(),
+                                                      'image': mediaItem.artUri
+                                                          .toString(),
+                                                      'duration': mediaItem
+                                                          .duration?.inSeconds
+                                                          .toString(),
+                                                      'title': mediaItem.title
+                                                          .toString(),
+                                                      'url': mediaItem
+                                                          .extras!['url']
+                                                          .toString(),
+                                                      'year': mediaItem
+                                                          .extras!['year']
+                                                          .toString(),
+                                                      'language': mediaItem
+                                                          .extras!['language']
+                                                          .toString(),
+                                                      'genre': mediaItem.genre
+                                                          ?.toString(),
+                                                      '320kbps': mediaItem
+                                                          .extras?['320kbps'],
+                                                      'has_lyrics':
+                                                          mediaItem.extras?[
+                                                              'has_lyrics'],
+                                                      'release_date':
+                                                          mediaItem.extras![
+                                                              'release_date'],
+                                                      'album_id': mediaItem
+                                                          .extras!['album_id'],
+                                                      'subtitle': mediaItem
+                                                          .extras!['subtitle']
+                                                    })
+                                                  : const IconButton(
+                                                      icon: Icon(
+                                                        Icons.save_alt,
+                                                      ),
+                                                      iconSize: 25.0,
+                                                      tooltip: 'Download',
+                                                      onPressed: null),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                  Align(
-                                    alignment: Alignment.bottomCenter,
-                                    child: SizedBox(
-                                      height: 500,
-                                      width: MediaQuery.of(context).size.width *
-                                          0.985,
-                                      child: DraggableScrollableActuator(
-                                        child: DraggableScrollableSheet(
-                                            key: Key(initialExtent.toString()),
-                                            minChildSize: minExtent,
-                                            initialChildSize: initialExtent,
-                                            builder: (BuildContext dragContext,
-                                                ScrollController
-                                                    scrollController) {
+                                  TextButton(
+                                    onPressed: () {
+                                      if (queue.isNotEmpty &&
+                                          mediaItem != null) {
+                                        showModalBottomSheet(
+                                            isDismissible: true,
+                                            backgroundColor: Colors.transparent,
+                                            context: context,
+                                            builder: (BuildContext context) {
                                               return BottomGradientContainer(
                                                 padding: EdgeInsets.zero,
                                                 margin: const EdgeInsets.only(
@@ -1712,241 +1634,239 @@ class _PlayScreenState extends State<PlayScreen> {
                                                         Radius.circular(15.0),
                                                     topRight:
                                                         Radius.circular(15.0)),
-                                                child: (mediaItem == null ||
-                                                        queue.isEmpty)
-                                                    ? const SizedBox()
-                                                    : ReorderableListView
-                                                        .builder(
-                                                            header: SizedBox(
-                                                              key: const Key(
-                                                                  'head'),
-                                                              height: 50,
-                                                              child: Center(
-                                                                child: SizedBox
-                                                                    .expand(
-                                                                  child: TextButton(
-                                                                      style: TextButton.styleFrom(
-                                                                        primary: Theme.of(context)
-                                                                            .iconTheme
-                                                                            .color,
-                                                                        backgroundColor:
-                                                                            Colors.transparent,
-                                                                        elevation:
-                                                                            0.0,
+                                                child:
+                                                    StreamBuilder<QueueState>(
+                                                        stream:
+                                                            _queueStateStream,
+                                                        builder: (context,
+                                                            snapshot) {
+                                                          final queueState =
+                                                              snapshot.data;
+                                                          final queue =
+                                                              queueState
+                                                                      ?.queue ??
+                                                                  [];
+                                                          final mediaItem =
+                                                              queueState
+                                                                  ?.mediaItem;
+                                                          return ReorderableListView
+                                                              .builder(
+                                                                  header:
+                                                                      SizedBox(
+                                                                    key: const Key(
+                                                                        'head'),
+                                                                    height: 50,
+                                                                    child:
+                                                                        Center(
+                                                                      child: SizedBox
+                                                                          .expand(
+                                                                        child:
+                                                                            TextButton(
+                                                                          style:
+                                                                              TextButton.styleFrom(
+                                                                            primary:
+                                                                                Theme.of(context).iconTheme.color,
+                                                                            backgroundColor:
+                                                                                Colors.transparent,
+                                                                            elevation:
+                                                                                0.0,
+                                                                          ),
+                                                                          onPressed:
+                                                                              () {
+                                                                            Navigator.pop(context);
+                                                                          },
+                                                                          child:
+                                                                              const Text(
+                                                                            'Now Playing',
+                                                                            textAlign:
+                                                                                TextAlign.center,
+                                                                            style:
+                                                                                TextStyle(
+                                                                              fontWeight: FontWeight.w600,
+                                                                              fontSize: 18,
+                                                                            ),
+                                                                          ),
+                                                                        ),
                                                                       ),
-                                                                      onPressed: () {
+                                                                    ),
+                                                                  ),
+                                                                  // scrollController:
+                                                                  // scrollController,
+                                                                  onReorder: (int
+                                                                          oldIndex,
+                                                                      int
+                                                                          newIndex) {
+                                                                    setState(
+                                                                        () {
+                                                                      if (oldIndex <
+                                                                          newIndex) {
+                                                                        newIndex--;
+                                                                      }
+                                                                      final items =
+                                                                          queue.removeAt(
+                                                                              oldIndex);
+                                                                      queue.insert(
+                                                                          newIndex,
+                                                                          items);
+                                                                      AudioService
+                                                                          .customAction(
+                                                                              'reorder',
+                                                                              [
+                                                                            oldIndex,
+                                                                            newIndex
+                                                                          ]);
+                                                                    });
+                                                                  },
+                                                                  physics:
+                                                                      const BouncingScrollPhysics(),
+                                                                  padding: const EdgeInsets
+                                                                          .only(
+                                                                      bottom:
+                                                                          10),
+                                                                  shrinkWrap:
+                                                                      true,
+                                                                  itemCount: queue
+                                                                      .length,
+                                                                  itemBuilder:
+                                                                      (context,
+                                                                          index) {
+                                                                    return Dismissible(
+                                                                      key: Key(
+                                                                          queue[index]
+                                                                              .id),
+                                                                      direction: queue[index] ==
+                                                                              mediaItem
+                                                                          ? DismissDirection
+                                                                              .none
+                                                                          : DismissDirection
+                                                                              .horizontal,
+                                                                      onDismissed:
+                                                                          (dir) {
                                                                         setState(
                                                                             () {
-                                                                          initialExtent = isExpanded
-                                                                              ? minExtent
-                                                                              : maxExtent;
-                                                                          isExpanded =
-                                                                              !isExpanded;
+                                                                          AudioService.removeQueueItem(
+                                                                              queue[index]);
+                                                                          queue.remove(
+                                                                              queue[index]);
                                                                         });
-                                                                        DraggableScrollableActuator.reset(
-                                                                            dragContext);
                                                                       },
-                                                                      child: const Text(
-                                                                        'Now Playing',
-                                                                        textAlign:
-                                                                            TextAlign.center,
-                                                                        style:
-                                                                            TextStyle(
-                                                                          fontWeight:
-                                                                              FontWeight.w600,
-                                                                          fontSize:
-                                                                              18,
-                                                                        ),
-                                                                      )),
-                                                                ),
-                                                              ),
-                                                            ),
-                                                            scrollController:
-                                                                scrollController,
-                                                            onReorder: (int
-                                                                    oldIndex,
-                                                                int newIndex) {
-                                                              setState(() {
-                                                                if (oldIndex <
-                                                                    newIndex) {
-                                                                  newIndex--;
-                                                                }
-                                                                final items =
-                                                                    queue.removeAt(
-                                                                        oldIndex);
-                                                                queue.insert(
-                                                                    newIndex,
-                                                                    items);
-                                                                AudioService
-                                                                    .customAction(
-                                                                        'reorder',
-                                                                        [
-                                                                      oldIndex,
-                                                                      newIndex
-                                                                    ]);
-                                                              });
-                                                            },
-                                                            physics:
-                                                                const BouncingScrollPhysics(),
-                                                            padding:
-                                                                const EdgeInsets
-                                                                        .only(
-                                                                    bottom: 10),
-                                                            shrinkWrap: true,
-                                                            itemCount:
-                                                                queue.length,
-                                                            itemBuilder:
-                                                                (context,
-                                                                    index) {
-                                                              return Dismissible(
-                                                                key: Key(
-                                                                    queue[index]
-                                                                        .id),
-                                                                direction: queue[
-                                                                            index] ==
-                                                                        mediaItem
-                                                                    ? DismissDirection
-                                                                        .none
-                                                                    : DismissDirection
-                                                                        .horizontal,
-                                                                onDismissed:
-                                                                    (dir) {
-                                                                  setState(() {
-                                                                    AudioService
-                                                                        .removeQueueItem(
-                                                                            queue[index]);
-                                                                    queue.remove(
-                                                                        queue[
-                                                                            index]);
-                                                                  });
-                                                                },
-                                                                child:
-                                                                    ListTileTheme(
-                                                                  selectedColor:
-                                                                      Theme.of(
-                                                                              context)
-                                                                          .accentColor,
-                                                                  child:
-                                                                      ListTile(
-                                                                    contentPadding: const EdgeInsets
-                                                                            .only(
-                                                                        left:
-                                                                            16.0,
-                                                                        right:
-                                                                            10.0),
-                                                                    selected: queue[
-                                                                            index] ==
-                                                                        mediaItem,
-                                                                    trailing: queue[index] ==
-                                                                            mediaItem
-                                                                        ? IconButton(
-                                                                            icon:
-                                                                                const Icon(
-                                                                              Icons.bar_chart_rounded,
-                                                                            ),
-                                                                            tooltip:
-                                                                                'Playing',
-                                                                            onPressed:
-                                                                                () {},
-                                                                          )
-                                                                        : offline
-                                                                            ? const SizedBox()
-                                                                            : Row(
-                                                                                mainAxisSize: MainAxisSize.min,
-                                                                                children: [
-                                                                                  LikeButton(
-                                                                                    mediaItem: queue[index],
-                                                                                  ),
-                                                                                  DownloadButton(icon: 'download', data: {
-                                                                                    'id': queue[index].id.toString(),
-                                                                                    'artist': queue[index].artist.toString(),
-                                                                                    'album': queue[index].album.toString(),
-                                                                                    'image': queue[index].artUri.toString(),
-                                                                                    'duration': queue[index].duration!.inSeconds.toString(),
-                                                                                    'title': queue[index].title.toString(),
-                                                                                    'url': queue[index].extras?['url'].toString(),
-                                                                                    'year': queue[index].extras?['year'].toString(),
-                                                                                    'language': queue[index].extras?['language'].toString(),
-                                                                                    'genre': queue[index].genre?.toString(),
-                                                                                    '320kbps': queue[index].extras?['320kbps'],
-                                                                                    'has_lyrics': queue[index].extras?['has_lyrics'],
-                                                                                    'release_date': queue[index].extras?['release_date'],
-                                                                                    'album_id': queue[index].extras?['album_id'],
-                                                                                    'subtitle': queue[index].extras?['subtitle']
-                                                                                  })
-                                                                                ],
-                                                                              ),
-                                                                    leading:
-                                                                        Card(
-                                                                      elevation:
-                                                                          5,
-                                                                      shape:
-                                                                          RoundedRectangleBorder(
-                                                                        borderRadius:
-                                                                            BorderRadius.circular(7.0),
-                                                                      ),
-                                                                      clipBehavior:
-                                                                          Clip.antiAlias,
                                                                       child:
-                                                                          Stack(
-                                                                        children: [
-                                                                          const Image(
-                                                                            image:
-                                                                                AssetImage('assets/cover.jpg'),
-                                                                          ),
-                                                                          if (queue[index].artUri ==
-                                                                              null)
-                                                                            const SizedBox()
-                                                                          else
-                                                                            SizedBox(
-                                                                              height: 50.0,
-                                                                              width: 50.0,
-                                                                              child: queue[index].artUri.toString().startsWith('file:')
-                                                                                  ? Image(fit: BoxFit.cover, image: FileImage(File(queue[index].artUri!.toFilePath())))
-                                                                                  : CachedNetworkImage(
-                                                                                      fit: BoxFit.cover,
-                                                                                      errorWidget: (BuildContext context, _, __) => const Image(
-                                                                                        image: AssetImage('assets/cover.jpg'),
-                                                                                      ),
-                                                                                      placeholder: (BuildContext context, _) => const Image(
-                                                                                        image: AssetImage('assets/cover.jpg'),
-                                                                                      ),
-                                                                                      imageUrl: queue[index].artUri.toString(),
+                                                                          ListTileTheme(
+                                                                        selectedColor:
+                                                                            Theme.of(context).accentColor,
+                                                                        child:
+                                                                            ListTile(
+                                                                          contentPadding: const EdgeInsets.only(
+                                                                              left: 16.0,
+                                                                              right: 10.0),
+                                                                          selected:
+                                                                              queue[index] == mediaItem,
+                                                                          trailing: queue[index] == mediaItem
+                                                                              ? IconButton(
+                                                                                  icon: const Icon(
+                                                                                    Icons.bar_chart_rounded,
+                                                                                  ),
+                                                                                  tooltip: 'Playing',
+                                                                                  onPressed: () {},
+                                                                                )
+                                                                              : offline
+                                                                                  ? const SizedBox()
+                                                                                  : Row(
+                                                                                      mainAxisSize: MainAxisSize.min,
+                                                                                      children: [
+                                                                                        LikeButton(
+                                                                                          mediaItem: queue[index],
+                                                                                        ),
+                                                                                        DownloadButton(icon: 'download', data: {
+                                                                                          'id': queue[index].id.toString(),
+                                                                                          'artist': queue[index].artist.toString(),
+                                                                                          'album': queue[index].album.toString(),
+                                                                                          'image': queue[index].artUri.toString(),
+                                                                                          'duration': queue[index].duration!.inSeconds.toString(),
+                                                                                          'title': queue[index].title.toString(),
+                                                                                          'url': queue[index].extras?['url'].toString(),
+                                                                                          'year': queue[index].extras?['year'].toString(),
+                                                                                          'language': queue[index].extras?['language'].toString(),
+                                                                                          'genre': queue[index].genre?.toString(),
+                                                                                          '320kbps': queue[index].extras?['320kbps'],
+                                                                                          'has_lyrics': queue[index].extras?['has_lyrics'],
+                                                                                          'release_date': queue[index].extras?['release_date'],
+                                                                                          'album_id': queue[index].extras?['album_id'],
+                                                                                          'subtitle': queue[index].extras?['subtitle']
+                                                                                        })
+                                                                                      ],
                                                                                     ),
+                                                                          leading:
+                                                                              Card(
+                                                                            elevation:
+                                                                                5,
+                                                                            shape:
+                                                                                RoundedRectangleBorder(
+                                                                              borderRadius: BorderRadius.circular(7.0),
                                                                             ),
-                                                                        ],
+                                                                            clipBehavior:
+                                                                                Clip.antiAlias,
+                                                                            child:
+                                                                                Stack(
+                                                                              children: [
+                                                                                const Image(
+                                                                                  image: AssetImage('assets/cover.jpg'),
+                                                                                ),
+                                                                                if (queue[index].artUri == null)
+                                                                                  const SizedBox()
+                                                                                else
+                                                                                  SizedBox(
+                                                                                    height: 50.0,
+                                                                                    width: 50.0,
+                                                                                    child: queue[index].artUri.toString().startsWith('file:')
+                                                                                        ? Image(fit: BoxFit.cover, image: FileImage(File(queue[index].artUri!.toFilePath())))
+                                                                                        : CachedNetworkImage(
+                                                                                            fit: BoxFit.cover,
+                                                                                            errorWidget: (BuildContext context, _, __) => const Image(
+                                                                                              image: AssetImage('assets/cover.jpg'),
+                                                                                            ),
+                                                                                            placeholder: (BuildContext context, _) => const Image(
+                                                                                              image: AssetImage('assets/cover.jpg'),
+                                                                                            ),
+                                                                                            imageUrl: queue[index].artUri.toString(),
+                                                                                          ),
+                                                                                  ),
+                                                                              ],
+                                                                            ),
+                                                                          ),
+                                                                          title:
+                                                                              Text(
+                                                                            queue[index].title,
+                                                                            overflow:
+                                                                                TextOverflow.ellipsis,
+                                                                            style:
+                                                                                TextStyle(fontWeight: queue[index] == mediaItem ? FontWeight.w600 : FontWeight.normal),
+                                                                          ),
+                                                                          subtitle:
+                                                                              Text(
+                                                                            queue[index].artist!,
+                                                                            overflow:
+                                                                                TextOverflow.ellipsis,
+                                                                          ),
+                                                                          onTap:
+                                                                              () {
+                                                                            AudioService.skipToQueueItem(queue[index].id);
+                                                                          },
+                                                                        ),
                                                                       ),
-                                                                    ),
-                                                                    title: Text(
-                                                                      queue[index]
-                                                                          .title,
-                                                                      overflow:
-                                                                          TextOverflow
-                                                                              .ellipsis,
-                                                                      style: TextStyle(
-                                                                          fontWeight: queue[index] == mediaItem
-                                                                              ? FontWeight.w600
-                                                                              : FontWeight.normal),
-                                                                    ),
-                                                                    subtitle:
-                                                                        Text(
-                                                                      queue[index]
-                                                                          .artist!,
-                                                                      overflow:
-                                                                          TextOverflow
-                                                                              .ellipsis,
-                                                                    ),
-                                                                    onTap: () {
-                                                                      AudioService.skipToQueueItem(
-                                                                          queue[index]
-                                                                              .id);
-                                                                    },
-                                                                  ),
-                                                                ),
-                                                              );
-                                                            }),
+                                                                    );
+                                                                  });
+                                                        }),
                                               );
-                                            }),
+                                            });
+                                      }
+                                    },
+                                    child: const Text(
+                                      'Now Playing',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 18,
                                       ),
                                     ),
                                   ),
@@ -2082,21 +2002,22 @@ class _PlayScreenState extends State<PlayScreen> {
           AudioService.currentMediaItemStream,
           (queue, mediaItem) => QueueState(queue, mediaItem));
 
-  Future<void> audioPlayerButton() async {
-    await AudioService.start(
-      backgroundTaskEntrypoint: _audioPlayerTaskEntrypoint,
-      params: {
-        'index': globalIndex,
-        'offline': offline,
-        'quality': preferredQuality
-      },
-      androidNotificationChannelName: 'BlackHole',
-      androidNotificationColor: 0xFF181818,
-      androidNotificationIcon: 'drawable/ic_stat_music_note',
-      androidEnableQueue: true,
-      androidStopForegroundOnPause: stopServiceOnPause,
-    );
-
+  Future<void> audioPlayerButton({bool running = false}) async {
+    if (!running) {
+      await AudioService.start(
+        backgroundTaskEntrypoint: _audioPlayerTaskEntrypoint,
+        params: {
+          'index': globalIndex,
+          'offline': offline,
+          'quality': preferredQuality
+        },
+        androidNotificationChannelName: 'BlackHole',
+        androidNotificationColor: 0xFF181818,
+        androidNotificationIcon: 'drawable/ic_stat_music_note',
+        androidEnableQueue: true,
+        androidStopForegroundOnPause: stopServiceOnPause,
+      );
+    }
     await AudioService.updateQueue(globalQueue);
     // await AudioService.skipToQueueItem(globalQueue[globalIndex].id);
     await AudioService.play();

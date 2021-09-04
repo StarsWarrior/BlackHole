@@ -68,49 +68,73 @@ class _RecentlyPlayedState extends State<RecentlyPlayed> {
                       itemBuilder: (context, index) {
                         return _songs.isEmpty
                             ? const SizedBox()
-                            : ListTile(
-                                leading: Card(
-                                  elevation: 5,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(7.0),
-                                  ),
-                                  clipBehavior: Clip.antiAlias,
-                                  child: CachedNetworkImage(
-                                    errorWidget: (context, _, __) =>
-                                        const Image(
-                                      image: AssetImage('assets/cover.jpg'),
-                                    ),
-                                    imageUrl: _songs[index]['image']
-                                        .toString()
-                                        .replaceAll('http:', 'https:'),
-                                    placeholder: (context, url) => const Image(
-                                      image: AssetImage('assets/cover.jpg'),
-                                    ),
-                                  ),
-                                ),
-                                title: Text(
-                                  '${_songs[index]["title"]}',
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                subtitle: Text(
-                                  '${_songs[index]["artist"]}',
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                onTap: () {
-                                  Navigator.push(
-                                      context,
-                                      PageRouteBuilder(
-                                          opaque: false,
-                                          pageBuilder: (_, __, ___) =>
-                                              PlayScreen(
-                                                data: {
-                                                  'response': _songs,
-                                                  'index': index,
-                                                  'offline': false,
-                                                },
-                                                fromMiniplayer: false,
-                                              )));
+                            : Dismissible(
+                                key: Key(_songs[index]['id'].toString()),
+                                direction: DismissDirection.endToStart,
+                                background: Container(
+                                    color: Colors.redAccent,
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 15.0),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        children: const [
+                                          Icon(Icons.delete_outline_rounded),
+                                        ],
+                                      ),
+                                    )),
+                                onDismissed: (direction) {
+                                  _songs.removeAt(index);
+                                  setState(() {});
+                                  Hive.box('recentlyPlayed')
+                                      .put('recentSongs', _songs);
                                 },
+                                child: ListTile(
+                                  leading: Card(
+                                    elevation: 5,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(7.0),
+                                    ),
+                                    clipBehavior: Clip.antiAlias,
+                                    child: CachedNetworkImage(
+                                      errorWidget: (context, _, __) =>
+                                          const Image(
+                                        image: AssetImage('assets/cover.jpg'),
+                                      ),
+                                      imageUrl: _songs[index]['image']
+                                          .toString()
+                                          .replaceAll('http:', 'https:'),
+                                      placeholder: (context, url) =>
+                                          const Image(
+                                        image: AssetImage('assets/cover.jpg'),
+                                      ),
+                                    ),
+                                  ),
+                                  title: Text(
+                                    '${_songs[index]["title"]}',
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  subtitle: Text(
+                                    '${_songs[index]["artist"]}',
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  onTap: () {
+                                    Navigator.push(
+                                        context,
+                                        PageRouteBuilder(
+                                            opaque: false,
+                                            pageBuilder: (_, __, ___) =>
+                                                PlayScreen(
+                                                  data: {
+                                                    'response': _songs,
+                                                    'index': index,
+                                                    'offline': false,
+                                                  },
+                                                  fromMiniplayer: false,
+                                                )));
+                                  },
+                                ),
                               );
                       }),
             ),

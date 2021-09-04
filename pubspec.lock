@@ -141,13 +141,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.0"
-  equatable:
-    dependency: transitive
-    description:
-      name: equatable
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.0.3"
   ext_storage:
     dependency: "direct main"
     description:
@@ -204,13 +197,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.1.1"
-  flutter_ffmpeg:
-    dependency: "direct main"
-    description:
-      name: flutter_ffmpeg
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.4.2"
   flutter_isolate:
     dependency: transitive
     description:
@@ -235,6 +221,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  freezed_annotation:
+    dependency: "direct overridden"
+    description:
+      name: freezed_annotation
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.14.2"
   gotrue:
     dependency: transitive
     description:
@@ -284,6 +277,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.0.0"
+  id3:
+    dependency: transitive
+    description:
+      name: id3
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.0"
   image:
     dependency: transitive
     description:
@@ -391,6 +391,27 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.0+1"
+  on_audio_query:
+    dependency: "direct main"
+    description:
+      name: on_audio_query
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.2.0"
+  on_audio_query_platform_interface:
+    dependency: transitive
+    description:
+      name: on_audio_query_platform_interface
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.0"
+  on_audio_query_web:
+    dependency: transitive
+    description:
+      name: on_audio_query_web
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.0"
   package_info:
     dependency: "direct main"
     description:
@@ -745,7 +766,7 @@ packages:
       name: youtube_explode_dart
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.9.10"
+    version: "1.10.5+1"
 sdks:
   dart: ">=2.13.0 <3.0.0"
   flutter: ">=2.0.0"

@@ -47,26 +47,33 @@ Future<void> main() async {
 }
 
 Future<void> openHiveBox(String boxName, {bool limit = false}) async {
-  try {
-    if (limit) {
-      final box = await Hive.openBox(boxName);
-      // clear box if it grows large
-      if (box.length > 1000) {
-        box.clear();
-      }
+  if (limit) {
+    final box = await Hive.openBox(boxName).onError((error, stackTrace) async {
+      final Directory dir = await getApplicationDocumentsDirectory();
+      final String dirPath = dir.path;
+      final File dbFile = File('$dirPath/$boxName.hive');
+      final File lockFile = File('$dirPath/$boxName.lock');
+      await dbFile.delete();
+      await lockFile.delete();
       await Hive.openBox(boxName);
-    } else {
-      await Hive.openBox(boxName);
+      throw 'Failed to open $boxName Box\nError: $error';
+    });
+    // clear box if it grows large
+    if (box.length > 1000) {
+      box.clear();
     }
-  } catch (e) {
-    final Directory dir = await getApplicationDocumentsDirectory();
-    final String dirPath = dir.path;
-    final File dbFile = File('$dirPath/$boxName.hive');
-    final File lockFile = File('$dirPath/$boxName.lock');
-    await dbFile.delete();
-    await lockFile.delete();
     await Hive.openBox(boxName);
-    throw 'Failed to open $boxName Box\nError: $e';
+  } else {
+    await Hive.openBox(boxName).onError((error, stackTrace) async {
+      final Directory dir = await getApplicationDocumentsDirectory();
+      final String dirPath = dir.path;
+      final File dbFile = File('$dirPath/$boxName.hive');
+      final File lockFile = File('$dirPath/$boxName.lock');
+      await dbFile.delete();
+      await lockFile.delete();
+      await Hive.openBox(boxName);
+      throw 'Failed to open $boxName Box\nError: $error';
+    });
   }
 }
 

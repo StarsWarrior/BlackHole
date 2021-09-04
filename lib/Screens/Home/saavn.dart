@@ -1,3 +1,4 @@
+import 'package:blackhole/CustomWidgets/snackbar.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
@@ -50,10 +51,10 @@ class _SaavnHomePageState extends State<SaavnHomePage> {
     } else if (type == 'song') {
       return formatString(item['artist']?.toString());
     } else {
-      final artists = item['more_info']['artistMap']['artists']
+      final artists = item['more_info']['artistMap']?['artists']
           .map((artist) => artist['name'])
           .toList();
-      return formatString(artists.join(', ')?.toString());
+      return formatString(artists?.join(', ')?.toString());
     }
   }
 
@@ -191,7 +192,7 @@ class _SaavnHomePageState extends State<SaavnHomePage> {
                     padding: const EdgeInsets.fromLTRB(15, 10, 0, 5),
                     child: Text(
                       formatString(
-                          data['modules'][lists[idx]]['title']?.toString()),
+                          data['modules'][lists[idx]]?['title']?.toString()),
                       style: TextStyle(
                         color: Theme.of(context).accentColor,
                         fontSize: 18,
@@ -202,52 +203,7 @@ class _SaavnHomePageState extends State<SaavnHomePage> {
                 ],
               ),
               if (data[lists[idx]] == null)
-                SizedBox(
-                  height: MediaQuery.of(context).size.height / 4 + 5,
-                  child: ListView.builder(
-                    physics: const BouncingScrollPhysics(),
-                    scrollDirection: Axis.horizontal,
-                    padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                    itemCount: 10,
-                    itemBuilder: (context, index) {
-                      return SizedBox(
-                        width: MediaQuery.of(context).size.height / 4 - 30,
-                        child: Column(
-                          children: [
-                            Card(
-                              elevation: 5,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10.0),
-                              ),
-                              clipBehavior: Clip.antiAlias,
-                              child: const Image(
-                                image: AssetImage('assets/cover.jpg'),
-                              ),
-                            ),
-                            const Text(
-                              'Loading ...',
-                              textAlign: TextAlign.center,
-                              softWrap: false,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            Text(
-                              'Please Wait',
-                              textAlign: TextAlign.center,
-                              softWrap: false,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                  fontSize: 11,
-                                  color: Theme.of(context)
-                                      .textTheme
-                                      .caption!
-                                      .color),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
-                )
+                const SizedBox()
               else
                 SizedBox(
                   height: MediaQuery.of(context).size.height / 4 + 5,
@@ -264,27 +220,32 @@ class _SaavnHomePageState extends State<SaavnHomePage> {
                       final subTitle = getSubTitle(item);
                       return GestureDetector(
                         onTap: () {
-                          Navigator.push(
-                            context,
-                            PageRouteBuilder(
-                              opaque: false,
-                              pageBuilder: (_, __, ___) =>
-                                  item['type'] == 'song'
-                                      ? PlayScreen(
-                                          data: {
-                                            'response': currentSongList,
-                                            'index': currentSongList.indexWhere(
-                                                (e) => e['id'] == item['id']),
-                                            'offline': false,
-                                          },
-                                          fromMiniplayer: false,
-                                        )
-                                      : SongsListPage(
-                                          listImage: item['image'].toString(),
-                                          listItem: item,
-                                        ),
-                            ),
-                          );
+                          if (item['type'] == 'radio_station') {
+                            ShowSnackBar().showSnackBar(
+                                context, 'Feature Under Development!');
+                          } else {
+                            Navigator.push(
+                              context,
+                              PageRouteBuilder(
+                                opaque: false,
+                                pageBuilder: (_, __, ___) => item['type'] ==
+                                        'song'
+                                    ? PlayScreen(
+                                        data: {
+                                          'response': currentSongList,
+                                          'index': currentSongList.indexWhere(
+                                              (e) => e['id'] == item['id']),
+                                          'offline': false,
+                                        },
+                                        fromMiniplayer: false,
+                                      )
+                                    : SongsListPage(
+                                        listImage: item['image'].toString(),
+                                        listItem: item,
+                                      ),
+                              ),
+                            );
+                          }
                         },
                         child: SizedBox(
                           width: MediaQuery.of(context).size.height / 4 - 30,

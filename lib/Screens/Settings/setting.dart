@@ -1196,6 +1196,14 @@ class _SettingPageState extends State<SettingPage> {
                             Navigator.pop(context);
                           });
                         }),
+                    const BoxSwitchTile(
+                      title: Text('Support Equalizer'),
+                      subtitle: Text(
+                          'Turn this off if you are unable to play songs (in both online and offline mode)'),
+                      keyName: 'supportEq',
+                      isThreeLine: true,
+                      defaultValue: true,
+                    ),
                     BoxSwitchTile(
                         title: const Text('Show Last Session on Home Screen'),
                         subtitle: const Text('Default: On'),
@@ -1426,9 +1434,8 @@ class _SettingPageState extends State<SettingPage> {
                         dense: true,
                         isThreeLine: true,
                         onTap: () {
-                          final userId = Hive.box('settings').get('userId');
-                          final String upiUrl =
-                              'upi://pay?pa=8570094149@okbizaxis&pn=Ankit%20Sangwan&mc=5732&aid=uGICAgIDn98OpSw&tr=BCR2DN6T37O6DB3Q&cu=INR&tn=$userId';
+                          const String upiUrl =
+                              'upi://pay?pa=8570094149@okbizaxis&pn=BlackHole&mc=5732&aid=uGICAgIDn98OpSw&tr=BCR2DN6T37O6DB3Q';
                           launch(upiUrl);
                         },
                         onLongPress: () {

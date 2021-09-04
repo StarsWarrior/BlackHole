@@ -14,14 +14,7 @@ import 'package:rxdart/rxdart.dart';
 class AudioPlayerTask extends BackgroundAudioTask {
   final _equalizer = AndroidEqualizer();
   AndroidEqualizerParameters? _equalizerParams;
-
-  late final AudioPlayer _player = AudioPlayer(
-    audioPipeline: AudioPipeline(
-      androidAudioEffects: [
-        _equalizer,
-      ],
-    ),
-  );
+  late AudioPlayer? _player;
 
   int? count;
   Timer? _sleepTimer;
@@ -41,6 +34,19 @@ class AudioPlayerTask extends BackgroundAudioTask {
         .get('stopForegroundService', defaultValue: true) as bool;
     if (stopForegroundService) {
       await onStop();
+    }
+  }
+
+  Future<void> startService({bool withPipeline = true}) async {
+    if (withPipeline) {
+      final AudioPipeline _pipeline = AudioPipeline(
+        androidAudioEffects: [
+          _equalizer,
+        ],
+      );
+      _player = AudioPlayer(audioPipeline: _pipeline);
+    } else {
+      _player = AudioPlayer();
     }
   }
 
@@ -106,11 +112,13 @@ class AudioPlayerTask extends BackgroundAudioTask {
     offline = params['offline'] as bool;
     preferredQuality = params['quality'].toString();
     await initiateBox();
-
+    await startService(
+        withPipeline:
+            Hive.box('settings').get('supportEq', defaultValue: true) as bool);
     final session = await AudioSession.instance;
     await session.configure(const AudioSessionConfiguration.music());
 
-    _player.currentIndexStream.distinct().listen((idx) {
+    _player!.currentIndexStream.distinct().listen((idx) {
       if (idx != null && queue.isNotEmpty) {
         index = idx;
         AudioServiceBackground.setMediaItem(queue[idx]);
@@ -132,11 +140,11 @@ class AudioPlayerTask extends BackgroundAudioTask {
     // }
     // });
 
-    _eventSubscription = _player.playbackEventStream.listen((event) {
+    _eventSubscription = _player!.playbackEventStream.listen((event) {
       _broadcastState();
     });
 
-    _player.processingStateStream.listen((state) {
+    _player!.processingStateStream.listen((state) {
       if (state == ProcessingState.completed) {
         AudioService.stop();
       }
@@ -148,7 +156,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
     final newIndex = queue.indexWhere((item) => item.id == mediaId);
     if (newIndex == -1) return;
     index = newIndex;
-    _player.seek(Duration.zero, index: newIndex);
+    _player!.seek(Duration.zero, index: newIndex);
     if (!offline) addRecentlyPlayed(queue[newIndex]);
   }
 
@@ -166,8 +174,8 @@ class AudioPlayerTask extends BackgroundAudioTask {
               tag: item))
           .toList(),
     );
-    await _player.setAudioSource(concatenatingAudioSource);
-    await _player.seek(Duration.zero, index: index);
+    await _player!.setAudioSource(concatenatingAudioSource);
+    await _player!.seek(Duration.zero, index: index);
     queue = _queue;
   }
 
@@ -232,7 +240,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
   @override
   Future<void> onPlay() async {
     if (!offline) addRecentlyPlayed(queue[index!]);
-    _player.play();
+    _player!.play();
   }
 
   @override
@@ -311,14 +319,14 @@ class AudioPlayerTask extends BackgroundAudioTask {
   Future<void> onSetRepeatMode(AudioServiceRepeatMode repeatMode) {
     switch (repeatMode) {
       case AudioServiceRepeatMode.all:
-        _player.setLoopMode(LoopMode.all);
+        _player!.setLoopMode(LoopMode.all);
         break;
 
       case AudioServiceRepeatMode.one:
-        _player.setLoopMode(LoopMode.one);
+        _player!.setLoopMode(LoopMode.one);
         break;
       default:
-        _player.setLoopMode(LoopMode.off);
+        _player!.setLoopMode(LoopMode.off);
         break;
     }
 
@@ -330,21 +338,24 @@ class AudioPlayerTask extends BackgroundAudioTask {
     switch (shuffleMode) {
       case AudioServiceShuffleMode.none:
         queue = defaultQueue;
-        _player.setShuffleModeEnabled(false);
+        _player!.setShuffleModeEnabled(false);
         AudioServiceBackground.setQueue(queue);
         break;
       case AudioServiceShuffleMode.group:
         break;
       case AudioServiceShuffleMode.all:
         defaultQueue = queue;
-        await _player.setShuffleModeEnabled(true);
-        await _player.shuffle();
-        _player.sequenceStateStream
+        await _player!.setShuffleModeEnabled(true);
+        await _player!.shuffle();
+        _player!.sequenceStateStream
             .map((state) => state?.effectiveSequence)
             .distinct()
             .map((sequence) =>
                 sequence!.map((source) => source.tag as MediaItem).toList())
-            .listen(AudioServiceBackground.setQueue);
+            .listen(AudioServiceBackground.setQueue)
+            .onDone(() {
+          queue = AudioServiceBackground.queue!;
+        });
         break;
     }
   }
@@ -352,7 +363,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
   Future<void> onSetVolume(
     double volume,
   ) async {
-    await _player.setVolume(volume);
+    await _player!.setVolume(volume);
   }
 
   @override
@@ -402,14 +413,14 @@ class AudioPlayerTask extends BackgroundAudioTask {
   }
 
   @override
-  Future<void> onPause() => _player.pause();
+  Future<void> onPause() => _player!.pause();
 
   @override
-  Future<void> onSeekTo(Duration position) => _player.seek(position);
+  Future<void> onSeekTo(Duration position) => _player!.seek(position);
 
   @override
   Future<void> onStop() async {
-    await _player.dispose();
+    await _player!.dispose();
     _eventSubscription.cancel();
     await _broadcastState();
     await super.onStop();
@@ -420,7 +431,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
     await AudioServiceBackground.setState(
       controls: [
         MediaControl.skipToPrevious,
-        if (_player.playing) MediaControl.pause else MediaControl.play,
+        if (_player!.playing) MediaControl.pause else MediaControl.play,
         MediaControl.skipToNext,
         MediaControl.stop,
       ],
@@ -431,16 +442,16 @@ class AudioPlayerTask extends BackgroundAudioTask {
       ],
       androidCompactActions: [0, 1, 2],
       processingState: _getProcessingState(),
-      playing: _player.playing,
-      position: _player.position,
-      bufferedPosition: _player.bufferedPosition,
-      speed: _player.speed,
+      playing: _player!.playing,
+      position: _player!.position,
+      bufferedPosition: _player!.bufferedPosition,
+      speed: _player!.speed,
     );
   }
 
   /// Maps just_audio's processing state into into audio_service's playing state.
   AudioProcessingState _getProcessingState() {
-    switch (_player.processingState) {
+    switch (_player!.processingState) {
       case ProcessingState.idle:
         return AudioProcessingState.stopped;
       case ProcessingState.loading:
@@ -452,7 +463,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
       case ProcessingState.completed:
         return AudioProcessingState.completed;
       default:
-        throw Exception('Invalid state: ${_player.processingState}');
+        throw Exception('Invalid state: ${_player!.processingState}');
     }
   }
 }

@@ -20,7 +20,6 @@ class YouTube extends StatefulWidget {
 }
 
 class _YouTubeState extends State<YouTube> {
-  String channelId = 'UC-9-kyTW8ZkZNDHQJ6FgpwQ';
   List ytSearch =
       Hive.box('settings').get('ytSearch', defaultValue: []) as List;
   bool showHistory =
@@ -30,7 +29,7 @@ class _YouTubeState extends State<YouTube> {
   @override
   void initState() {
     if (!status) {
-      YouTubeServices().getChannelSongs(channelId).then((value) {
+      YouTubeServices().getMusicHome().then((value) {
         status = true;
         if (value.isNotEmpty) {
           setState(() {
