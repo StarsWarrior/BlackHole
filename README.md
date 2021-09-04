@@ -9,6 +9,7 @@ Awesome Music Player made with Flutter!
 
 [![GitHub stars](https://img.shields.io/github/stars/Sangwan5688/BlackHole.svg?style=social&label=Star)](https://github.com//Sangwan5688/BlackHole) ![GitHub forks](https://img.shields.io/github/forks/Sangwan5688/BlackHole.svg?style=social&label=Forks) ![GitHub followers](https://img.shields.io/github/followers/Sangwan5688.svg?style=social&label=Follow)
 
+## Download
 [<img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png"
      alt="Get it on F-Droid"
      height="80">](https://f-droid.org/packages/com.shadow.blackhole/)
@@ -52,8 +53,7 @@ Or [Download from Github](https://github.com/Sangwan5688/BlackHole/releases)
 and much more...
 Check it yourself :)
 
-<h2 align="center">Preview</h2>
-
+## Screenshots
 <img src="https://github.com/Sangwan5688/BlackHole/blob/main/Screenshots/home.png?raw=true" width="32%"> <img src="https://github.com/Sangwan5688/BlackHole/blob/main/Screenshots/play.png?raw=true" width="32%"> <img src="https://github.com/Sangwan5688/BlackHole/blob/main/Screenshots/artist.png?raw=true" width="32%"> <img src="https://github.com/Sangwan5688/BlackHole/blob/main/Screenshots/topCharts.png?raw=true" width="32%"> <img src="https://github.com/Sangwan5688/BlackHole/blob/main/Screenshots/youtube.png?raw=true" width="32%"> <img src="https://github.com/Sangwan5688/BlackHole/blob/main/Screenshots/playlist.png?raw=true" width="32%">
 
 ## License
@@ -70,7 +70,7 @@ See the GNU General Public License for more details.
 ```
 [View License](https://github.com/Sangwan5688/BlackHole/blob/main/LICENSE)
 
-## Build
+## Building from Source
 
 1. If you don't have Flutter SDK installed, please visit official [Flutter](https://flutter.dev/) site.
 2. Fetch latest source code from master branch.
@@ -79,18 +79,16 @@ See the GNU General Public License for more details.
 git clone https://github.com/Sangwan5688/BlackHole.git
 ```
 
-3. Run the app with Android Studio or Visual Studio. Or the command line.
+3. Run the app with Android Studio or VS Code. Or the command line:
 
 ```
 flutter pub get
 flutter run
 ```
 
-4. (Optional) You can setup your own database for the app or use the default. To setup your own follow [these instructions](https://github.com/Sangwan5688/BlackHole/wiki/Set-up-your-own-Firebase-Database).
-
 ## Contribute
 
-Contributions are welcomed. Please read our [contributing guidelines](https://github.com/Sangwan5688/BlackHole/blob/main/CONTRIBUTING.md) before contributing.
+Contributions are welcome. Please read our [contributing guidelines](https://github.com/Sangwan5688/BlackHole/blob/main/CONTRIBUTING.md) before contributing.
 
 ## Facing any Issue?
 
