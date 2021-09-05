@@ -440,10 +440,6 @@ class _SearchPageState extends State<SearchPage> {
                                                               fromMiniplayer:
                                                                   false)
                                                           : SongsListPage(
-                                                              listImage: value[
-                                                                          index]
-                                                                      ['image']
-                                                                  .toString(),
                                                               listItem:
                                                                   value[index]
                                                                       as Map),

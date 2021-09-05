@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:blackhole/CustomWidgets/add_playlist.dart';
 import 'package:blackhole/CustomWidgets/snackbar.dart';
 import 'package:blackhole/Helpers/mediaitem_converter.dart';
+import 'package:share_plus/share_plus.dart';
 
 class AddToQueueButton extends StatefulWidget {
   final Map data;
@@ -63,11 +64,26 @@ class _AddToQueueButtonState extends State<AddToQueueButton> {
                       const Spacer(),
                     ],
                   )),
+              PopupMenuItem(
+                  value: 3,
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.share_rounded,
+                        color: Theme.of(context).iconTheme.color,
+                      ),
+                      const Spacer(),
+                      const Text('Share'),
+                      const Spacer(),
+                    ],
+                  )),
             ],
         onSelected: (int? value) {
           final MediaItem mediaItem =
               MediaItemConverter().mapToMediaItem(widget.data);
-
+          if (value == 3) {
+            Share.share(widget.data['perma_url'].toString());
+          }
           if (value == 0) {
             AddToPlaylist().addToPlaylist(context, mediaItem);
           }

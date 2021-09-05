@@ -15,12 +15,10 @@ import 'package:blackhole/Screens/Player/audioplayer.dart';
 
 class SongsListPage extends StatefulWidget {
   final Map listItem;
-  final String? listImage;
 
   const SongsListPage({
     Key? key,
     required this.listItem,
-    this.listImage,
   }) : super(key: key);
 
   @override
@@ -112,8 +110,10 @@ class _SongsListPageState extends State<SongsListPage> {
                                   actions: [
                                     AddListToQueueButton(
                                         data: songList,
+                                        url: widget.listItem['perma_url']
+                                            .toString(),
                                         title: widget.listItem['title']
-                                                as String? ??
+                                                ?.toString() ??
                                             'Songs')
                                   ],
                                   flexibleSpace: FlexibleSpaceBar(
@@ -138,7 +138,7 @@ class _SongsListPageState extends State<SongsListPage> {
                                             0, 0, rect.width, rect.height));
                                       },
                                       blendMode: BlendMode.dstIn,
-                                      child: widget.listImage == null
+                                      child: widget.listItem['image'] == null
                                           ? const Image(
                                               fit: BoxFit.cover,
                                               image: AssetImage(
@@ -150,7 +150,8 @@ class _SongsListPageState extends State<SongsListPage> {
                                                 image: AssetImage(
                                                     'assets/album.png'),
                                               ),
-                                              imageUrl: widget.listImage!
+                                              imageUrl: widget.listItem['image']
+                                                  .toString()
                                                   .replaceAll('http:', 'https:')
                                                   .replaceAll(
                                                       '50x50', '500x500')

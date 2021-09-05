@@ -117,6 +117,7 @@ class FormatResponse {
             .replaceAll('150x150', '500x500')
             .replaceAll('50x50', '500x500')
             .replaceAll('http:', 'https:'),
+        'perma_url': response['perma_url'],
         'url': decode(response['more_info']['encrypted_media_url'].toString()),
       };
       // Hive.box('songDetails').put(response['id'], info);
@@ -183,6 +184,7 @@ class FormatResponse {
             .replaceAll('150x150', '500x500')
             .replaceAll('50x50', '500x500')
             .replaceAll('http:', 'https:'),
+        'perma_url': response['perma_url'],
         'url': decode(response['encrypted_media_url'].toString())
       };
     } catch (e) {

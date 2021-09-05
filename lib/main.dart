@@ -26,6 +26,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'package:blackhole/Helpers/config.dart';
+import 'package:blackhole/Helpers/route_handler.dart';
 import 'package:blackhole/Screens/About/about.dart';
 import 'package:blackhole/Screens/Home/home.dart';
 import 'package:blackhole/Screens/Library/nowplaying.dart';
@@ -164,6 +165,10 @@ class _MyAppState extends State<MyApp> {
         '/playlists': (context) => PlaylistScreen(),
         '/nowplaying': (context) => NowPlaying(),
         '/recent': (context) => RecentlyPlayed(),
+        // '/featured':
+      },
+      onGenerateRoute: (RouteSettings settings) {
+        return HandleRoute().handleRoute(settings.name);
       },
     );
   }

@@ -18,6 +18,7 @@ class SaavnAPI {
     'homeData': '__call=webapi.getLaunchData',
     'topSearches': '__call=content.getTopSearches',
     'getResult': '__call=search.getResults',
+    'fromToken': '__call=webapi.get',
   };
 
   Future<Response> getResponse(String params,
@@ -63,6 +64,25 @@ class SaavnAPI {
       print('Error in fetchHomePageData: $e');
     }
     return result;
+  }
+
+  Future<Map> getSongFromToken(String token, String type) async {
+    List searchedList = [];
+    final String params = "token=$token&type=$type&${endpoints['fromToken']}";
+    try {
+      final res = await getResponse(params);
+      if (res.statusCode == 200) {
+        final Map getMain = json.decode(res.body) as Map;
+        if (type == 'album' || type == 'playlist') return getMain;
+        final List responseList = getMain['songs'] as List;
+        searchedList =
+            await FormatResponse().formatSongsResponse(responseList, type);
+      }
+    } catch (e) {
+      // ignore: avoid_print
+      print('Error in getSongFromToken: $e');
+    }
+    return {'songs': searchedList};
   }
 
   Future<List<String>> getTopSearches() async {

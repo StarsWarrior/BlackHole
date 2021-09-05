@@ -191,10 +191,7 @@ class _AlbumSearchPageState extends State<AlbumSearchPage> {
                                                           .toString(),
                                                   artistImage:
                                                       entry['image'].toString())
-                                              : SongsListPage(
-                                                  listImage:
-                                                      entry['image'].toString(),
-                                                  listItem: entry),
+                                              : SongsListPage(listItem: entry),
                                         ),
                                       );
                                     },

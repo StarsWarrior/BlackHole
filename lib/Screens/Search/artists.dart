@@ -233,10 +233,6 @@ class _ArtistSearchPageState extends State<ArtistSearchPage> {
                                                                 false,
                                                           )
                                                         : SongsListPage(
-                                                            listImage: entry
-                                                                .value[index]
-                                                                    ['image']
-                                                                .toString(),
                                                             listItem: entry
                                                                     .value[
                                                                 index] as Map),

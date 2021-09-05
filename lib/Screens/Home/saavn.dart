@@ -240,7 +240,6 @@ class _SaavnHomePageState extends State<SaavnHomePage> {
                                         fromMiniplayer: false,
                                       )
                                     : SongsListPage(
-                                        listImage: item['image'].toString(),
                                         listItem: item,
                                       ),
                               ),
