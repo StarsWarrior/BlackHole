@@ -6,7 +6,7 @@ class ShowSnackBar {
       {SnackBarAction? action, Duration? duration}) {
     return ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        duration: duration ?? const Duration(seconds: 2),
+        duration: duration ?? const Duration(seconds: 1),
         elevation: 6,
         backgroundColor: Colors.grey[900],
         behavior: SnackBarBehavior.floating,

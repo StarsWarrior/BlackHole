@@ -47,7 +47,7 @@ class _SaavnHomePageState extends State<SaavnHomePage> {
     } else if (type == 'playlist') {
       return formatString(item['subtitle']?.toString());
     } else if (type == 'radio_station') {
-      return 'Artist Radio';
+      return formatString(item['subtitle']?.toString());
     } else if (type == 'song') {
       return formatString(item['artist']?.toString());
     } else {
@@ -222,7 +222,42 @@ class _SaavnHomePageState extends State<SaavnHomePage> {
                         onTap: () {
                           if (item['type'] == 'radio_station') {
                             ShowSnackBar().showSnackBar(
-                                context, 'Feature Under Development!');
+                              context,
+                              'Connecting to Radio...',
+                              duration: const Duration(seconds: 2),
+                            );
+                            SaavnAPI()
+                                .createRadio(
+                              item['more_info']['featured_station_type']
+                                          .toString() ==
+                                      'artist'
+                                  ? item['more_info']['query'].toString()
+                                  : item['id'].toString(),
+                              item['more_info']['language']?.toString() ??
+                                  'hindi',
+                              item['more_info']['featured_station_type']
+                                  .toString(),
+                            )
+                                .then((value) {
+                              if (value != null) {
+                                SaavnAPI()
+                                    .getRadioSongs(value)
+                                    .then((value) => Navigator.push(
+                                          context,
+                                          PageRouteBuilder(
+                                              opaque: false,
+                                              pageBuilder: (_, __, ___) =>
+                                                  PlayScreen(
+                                                    data: {
+                                                      'response': value,
+                                                      'index': 0,
+                                                      'offline': false,
+                                                    },
+                                                    fromMiniplayer: false,
+                                                  )),
+                                        ));
+                              }
+                            });
                           } else {
                             Navigator.push(
                               context,

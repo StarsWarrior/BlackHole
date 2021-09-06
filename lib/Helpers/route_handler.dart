@@ -6,7 +6,7 @@ import 'package:blackhole/Screens/Player/audioplayer.dart';
 
 class HandleRoute {
   Route? handleRoute(String? url) {
-    final List<String> paths = url?.split('/') ?? [];
+    final List<String> paths = url?.replaceAll('?', '/').split('/') ?? [];
     if (paths.isNotEmpty &&
         paths.length > 3 &&
         (paths[1] == 'song' || paths[1] == 'album' || paths[1] == 'featured') &&
