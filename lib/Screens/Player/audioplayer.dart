@@ -13,6 +13,7 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:miniplayer/miniplayer.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:blackhole/CustomWidgets/add_playlist.dart';
@@ -125,7 +126,9 @@ class _PlayScreenState extends State<PlayScreen> {
         title: playTitle != null ? playTitle.split('(')[0] : 'Unknown',
         artist: playArtist ?? 'Unknown',
         artUri: Uri.file(filePath!),
-        extras: {'url': response['_data']});
+        extras: {
+          'url': response['_data'],
+        });
     return tempDict;
   }
 
@@ -224,7 +227,6 @@ class _PlayScreenState extends State<PlayScreen> {
               return Scaffold(
                 backgroundColor: Colors.transparent,
                 appBar: AppBar(
-                  toolbarHeight: 40.0,
                   elevation: 0,
                   backgroundColor: Colors.transparent,
                   centerTitle: true,
@@ -241,13 +243,22 @@ class _PlayScreenState extends State<PlayScreen> {
                         }
                       }),
                   actions: [
+                    if (!offline)
+                      IconButton(
+                          icon: const Icon(Icons.share_rounded),
+                          onPressed: () {
+                            Share.share(fromYT
+                                ? 'https://youtube.com/watch?v=${mediaItem!.id}'
+                                : mediaItem!.extras!['perma_url'].toString());
+                          }),
                     PopupMenuButton(
                       icon: Icon(
                         Icons.more_vert_rounded,
                         color: Theme.of(context).iconTheme.color,
                       ),
                       shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(7.0))),
+                          borderRadius:
+                              BorderRadius.all(Radius.circular(15.0))),
                       onSelected: (int? value) {
                         if (value == 4) {
                           showDialog(
@@ -473,9 +484,9 @@ class _PlayScreenState extends State<PlayScreen> {
                                         color:
                                             Theme.of(context).iconTheme.color,
                                       ),
-                                      const Spacer(),
+                                      const SizedBox(width: 10.0),
                                       const Text('Sleep Timer'),
-                                      const Spacer(),
+                                      
                                     ],
                                   )),
                               PopupMenuItem(
@@ -487,9 +498,8 @@ class _PlayScreenState extends State<PlayScreen> {
                                         color:
                                             Theme.of(context).iconTheme.color,
                                       ),
-                                      const Spacer(),
+                                      const SizedBox(width: 10.0),
                                       const Text('Show Lyrics'),
-                                      const Spacer(),
                                     ],
                                   )),
                               if (Hive.box('settings')
@@ -503,9 +513,8 @@ class _PlayScreenState extends State<PlayScreen> {
                                           color:
                                               Theme.of(context).iconTheme.color,
                                         ),
-                                        const Spacer(),
+                                        const SizedBox(width: 10.0),
                                         const Text('Equalizer'),
-                                        const Spacer(),
                                       ],
                                     )),
                             ]
@@ -519,9 +528,8 @@ class _PlayScreenState extends State<PlayScreen> {
                                         color:
                                             Theme.of(context).iconTheme.color,
                                       ),
-                                      const Spacer(),
+                                      const SizedBox(width: 10.0),
                                       const Text('Add to playlist'),
-                                      const Spacer(),
                                     ],
                                   )),
                               PopupMenuItem(
@@ -533,9 +541,8 @@ class _PlayScreenState extends State<PlayScreen> {
                                         color:
                                             Theme.of(context).iconTheme.color,
                                       ),
-                                      const Spacer(),
+                                      const SizedBox(width: 10.0),
                                       const Text('Sleep Timer'),
-                                      const Spacer(),
                                     ],
                                   )),
                               PopupMenuItem(
@@ -547,9 +554,8 @@ class _PlayScreenState extends State<PlayScreen> {
                                         color:
                                             Theme.of(context).iconTheme.color,
                                       ),
-                                      const Spacer(),
+                                      const SizedBox(width: 10.0),
                                       const Text('Show Lyrics'),
-                                      const Spacer(),
                                     ],
                                   )),
                               if (Hive.box('settings')
@@ -563,9 +569,8 @@ class _PlayScreenState extends State<PlayScreen> {
                                           color:
                                               Theme.of(context).iconTheme.color,
                                         ),
-                                        const Spacer(),
+                                        const SizedBox(width: 10.0),
                                         const Text('Equalizer'),
-                                        const Spacer(),
                                       ],
                                     )),
                               PopupMenuItem(
@@ -577,11 +582,10 @@ class _PlayScreenState extends State<PlayScreen> {
                                         color:
                                             Theme.of(context).iconTheme.color,
                                       ),
-                                      const Spacer(),
+                                      const SizedBox(width: 10.0),
                                       Text(fromYT
                                           ? 'Watch Video'
                                           : 'Search Video'),
-                                      const Spacer(),
                                     ],
                                   )),
                             ],
@@ -699,77 +703,47 @@ class _PlayScreenState extends State<PlayScreen> {
                                             ),
                                           ),
                                         ),
-                                        SizedBox(
-                                          height: (MediaQuery.of(context)
-                                                          .size
-                                                          .height *
-                                                      0.875 -
-                                                  MediaQuery.of(context)
-                                                          .size
-                                                          .width *
-                                                      0.925) *
-                                              1 /
-                                              4.5,
-                                          child: Padding(
-                                            padding: const EdgeInsets.fromLTRB(
-                                                35, 5, 35, 0),
-                                            child: Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.end,
-                                              children: [
-                                                Expanded(
-                                                  flex: 5,
-                                                  child: FittedBox(
-                                                    fit: BoxFit.scaleDown,
-                                                    child: Text(
-                                                      globalQueue.length <=
-                                                              globalIndex
-                                                          ? 'Unknown'
-                                                          : globalQueue[
-                                                                  globalIndex]
-                                                              .title
-                                                              .split(' (')[0]
-                                                              .split('|')[0]
-                                                              .trim(),
-                                                      textAlign:
-                                                          TextAlign.center,
-                                                      overflow:
-                                                          TextOverflow.fade,
-                                                      maxLines: 1,
-                                                      style: TextStyle(
-                                                          fontSize: 40,
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                          color:
-                                                              Theme.of(context)
-                                                                  .accentColor),
-                                                    ),
-                                                  ),
-                                                ),
-                                                Expanded(
-                                                  flex: 3,
-                                                  child: FittedBox(
-                                                    fit: BoxFit.scaleDown,
-                                                    child: Text(
-                                                      globalQueue.length <=
-                                                              globalIndex
-                                                          ? 'Unknown'
-                                                          : globalQueue[
-                                                                  globalIndex]
-                                                              .artist!,
-                                                      textAlign:
-                                                          TextAlign.center,
-                                                      style: const TextStyle(
-                                                          fontSize: 18,
-                                                          fontWeight:
-                                                              FontWeight.w500),
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
+
+                                        /// Title and subtitle
+                                        Padding(
+                                          padding: const EdgeInsets.fromLTRB(
+                                              35, 5, 35, 0),
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.end,
+                                            children: [
+                                              Text(
+                                                globalQueue.length <=
+                                                        globalIndex
+                                                    ? 'Unknown'
+                                                    : globalQueue[globalIndex]
+                                                        .title
+                                                        .split(' (')[0]
+                                                        .split('|')[0]
+                                                        .trim(),
+                                                textAlign: TextAlign.center,
+                                                overflow: TextOverflow.ellipsis,
+                                                maxLines: 1,
+                                                style: TextStyle(
+                                                    fontSize: 35,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Theme.of(context)
+                                                        .accentColor),
+                                              ),
+                                              Text(
+                                                globalQueue.length <=
+                                                        globalIndex
+                                                    ? 'Unknown'
+                                                    : globalQueue[globalIndex]
+                                                        .artist!,
+                                                textAlign: TextAlign.center,
+                                                style: const TextStyle(
+                                                    fontSize: 18,
+                                                    fontWeight:
+                                                        FontWeight.w500),
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ],
                                           ),
                                         ),
                                         const SeekBar(
@@ -1246,80 +1220,59 @@ class _PlayScreenState extends State<PlayScreen> {
                                   // ),
 
                                   /// Title and subtitle
-                                  SizedBox(
-                                    height: (MediaQuery.of(context)
-                                                    .size
-                                                    .height *
-                                                0.875 -
-                                            MediaQuery.of(context).size.width *
-                                                0.925) *
-                                        1 /
-                                        4.5,
-                                    child: Padding(
-                                      padding: const EdgeInsets.fromLTRB(
-                                          35, 5, 35, 0),
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.end,
-                                        children: [
-                                          /// Title container
-                                          Expanded(
-                                            flex: 5,
-                                            child: FittedBox(
-                                              fit: BoxFit.scaleDown,
-                                              child: Text(
-                                                (mediaItem?.title != null)
-                                                    ? (mediaItem!.title
-                                                        .split(' (')[0]
-                                                        .split('|')[0]
-                                                        .trim())
-                                                    : ((globalQueue.length <=
-                                                            globalIndex)
-                                                        ? 'Title'
-                                                        : globalQueue[
-                                                                globalIndex]
-                                                            .title
-                                                            .split(' (')[0]
-                                                            .split('|')[0]
-                                                            .trim()),
-                                                textAlign: TextAlign.center,
-                                                overflow: TextOverflow.fade,
-                                                maxLines: 1,
-                                                style: TextStyle(
-                                                    fontSize: 40,
-                                                    fontWeight: FontWeight.bold,
-                                                    color: Theme.of(context)
-                                                        .accentColor),
-                                              ),
+                                  Column(
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.fromLTRB(
+                                            35, 5, 35, 0),
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.end,
+                                          children: [
+                                            /// Title container
+                                            Text(
+                                              (mediaItem?.title != null)
+                                                  ? (mediaItem!.title
+                                                      .split(' (')[0]
+                                                      .split('|')[0]
+                                                      .trim())
+                                                  : ((globalQueue.length <=
+                                                          globalIndex)
+                                                      ? 'Unknown'
+                                                      : globalQueue[globalIndex]
+                                                          .title
+                                                          .split(' (')[0]
+                                                          .split('|')[0]
+                                                          .trim()),
+                                              textAlign: TextAlign.center,
+                                              overflow: TextOverflow.ellipsis,
+                                              maxLines: 1,
+                                              style: TextStyle(
+                                                  fontSize: 35,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Theme.of(context)
+                                                      .accentColor),
                                             ),
-                                          ),
 
-                                          /// Subtitle container
-                                          Expanded(
-                                            flex: 3,
-                                            child: FittedBox(
-                                              fit: BoxFit.scaleDown,
-                                              child: Text(
-                                                (mediaItem?.artist != null)
-                                                    ? mediaItem!.artist!
-                                                    : ((globalQueue.length <=
-                                                            globalIndex)
-                                                        ? 'Unknown'
-                                                        : globalQueue[
-                                                                globalIndex]
-                                                            .artist!),
-                                                textAlign: TextAlign.center,
-                                                style: const TextStyle(
-                                                    fontSize: 18,
-                                                    fontWeight:
-                                                        FontWeight.w500),
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
+                                            /// Subtitle container
+                                            Text(
+                                              (mediaItem?.artist != null)
+                                                  ? mediaItem!.artist!
+                                                  : ((globalQueue.length <=
+                                                          globalIndex)
+                                                      ? 'Unknown'
+                                                      : globalQueue[globalIndex]
+                                                          .artist!),
+                                              textAlign: TextAlign.center,
+                                              style: const TextStyle(
+                                                  fontSize: 18,
+                                                  fontWeight: FontWeight.w500),
+                                              overflow: TextOverflow.ellipsis,
                                             ),
-                                          ),
-                                        ],
+                                          ],
+                                        ),
                                       ),
-                                    ),
+                                    ],
                                   ),
 
                                   /// Seekbar starts from here

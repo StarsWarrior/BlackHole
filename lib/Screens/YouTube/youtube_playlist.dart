@@ -221,7 +221,7 @@ class _YouTubePlaylistState extends State<YouTubePlaylist> {
                                           ),
                                           shape: const RoundedRectangleBorder(
                                               borderRadius: BorderRadius.all(
-                                                  Radius.circular(7.0))),
+                                                  Radius.circular(15.0))),
                                           itemBuilder: (context) => [
                                                 PopupMenuItem(
                                                     value: 0,
@@ -234,10 +234,10 @@ class _YouTubePlaylistState extends State<YouTubePlaylist> {
                                                                   .iconTheme
                                                                   .color,
                                                         ),
-                                                        const Spacer(),
+                                                        const SizedBox(
+                                                            width: 10.0),
                                                         const Text(
                                                             'Search Home'),
-                                                        const Spacer(),
                                                       ],
                                                     )),
                                               ],

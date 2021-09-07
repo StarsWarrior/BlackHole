@@ -18,6 +18,7 @@ class MediaItemConverter {
       'url': mediaItem.extras!['url'].toString(),
       'year': mediaItem.extras?['year'].toString(),
       '320kbps': mediaItem.extras?['320kbps'],
+      'perma_url': mediaItem.extras?['perma_url'],
     };
   }
 
@@ -46,6 +47,7 @@ class MediaItemConverter {
           'release_date': song['release_date'],
           'album_id': song['album_id'],
           'subtitle': song['subtitle'],
+          'perma_url': song['perma_url'],
         });
   }
 }

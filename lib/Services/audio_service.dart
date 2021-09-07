@@ -51,15 +51,8 @@ class AudioPlayerTask extends BackgroundAudioTask {
   }
 
   Future<void> initiateBox() async {
-    try {
-      await Hive.initFlutter();
-    } catch (e) {
-      // print('Failed to initiate Hive');
-      // print('Error: $e');
-    }
-    try {
-      await Hive.openBox('settings');
-    } catch (e) {
+    await Hive.initFlutter();
+    await Hive.openBox('settings').onError((error, stackTrace) async {
       // print('Failed to open Settings Box');
       // print('Error: $e');
       final Directory dir = await getApplicationDocumentsDirectory();
@@ -68,11 +61,11 @@ class AudioPlayerTask extends BackgroundAudioTask {
       final File lockFile = File('$dirPath/settings.lock');
       await dbFile.delete();
       await lockFile.delete();
-      await Hive.openBox('settings');
-    }
-    try {
-      await Hive.openBox('recentlyPlayed');
-    } catch (e) {
+      final Box box = await Hive.openBox('settings');
+      return box;
+    });
+
+    await Hive.openBox('recentlyPlayed').onError((error, stackTrace) async {
       // print('Failed to open Recent Box');
       // print('Error: $e');
       final Directory dir = await getApplicationDocumentsDirectory();
@@ -81,8 +74,9 @@ class AudioPlayerTask extends BackgroundAudioTask {
       final File lockFile = File('$dirPath/recentlyPlayed.lock');
       await dbFile.delete();
       await lockFile.delete();
-      await Hive.openBox('recentlyPlayed');
-    }
+      final Box box = await Hive.openBox('recentlyPlayed');
+      return box;
+    });
   }
 
   Future<void> addRecentlyPlayed(MediaItem mediaitem) async {

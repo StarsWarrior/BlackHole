@@ -1,5 +1,6 @@
 import 'package:blackhole/CustomWidgets/snackbar.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 
@@ -11,6 +12,8 @@ import 'package:blackhole/Screens/Player/audioplayer.dart';
 bool fetched = false;
 List preferredLanguage = Hive.box('settings')
     .get('preferredLanguage', defaultValue: ['Hindi']) as List;
+List likedRadio =
+    Hive.box('settings').get('likedRadio', defaultValue: []) as List;
 Map data = Hive.box('cache').get('homepage', defaultValue: {}) as Map;
 List lists = ['recent', ...?data['collections']];
 
@@ -211,14 +214,68 @@ class _SaavnHomePageState extends State<SaavnHomePage> {
                     physics: const BouncingScrollPhysics(),
                     scrollDirection: Axis.horizontal,
                     padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                    itemCount: (data[lists[idx]] as List).length,
+                    itemCount: data['modules'][lists[idx]]?['title']
+                                ?.toString() ==
+                            'Radio Stations'
+                        ? (data[lists[idx]] as List).length + likedRadio.length
+                        : (data[lists[idx]] as List).length,
                     itemBuilder: (context, index) {
-                      final Map item = data[lists[idx]][index] as Map;
+                      Map item = data[lists[idx]][index] as Map;
+                      if (data['modules'][lists[idx]]?['title']?.toString() ==
+                          'Radio Stations') {
+                        index < likedRadio.length
+                            ? item = likedRadio[index] as Map
+                            : item = data[lists[idx]][index - likedRadio.length]
+                                as Map;
+                      }
                       final currentSongList = data[lists[idx]]
                           .where((e) => e['type'] == 'song')
                           .toList();
                       final subTitle = getSubTitle(item);
                       return GestureDetector(
+                        onLongPress: () {
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                backgroundColor: Colors.transparent,
+                                contentPadding: EdgeInsets.zero,
+                                content: Card(
+                                  elevation: 5,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(
+                                        item['type'] == 'radio_station'
+                                            ? 1000.0
+                                            : 10.0),
+                                  ),
+                                  clipBehavior: Clip.antiAlias,
+                                  child: CachedNetworkImage(
+                                    fit: BoxFit.cover,
+                                    errorWidget: (context, _, __) =>
+                                        const Image(
+                                      image: AssetImage('assets/cover.jpg'),
+                                    ),
+                                    imageUrl: item['image']
+                                        .toString()
+                                        .replaceAll('http:', 'https:')
+                                        .replaceAll('50x50', '500x500')
+                                        .replaceAll('150x150', '500x500'),
+                                    placeholder: (context, url) => Image(
+                                      image: (item['type'] == 'playlist' ||
+                                              item['type'] == 'album')
+                                          ? const AssetImage('assets/album.png')
+                                          : item['type'] == 'artist'
+                                              ? const AssetImage(
+                                                  'assets/artist.png')
+                                              : const AssetImage(
+                                                  'assets/cover.jpg'),
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          );
+                        },
                         onTap: () {
                           if (item['type'] == 'radio_station') {
                             ShowSnackBar().showSnackBar(
@@ -283,59 +340,87 @@ class _SaavnHomePageState extends State<SaavnHomePage> {
                         },
                         child: SizedBox(
                           width: MediaQuery.of(context).size.height / 4 - 30,
-                          child: Column(
+                          child: Stack(
                             children: [
-                              Card(
-                                elevation: 5,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(
-                                      item['type'] == 'radio_station'
-                                          ? 100.0
-                                          : 10.0),
-                                ),
-                                clipBehavior: Clip.antiAlias,
-                                child: CachedNetworkImage(
-                                  errorWidget: (context, _, __) => const Image(
-                                    image: AssetImage('assets/cover.jpg'),
-                                  ),
-                                  imageUrl: item['image']
-                                      .toString()
-                                      .replaceAll('http:', 'https:')
-                                      .replaceAll('50x50', '500x500')
-                                      .replaceAll('150x150', '500x500'),
-                                  placeholder: (context, url) => Image(
-                                    image: (item['type'] == 'playlist' ||
-                                            item['type'] == 'album')
-                                        ? const AssetImage('assets/album.png')
-                                        : item['type'] == 'artist'
+                              Column(
+                                children: [
+                                  Card(
+                                    elevation: 5,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(
+                                          item['type'] == 'radio_station'
+                                              ? 1000.0
+                                              : 10.0),
+                                    ),
+                                    clipBehavior: Clip.antiAlias,
+                                    child: CachedNetworkImage(
+                                      errorWidget: (context, _, __) =>
+                                          const Image(
+                                        image: AssetImage('assets/cover.jpg'),
+                                      ),
+                                      imageUrl: item['image']
+                                          .toString()
+                                          .replaceAll('http:', 'https:')
+                                          .replaceAll('50x50', '500x500')
+                                          .replaceAll('150x150', '500x500'),
+                                      placeholder: (context, url) => Image(
+                                        image: (item['type'] == 'playlist' ||
+                                                item['type'] == 'album')
                                             ? const AssetImage(
-                                                'assets/artist.png')
-                                            : const AssetImage(
-                                                'assets/cover.jpg'),
+                                                'assets/album.png')
+                                            : item['type'] == 'artist'
+                                                ? const AssetImage(
+                                                    'assets/artist.png')
+                                                : const AssetImage(
+                                                    'assets/cover.jpg'),
+                                      ),
+                                    ),
                                   ),
-                                ),
+                                  Text(
+                                    formatString(item['title']?.toString()),
+                                    textAlign: TextAlign.center,
+                                    softWrap: false,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  if (subTitle != '')
+                                    Text(
+                                      subTitle,
+                                      textAlign: TextAlign.center,
+                                      softWrap: false,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                          fontSize: 11,
+                                          color: Theme.of(context)
+                                              .textTheme
+                                              .caption!
+                                              .color),
+                                    )
+                                  else
+                                    const SizedBox(),
+                                ],
                               ),
-                              Text(
-                                formatString(item['title']?.toString()),
-                                textAlign: TextAlign.center,
-                                softWrap: false,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              if (subTitle != '')
-                                Text(
-                                  subTitle,
-                                  textAlign: TextAlign.center,
-                                  softWrap: false,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                      fontSize: 11,
-                                      color: Theme.of(context)
-                                          .textTheme
-                                          .caption!
-                                          .color),
+                              if (item['type'] == 'radio_station')
+                                Align(
+                                  alignment: Alignment.topRight,
+                                  child: IconButton(
+                                    icon: likedRadio.contains(item)
+                                        ? const Icon(
+                                            Icons.favorite_rounded,
+                                            color: Colors.red,
+                                          )
+                                        : const Icon(
+                                            Icons.favorite_border_rounded),
+                                    // iconSize: 40.0,
+                                    onPressed: () {
+                                      likedRadio.contains(item)
+                                          ? likedRadio.remove(item)
+                                          : likedRadio.add(item);
+                                      Hive.box('settings')
+                                          .put('likedRadio', likedRadio);
+                                      setState(() {});
+                                    },
+                                  ),
                                 )
-                              else
-                                const SizedBox(),
                             ],
                           ),
                         ),

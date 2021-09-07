@@ -245,8 +245,8 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                               trailing: PopupMenuButton(
                                 icon: const Icon(Icons.more_vert_rounded),
                                 shape: const RoundedRectangleBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(7.0))),
+                                    borderRadius: BorderRadius.all(
+                                        Radius.circular(15.0))),
                                 onSelected: (int? value) async {
                                   if (value == 1) {
                                     ExportPlaylist().exportPlaylist(
@@ -393,9 +393,8 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                                     child: Row(
                                       children: const [
                                         Icon(Icons.edit_rounded),
-                                        Spacer(),
+                                        SizedBox(width: 10.0),
                                         Text('Rename'),
-                                        Spacer(),
                                       ],
                                     ),
                                   ),
@@ -404,9 +403,8 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                                     child: Row(
                                       children: const [
                                         Icon(Icons.delete_rounded),
-                                        Spacer(),
+                                        SizedBox(width: 10.0),
                                         Text('Delete'),
-                                        Spacer(),
                                       ],
                                     ),
                                   ),
@@ -415,9 +413,8 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                                     child: Row(
                                       children: const [
                                         Icon(MdiIcons.export),
-                                        Spacer(),
+                                        SizedBox(width: 10.0),
                                         Text('Export'),
-                                        Spacer(),
                                       ],
                                     ),
                                   ),
@@ -426,9 +423,8 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                                     child: Row(
                                       children: const [
                                         Icon(MdiIcons.share),
-                                        Spacer(),
+                                        SizedBox(width: 10.0),
                                         Text('Share'),
-                                        Spacer(),
                                       ],
                                     ),
                                   ),

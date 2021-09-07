@@ -81,7 +81,8 @@ class _SongsListState extends State<SongsList> {
                   PopupMenuButton(
                       icon: const Icon(Icons.sort_rounded),
                       shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(7.0))),
+                          borderRadius:
+                              BorderRadius.all(Radius.circular(15.0))),
                       onSelected: (int value) {
                         sortValue = value;
                         Hive.box('settings').put('sortValue', value);

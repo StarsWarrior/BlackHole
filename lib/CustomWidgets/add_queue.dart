@@ -23,7 +23,7 @@ class _AddToQueueButtonState extends State<AddToQueueButton> {
           color: Theme.of(context).iconTheme.color,
         ),
         shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(7.0))),
+            borderRadius: BorderRadius.all(Radius.circular(15.0))),
         itemBuilder: (context) => [
               PopupMenuItem(
                   value: 2,
@@ -33,9 +33,8 @@ class _AddToQueueButtonState extends State<AddToQueueButton> {
                         Icons.queue_music_rounded,
                         color: Theme.of(context).iconTheme.color,
                       ),
-                      const Spacer(),
+                      const SizedBox(width: 10.0),
                       const Text('Play Next'),
-                      const Spacer(),
                     ],
                   )),
               PopupMenuItem(
@@ -46,9 +45,8 @@ class _AddToQueueButtonState extends State<AddToQueueButton> {
                         Icons.queue_music_rounded,
                         color: Theme.of(context).iconTheme.color,
                       ),
-                      const Spacer(),
+                      const SizedBox(width: 10.0),
                       const Text('Add to Queue'),
-                      const Spacer(),
                     ],
                   )),
               PopupMenuItem(
@@ -59,9 +57,8 @@ class _AddToQueueButtonState extends State<AddToQueueButton> {
                         Icons.playlist_add_rounded,
                         color: Theme.of(context).iconTheme.color,
                       ),
-                      const Spacer(),
+                      const SizedBox(width: 10.0),
                       const Text('Add to playlist'),
-                      const Spacer(),
                     ],
                   )),
               PopupMenuItem(
@@ -72,9 +69,8 @@ class _AddToQueueButtonState extends State<AddToQueueButton> {
                         Icons.share_rounded,
                         color: Theme.of(context).iconTheme.color,
                       ),
-                      const Spacer(),
+                      const SizedBox(width: 10.0),
                       const Text('Share'),
-                      const Spacer(),
                     ],
                   )),
             ],

@@ -388,7 +388,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                 //       icon: const Icon(Icons.sort_rounded),
                 //       shape: const RoundedRectangleBorder(
                 //           borderRadius:
-                //               BorderRadius.all(Radius.circular(7.0))),
+                //               BorderRadius.all(Radius.circular(15.0))),
                 //       onSelected: (currentIndex == 0 || currentIndex == 4)
                 //           ? (int value) {
                 //               sortValue = value;
@@ -751,7 +751,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
 //                 trailing: PopupMenuButton(
 //                   icon: const Icon(Icons.more_vert_rounded),
 //                   shape: const RoundedRectangleBorder(
-//                       borderRadius: BorderRadius.all(Radius.circular(7.0))),
+//                       borderRadius: BorderRadius.all(Radius.circular(15.0))),
 //                   onSelected: (dynamic value) async {
 //                     if (value == 0) {
 //                       showDialog(
@@ -903,9 +903,8 @@ class _DownloadedSongsState extends State<DownloadedSongs>
 //                       child: Row(
 //                         children: const [
 //                           Icon(Icons.edit_rounded),
-//                           Spacer(),
+//                           const SizedBox(width: 10.0),
 //                           Text('Rename'),
-//                           Spacer(),
 //                         ],
 //                       ),
 //                     ),
@@ -914,9 +913,8 @@ class _DownloadedSongsState extends State<DownloadedSongs>
 //                       child: Row(
 //                         children: const [
 //                           Icon(Icons.delete_rounded),
-//                           Spacer(),
+//                           const SizedBox(width: 10.0),
 //                           Text('Delete'),
-//                           Spacer(),
 //                         ],
 //                       ),
 //                     ),
@@ -1026,7 +1024,7 @@ class SongsTab extends StatelessWidget {
                 // trailing: PopupMenuButton(
                 //   icon: const Icon(Icons.more_vert_rounded),
                 //   shape: const RoundedRectangleBorder(
-                //       borderRadius: BorderRadius.all(Radius.circular(7.0))),
+                //       borderRadius: BorderRadius.all(Radius.circular(15.0))),
                 //   onSelected: (int? value) async {
                 //     if (value == 0) {
                 //       showDialog(
@@ -1482,9 +1480,8 @@ class SongsTab extends StatelessWidget {
                 //       child: Row(
                 //         children: const [
                 //           Icon(Icons.edit_rounded),
-                //           Spacer(),
+                //           const SizedBox(width: 10.0),
                 //           Text('Rename'),
-                //           Spacer(),
                 //         ],
                 //       ),
                 //     ),
@@ -1495,9 +1492,8 @@ class SongsTab extends StatelessWidget {
                 //           Icon(
                 //               // CupertinoIcons.tag
                 //               Icons.local_offer_rounded),
-                //           Spacer(),
+                //           const SizedBox(width: 10.0),
                 //           Text('Edit Tags'),
-                //           Spacer(),
                 //         ],
                 //       ),
                 //     ),
@@ -1506,9 +1502,8 @@ class SongsTab extends StatelessWidget {
                 //       child: Row(
                 //         children: const [
                 //           Icon(Icons.delete_rounded),
-                //           Spacer(),
+                //           const SizedBox(width: 10.0),
                 //           Text('Delete'),
-                //           Spacer(),
                 //         ],
                 //       ),
                 //     ),

@@ -252,7 +252,7 @@ class _LikedSongsState extends State<LikedSongs>
                         icon: const Icon(Icons.sort_rounded),
                         shape: const RoundedRectangleBorder(
                             borderRadius:
-                                BorderRadius.all(Radius.circular(7.0))),
+                                BorderRadius.all(Radius.circular(15.0))),
                         onSelected: (currentIndex == 0)
                             ? (int value) {
                                 sortValue = value;
@@ -573,7 +573,7 @@ class _LikedSongsState extends State<LikedSongs>
                                                       borderRadius:
                                                           BorderRadius.all(
                                                               Radius.circular(
-                                                                  7.0))),
+                                                                  15.0))),
                                               itemBuilder: (context) => [
                                                     PopupMenuItem(
                                                       value: 0,
@@ -581,9 +581,8 @@ class _LikedSongsState extends State<LikedSongs>
                                                         children: const [
                                                           Icon(Icons
                                                               .delete_rounded),
-                                                          Spacer(),
+                                                          SizedBox(width: 10.0),
                                                           Text('Remove'),
-                                                          Spacer(),
                                                         ],
                                                       ),
                                                     ),
@@ -593,10 +592,9 @@ class _LikedSongsState extends State<LikedSongs>
                                                         children: const [
                                                           Icon(Icons
                                                               .playlist_add_rounded),
-                                                          Spacer(),
+                                                          SizedBox(width: 10.0),
                                                           Text(
                                                               'Add to Playlist'),
-                                                          Spacer(),
                                                         ],
                                                       ),
                                                     ),

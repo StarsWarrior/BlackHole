@@ -25,7 +25,7 @@ class _AddListToQueueButtonState extends State<AddListToQueueButton> {
           Icons.more_vert_rounded,
         ),
         shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(7.0))),
+            borderRadius: BorderRadius.all(Radius.circular(15.0))),
         itemBuilder: (context) => [
               PopupMenuItem(
                   value: 0,
@@ -35,9 +35,8 @@ class _AddListToQueueButtonState extends State<AddListToQueueButton> {
                         Icons.queue_music_rounded,
                         color: Theme.of(context).iconTheme.color,
                       ),
-                      const Spacer(),
+                      const SizedBox(width: 10.0),
                       const Text('Add to Queue'),
-                      const Spacer(),
                     ],
                   )),
               PopupMenuItem(
@@ -48,9 +47,8 @@ class _AddListToQueueButtonState extends State<AddListToQueueButton> {
                         Icons.favorite_border_rounded,
                         color: Theme.of(context).iconTheme.color,
                       ),
-                      const Spacer(),
+                      const SizedBox(width: 10.0),
                       const Text('Save Playlist'),
-                      const Spacer(),
                     ],
                   )),
               PopupMenuItem(
@@ -61,9 +59,8 @@ class _AddListToQueueButtonState extends State<AddListToQueueButton> {
                         Icons.share_rounded,
                         color: Theme.of(context).iconTheme.color,
                       ),
-                      const Spacer(),
+                      const SizedBox(width: 10.0),
                       const Text('Share'),
-                      const Spacer(),
                     ],
                   )),
             ],
