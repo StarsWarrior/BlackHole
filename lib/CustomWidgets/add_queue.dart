@@ -42,7 +42,7 @@ class _AddToQueueButtonState extends State<AddToQueueButton> {
                   child: Row(
                     children: [
                       Icon(
-                        Icons.queue_music_rounded,
+                        Icons.playlist_add_rounded,
                         color: Theme.of(context).iconTheme.color,
                       ),
                       const SizedBox(width: 10.0),

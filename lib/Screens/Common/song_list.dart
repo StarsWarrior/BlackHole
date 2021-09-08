@@ -12,6 +12,7 @@ import 'package:blackhole/CustomWidgets/empty_screen.dart';
 import 'package:blackhole/CustomWidgets/gradient_containers.dart';
 import 'package:blackhole/CustomWidgets/miniplayer.dart';
 import 'package:blackhole/Screens/Player/audioplayer.dart';
+import 'package:share_plus/share_plus.dart';
 
 class SongsListPage extends StatefulWidget {
   final Map listItem;
@@ -108,10 +109,16 @@ class _SongsListPageState extends State<SongsListPage> {
                                   expandedHeight:
                                       MediaQuery.of(context).size.height * 0.4,
                                   actions: [
+                                    IconButton(
+                                        icon: const Icon(Icons.share_rounded),
+                                        tooltip: 'Share',
+                                        onPressed: () {
+                                          Share.share(widget
+                                              .listItem['perma_url']
+                                              .toString());
+                                        }),
                                     AddListToQueueButton(
                                         data: songList,
-                                        url: widget.listItem['perma_url']
-                                            .toString(),
                                         title: widget.listItem['title']
                                                 ?.toString() ??
                                             'Songs')

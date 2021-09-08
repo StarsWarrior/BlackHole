@@ -410,7 +410,9 @@ class _SaavnHomePageState extends State<SaavnHomePage> {
                                           )
                                         : const Icon(
                                             Icons.favorite_border_rounded),
-                                    // iconSize: 40.0,
+                                    tooltip: likedRadio.contains(item)
+                                        ? 'Unlike'
+                                        : 'Like',
                                     onPressed: () {
                                       likedRadio.contains(item)
                                           ? likedRadio.remove(item)

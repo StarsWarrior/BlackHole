@@ -23,6 +23,7 @@ class SaavnAPI {
     'artistRadio': '__call=webradio.createArtistStation',
     'entityRadio': '__call=webradio.createEntityStation',
     'radioSongs': '__call=webradio.getSong',
+    'getReco': '__call=reco.getreco',
   };
 
   Future<Response> getResponse(String params,
@@ -87,6 +88,16 @@ class SaavnAPI {
       print('Error in getSongFromToken: $e');
     }
     return {'songs': List.empty()};
+  }
+
+  Future<List> getReco(String pid) async {
+    final String params = "${endpoints['getReco']}&pid=$pid";
+    final res = await getResponse(params);
+    if (res.statusCode == 200) {
+      final List getMain = json.decode(res.body) as List;
+      return FormatResponse().formatSongsResponse(getMain, 'song');
+    }
+    return List.empty();
   }
 
   Future<String?> createRadio(

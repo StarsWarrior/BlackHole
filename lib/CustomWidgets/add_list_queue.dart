@@ -3,14 +3,12 @@ import 'package:flutter/material.dart';
 
 import 'package:blackhole/CustomWidgets/snackbar.dart';
 import 'package:blackhole/Helpers/playlist.dart';
-import 'package:share_plus/share_plus.dart';
 
 class AddListToQueueButton extends StatefulWidget {
   final List data;
-  final String url;
   final String title;
   const AddListToQueueButton(
-      {Key? key, required this.data, required this.title, required this.url})
+      {Key? key, required this.data, required this.title})
       : super(key: key);
 
   @override
@@ -32,7 +30,7 @@ class _AddListToQueueButtonState extends State<AddListToQueueButton> {
                   child: Row(
                     children: [
                       Icon(
-                        Icons.queue_music_rounded,
+                        Icons.playlist_add_rounded,
                         color: Theme.of(context).iconTheme.color,
                       ),
                       const SizedBox(width: 10.0),
@@ -51,23 +49,8 @@ class _AddListToQueueButtonState extends State<AddListToQueueButton> {
                       const Text('Save Playlist'),
                     ],
                   )),
-              PopupMenuItem(
-                  value: 2,
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.share_rounded,
-                        color: Theme.of(context).iconTheme.color,
-                      ),
-                      const SizedBox(width: 10.0),
-                      const Text('Share'),
-                    ],
-                  )),
             ],
         onSelected: (int? value) {
-          if (value == 2) {
-            Share.share(widget.url);
-          }
           if (value == 1) {
             addPlaylist(widget.title, widget.data).then(
               (value) => ShowSnackBar().showSnackBar(

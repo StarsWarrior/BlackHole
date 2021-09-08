@@ -88,8 +88,8 @@ class _DownloadedSongsState extends State<DownloadedSongs>
   Future<List<SongModel>> getSongs(
       {SongSortType? sortType, OrderType? orderType}) async {
     return audioQuery.querySongs(
-      sortType: sortType,
-      orderType: orderType,
+      sortType: sortType ?? SongSortType.DATA_ADDED,
+      orderType: orderType ?? OrderType.DESC_OR_GREATER,
       uriType: UriType.EXTERNAL,
     );
   }
@@ -376,10 +376,11 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                 // ],
                 // ),
                 // actions: [
-                //   IconButton(
-                //     icon: const Icon(CupertinoIcons.search),
-                //     onPressed: () {
-                //       showSearch(
+                // IconButton(
+                // icon: const Icon(CupertinoIcons.search),
+                // tooltip: 'Search',
+                // onPressed: () {
+                // showSearch(
                 //           context: context,
                 //           delegate: DataSearch(_cachedSongs));
                 //     },

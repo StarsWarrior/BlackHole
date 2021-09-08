@@ -3,7 +3,10 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:audio_service/audio_service.dart';
+import 'package:blackhole/APIs/api.dart';
+import 'package:blackhole/CustomWidgets/add_queue.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flip_card/flip_card.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -68,6 +71,7 @@ class _PlayScreenState extends State<PlayScreen> {
   bool fromYT = false;
   String defaultCover = '';
 
+  GlobalKey<FlipCardState> cardKey = GlobalKey<FlipCardState>();
   // final _controller = PageController();
   // sleepTimer(0) cancels the timer
   void sleepTimer(int time) {
@@ -243,9 +247,18 @@ class _PlayScreenState extends State<PlayScreen> {
                         }
                       }),
                   actions: [
+                    IconButton(
+                      icon: Icon(
+                        CupertinoIcons.textformat,
+                        color: Theme.of(context).iconTheme.color,
+                      ),
+                      tooltip: 'Lyrics',
+                      onPressed: () => cardKey.currentState!.toggleCard(),
+                    ),
                     if (!offline)
                       IconButton(
                           icon: const Icon(Icons.share_rounded),
+                          tooltip: 'Share',
                           onPressed: () {
                             Share.share(fromYT
                                 ? 'https://youtube.com/watch?v=${mediaItem!.id}'
@@ -271,164 +284,6 @@ class _PlayScreenState extends State<PlayScreen> {
                           launch(fromYT
                               ? 'https://youtube.com/watch?v=${mediaItem!.id}'
                               : 'https://www.youtube.com/results?search_query=${mediaItem!.title} by ${mediaItem.artist}');
-                        }
-                        if (value == 2) {
-                          offline
-                              ? showModalBottomSheet(
-                                  isDismissible: true,
-                                  backgroundColor: Colors.transparent,
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return BottomGradientContainer(
-                                      padding: EdgeInsets.zero,
-                                      child: Center(
-                                        child: SingleChildScrollView(
-                                          physics:
-                                              const BouncingScrollPhysics(),
-                                          padding: const EdgeInsets.fromLTRB(
-                                              10, 30, 10, 30),
-                                          child: FutureBuilder(
-                                              future: Lyrics().getOffLyrics(
-                                                mediaItem!.id.toString(),
-                                              ),
-                                              builder: (BuildContext context,
-                                                  AsyncSnapshot<String>
-                                                      snapshot) {
-                                                if (snapshot.connectionState ==
-                                                    ConnectionState.done) {
-                                                  final String? lyrics =
-                                                      snapshot.data;
-                                                  if (lyrics == '') {
-                                                    return EmptyScreen()
-                                                        .emptyScreen(
-                                                            context,
-                                                            0,
-                                                            ':( ',
-                                                            100.0,
-                                                            'Lyrics',
-                                                            60.0,
-                                                            'Not Available',
-                                                            20.0);
-                                                  }
-                                                  return SelectableText(
-                                                    lyrics!,
-                                                    textAlign: TextAlign.center,
-                                                  );
-                                                }
-                                                return CircularProgressIndicator(
-                                                  valueColor:
-                                                      AlwaysStoppedAnimation<
-                                                              Color>(
-                                                          Theme.of(context)
-                                                              .accentColor),
-                                                );
-                                              }),
-                                        ),
-                                      ),
-                                    );
-                                  })
-                              : showModalBottomSheet(
-                                  isDismissible: true,
-                                  backgroundColor: Colors.transparent,
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    String? lyrics;
-                                    final queueState = snapshot.data;
-                                    final mediaItem = queueState?.mediaItem;
-
-                                    return mediaItem == null
-                                        ? const SizedBox()
-                                        : BottomGradientContainer(
-                                            padding: EdgeInsets.zero,
-                                            child: Center(
-                                              child: SingleChildScrollView(
-                                                physics:
-                                                    const BouncingScrollPhysics(),
-                                                padding:
-                                                    const EdgeInsets.fromLTRB(
-                                                        10, 30, 10, 30),
-                                                child: mediaItem.extras?['has_lyrics'] ==
-                                                        'true'
-                                                    ? FutureBuilder(
-                                                        future: Lyrics()
-                                                            .getSaavnLyrics(
-                                                                mediaItem.id
-                                                                    .toString()),
-                                                        builder: (BuildContext context,
-                                                            AsyncSnapshot<String>
-                                                                snapshot) {
-                                                          if (snapshot
-                                                                  .connectionState ==
-                                                              ConnectionState
-                                                                  .done) {
-                                                            lyrics =
-                                                                snapshot.data;
-
-                                                            return SelectableText(
-                                                              lyrics!,
-                                                              textAlign:
-                                                                  TextAlign
-                                                                      .center,
-                                                            );
-                                                          }
-                                                          return CircularProgressIndicator(
-                                                            valueColor:
-                                                                AlwaysStoppedAnimation<
-                                                                    Color>(Theme.of(
-                                                                        context)
-                                                                    .accentColor),
-                                                          );
-                                                        })
-                                                    : FutureBuilder(
-                                                        future: Lyrics()
-                                                            .getLyrics(
-                                                                mediaItem.title
-                                                                    .toString(),
-                                                                mediaItem.artist
-                                                                    .toString()),
-                                                        builder:
-                                                            (BuildContext context,
-                                                                AsyncSnapshot<String>
-                                                                    snapshot) {
-                                                          if (snapshot
-                                                                  .connectionState ==
-                                                              ConnectionState
-                                                                  .done) {
-                                                            final String?
-                                                                lyrics =
-                                                                snapshot.data;
-                                                            if (lyrics == '') {
-                                                              return EmptyScreen()
-                                                                  .emptyScreen(
-                                                                      context,
-                                                                      0,
-                                                                      ':( ',
-                                                                      100.0,
-                                                                      'Lyrics',
-                                                                      60.0,
-                                                                      'Not Available',
-                                                                      20.0);
-                                                            }
-                                                            return SelectableText(
-                                                              lyrics!,
-                                                              textAlign:
-                                                                  TextAlign
-                                                                      .center,
-                                                            );
-                                                          }
-                                                          return CircularProgressIndicator(
-                                                            valueColor:
-                                                                AlwaysStoppedAnimation<
-                                                                    Color>(Theme.of(
-                                                                        context)
-                                                                    .accentColor),
-                                                          );
-                                                        }),
-                                              ),
-                                            ),
-                                          );
-                                  },
-                                );
                         }
                         if (value == 1) {
                           showDialog(
@@ -472,6 +327,80 @@ class _PlayScreenState extends State<PlayScreen> {
                         if (value == 0) {
                           AddToPlaylist().addToPlaylist(context, mediaItem);
                         }
+                        if (value == 2) {
+                          SaavnAPI().getReco(mediaItem!.id).then((value) {
+                            showModalBottomSheet(
+                                isDismissible: true,
+                                backgroundColor: Colors.transparent,
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return BottomGradientContainer(
+                                    padding: EdgeInsets.zero,
+                                    margin: const EdgeInsets.only(
+                                        left: 20, right: 20),
+                                    borderRadius: const BorderRadius.only(
+                                        topLeft: Radius.circular(15.0),
+                                        topRight: Radius.circular(15.0)),
+                                    child: ListView.builder(
+                                        itemCount: value.length,
+                                        physics: const BouncingScrollPhysics(),
+                                        shrinkWrap: true,
+                                        padding: const EdgeInsets.all(10.0),
+                                        itemBuilder: (context, index) {
+                                          return ListTile(
+                                            contentPadding:
+                                                const EdgeInsets.only(
+                                                    left: 15.0),
+                                            title: Text(
+                                              '${value[index]["title"]}',
+                                              overflow: TextOverflow.ellipsis,
+                                              style: const TextStyle(
+                                                  fontWeight: FontWeight.w500),
+                                            ),
+                                            subtitle: Text(
+                                              '${value[index]["subtitle"]}',
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                            leading: Card(
+                                              elevation: 8,
+                                              shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          7.0)),
+                                              clipBehavior: Clip.antiAlias,
+                                              child: CachedNetworkImage(
+                                                errorWidget: (context, _, __) =>
+                                                    const Image(
+                                                  image: AssetImage(
+                                                      'assets/cover.jpg'),
+                                                ),
+                                                imageUrl:
+                                                    '${value[index]["image"].replaceAll('http:', 'https:')}',
+                                                placeholder: (context, url) =>
+                                                    const Image(
+                                                  image: AssetImage(
+                                                      'assets/cover.jpg'),
+                                                ),
+                                              ),
+                                            ),
+                                            trailing: Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                DownloadButton(
+                                                  data: value[index] as Map,
+                                                  icon: 'download',
+                                                ),
+                                                AddToQueueButton(
+                                                    data: value[index] as Map),
+                                              ],
+                                            ),
+                                            onTap: () {},
+                                          );
+                                        }),
+                                  );
+                                });
+                          });
+                        }
                       },
                       itemBuilder: (context) => offline
                           ? [
@@ -486,20 +415,6 @@ class _PlayScreenState extends State<PlayScreen> {
                                       ),
                                       const SizedBox(width: 10.0),
                                       const Text('Sleep Timer'),
-                                      
-                                    ],
-                                  )),
-                              PopupMenuItem(
-                                  value: 2,
-                                  child: Row(
-                                    children: [
-                                      Icon(
-                                        CupertinoIcons.textformat,
-                                        color:
-                                            Theme.of(context).iconTheme.color,
-                                      ),
-                                      const SizedBox(width: 10.0),
-                                      const Text('Show Lyrics'),
                                     ],
                                   )),
                               if (Hive.box('settings')
@@ -545,19 +460,6 @@ class _PlayScreenState extends State<PlayScreen> {
                                       const Text('Sleep Timer'),
                                     ],
                                   )),
-                              PopupMenuItem(
-                                  value: 2,
-                                  child: Row(
-                                    children: [
-                                      Icon(
-                                        CupertinoIcons.textformat,
-                                        color:
-                                            Theme.of(context).iconTheme.color,
-                                      ),
-                                      const SizedBox(width: 10.0),
-                                      const Text('Show Lyrics'),
-                                    ],
-                                  )),
                               if (Hive.box('settings')
                                   .get('supportEq', defaultValue: true) as bool)
                                 PopupMenuItem(
@@ -588,6 +490,20 @@ class _PlayScreenState extends State<PlayScreen> {
                                           : 'Search Video'),
                                     ],
                                   )),
+                              if (!fromYT)
+                                PopupMenuItem(
+                                    value: 2,
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          Icons.music_note_rounded,
+                                          color:
+                                              Theme.of(context).iconTheme.color,
+                                        ),
+                                        const SizedBox(width: 10.0),
+                                        const Text('Recommended Songs'),
+                                      ],
+                                    )),
                             ],
                     )
                   ],
@@ -980,238 +896,397 @@ class _PlayScreenState extends State<PlayScreen> {
                                         //     BouncingScrollPhysics(),
                                         // itemBuilder:
                                         //     (context, index) =>
-                                        GestureDetector(
-                                            onTap: () {
-                                              if (AudioService
-                                                      .playbackState.playing ==
-                                                  true) {
-                                                AudioService.pause();
-                                              } else {
-                                                AudioService.play();
-                                              }
-                                            },
-                                            onHorizontalDragEnd:
-                                                (DragEndDetails details) {
-                                              if ((details.primaryVelocity ??
-                                                          0) >
-                                                      100 &&
-                                                  (mediaItem != queue.first ||
-                                                      repeatMode == 'All')) {
-                                                if (mediaItem == queue.first) {
-                                                  AudioService.skipToQueueItem(
-                                                      queue.last.id);
-                                                } else {
-                                                  AudioService.skipToPrevious();
-                                                }
-                                              }
+                                        Align(
+                                            alignment: Alignment.topCenter,
+                                            child: SizedBox(
+                                              height: MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.85,
+                                              width: MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.85,
+                                              child: FlipCard(
+                                                key: cardKey,
+                                                back: Card(
+                                                  elevation: 10.0,
+                                                  shape: RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              15.0)),
+                                                  clipBehavior: Clip.antiAlias,
+                                                  child: GradientContainer(
+                                                    child: Center(
+                                                      child:
+                                                          SingleChildScrollView(
+                                                        physics:
+                                                            const BouncingScrollPhysics(),
+                                                        padding:
+                                                            const EdgeInsets
+                                                                    .fromLTRB(
+                                                                10, 30, 10, 30),
+                                                        child: offline
+                                                            ? FutureBuilder(
+                                                                future: Lyrics()
+                                                                    .getOffLyrics(
+                                                                  mediaItem.id
+                                                                      .toString(),
+                                                                ),
+                                                                builder: (BuildContext context,
+                                                                    AsyncSnapshot<String>
+                                                                        snapshot) {
+                                                                  if (snapshot
+                                                                          .connectionState ==
+                                                                      ConnectionState
+                                                                          .done) {
+                                                                    final String?
+                                                                        lyrics =
+                                                                        snapshot
+                                                                            .data;
+                                                                    if (lyrics ==
+                                                                        '') {
+                                                                      return EmptyScreen().emptyScreen(
+                                                                          context,
+                                                                          0,
+                                                                          ':( ',
+                                                                          100.0,
+                                                                          'Lyrics',
+                                                                          60.0,
+                                                                          'Not Available',
+                                                                          20.0);
+                                                                    }
+                                                                    return SelectableText(
+                                                                      lyrics!,
+                                                                      textAlign:
+                                                                          TextAlign
+                                                                              .center,
+                                                                    );
+                                                                  }
+                                                                  return CircularProgressIndicator(
+                                                                    valueColor: AlwaysStoppedAnimation<
+                                                                        Color>(Theme.of(
+                                                                            context)
+                                                                        .accentColor),
+                                                                  );
+                                                                })
+                                                            : mediaItem.extras?['has_lyrics'] ==
+                                                                    'true'
+                                                                ? FutureBuilder(
+                                                                    future: Lyrics().getSaavnLyrics(
+                                                                        mediaItem
+                                                                            .id
+                                                                            .toString()),
+                                                                    builder: (BuildContext context,
+                                                                        AsyncSnapshot<String>
+                                                                            snapshot) {
+                                                                      String?
+                                                                          lyrics;
+                                                                      if (snapshot
+                                                                              .connectionState ==
+                                                                          ConnectionState
+                                                                              .done) {
+                                                                        lyrics =
+                                                                            snapshot.data;
+                                                                        return Text(
+                                                                          lyrics!,
+                                                                          textAlign:
+                                                                              TextAlign.center,
+                                                                        );
+                                                                      }
+                                                                      return CircularProgressIndicator(
+                                                                        valueColor: AlwaysStoppedAnimation<
+                                                                            Color>(Theme.of(
+                                                                                context)
+                                                                            .accentColor),
+                                                                      );
+                                                                    })
+                                                                : FutureBuilder(
+                                                                    future: Lyrics().getLyrics(
+                                                                        mediaItem
+                                                                            .title
+                                                                            .toString(),
+                                                                        mediaItem
+                                                                            .artist
+                                                                            .toString()),
+                                                                    builder: (BuildContext context,
+                                                                        AsyncSnapshot<String> snapshot) {
+                                                                      if (snapshot
+                                                                              .connectionState ==
+                                                                          ConnectionState
+                                                                              .done) {
+                                                                        final String?
+                                                                            lyrics =
+                                                                            snapshot.data;
+                                                                        if (lyrics ==
+                                                                            '') {
+                                                                          return EmptyScreen().emptyScreen(
+                                                                              context,
+                                                                              0,
+                                                                              ':( ',
+                                                                              100.0,
+                                                                              'Lyrics',
+                                                                              60.0,
+                                                                              'Not Available',
+                                                                              20.0);
+                                                                        }
+                                                                        return Text(
+                                                                          lyrics!,
+                                                                          textAlign:
+                                                                              TextAlign.center,
+                                                                        );
+                                                                      }
+                                                                      return CircularProgressIndicator(
+                                                                        valueColor: AlwaysStoppedAnimation<
+                                                                            Color>(Theme.of(
+                                                                                context)
+                                                                            .accentColor),
+                                                                      );
+                                                                    }),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                                front: GestureDetector(
+                                                  onTap: () {
+                                                    if (AudioService
+                                                            .playbackState
+                                                            .playing ==
+                                                        true) {
+                                                      AudioService.pause();
+                                                    } else {
+                                                      AudioService.play();
+                                                    }
+                                                  },
+                                                  onDoubleTap: () => cardKey
+                                                      .currentState!
+                                                      .toggleCard(),
+                                                  onHorizontalDragEnd:
+                                                      (DragEndDetails details) {
+                                                    if ((details.primaryVelocity ??
+                                                                0) >
+                                                            100 &&
+                                                        (mediaItem !=
+                                                                queue.first ||
+                                                            repeatMode ==
+                                                                'All')) {
+                                                      if (mediaItem ==
+                                                          queue.first) {
+                                                        AudioService
+                                                            .skipToQueueItem(
+                                                                queue.last.id);
+                                                      } else {
+                                                        AudioService
+                                                            .skipToPrevious();
+                                                      }
+                                                    }
 
-                                              if ((details.primaryVelocity ??
-                                                          0) <
-                                                      -100 &&
-                                                  (mediaItem != queue.last ||
-                                                      repeatMode == 'All')) {
-                                                if (mediaItem == queue.last) {
-                                                  AudioService.skipToQueueItem(
-                                                      queue.first.id);
-                                                } else {
-                                                  AudioService.skipToNext();
-                                                }
-                                              }
-                                            },
-                                            onVerticalDragStart: (_) {
-                                              dragging.value = true;
-                                            },
-                                            onVerticalDragEnd: (_) {
-                                              dragging.value = false;
-                                            },
-                                            onVerticalDragUpdate:
-                                                (DragUpdateDetails details) {
-                                              if (details.delta.dy != 0.0) {
-                                                volume.value -=
-                                                    details.delta.dy / 100;
-                                                if (volume.value < 0) {
-                                                  volume.value = 0.0;
-                                                }
-                                                if (volume.value > 1.0) {
-                                                  volume.value = 1.0;
-                                                }
-                                                AudioService.customAction(
-                                                  'setVolume',
-                                                  volume.value,
-                                                );
-                                                Hive.box('settings').put(
-                                                    'volume', volume.value);
-                                              }
-                                            },
-                                            child: Align(
-                                              alignment: Alignment.topCenter,
-                                              child: SizedBox(
-                                                height: MediaQuery.of(context)
-                                                        .size
-                                                        .width *
-                                                    0.85,
-                                                width: MediaQuery.of(context)
-                                                        .size
-                                                        .width *
-                                                    0.85,
-                                                child: Stack(
-                                                  children: [
-                                                    Card(
-                                                      elevation: 10.0,
-                                                      shape:
-                                                          RoundedRectangleBorder(
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          15.0)),
-                                                      clipBehavior:
-                                                          Clip.antiAlias,
-                                                      child: Stack(
-                                                        children: [
-                                                          Image(
-                                                              fit: BoxFit.cover,
-                                                              height: MediaQuery.of(
-                                                                          context)
-                                                                      .size
-                                                                      .width *
-                                                                  0.85,
-                                                              image: const AssetImage(
-                                                                  'assets/cover.jpg')),
-                                                          if (offline)
+                                                    if ((details.primaryVelocity ??
+                                                                0) <
+                                                            -100 &&
+                                                        (mediaItem !=
+                                                                queue.last ||
+                                                            repeatMode ==
+                                                                'All')) {
+                                                      if (mediaItem ==
+                                                          queue.last) {
+                                                        AudioService
+                                                            .skipToQueueItem(
+                                                                queue.first.id);
+                                                      } else {
+                                                        AudioService
+                                                            .skipToNext();
+                                                      }
+                                                    }
+                                                  },
+                                                  onLongPress: () {
+                                                    if (!offline) {
+                                                      AddToPlaylist()
+                                                          .addToPlaylist(
+                                                              context,
+                                                              mediaItem);
+                                                    }
+                                                  },
+                                                  onVerticalDragStart: (_) {
+                                                    dragging.value = true;
+                                                  },
+                                                  onVerticalDragEnd: (_) {
+                                                    dragging.value = false;
+                                                  },
+                                                  onVerticalDragUpdate:
+                                                      (DragUpdateDetails
+                                                          details) {
+                                                    if (details.delta.dy !=
+                                                        0.0) {
+                                                      volume.value -=
+                                                          details.delta.dy /
+                                                              100;
+                                                      if (volume.value < 0) {
+                                                        volume.value = 0.0;
+                                                      }
+                                                      if (volume.value > 1.0) {
+                                                        volume.value = 1.0;
+                                                      }
+                                                      AudioService.customAction(
+                                                        'setVolume',
+                                                        volume.value,
+                                                      );
+                                                      Hive.box('settings').put(
+                                                          'volume',
+                                                          volume.value);
+                                                    }
+                                                  },
+                                                  child: Stack(
+                                                    children: [
+                                                      Card(
+                                                        elevation: 10.0,
+                                                        shape: RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        15.0)),
+                                                        clipBehavior:
+                                                            Clip.antiAlias,
+                                                        child: Stack(
+                                                          children: [
                                                             Image(
                                                                 fit: BoxFit
                                                                     .cover,
-                                                                height: MediaQuery
-                                                                            .of(
-                                                                                context)
-                                                                        .size
-                                                                        .width *
-                                                                    0.85,
-                                                                width: MediaQuery.of(
+                                                                height: MediaQuery.of(
                                                                             context)
                                                                         .size
                                                                         .width *
                                                                     0.85,
-                                                                image: FileImage(File(mediaItem
+                                                                image: const AssetImage(
+                                                                    'assets/cover.jpg')),
+                                                            if (offline)
+                                                              Image(
+                                                                  fit: BoxFit
+                                                                      .cover,
+                                                                  height: MediaQuery.of(context)
+                                                                          .size
+                                                                          .width *
+                                                                      0.85,
+                                                                  width: MediaQuery.of(
+                                                                              context)
+                                                                          .size
+                                                                          .width *
+                                                                      0.85,
+                                                                  image: FileImage(File(mediaItem
+                                                                      // queue[index %
+                                                                      // queue.length]
+                                                                      .artUri!
+                                                                      .toFilePath())))
+                                                            else
+                                                              CachedNetworkImage(
+                                                                fit: BoxFit
+                                                                    .cover,
+                                                                errorWidget: (BuildContext
+                                                                            context,
+                                                                        _,
+                                                                        __) =>
+                                                                    const Image(
+                                                                  image: AssetImage(
+                                                                      'assets/cover.jpg'),
+                                                                ),
+                                                                placeholder: (BuildContext
+                                                                            context,
+                                                                        _) =>
+                                                                    const Image(
+                                                                  image: AssetImage(
+                                                                      'assets/cover.jpg'),
+                                                                ),
+                                                                imageUrl: mediaItem
                                                                     // queue[index %
                                                                     // queue.length]
-                                                                    .artUri!
-                                                                    .toFilePath())))
-                                                          else
-                                                            CachedNetworkImage(
-                                                              fit: BoxFit.cover,
-                                                              errorWidget:
-                                                                  (BuildContext
-                                                                              context,
-                                                                          _,
-                                                                          __) =>
-                                                                      const Image(
-                                                                image: AssetImage(
-                                                                    'assets/cover.jpg'),
-                                                              ),
-                                                              placeholder:
-                                                                  (BuildContext
-                                                                              context,
-                                                                          _) =>
-                                                                      const Image(
-                                                                image: AssetImage(
-                                                                    'assets/cover.jpg'),
-                                                              ),
-                                                              imageUrl: mediaItem
-                                                                  // queue[index %
-                                                                  // queue.length]
-                                                                  .artUri
-                                                                  .toString(),
-                                                              height: MediaQuery.of(
-                                                                          context)
-                                                                      .size
-                                                                      .width *
-                                                                  0.85,
-                                                            )
-                                                        ],
+                                                                    .artUri
+                                                                    .toString(),
+                                                                height: MediaQuery.of(
+                                                                            context)
+                                                                        .size
+                                                                        .width *
+                                                                    0.85,
+                                                              )
+                                                          ],
+                                                        ),
                                                       ),
-                                                    ),
-                                                    ValueListenableBuilder(
-                                                        valueListenable:
-                                                            dragging,
-                                                        builder: (BuildContext
-                                                                context,
-                                                            bool value,
-                                                            Widget? child) {
-                                                          return Visibility(
-                                                            visible: value,
-                                                            child:
-                                                                ValueListenableBuilder(
-                                                                    valueListenable:
-                                                                        volume,
-                                                                    builder: (BuildContext
-                                                                            context,
-                                                                        double
-                                                                            volumeValue,
-                                                                        Widget?
-                                                                            child) {
-                                                                      return Center(
-                                                                        child:
-                                                                            SizedBox(
-                                                                          width:
-                                                                              60.0,
-                                                                          height:
-                                                                              MediaQuery.of(context).size.width * 0.7,
+                                                      ValueListenableBuilder(
+                                                          valueListenable:
+                                                              dragging,
+                                                          builder: (BuildContext
+                                                                  context,
+                                                              bool value,
+                                                              Widget? child) {
+                                                            return Visibility(
+                                                              visible: value,
+                                                              child:
+                                                                  ValueListenableBuilder(
+                                                                      valueListenable:
+                                                                          volume,
+                                                                      builder: (BuildContext context,
+                                                                          double
+                                                                              volumeValue,
+                                                                          Widget?
+                                                                              child) {
+                                                                        return Center(
                                                                           child:
-                                                                              Card(
-                                                                            color:
-                                                                                Colors.black87,
-                                                                            shape:
-                                                                                RoundedRectangleBorder(
-                                                                              borderRadius: BorderRadius.circular(7.0),
-                                                                            ),
-                                                                            clipBehavior:
-                                                                                Clip.antiAlias,
+                                                                              SizedBox(
+                                                                            width:
+                                                                                60.0,
+                                                                            height:
+                                                                                MediaQuery.of(context).size.width * 0.7,
                                                                             child:
-                                                                                Column(
-                                                                              mainAxisAlignment: MainAxisAlignment.center,
-                                                                              mainAxisSize: MainAxisSize.min,
-                                                                              children: [
-                                                                                Expanded(
-                                                                                  child: FittedBox(
-                                                                                    fit: BoxFit.fitHeight,
-                                                                                    child: RotatedBox(
-                                                                                      quarterTurns: -1,
-                                                                                      child: SliderTheme(
-                                                                                        data: SliderTheme.of(context).copyWith(
-                                                                                          thumbShape: HiddenThumbComponentShape(),
-                                                                                          activeTrackColor: Theme.of(context).accentColor,
-                                                                                          inactiveTrackColor: Theme.of(context).accentColor.withOpacity(0.4),
-                                                                                          // trackHeight: 4.0,
-                                                                                          trackShape: const RoundedRectSliderTrackShape(),
-                                                                                        ),
-                                                                                        child: ExcludeSemantics(
-                                                                                          child: Slider(
-                                                                                            value: volumeValue,
-                                                                                            onChanged: (_) {},
+                                                                                Card(
+                                                                              color: Colors.black87,
+                                                                              shape: RoundedRectangleBorder(
+                                                                                borderRadius: BorderRadius.circular(10.0),
+                                                                              ),
+                                                                              clipBehavior: Clip.antiAlias,
+                                                                              child: Column(
+                                                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                                                mainAxisSize: MainAxisSize.min,
+                                                                                children: [
+                                                                                  Expanded(
+                                                                                    child: FittedBox(
+                                                                                      fit: BoxFit.fitHeight,
+                                                                                      child: RotatedBox(
+                                                                                        quarterTurns: -1,
+                                                                                        child: SliderTheme(
+                                                                                          data: SliderTheme.of(context).copyWith(
+                                                                                            thumbShape: HiddenThumbComponentShape(),
+                                                                                            activeTrackColor: Theme.of(context).accentColor,
+                                                                                            inactiveTrackColor: Theme.of(context).accentColor.withOpacity(0.4),
+                                                                                            // trackHeight: 4.0,
+                                                                                            trackShape: const RoundedRectSliderTrackShape(),
+                                                                                          ),
+                                                                                          child: ExcludeSemantics(
+                                                                                            child: Slider(
+                                                                                              value: volumeValue,
+                                                                                              onChanged: (_) {},
+                                                                                            ),
                                                                                           ),
                                                                                         ),
                                                                                       ),
                                                                                     ),
                                                                                   ),
-                                                                                ),
-                                                                                Padding(
-                                                                                  padding: const EdgeInsets.only(bottom: 20.0),
-                                                                                  child: Icon(volumeValue == 0
-                                                                                      ? Icons.volume_off_rounded
-                                                                                      : volumeValue > 0.6
-                                                                                          ? Icons.volume_up_rounded
-                                                                                          : Icons.volume_down_rounded),
-                                                                                ),
-                                                                              ],
+                                                                                  Padding(
+                                                                                    padding: const EdgeInsets.only(bottom: 20.0),
+                                                                                    child: Icon(volumeValue == 0
+                                                                                        ? Icons.volume_off_rounded
+                                                                                        : volumeValue > 0.6
+                                                                                            ? Icons.volume_up_rounded
+                                                                                            : Icons.volume_down_rounded),
+                                                                                  ),
+                                                                                ],
+                                                                              ),
                                                                             ),
                                                                           ),
-                                                                        ),
-                                                                      );
-                                                                    }),
-                                                          );
-                                                        }),
-                                                  ],
+                                                                        );
+                                                                      }),
+                                                            );
+                                                          }),
+                                                    ],
+                                                  ),
                                                 ),
                                               ),
                                             ),

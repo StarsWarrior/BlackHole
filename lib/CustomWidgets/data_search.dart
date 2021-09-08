@@ -14,12 +14,17 @@ class DataSearch extends SearchDelegate {
   List<Widget> buildActions(BuildContext context) {
     return [
       if (query.isEmpty)
-        IconButton(icon: const Icon(CupertinoIcons.search), onPressed: () {})
+        IconButton(
+          icon: const Icon(CupertinoIcons.search),
+          tooltip: 'Search',
+          onPressed: () {},
+        )
       else
         IconButton(
           onPressed: () {
             query = '';
           },
+          tooltip: 'Clear',
           icon: const Icon(
             Icons.clear_rounded,
           ),
@@ -31,6 +36,7 @@ class DataSearch extends SearchDelegate {
   Widget buildLeading(BuildContext context) {
     return IconButton(
       icon: const Icon(Icons.arrow_back_rounded),
+      tooltip: 'Back',
       onPressed: () {
         close(context, null);
       },

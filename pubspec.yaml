@@ -54,6 +54,7 @@ dependencies:
   
   # UI related
   cupertino_icons: ^1.0.3
+  flip_card: ^0.5.0
   material_design_icons_flutter: ^5.0.5955-rc.1
   material_floating_search_bar: ^0.3.4
   miniplayer:
