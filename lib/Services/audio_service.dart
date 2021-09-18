@@ -22,7 +22,6 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
   late String preferredQuality;
 
   int? index;
-  bool offline = false;
 
   // final BehaviorSubject<List<MediaItem>> _recentSubject =
   // BehaviorSubject.seeded(<MediaItem>[]);
@@ -143,7 +142,6 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
   }
 
   AudioSource _itemToSource(MediaItem mediaItem) {
-    // print(mediaItem.extras!['url']);
     final audioSource = AudioSource.uri(
         mediaItem.artUri.toString().startsWith('file:')
             ? Uri.file(mediaItem.extras!['url'].toString())
@@ -180,7 +178,8 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
   }
 
   Future<void> addRecentlyPlayed(MediaItem mediaitem) async {
-    if (mediaitem.artUri.toString().startsWith('https://img.youtube.com')) {
+    if (mediaitem.artUri.toString().startsWith('file') ||
+        mediaitem.artUri.toString().startsWith('https://img.youtube.com')) {
       return;
     }
     List recentList = await Hive.box('recentlyPlayed')

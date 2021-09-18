@@ -150,7 +150,7 @@ class _PlayScreenState extends State<PlayScreen> {
       for (int i = 0; i < response.length; i++) {
         globalQueue.add(await setTags(response[i] as Map, tempDir));
       }
-      setState(() {});
+      updateNplay();
     });
   }
 
@@ -217,8 +217,8 @@ class _PlayScreenState extends State<PlayScreen> {
           setOffValues(response);
         } else {
           setValues(response);
+          updateNplay();
         }
-        updateNplay();
       }
     }
 
@@ -1014,133 +1014,157 @@ class NowPlayingStream extends StatelessWidget {
   }
 }
 
-class ArtWorkWidget extends StatelessWidget {
+class ArtWorkWidget extends StatefulWidget {
   final GlobalKey<FlipCardState> cardKey;
   final MediaItem mediaItem;
   final bool offline;
   final double width;
 
-  ArtWorkWidget(this.cardKey, this.mediaItem, this.width,
+  const ArtWorkWidget(this.cardKey, this.mediaItem, this.width,
       {this.offline = false});
 
+  @override
+  _ArtWorkWidgetState createState() => _ArtWorkWidgetState();
+}
+
+class _ArtWorkWidgetState extends State<ArtWorkWidget> {
   final ValueNotifier<bool> dragging = ValueNotifier<bool>(false);
+  final ValueNotifier<bool> done = ValueNotifier<bool>(false);
+  Map lyrics = {'id': '', 'lyrics': ''};
+
+  Future<String> fetchLyrics() async {
+    return Lyrics().getLyrics(
+        widget.mediaItem.title.toString(), widget.mediaItem.artist.toString());
+  }
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: width * 0.9,
+      height: widget.width * 0.9,
       child: Align(
         alignment: Alignment.topCenter,
         child: SizedBox(
-          height: width * 0.85,
-          width: width * 0.85,
+          height: widget.width * 0.85,
+          width: widget.width * 0.85,
           child: Hero(
             tag: 'currentArtwork',
             child: FlipCard(
-              key: cardKey,
-              back: Card(
-                elevation: 10.0,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15.0)),
-                clipBehavior: Clip.antiAlias,
-                child: GradientContainer(
-                  child: ShaderMask(
-                    shaderCallback: (rect) {
-                      return const LinearGradient(
-                        begin: Alignment.center,
-                        end: Alignment.bottomCenter,
-                        colors: [Colors.black, Colors.transparent],
-                      ).createShader(
-                          Rect.fromLTRB(0, 0, rect.width, rect.height));
-                    },
-                    blendMode: BlendMode.dstIn,
-                    child: Center(
-                      child: SingleChildScrollView(
-                        physics: const BouncingScrollPhysics(),
-                        padding: const EdgeInsets.fromLTRB(10, 10, 10, 50),
-                        child: offline
-                            ? FutureBuilder(
-                                future: Lyrics().getOffLyrics(
-                                  mediaItem.id.toString(),
-                                ),
-                                builder: (BuildContext context,
-                                    AsyncSnapshot<String> snapshot) {
-                                  if (snapshot.connectionState ==
-                                      ConnectionState.done) {
-                                    final String? lyrics = snapshot.data;
-                                    if (lyrics == '') {
-                                      return EmptyScreen().emptyScreen(
-                                          context,
-                                          0,
-                                          ':( ',
-                                          100.0,
-                                          'Lyrics',
-                                          60.0,
-                                          'Not Available',
-                                          20.0);
+              key: widget.cardKey,
+              flipOnTouch: false,
+              onFlipDone: (value) {
+                if (lyrics['id'] != widget.mediaItem.id ||
+                    (!value && lyrics['lyrics'] == '' && !done.value)) {
+                  done.value = false;
+                  fetchLyrics().then((value) {
+                    lyrics['lyrics'] = value;
+                    lyrics['id'] = widget.mediaItem.id;
+                    done.value = true;
+                  });
+                }
+              },
+              back: GestureDetector(
+                onTap: () => widget.cardKey.currentState!.toggleCard(),
+                onDoubleTap: () => widget.cardKey.currentState!.toggleCard(),
+                child: Card(
+                  elevation: 10.0,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15.0)),
+                  clipBehavior: Clip.antiAlias,
+                  child: GradientContainer(
+                    child: ShaderMask(
+                      shaderCallback: (rect) {
+                        return const LinearGradient(
+                          begin: Alignment.center,
+                          end: Alignment.bottomCenter,
+                          colors: [Colors.black, Colors.transparent],
+                        ).createShader(
+                            Rect.fromLTRB(0, 0, rect.width, rect.height));
+                      },
+                      blendMode: BlendMode.dstIn,
+                      child: Center(
+                        child: SingleChildScrollView(
+                          physics: const BouncingScrollPhysics(),
+                          padding: const EdgeInsets.fromLTRB(10, 20, 10, 50),
+                          child: widget.offline
+                              ? FutureBuilder(
+                                  future: Lyrics().getOffLyrics(
+                                    widget.mediaItem.id.toString(),
+                                  ),
+                                  builder: (BuildContext context,
+                                      AsyncSnapshot<String> snapshot) {
+                                    if (snapshot.connectionState ==
+                                        ConnectionState.done) {
+                                      final String lyrics = snapshot.data ?? '';
+                                      if (lyrics == '') {
+                                        return EmptyScreen().emptyScreen(
+                                            context,
+                                            0,
+                                            ':( ',
+                                            100.0,
+                                            'Lyrics',
+                                            60.0,
+                                            'Not Available',
+                                            20.0);
+                                      }
+                                      return SelectableText(
+                                        lyrics,
+                                        textAlign: TextAlign.center,
+                                      );
                                     }
-                                    return SelectableText(
-                                      lyrics!,
-                                      textAlign: TextAlign.center,
+                                    return CircularProgressIndicator(
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                          Theme.of(context).accentColor),
                                     );
-                                  }
-                                  return CircularProgressIndicator(
-                                    valueColor: AlwaysStoppedAnimation<Color>(
-                                        Theme.of(context).accentColor),
-                                  );
-                                })
-                            : mediaItem.extras?['has_lyrics'] == 'true'
-                                ? FutureBuilder(
-                                    future: Lyrics().getSaavnLyrics(
-                                        mediaItem.id.toString()),
-                                    builder: (BuildContext context,
-                                        AsyncSnapshot<String> snapshot) {
-                                      String? lyrics;
-                                      if (snapshot.connectionState ==
-                                          ConnectionState.done) {
-                                        lyrics = snapshot.data;
-                                        return Text(
-                                          lyrics!,
-                                          textAlign: TextAlign.center,
-                                        );
-                                      }
-                                      return CircularProgressIndicator(
-                                        valueColor:
-                                            AlwaysStoppedAnimation<Color>(
-                                                Theme.of(context).accentColor),
-                                      );
-                                    })
-                                : FutureBuilder(
-                                    future: Lyrics().getLyrics(
-                                        mediaItem.title.toString(),
-                                        mediaItem.artist.toString()),
-                                    builder: (BuildContext context,
-                                        AsyncSnapshot<String> snapshot) {
-                                      if (snapshot.connectionState ==
-                                          ConnectionState.done) {
-                                        final String? lyrics = snapshot.data;
-                                        if (lyrics == '') {
-                                          return EmptyScreen().emptyScreen(
-                                              context,
-                                              0,
-                                              ':( ',
-                                              100.0,
-                                              'Lyrics',
-                                              60.0,
-                                              'Not Available',
-                                              20.0);
+                                  })
+                              : widget.mediaItem.extras?['has_lyrics'] == 'true'
+                                  ? FutureBuilder(
+                                      future: Lyrics().getSaavnLyrics(
+                                          widget.mediaItem.id.toString()),
+                                      builder: (BuildContext context,
+                                          AsyncSnapshot<String> snapshot) {
+                                        String? lyrics;
+                                        if (snapshot.connectionState ==
+                                            ConnectionState.done) {
+                                          lyrics = snapshot.data;
+                                          return Text(
+                                            lyrics!,
+                                            textAlign: TextAlign.center,
+                                          );
                                         }
-                                        return Text(
-                                          lyrics!,
-                                          textAlign: TextAlign.center,
+                                        return CircularProgressIndicator(
+                                          valueColor: AlwaysStoppedAnimation<
+                                                  Color>(
+                                              Theme.of(context).accentColor),
                                         );
-                                      }
-                                      return CircularProgressIndicator(
-                                        valueColor:
-                                            AlwaysStoppedAnimation<Color>(
-                                                Theme.of(context).accentColor),
-                                      );
-                                    }),
+                                      })
+                                  : ValueListenableBuilder(
+                                      valueListenable: done,
+                                      builder: (BuildContext context,
+                                          bool value, Widget? child) {
+                                        return value
+                                            ? lyrics['lyrics'] == ''
+                                                ? EmptyScreen().emptyScreen(
+                                                    context,
+                                                    0,
+                                                    ':( ',
+                                                    100.0,
+                                                    'Lyrics',
+                                                    60.0,
+                                                    'Not Available',
+                                                    20.0)
+                                                : Text(
+                                                    lyrics['lyrics'].toString(),
+                                                    textAlign: TextAlign.center,
+                                                  )
+                                            : CircularProgressIndicator(
+                                                valueColor:
+                                                    AlwaysStoppedAnimation<
+                                                            Color>(
+                                                        Theme.of(context)
+                                                            .accentColor),
+                                              );
+                                      }),
+                        ),
                       ),
                     ),
                   ),
@@ -1156,7 +1180,8 @@ class ArtWorkWidget extends StatelessWidget {
                             ? audioHandler.pause()
                             : audioHandler.play();
                       },
-                      onDoubleTap: () => cardKey.currentState!.toggleCard(),
+                      onDoubleTap: () =>
+                          widget.cardKey.currentState!.toggleCard(),
                       onHorizontalDragEnd: (DragEndDetails details) {
                         if ((details.primaryVelocity ?? 0) > 100) {
                           if (queueState.hasPrevious) {
@@ -1171,8 +1196,9 @@ class ArtWorkWidget extends StatelessWidget {
                         }
                       },
                       onLongPress: () {
-                        if (!offline) {
-                          AddToPlaylist().addToPlaylist(context, mediaItem);
+                        if (!widget.offline) {
+                          AddToPlaylist()
+                              .addToPlaylist(context, widget.mediaItem);
                         }
                       },
                       onVerticalDragStart: (_) {
@@ -1201,15 +1227,15 @@ class ArtWorkWidget extends StatelessWidget {
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(15.0)),
                             clipBehavior: Clip.antiAlias,
-                            child: mediaItem.artUri
+                            child: widget.mediaItem.artUri
                                     .toString()
                                     .startsWith('file')
                                 ? Image(
                                     fit: BoxFit.cover,
-                                    height: width * 0.85,
-                                    width: width * 0.85,
-                                    image: FileImage(
-                                        File(mediaItem.artUri!.toFilePath())))
+                                    height: widget.width * 0.85,
+                                    width: widget.width * 0.85,
+                                    image: FileImage(File(
+                                        widget.mediaItem.artUri!.toFilePath())))
                                 : CachedNetworkImage(
                                     fit: BoxFit.cover,
                                     errorWidget:
@@ -1221,8 +1247,9 @@ class ArtWorkWidget extends StatelessWidget {
                                         const Image(
                                       image: AssetImage('assets/cover.jpg'),
                                     ),
-                                    imageUrl: mediaItem.artUri.toString(),
-                                    height: width * 0.85,
+                                    imageUrl:
+                                        widget.mediaItem.artUri.toString(),
+                                    height: widget.width * 0.85,
                                   ),
                           ),
                           ValueListenableBuilder(

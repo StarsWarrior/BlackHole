@@ -37,6 +37,7 @@ import 'package:blackhole/Screens/Player/audioplayer.dart';
 import 'package:blackhole/Screens/Settings/setting.dart';
 import 'package:blackhole/Services/audio_service.dart';
 
+// TODO: use getit to register handler in future
 late AudioPlayerHandler audioHandler;
 
 Future<void> main() async {

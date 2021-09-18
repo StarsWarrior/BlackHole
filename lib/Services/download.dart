@@ -17,6 +17,8 @@ import 'package:blackhole/CustomWidgets/snackbar.dart';
 import 'package:blackhole/Helpers/lyrics.dart';
 
 class Download with ChangeNotifier {
+  int? rememberOption;
+  final ValueNotifier<bool> remember = ValueNotifier<bool>(false);
   String preferredDownloadQuality = Hive.box('settings')
       .get('downloadQuality', defaultValue: '320 kbps') as String;
   String downloadFormat = 'm4a';
@@ -93,83 +95,134 @@ class Download with ChangeNotifier {
 
     final bool exists = await File('$dlPath/$filename').exists();
     if (exists) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text(
-              'Already Exists',
-              style: TextStyle(color: Theme.of(context).accentColor),
-            ),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                SizedBox(
-                  width: 400,
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
+      if (remember.value == true && rememberOption != null) {
+        switch (rememberOption) {
+          case 0:
+            lastDownloadId = data['id'].toString();
+            break;
+          case 1:
+            downloadSong(context, dlPath, filename, data);
+            break;
+          case 2:
+            while (await File('$dlPath/$filename').exists()) {
+              filename = filename.replaceAll('.m4a', ' (1).m4a');
+            }
+            break;
+          default:
+            lastDownloadId = data['id'].toString();
+            break;
+        }
+      } else {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+                title: Text(
+                  'Already Exists',
+                  style: TextStyle(color: Theme.of(context).accentColor),
+                ),
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SizedBox(
+                      width: 400,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            '"${data['title']}" already exists.\nDo you want to download it again?',
+                            softWrap: true,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                  ],
+                ),
+                actions: [
+                  Column(
                     children: [
-                      Text(
-                        '"${data['title']}" already exists.\nDo you want to download it again?',
-                        softWrap: true,
+                      ValueListenableBuilder(
+                          valueListenable: remember,
+                          builder: (BuildContext context, bool value,
+                              Widget? child) {
+                            return Row(
+                              children: [
+                                Checkbox(
+                                  activeColor: Theme.of(context).accentColor,
+                                  value: remember.value,
+                                  onChanged: (bool? value) {
+                                    remember.value = value ?? false;
+                                  },
+                                ),
+                                const Text('Remember my choice'),
+                              ],
+                            );
+                          }),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          TextButton(
+                            style: TextButton.styleFrom(
+                              primary: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? Colors.white
+                                  : Colors.grey[700],
+                            ),
+                            onPressed: () {
+                              lastDownloadId = data['id'].toString();
+                              Navigator.pop(context);
+                              rememberOption = 0;
+                            },
+                            child: const Text(
+                              'No',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                          TextButton(
+                            style: TextButton.styleFrom(
+                              primary: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? Colors.white
+                                  : Colors.grey[700],
+                            ),
+                            onPressed: () async {
+                              Navigator.pop(context);
+                              downloadSong(context, dlPath, filename, data);
+                              rememberOption = 1;
+                            },
+                            child: const Text('Yes, but Replace Old'),
+                          ),
+                          const SizedBox(width: 5.0),
+                          TextButton(
+                            style: TextButton.styleFrom(
+                              primary: Colors.white,
+                              backgroundColor: Theme.of(context).accentColor,
+                            ),
+                            onPressed: () async {
+                              Navigator.pop(context);
+                              while (await File('$dlPath/$filename').exists()) {
+                                filename =
+                                    filename.replaceAll('.m4a', ' (1).m4a');
+                              }
+                              rememberOption = 2;
+                              downloadSong(context, dlPath, filename, data);
+                            },
+                            child: const Text('Yes'),
+                          ),
+                          const SizedBox(
+                            width: 5,
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-              ],
-            ),
-            actions: [
-              TextButton(
-                style: TextButton.styleFrom(
-                  primary: Theme.of(context).brightness == Brightness.dark
-                      ? Colors.white
-                      : Colors.grey[700],
-                ),
-                onPressed: () {
-                  lastDownloadId = data['id'].toString();
-                  Navigator.pop(context);
-                },
-                child: const Text(
-                  'No',
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
-              TextButton(
-                style: TextButton.styleFrom(
-                  primary: Theme.of(context).brightness == Brightness.dark
-                      ? Colors.white
-                      : Colors.grey[700],
-                ),
-                onPressed: () async {
-                  Navigator.pop(context);
-                  downloadSong(context, dlPath, filename, data);
-                },
-                child: const Text('Yes, but Replace Old'),
-              ),
-              TextButton(
-                style: TextButton.styleFrom(
-                  primary: Colors.white,
-                  backgroundColor: Theme.of(context).accentColor,
-                ),
-                onPressed: () async {
-                  Navigator.pop(context);
-                  while (await File('$dlPath/$filename').exists()) {
-                    filename = filename.replaceAll('.m4a', ' (1).m4a');
-                  }
-                  downloadSong(context, dlPath, filename, data);
-                },
-                child: const Text('Yes'),
-              ),
-              const SizedBox(
-                width: 5,
-              ),
-            ],
-          );
-        },
-      );
+                ]);
+          },
+        );
+      }
     } else {
       downloadSong(context, dlPath, filename, data);
     }
