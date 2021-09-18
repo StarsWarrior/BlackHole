@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class ShowSnackBar {
   ScaffoldFeatureController<SnackBar, SnackBarClosedReason> showSnackBar(
       BuildContext context, String title,
-      {SnackBarAction? action, Duration? duration}) {
+      {SnackBarAction? action, Duration? duration, bool noAction = false}) {
     return ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         duration: duration ?? const Duration(seconds: 1),
@@ -14,12 +14,14 @@ class ShowSnackBar {
           title,
           style: const TextStyle(color: Colors.white),
         ),
-        action: action ??
-            SnackBarAction(
-              textColor: Theme.of(context).accentColor,
-              label: 'Ok',
-              onPressed: () {},
-            ),
+        action: noAction
+            ? null
+            : action ??
+                SnackBarAction(
+                  textColor: Theme.of(context).accentColor,
+                  label: 'Ok',
+                  onPressed: () {},
+                ),
       ),
     );
   }

@@ -11,15 +11,14 @@ class YouTubeServices {
     'music': '/music',
     'playlist': '/playlist'
   };
+  final YoutubeExplode yt = YoutubeExplode();
+
   Future<List<Video>> getPlaylistSongs(String id) async {
-    final YoutubeExplode yt = YoutubeExplode();
     final List<Video> results = await yt.playlists.getVideos(id).toList();
-    yt.close();
     return results;
   }
 
   Future<Playlist> getPlaylistDetails(String id) async {
-    final YoutubeExplode yt = YoutubeExplode();
     final Playlist metadata = await yt.playlists.get(id);
     return metadata;
   }
@@ -110,7 +109,6 @@ class YouTubeServices {
   }
 
   Future<List<Video>> fetchSearchResults(String query) async {
-    final YoutubeExplode yt = YoutubeExplode();
     final List<Video> searchResults = await yt.search.getVideos(query);
 
     // Uri link = Uri.https(searchAuthority, searchPath, {"search_query": query});
@@ -156,17 +154,14 @@ class YouTubeServices {
     //     'subtitle': '',
     //   };
     // }).toList();
-    yt.close();
     return searchResults;
   }
 
   Future<String> getUri(Video video) async {
-    final YoutubeExplode yt = YoutubeExplode();
     final StreamManifest manifest =
         await yt.videos.streamsClient.getManifest(video.id);
     final AudioOnlyStreamInfo streamInfo =
         manifest.audioOnly.withHighestBitrate();
-    yt.close();
     return streamInfo.url.toString();
   }
 }

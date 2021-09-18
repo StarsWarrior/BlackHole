@@ -12,7 +12,7 @@ class SeekBar extends StatefulWidget {
   const SeekBar({
     required this.duration,
     required this.position,
-    required this.bufferedPosition,
+    this.bufferedPosition = Duration.zero,
     this.onChanged,
     this.onChangeEnd,
   });
@@ -23,6 +23,7 @@ class SeekBar extends StatefulWidget {
 
 class _SeekBarState extends State<SeekBar> {
   double? _dragValue;
+  bool _dragging = false;
   late SliderThemeData _sliderThemeData;
 
   @override
@@ -36,6 +37,13 @@ class _SeekBarState extends State<SeekBar> {
 
   @override
   Widget build(BuildContext context) {
+    final value = min(
+      _dragValue ?? widget.position.inMilliseconds.toDouble(),
+      widget.duration.inMilliseconds.toDouble(),
+    );
+    if (_dragValue != null && !_dragging) {
+      _dragValue = null;
+    }
     return SizedBox(
       width: MediaQuery.of(context).size.width * 0.975,
       child: Stack(
@@ -55,20 +63,7 @@ class _SeekBarState extends State<SeekBar> {
                 max: widget.duration.inMilliseconds.toDouble(),
                 value: min(widget.bufferedPosition.inMilliseconds.toDouble(),
                     widget.duration.inMilliseconds.toDouble()),
-                onChanged: (value) {
-                  setState(() {
-                    _dragValue = value;
-                  });
-                  if (widget.onChanged != null) {
-                    widget.onChanged!(Duration(milliseconds: value.round()));
-                  }
-                },
-                onChangeEnd: (value) {
-                  if (widget.onChangeEnd != null) {
-                    widget.onChangeEnd!(Duration(milliseconds: value.round()));
-                  }
-                  _dragValue = null;
-                },
+                onChanged: (value) {},
               ),
             ),
           ),
@@ -81,10 +76,11 @@ class _SeekBarState extends State<SeekBar> {
             ),
             child: Slider(
               max: widget.duration.inMilliseconds.toDouble(),
-              value: min(
-                  _dragValue ?? widget.position.inMilliseconds.toDouble(),
-                  widget.duration.inMilliseconds.toDouble()),
+              value: value,
               onChanged: (value) {
+                if (!_dragging) {
+                  _dragging = true;
+                }
                 setState(() {
                   _dragValue = value;
                 });
@@ -96,7 +92,7 @@ class _SeekBarState extends State<SeekBar> {
                 if (widget.onChangeEnd != null) {
                   widget.onChangeEnd!(Duration(milliseconds: value.round()));
                 }
-                _dragValue = null;
+                _dragging = false;
               },
             ),
           ),
@@ -150,12 +146,4 @@ class HiddenThumbComponentShape extends SliderComponentShape {
     required double textScaleFactor,
     required Size sizeWithOverflow,
   }) {}
-}
-
-class PositionData {
-  final Duration position;
-  final Duration bufferedPosition;
-  final Duration duration;
-
-  PositionData(this.position, this.bufferedPosition, this.duration);
 }

@@ -1179,20 +1179,23 @@ class _SettingPageState extends State<SettingPage> {
                 child: GradientCard(
                   child: Column(children: [
                     ListTile(
-                        title: const Text('Min File size to search music'),
+                        title: const Text('Min Audio Length to search music'),
                         subtitle: const Text(
-                            'Files with size lesser than this will not be shown in music list'),
+                            'Files with audio length smaller than this will not be shown in "My Music" Section'),
                         dense: true,
                         onTap: () {
                           TextInputDialog().showTextInputDialog(
                               context,
-                              'Min File Size (in KB)',
-                              (Hive.box('settings').get('minSize',
-                                      defaultValue: 1024) as int)
+                              'Min Audio Length (in sec)',
+                              (Hive.box('settings').get('minDuration',
+                                      defaultValue: 10) as int)
                                   .toString(),
                               TextInputType.number, (String value) {
+                            if (value.trim() == '') {
+                              value = '0';
+                            }
                             Hive.box('settings')
-                                .put('minSize', int.parse(value));
+                                .put('minDuration', int.parse(value));
                             Navigator.pop(context);
                           });
                         }),
@@ -1226,14 +1229,14 @@ class _SettingPageState extends State<SettingPage> {
                       keyName: 'stopForegroundService',
                       defaultValue: true,
                     ),
-                    const BoxSwitchTile(
-                      title: Text('Remove Service from foreground when paused'),
-                      subtitle: Text(
-                          "If turned on, you can slide notification when paused to stop the service. But Service can also be stopped by android to release memory. If you don't want android to stop service while paused, turn it off\nDefault: On\n"),
-                      isThreeLine: true,
-                      keyName: 'stopServiceOnPause',
-                      defaultValue: true,
-                    ),
+                    // const BoxSwitchTile(
+                    //   title: Text('Remove Service from foreground when paused'),
+                    //   subtitle: Text(
+                    //       "If turned on, you can slide notification when paused to stop the service. But Service can also be stopped by android to release memory. If you don't want android to stop service while paused, turn it off\nDefault: On\n"),
+                    //   isThreeLine: true,
+                    //   keyName: 'stopServiceOnPause',
+                    //   defaultValue: true,
+                    // ),
                     const BoxSwitchTile(
                       title: Text('Auto check for Updates'),
                       subtitle: Text(

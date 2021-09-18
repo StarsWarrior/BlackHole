@@ -18,7 +18,6 @@
 import 'dart:io';
 
 import 'package:audio_service/audio_service.dart';
-import 'package:blackhole/Screens/Login/pref.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
@@ -33,18 +32,41 @@ import 'package:blackhole/Screens/Library/nowplaying.dart';
 import 'package:blackhole/Screens/Library/playlists.dart';
 import 'package:blackhole/Screens/Library/recent.dart';
 import 'package:blackhole/Screens/Login/auth.dart';
+import 'package:blackhole/Screens/Login/pref.dart';
+import 'package:blackhole/Screens/Player/audioplayer.dart';
 import 'package:blackhole/Screens/Settings/setting.dart';
+import 'package:blackhole/Services/audio_service.dart';
+
+late AudioPlayerHandler audioHandler;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  Paint.enableDithering = true;
+
   await Hive.initFlutter();
   await openHiveBox('settings');
   await openHiveBox('cache');
   await openHiveBox('recentlyPlayed');
   await openHiveBox('songDetails', limit: true);
 
-  Paint.enableDithering = true;
+  await startService();
   runApp(MyApp());
+}
+
+Future<void> startService() async {
+  audioHandler = await AudioService.init(
+    builder: () => AudioPlayerHandlerImpl(),
+    config: AudioServiceConfig(
+      androidNotificationChannelId: 'com.shadow.blackhole.channel.audio',
+      androidNotificationChannelName: 'BlackHole',
+      androidNotificationOngoing: true,
+      androidNotificationIcon: 'drawable/ic_stat_music_note',
+      androidShowNotificationBadge: true,
+      // androidStopForegroundOnPause: Hive.box('settings')
+      // .get('stopServiceOnPause', defaultValue: true) as bool,
+      notificationColor: Colors.grey[900],
+    ),
+  );
 }
 
 Future<void> openHiveBox(String boxName, {bool limit = false}) async {
@@ -93,9 +115,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   Widget initialFuntion() {
-    return Hive.box('settings').get('auth') != null
-        ? AudioServiceWidget(child: HomePage())
-        : AuthScreen();
+    return Hive.box('settings').get('auth') != null ? HomePage() : AuthScreen();
   }
 
   @override
@@ -103,6 +123,8 @@ class _MyAppState extends State<MyApp> {
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
     ]);
 
     return MaterialApp(

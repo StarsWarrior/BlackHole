@@ -1,4 +1,6 @@
 import 'package:audio_service/audio_service.dart';
+import 'package:blackhole/Helpers/mediaitem_converter.dart';
+import 'package:blackhole/main.dart';
 import 'package:flutter/material.dart';
 
 import 'package:blackhole/CustomWidgets/snackbar.dart';
@@ -60,11 +62,19 @@ class _AddListToQueueButtonState extends State<AddListToQueueButton> {
             );
           }
           if (value == 0) {
-            final MediaItem? event = AudioService.currentMediaItem;
-            if (event != null &&
-                event.extras!['url'].toString().startsWith('http')) {
+            final MediaItem? currentMediaItem = audioHandler.mediaItem.value;
+            if (currentMediaItem != null &&
+                currentMediaItem.extras!['url'].toString().startsWith('http')) {
               // TODO: make sure to check if song is already in queue
-              AudioService.customAction('addListToQueue', widget.data);
+              final queue = audioHandler.queue.value;
+              final converter = MediaItemConverter();
+
+              widget.data.map((e) {
+                final element = converter.mapToMediaItem(e as Map);
+                if (!queue.contains(element)) {
+                  audioHandler.addQueueItem(element);
+                }
+              });
 
               ShowSnackBar().showSnackBar(
                 context,
@@ -73,7 +83,7 @@ class _AddListToQueueButtonState extends State<AddListToQueueButton> {
             } else {
               ShowSnackBar().showSnackBar(
                 context,
-                event == null
+                currentMediaItem == null
                     ? 'Nothing is Playing'
                     : "Can't add Online Song to Offline Queue",
               );

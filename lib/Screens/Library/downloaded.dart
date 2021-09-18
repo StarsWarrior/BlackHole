@@ -49,7 +49,8 @@ class _DownloadedSongsState extends State<DownloadedSongs>
       Hive.box('settings').get('albumSortValue', defaultValue: 2) as int;
   List dirPaths =
       Hive.box('settings').get('searchPaths', defaultValue: []) as List;
-  int minSize = Hive.box('settings').get('minSize', defaultValue: 1024) as int;
+  int minDuration =
+      Hive.box('settings').get('minDuration', defaultValue: 10) as int;
   // TabController? _tcontroller;
   int currentIndex = 0;
 
@@ -123,12 +124,14 @@ class _DownloadedSongsState extends State<DownloadedSongs>
 
   Future<void> getCached() async {
     await requestPermission();
-    _cachedSongs = await getSongs();
+    final List<SongModel> temp = await getSongs();
+    _cachedSongs =
+        temp.where((i) => (i.duration ?? 60000) > 1000 * minDuration).toList();
     // _cachedAlbums = await getAlbums();
     // _cachedArtists = await getArtists();
     // _cachedGenres = await getGenres();
-
     added = true;
+    // print(_cachedSongs);
     setState(() {});
     getArtwork();
   }

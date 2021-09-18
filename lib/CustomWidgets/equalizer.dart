@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:audio_service/audio_service.dart';
+import 'package:blackhole/main.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
@@ -34,7 +34,7 @@ class _EqualizerState extends State<Equalizer> {
               onChanged: (value) {
                 enabled = value;
                 Hive.box('settings').put('setEqualizer', value);
-                AudioService.customAction('setEqualizer', value);
+                audioHandler.customAction('setEqualizer', {'value': value});
                 setState(() {});
               },
             ),
@@ -58,7 +58,7 @@ class EqualizerControls extends StatefulWidget {
 class _EqualizerControlsState extends State<EqualizerControls> {
   Future<Map> getEq() async {
     final Map parameters =
-        await AudioService.customAction('getEqualizerParams') as Map;
+        await audioHandler.customAction('getEqualizerParams') as Map;
     return parameters;
   }
 
@@ -122,7 +122,7 @@ class _VerticalSliderState extends State<VerticalSlider> {
   double? sliderValue;
 
   void setGain(int bandIndex, double gain) {
-    AudioService.customAction('setBandGain', {'band': bandIndex, 'gain': gain});
+    audioHandler.customAction('setBandGain', {'band': bandIndex, 'gain': gain});
   }
 
   @override

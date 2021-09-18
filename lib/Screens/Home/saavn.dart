@@ -54,7 +54,7 @@ class _SaavnHomePageState extends State<SaavnHomePage> {
     } else if (type == 'song') {
       return formatString(item['artist']?.toString());
     } else {
-      final artists = item['more_info']['artistMap']?['artists']
+      final artists = item['more_info']?['artistMap']?['artists']
           .map((artist) => artist['name'])
           .toList();
       return formatString(artists?.join(', ')?.toString());
@@ -78,6 +78,10 @@ class _SaavnHomePageState extends State<SaavnHomePage> {
       getHomePageData();
       fetched = true;
     }
+    final double boxSize =
+        MediaQuery.of(context).size.height > MediaQuery.of(context).size.width
+            ? MediaQuery.of(context).size.width
+            : MediaQuery.of(context).size.height;
     return ListView.builder(
         physics: const BouncingScrollPhysics(),
         shrinkWrap: true,
@@ -107,7 +111,7 @@ class _SaavnHomePageState extends State<SaavnHomePage> {
                         ],
                       ),
                       SizedBox(
-                        height: MediaQuery.of(context).size.height / 4 + 10,
+                        height: boxSize / 2 + 10,
                         child: ListView.builder(
                           physics: const BouncingScrollPhysics(),
                           scrollDirection: Axis.horizontal,
@@ -115,6 +119,43 @@ class _SaavnHomePageState extends State<SaavnHomePage> {
                           itemCount: recentList.length,
                           itemBuilder: (context, index) {
                             return GestureDetector(
+                              onLongPress: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      backgroundColor: Colors.transparent,
+                                      contentPadding: EdgeInsets.zero,
+                                      content: Card(
+                                        elevation: 5,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(10.0),
+                                        ),
+                                        clipBehavior: Clip.antiAlias,
+                                        child: CachedNetworkImage(
+                                          fit: BoxFit.cover,
+                                          errorWidget: (context, _, __) =>
+                                              const Image(
+                                            image:
+                                                AssetImage('assets/cover.jpg'),
+                                          ),
+                                          imageUrl: recentList[index]['image']
+                                              .toString()
+                                              .replaceAll('http:', 'https:')
+                                              .replaceAll('50x50', '500x500')
+                                              .replaceAll('150x150', '500x500'),
+                                          placeholder: (context, url) =>
+                                              const Image(
+                                            image:
+                                                AssetImage('assets/cover.jpg'),
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                );
+                              },
                               onTap: () {
                                 Navigator.push(
                                   context,
@@ -132,8 +173,7 @@ class _SaavnHomePageState extends State<SaavnHomePage> {
                                 );
                               },
                               child: SizedBox(
-                                width:
-                                    MediaQuery.of(context).size.height / 4 - 30,
+                                width: boxSize / 2 - 30,
                                 child: Column(
                                   children: [
                                     Card(
@@ -209,7 +249,7 @@ class _SaavnHomePageState extends State<SaavnHomePage> {
                 const SizedBox()
               else
                 SizedBox(
-                  height: MediaQuery.of(context).size.height / 4 + 5,
+                  height: boxSize / 2 + 10,
                   child: ListView.builder(
                     physics: const BouncingScrollPhysics(),
                     scrollDirection: Axis.horizontal,
@@ -232,6 +272,7 @@ class _SaavnHomePageState extends State<SaavnHomePage> {
                           .where((e) => e['type'] == 'song')
                           .toList();
                       final subTitle = getSubTitle(item);
+                      if (item.isEmpty) return const SizedBox();
                       return GestureDetector(
                         onLongPress: () {
                           showDialog(
@@ -339,7 +380,7 @@ class _SaavnHomePageState extends State<SaavnHomePage> {
                           }
                         },
                         child: SizedBox(
-                          width: MediaQuery.of(context).size.height / 4 - 30,
+                          width: boxSize / 2 - 30,
                           child: Stack(
                             children: [
                               Column(

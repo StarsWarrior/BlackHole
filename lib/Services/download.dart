@@ -218,16 +218,6 @@ class Download with ChangeNotifier {
     }
     debugPrint('Audio path $filepath');
     debugPrint('Image path $filepath2');
-    try {
-      ShowSnackBar().showSnackBar(
-        context,
-        filepath!.endsWith('.opus')
-            ? 'Downloading "${data['title'].toString()}" in Best Quality Available'
-            : 'Downloading "${data['title'].toString()}" in $preferredDownloadQuality',
-      );
-    } catch (e) {
-      // print('Failed to show Snackbar: $e');
-    }
 
     final String kUrl = data['url'].toString().replaceAll(
         '_96.', "_${preferredDownloadQuality.replaceAll(' kbps', '')}.");

@@ -15,7 +15,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.10.1+17
+version: 1.10.2+18
 
 environment:
   sdk: '>=2.13.0 <3.0.0'
@@ -30,9 +30,8 @@ dependencies:
 
   # Audio related
   audiotagger: ^2.2.1
-  audio_service: ^0.17.1
-  audio_session: ^0.1.5
-  just_audio: ^0.9.7
+  audio_service: ^0.18.0
+  just_audio: ^0.9.11
   on_audio_query: ^2.2.0
   
 
@@ -43,13 +42,12 @@ dependencies:
   # flutter_downloader: ^1.6.1
   # flutter_ffmpeg: ^0.4.2
   html_unescape: ^2.0.0
-  http: ^0.13.3
   # logging: ^1.0.1
   package_info: ^2.0.2
   share_plus: ^2.1.4
-  url_launcher: ^6.0.9
+  url_launcher: ^6.0.10
   uuid: ^3.0.4
-  youtube_explode_dart: ^1.10.4
+  youtube_explode_dart: ^1.10.6
 
   
   # UI related
@@ -57,24 +55,20 @@ dependencies:
   flip_card: ^0.5.0
   material_design_icons_flutter: ^5.0.5955-rc.1
   material_floating_search_bar: ^0.3.4
-  miniplayer:
-    git:
-      url: https://github.com/Sangwan5688/miniplayer.git
-      ref: 9ddb87c650dce69bf04d297543b73fac7de462f2
   salomon_bottom_bar: ^3.1.0
 
   # Database related
   hive: ^2.0.4
   hive_flutter: ^1.1.0
-  supabase: ^0.2.1
+  supabase: ^0.2.6
   
   # Storage related
   ext_storage:
     git:
       url: git://github.com/GitJournal/ext_storage.git
-  file_picker: ^4.0.0
-  path_provider: ^2.0.2
-  permission_handler: ^8.1.4+2
+  file_picker: ^4.0.3
+  path_provider: ^2.0.4
+  permission_handler: ^8.1.6
   
 
 dev_dependencies:

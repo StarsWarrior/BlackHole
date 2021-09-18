@@ -37,6 +37,7 @@ class _HomePageState extends State<HomePage> {
       Hive.box('settings').get('name', defaultValue: 'Guest') as String;
   bool checkUpdate =
       Hive.box('settings').get('checkUpdate', defaultValue: false) as bool;
+  DateTime? backButtonPressTime;
 
   String capitalize(String msg) {
     return '${msg[0].toUpperCase()}${msg.substring(1)}';
@@ -75,6 +76,25 @@ class _HomePageState extends State<HomePage> {
   void updateUserDetails(String key, dynamic value) {
     final userId = Hive.box('settings').get('userId') as String?;
     SupaBase().updateUserDetails(userId, key, value);
+  }
+
+  Future<bool> handleWillPop(BuildContext context) async {
+    final now = DateTime.now();
+    final backButtonHasNotBeenPressedOrSnackBarHasBeenClosed =
+        backButtonPressTime == null ||
+            now.difference(backButtonPressTime!) > const Duration(seconds: 3);
+
+    if (backButtonHasNotBeenPressedOrSnackBarHasBeenClosed) {
+      backButtonPressTime = now;
+      ShowSnackBar().showSnackBar(
+        context,
+        'Press Back Again to Exit App',
+        duration: const Duration(seconds: 2),
+        noAction: true,
+      );
+      return false;
+    }
+    return true;
   }
 
   Widget checkVersion() {
@@ -151,160 +171,158 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return GradientContainer(
       child: Scaffold(
-          resizeToAvoidBottomInset: false,
-          backgroundColor: Colors.transparent,
-          drawer: Drawer(
-            child: GradientContainer(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  CustomScrollView(
-                    shrinkWrap: true,
-                    physics: const BouncingScrollPhysics(),
-                    slivers: [
-                      SliverAppBar(
-                        backgroundColor: Colors.transparent,
-                        automaticallyImplyLeading: false,
-                        elevation: 0,
-                        stretch: true,
-                        expandedHeight:
-                            MediaQuery.of(context).size.height * 0.2,
-                        flexibleSpace: FlexibleSpaceBar(
-                          title: RichText(
-                            text: TextSpan(
-                              text: 'BlackHole',
-                              style: const TextStyle(
-                                fontSize: 30.0,
-                                fontWeight: FontWeight.w500,
-                              ),
-                              children: <TextSpan>[
-                                TextSpan(
-                                  text: appVersion == null
-                                      ? ''
-                                      : '\nv$appVersion',
-                                  style: const TextStyle(
-                                    fontSize: 7.0,
-                                  ),
+        resizeToAvoidBottomInset: false,
+        backgroundColor: Colors.transparent,
+        drawer: Drawer(
+          child: GradientContainer(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                CustomScrollView(
+                  shrinkWrap: true,
+                  physics: const BouncingScrollPhysics(),
+                  slivers: [
+                    SliverAppBar(
+                      backgroundColor: Colors.transparent,
+                      automaticallyImplyLeading: false,
+                      elevation: 0,
+                      stretch: true,
+                      expandedHeight: MediaQuery.of(context).size.height * 0.2,
+                      flexibleSpace: FlexibleSpaceBar(
+                        title: RichText(
+                          text: TextSpan(
+                            text: 'BlackHole',
+                            style: const TextStyle(
+                              fontSize: 30.0,
+                              fontWeight: FontWeight.w500,
+                            ),
+                            children: <TextSpan>[
+                              TextSpan(
+                                text:
+                                    appVersion == null ? '' : '\nv$appVersion',
+                                style: const TextStyle(
+                                  fontSize: 7.0,
                                 ),
+                              ),
+                            ],
+                          ),
+                          textAlign: TextAlign.end,
+                        ),
+                        titlePadding: const EdgeInsets.only(bottom: 40.0),
+                        centerTitle: true,
+                        background: ShaderMask(
+                          shaderCallback: (rect) {
+                            return LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [
+                                Colors.black.withOpacity(0.8),
+                                Colors.black.withOpacity(0.1),
                               ],
-                            ),
-                            textAlign: TextAlign.end,
-                          ),
-                          titlePadding: const EdgeInsets.only(bottom: 40.0),
-                          centerTitle: true,
-                          background: ShaderMask(
-                            shaderCallback: (rect) {
-                              return LinearGradient(
-                                begin: Alignment.topCenter,
-                                end: Alignment.bottomCenter,
-                                colors: [
-                                  Colors.black.withOpacity(0.8),
-                                  Colors.black.withOpacity(0.1),
-                                ],
-                              ).createShader(
-                                  Rect.fromLTRB(0, 0, rect.width, rect.height));
-                            },
-                            blendMode: BlendMode.dstIn,
-                            child: Image(
-                                alignment: Alignment.topCenter,
-                                image: AssetImage(
-                                    Theme.of(context).brightness ==
-                                            Brightness.dark
-                                        ? 'assets/header-dark.jpg'
-                                        : 'assets/header.jpg')),
-                          ),
+                            ).createShader(
+                                Rect.fromLTRB(0, 0, rect.width, rect.height));
+                          },
+                          blendMode: BlendMode.dstIn,
+                          child: Image(
+                              alignment: Alignment.topCenter,
+                              image: AssetImage(Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? 'assets/header-dark.jpg'
+                                  : 'assets/header.jpg')),
                         ),
-                      ),
-                      SliverList(
-                        delegate: SliverChildListDelegate(
-                          [
-                            ListTile(
-                              title: Text(
-                                'Home',
-                                style: TextStyle(
-                                  color: Theme.of(context).accentColor,
-                                ),
-                              ),
-                              contentPadding:
-                                  const EdgeInsets.symmetric(horizontal: 20.0),
-                              leading: Icon(
-                                Icons.home_rounded,
-                                color: Theme.of(context).accentColor,
-                              ),
-                              selected: true,
-                              onTap: () {
-                                Navigator.pop(context);
-                              },
-                            ),
-                            ListTile(
-                              title: const Text('My Music'),
-                              contentPadding:
-                                  const EdgeInsets.symmetric(horizontal: 20.0),
-                              leading: Icon(
-                                MdiIcons.folderMusic,
-                                color: Theme.of(context).iconTheme.color,
-                              ),
-                              onTap: () {
-                                Navigator.pop(context);
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            const DownloadedSongs(
-                                                type: 'all')));
-                              },
-                            ),
-                            ListTile(
-                              title: const Text('Settings'),
-                              contentPadding:
-                                  const EdgeInsets.symmetric(horizontal: 20.0),
-                              leading: Icon(
-                                Icons
-                                    .settings_rounded, // miscellaneous_services_rounded,
-                                color: Theme.of(context).iconTheme.color,
-                              ),
-                              onTap: () {
-                                Navigator.pop(context);
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            SettingPage(callback: callback)));
-                              },
-                            ),
-                            ListTile(
-                              title: const Text('About'),
-                              contentPadding:
-                                  const EdgeInsets.symmetric(horizontal: 20.0),
-                              leading: Icon(
-                                Icons.info_outline_rounded,
-                                color: Theme.of(context).iconTheme.color,
-                              ),
-                              onTap: () {
-                                Navigator.pop(context);
-                                Navigator.pushNamed(context, '/about');
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  const Padding(
-                    padding: EdgeInsets.fromLTRB(5, 30, 5, 20),
-                    child: Center(
-                      child: Text(
-                        'Made with ♥ by Ankit Sangwan',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 12),
                       ),
                     ),
+                    SliverList(
+                      delegate: SliverChildListDelegate(
+                        [
+                          ListTile(
+                            title: Text(
+                              'Home',
+                              style: TextStyle(
+                                color: Theme.of(context).accentColor,
+                              ),
+                            ),
+                            contentPadding:
+                                const EdgeInsets.symmetric(horizontal: 20.0),
+                            leading: Icon(
+                              Icons.home_rounded,
+                              color: Theme.of(context).accentColor,
+                            ),
+                            selected: true,
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                          ),
+                          ListTile(
+                            title: const Text('My Music'),
+                            contentPadding:
+                                const EdgeInsets.symmetric(horizontal: 20.0),
+                            leading: Icon(
+                              MdiIcons.folderMusic,
+                              color: Theme.of(context).iconTheme.color,
+                            ),
+                            onTap: () {
+                              Navigator.pop(context);
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const DownloadedSongs(type: 'all')));
+                            },
+                          ),
+                          ListTile(
+                            title: const Text('Settings'),
+                            contentPadding:
+                                const EdgeInsets.symmetric(horizontal: 20.0),
+                            leading: Icon(
+                              Icons
+                                  .settings_rounded, // miscellaneous_services_rounded,
+                              color: Theme.of(context).iconTheme.color,
+                            ),
+                            onTap: () {
+                              Navigator.pop(context);
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          SettingPage(callback: callback)));
+                            },
+                          ),
+                          ListTile(
+                            title: const Text('About'),
+                            contentPadding:
+                                const EdgeInsets.symmetric(horizontal: 20.0),
+                            leading: Icon(
+                              Icons.info_outline_rounded,
+                              color: Theme.of(context).iconTheme.color,
+                            ),
+                            onTap: () {
+                              Navigator.pop(context);
+                              Navigator.pushNamed(context, '/about');
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const Padding(
+                  padding: EdgeInsets.fromLTRB(5, 30, 5, 20),
+                  child: Center(
+                    child: Text(
+                      'Made with ♥ by Ankit Sangwan',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 12),
+                    ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
-          body: SafeArea(
+        ),
+        body: WillPopScope(
+          onWillPop: () => handleWillPop(context),
+          child: SafeArea(
             child: Column(
               children: [
                 Expanded(
@@ -573,54 +591,48 @@ class _HomePageState extends State<HomePage> {
               ],
             ),
           ),
-          bottomNavigationBar: ValueListenableBuilder(
-              valueListenable: playerExpandProgress,
-              builder: (BuildContext context, double value, Widget? child) {
-                return SafeArea(
-                  child: ValueListenableBuilder(
-                      valueListenable: _selectedIndex,
-                      builder: (BuildContext context, int indexValue,
-                          Widget? child) {
-                        return AnimatedContainer(
-                          duration: const Duration(milliseconds: 100),
-                          height: 60 *
-                              (MediaQuery.of(context).size.height - value) /
-                              (MediaQuery.of(context).size.height - 76),
-                          child: SalomonBottomBar(
-                            currentIndex: indexValue,
-                            onTap: (index) {
-                              _onItemTapped(index);
-                            },
-                            items: [
-                              /// Home
-                              SalomonBottomBarItem(
-                                icon: const Icon(Icons.home_rounded),
-                                title: const Text('Home'),
-                                selectedColor: Theme.of(context).accentColor,
-                              ),
+        ),
+        bottomNavigationBar: SafeArea(
+          child: ValueListenableBuilder(
+              valueListenable: _selectedIndex,
+              builder: (BuildContext context, int indexValue, Widget? child) {
+                return AnimatedContainer(
+                  duration: const Duration(milliseconds: 100),
+                  height: 60,
+                  child: SalomonBottomBar(
+                    currentIndex: indexValue,
+                    onTap: (index) {
+                      _onItemTapped(index);
+                    },
+                    items: [
+                      /// Home
+                      SalomonBottomBarItem(
+                        icon: const Icon(Icons.home_rounded),
+                        title: const Text('Home'),
+                        selectedColor: Theme.of(context).accentColor,
+                      ),
 
-                              SalomonBottomBarItem(
-                                icon: const Icon(Icons.trending_up_rounded),
-                                title: const Text('Spotify Charts'),
-                                selectedColor: Theme.of(context).accentColor,
-                              ),
-                              SalomonBottomBarItem(
-                                icon: const Icon(MdiIcons.youtube),
-                                title: const Text('YouTube'),
-                                selectedColor: Theme.of(context).accentColor,
-                              ),
-                              SalomonBottomBarItem(
-                                icon:
-                                    const Icon(Icons.my_library_music_rounded),
-                                title: const Text('Library'),
-                                selectedColor: Theme.of(context).accentColor,
-                              ),
-                            ],
-                          ),
-                        );
-                      }),
+                      SalomonBottomBarItem(
+                        icon: const Icon(Icons.trending_up_rounded),
+                        title: const Text('Spotify Charts'),
+                        selectedColor: Theme.of(context).accentColor,
+                      ),
+                      SalomonBottomBarItem(
+                        icon: const Icon(MdiIcons.youtube),
+                        title: const Text('YouTube'),
+                        selectedColor: Theme.of(context).accentColor,
+                      ),
+                      SalomonBottomBarItem(
+                        icon: const Icon(Icons.my_library_music_rounded),
+                        title: const Text('Library'),
+                        selectedColor: Theme.of(context).accentColor,
+                      ),
+                    ],
+                  ),
                 );
-              })),
+              }),
+        ),
+      ),
     );
   }
 }

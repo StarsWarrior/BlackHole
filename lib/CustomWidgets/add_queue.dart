@@ -1,4 +1,5 @@
 import 'package:audio_service/audio_service.dart';
+import 'package:blackhole/main.dart';
 import 'package:flutter/material.dart';
 
 import 'package:blackhole/CustomWidgets/add_playlist.dart';
@@ -84,20 +85,26 @@ class _AddToQueueButtonState extends State<AddToQueueButton> {
             AddToPlaylist().addToPlaylist(context, mediaItem);
           }
           if (value == 1) {
-            final MediaItem? event = AudioService.currentMediaItem;
-            if (event != null &&
-                event.extras!['url'].toString().startsWith('http')) {
-              // TODO: make sure to check if song is already in queue
-              AudioService.addQueueItem(mediaItem);
+            final MediaItem? currentMediaItem = audioHandler.mediaItem.value;
+            if (currentMediaItem != null &&
+                currentMediaItem.extras!['url'].toString().startsWith('http')) {
+              if (audioHandler.queue.value.contains(mediaItem)) {
+                ShowSnackBar().showSnackBar(
+                  context,
+                  '"${mediaItem.title}" already in Queue',
+                );
+              } else {
+                audioHandler.addQueueItem(mediaItem);
 
-              ShowSnackBar().showSnackBar(
-                context,
-                'Added "${mediaItem.title}" to Queue',
-              );
+                ShowSnackBar().showSnackBar(
+                  context,
+                  'Added "${mediaItem.title}" to Queue',
+                );
+              }
             } else {
               ShowSnackBar().showSnackBar(
                 context,
-                event == null
+                currentMediaItem == null
                     ? 'Nothing is Playing'
                     : "Can't add Online Song to Offline Queue",
               );
@@ -105,20 +112,27 @@ class _AddToQueueButtonState extends State<AddToQueueButton> {
           }
 
           if (value == 2) {
-            final MediaItem? event = AudioService.currentMediaItem;
-            if (event != null &&
-                event.extras!['url'].toString().startsWith('http')) {
-              // TODO: make sure to check if song is already in queue
-              AudioService.addQueueItemAt(mediaItem, -1);
+            final MediaItem? currentMediaItem = audioHandler.mediaItem.value;
+            if (currentMediaItem != null &&
+                currentMediaItem.extras!['url'].toString().startsWith('http')) {
+              final queue = audioHandler.queue.value;
+              if (queue.contains(mediaItem)) {
+                audioHandler.moveQueueItem(queue.indexOf(mediaItem),
+                    queue.indexOf(currentMediaItem) + 1);
+              } else {
+                audioHandler.addQueueItem(mediaItem);
+                audioHandler.moveQueueItem(
+                    queue.length, queue.indexOf(currentMediaItem) + 1);
+              }
 
               ShowSnackBar().showSnackBar(
                 context,
-                'Added "${mediaItem.title}" to Queue',
+                '"${mediaItem.title}" will play next',
               );
             } else {
               ShowSnackBar().showSnackBar(
                 context,
-                event == null
+                currentMediaItem == null
                     ? 'Nothing is Playing'
                     : "Can't add Online Song to Offline Queue",
               );
