@@ -168,6 +168,8 @@ class MyTheme with ChangeNotifier {
         return Colors.deepPurpleAccent[hue]!;
       case 'Light Green':
         return Colors.lightGreenAccent[hue]!;
+      case 'White':
+        return Colors.white;
 
       default:
         return _isDark ? Colors.tealAccent[400]! : Colors.lightBlueAccent[400]!;
@@ -258,6 +260,8 @@ class MyTheme with ChangeNotifier {
         return Colors.deepPurpleAccent[currentHue()]!;
       case 'Light Green':
         return Colors.lightGreenAccent[currentHue()]!;
+      case 'White':
+        return Colors.white;
 
       default:
         return _isDark ? Colors.tealAccent[400]! : Colors.lightBlueAccent[400]!;

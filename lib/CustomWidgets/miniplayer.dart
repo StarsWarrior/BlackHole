@@ -43,6 +43,7 @@ class _MiniPlayerState extends State<MiniPlayer> {
                     child: GradientCard(
                         miniplayer: true,
                         radius: 0.0,
+                        elevation: 0.0,
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [

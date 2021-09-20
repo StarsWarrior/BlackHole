@@ -220,18 +220,26 @@ class _SongsListPageState extends State<SongsListPage> {
                                             child: Row(
                                               mainAxisAlignment:
                                                   MainAxisAlignment.center,
-                                              children: const [
+                                              children: [
                                                 Icon(
                                                   Icons.play_arrow_rounded,
-                                                  color: Colors.white,
+                                                  color: Theme.of(context)
+                                                              .accentColor ==
+                                                          Colors.white
+                                                      ? Colors.black
+                                                      : Colors.white,
                                                 ),
-                                                SizedBox(width: 5.0),
+                                                const SizedBox(width: 5.0),
                                                 Text(
                                                   'Play',
                                                   style: TextStyle(
                                                     fontWeight: FontWeight.bold,
                                                     fontSize: 18.0,
-                                                    color: Colors.white,
+                                                    color: Theme.of(context)
+                                                                .accentColor ==
+                                                            Colors.white
+                                                        ? Colors.black
+                                                        : Colors.white,
                                                   ),
                                                   textAlign: TextAlign.center,
                                                 ),

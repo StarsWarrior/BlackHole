@@ -209,6 +209,7 @@ class _SettingPageState extends State<SettingPage> {
                                 'Deep Orange',
                                 'Red',
                                 'Pink',
+                                'White',
                               ];
                               return BottomGradientContainer(
                                 borderRadius: BorderRadius.circular(20.0),
@@ -709,6 +710,30 @@ class _SettingPageState extends State<SettingPage> {
                         isThreeLine: true,
                       ),
                       ListTile(
+                          title: const Text('Use Amoled Dark Mode Settings'),
+                          dense: true,
+                          onTap: () {
+                            currentTheme.switchTheme(isDark: true);
+                            Hive.box('settings').put('darkMode', true);
+
+                            settingsBox.put('backGrad', 4);
+                            currentTheme.backGrad = 4;
+                            settingsBox.put('cardGrad', 6);
+                            currentTheme.cardGrad = 6;
+                            settingsBox.put('bottomGrad', 4);
+                            currentTheme.bottomGrad = 4;
+
+                            currentTheme.switchCanvasColor('Black');
+                            canvasColor = 'Black';
+
+                            currentTheme.switchCardColor('Grey900');
+                            cardColor = 'Grey900';
+
+                            themeColor = 'White';
+                            colorHue = 400;
+                            currentTheme.switchColor('White', colorHue);
+                          }),
+                      ListTile(
                           title: const Text('Change to Default'),
                           dense: true,
                           onTap: () {
@@ -725,13 +750,11 @@ class _SettingPageState extends State<SettingPage> {
                             canvasColor = 'Grey';
 
                             currentTheme.switchCardColor('Grey850');
-                            cardColor = 'Grey900';
+                            cardColor = 'Grey850';
 
                             themeColor = 'Teal';
                             colorHue = 400;
                             currentTheme.switchTheme(isDark: true);
-                            setState(() {});
-                            widget.callback!();
                           }),
                     ],
                   ),

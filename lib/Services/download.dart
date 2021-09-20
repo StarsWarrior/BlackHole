@@ -238,9 +238,9 @@ class Download with ChangeNotifier {
     String appPath;
     final List<int> _bytes = [];
     String lyrics;
-    final artname = filename.replaceAll('.m4a', 'artwork.jpg');
+    final artname = filename.replaceAll('.m4a', '.jpg');
     if (!Platform.isWindows) {
-      final Directory appDir = await getApplicationDocumentsDirectory();
+      final Directory appDir = await getTemporaryDirectory();
       appPath = appDir.path;
     } else {
       final Directory? temp = await getDownloadsDirectory();
@@ -254,6 +254,7 @@ class Download with ChangeNotifier {
           .create(recursive: true)
           .then((value) => filepath = value.path);
       // print('created audio file');
+
       await File('$appPath/$artname')
           .create(recursive: true)
           .then((value) => filepath2 = value.path);
@@ -359,10 +360,11 @@ class Download with ChangeNotifier {
           path: filepath!,
           tag: tag,
         );
-        await Future.delayed(const Duration(seconds: 1), () {});
-        if (await file2.exists()) {
-          await file2.delete();
-        }
+        // await Future.delayed(const Duration(seconds: 1), () async {
+        //   if (await file2.exists()) {
+        //     await file2.delete();
+        //   }
+        // });
       } catch (e) {
         // print('Failed to edit tags');
       }
@@ -370,10 +372,36 @@ class Download with ChangeNotifier {
       lastDownloadId = data['id'].toString();
       progress = 0.0;
       notifyListeners();
-      ShowSnackBar().showSnackBar(
-        context,
-        '"${data['title'].toString()}" has been downloaded',
-      );
+      try {
+        ShowSnackBar().showSnackBar(
+          context,
+          '"${data['title'].toString()}" has been downloaded',
+        );
+      } catch (e) {
+        // ignore: avoid_print
+        print('Failed to show Snackbar');
+      }
+
+      final songData = {
+        'id': data['id'].toString(),
+        'title': data['title'].toString(),
+        'subtitle': data['subtitle'].toString(),
+        'artist': data['artist'].toString(),
+        'albumArtist': data['album_artist']?.toString() ??
+            data['artist']?.toString().split(', ')[0],
+        'album': data['album'].toString(),
+        'genre': data['language'].toString(),
+        'year': data['year'].toString(),
+        'lyrics': lyrics,
+        'duration': data['duration'],
+        'release_date': data['release_date'].toString(),
+        'album_id': data['album_id'].toString(),
+        'perma_url': data['perma_url'].toString(),
+        'quality': preferredDownloadQuality,
+        'path': filepath,
+        'image': filepath2,
+      };
+      Hive.box('downloads').put(songData['id'], songData);
     });
   }
 }

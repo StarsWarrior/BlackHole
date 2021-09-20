@@ -104,7 +104,7 @@ class _SaavnHomePageState extends State<SaavnHomePage> {
                               style: TextStyle(
                                 color: Theme.of(context).accentColor,
                                 fontSize: 18,
-                                fontWeight: FontWeight.w800,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
                           ),
@@ -204,6 +204,9 @@ class _SaavnHomePageState extends State<SaavnHomePage> {
                                       textAlign: TextAlign.center,
                                       softWrap: false,
                                       overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.w500,
+                                      ),
                                     ),
                                     Text(
                                       '${recentList[index]["artist"]}',
@@ -239,7 +242,7 @@ class _SaavnHomePageState extends State<SaavnHomePage> {
                       style: TextStyle(
                         color: Theme.of(context).accentColor,
                         fontSize: 18,
-                        fontWeight: FontWeight.w800,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
@@ -422,6 +425,9 @@ class _SaavnHomePageState extends State<SaavnHomePage> {
                                     textAlign: TextAlign.center,
                                     softWrap: false,
                                     overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                    ),
                                   ),
                                   if (subTitle != '')
                                     Text(

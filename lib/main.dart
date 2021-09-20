@@ -18,6 +18,7 @@
 import 'dart:io';
 
 import 'package:audio_service/audio_service.dart';
+import 'package:blackhole/Screens/Library/downloads.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
@@ -48,6 +49,7 @@ Future<void> main() async {
   await openHiveBox('settings');
   await openHiveBox('cache');
   await openHiveBox('recentlyPlayed');
+  await openHiveBox('downloads');
   await openHiveBox('songDetails', limit: true);
 
   await startService();
@@ -191,6 +193,7 @@ class _MyAppState extends State<MyApp> {
         '/playlists': (context) => PlaylistScreen(),
         '/nowplaying': (context) => NowPlaying(),
         '/recent': (context) => RecentlyPlayed(),
+        '/downloads': (context) => const Downloads(),
         // '/featured':
       },
       onGenerateRoute: (RouteSettings settings) {

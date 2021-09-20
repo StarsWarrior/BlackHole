@@ -100,24 +100,34 @@ class _SeekBarState extends State<SeekBar> {
             ),
           ),
           Positioned(
-            right: 18.0,
+            right: 13.0,
             bottom: 18.0,
             child: StreamBuilder<double>(
-              stream: audioHandler.speed,
-              builder: (context, snapshot) => IconButton(
-                icon: Text('${snapshot.data?.toStringAsFixed(1) ?? 1.0}x',
-                    style: const TextStyle(fontWeight: FontWeight.bold)),
-                onPressed: () {
-                  showSliderDialog(
-                    context: context,
-                    title: 'Adjust Speed',
-                    divisions: 25,
-                    min: 0.5,
-                    max: 3.0,
+                stream: audioHandler.speed,
+                builder: (context, snapshot) {
+                  final String speedValue =
+                      '${snapshot.data?.toStringAsFixed(1) ?? 1.0}x';
+                  return IconButton(
+                    icon: Text(
+                      speedValue,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                        color: speedValue == '1.0x'
+                            ? Theme.of(context).disabledColor
+                            : null,
+                      ),
+                    ),
+                    onPressed: () {
+                      showSliderDialog(
+                        context: context,
+                        title: 'Adjust Speed',
+                        divisions: 25,
+                        min: 0.5,
+                        max: 3.0,
+                      );
+                    },
                   );
-                },
-              ),
-            ),
+                }),
           ),
           Positioned(
             left: 25.0,

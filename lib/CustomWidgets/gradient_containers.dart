@@ -74,7 +74,9 @@ class GradientCard extends StatefulWidget {
   final Widget child;
   final bool? miniplayer;
   final double? radius;
-  const GradientCard({required this.child, this.miniplayer, this.radius});
+  final double? elevation;
+  const GradientCard(
+      {required this.child, this.miniplayer, this.radius, this.elevation});
   @override
   _GradientCardState createState() => _GradientCardState();
 }
@@ -83,7 +85,7 @@ class _GradientCardState extends State<GradientCard> {
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: 3,
+      elevation: widget.elevation ?? 3,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(widget.radius ?? 10.0),
       ),

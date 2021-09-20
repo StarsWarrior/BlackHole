@@ -62,6 +62,7 @@ class _PlayScreenState extends State<PlayScreen> {
   List response = [];
   bool fetched = false;
   bool offline = false;
+  bool downloaded = false;
   bool fromYT = false;
   String defaultCover = '';
   final ValueNotifier<Color?> gradientColor =
@@ -104,8 +105,8 @@ class _PlayScreenState extends State<PlayScreen> {
     String? filePath;
     if (response['image'] != null) {
       try {
-        final File file = File(
-            '${tempDir.path}/${playTitle.toString().replaceAll('/', '')}-${playArtist.toString().replaceAll('/', '')}.jpg');
+        final File file =
+            File('${tempDir.path}/${response["_display_name_wo_ext"]}.jpg');
         filePath = file.path;
         if (!await file.exists()) {
           await file.create();
@@ -142,7 +143,7 @@ class _PlayScreenState extends State<PlayScreen> {
     return file.path;
   }
 
-  void setOffValues(List response) {
+  void setOffValues(List response, {bool downloaed = false}) {
     getTemporaryDirectory().then((tempDir) async {
       final File file =
           File('${(await getTemporaryDirectory()).path}/cover.jpg');
@@ -154,8 +155,18 @@ class _PlayScreenState extends State<PlayScreen> {
       for (int i = 0; i < response.length; i++) {
         globalQueue.add(await setTags(response[i] as Map, tempDir));
       }
+      fetched = true;
       updateNplay();
     });
+  }
+
+  void setDownValues(List response) {
+    globalQueue.addAll(
+      response
+          .map((song) => MediaItemConverter().downMapToMediaItem(song as Map)),
+    );
+    fetched = true;
+    updateNplay();
   }
 
   void setValues(List response) {
@@ -196,6 +207,7 @@ class _PlayScreenState extends State<PlayScreen> {
     response = data['response'] as List;
     globalIndex = data['index'] as int;
     fromYT = data['fromYT'] as bool? ?? false;
+    downloaded = data['downloaded'] as bool? ?? false;
     if (data['offline'] == null) {
       if (audioHandler.mediaItem.value?.extras!['url'].startsWith('http')
           as bool) {
@@ -218,7 +230,7 @@ class _PlayScreenState extends State<PlayScreen> {
         shuffle = false;
         Hive.box('settings').put('shuffle', shuffle);
         if (offline) {
-          setOffValues(response);
+          downloaded ? setDownValues(response) : setOffValues(response);
         } else {
           setValues(response);
           updateNplay();
@@ -688,6 +700,7 @@ class ControlButtons extends StatelessWidget {
                 icon: const Icon(Icons.skip_previous_rounded),
                 iconSize: miniplayer ? 24.0 : 45.0,
                 tooltip: 'Skip Previous',
+                color: Theme.of(context).iconTheme.color,
                 onPressed:
                     queueState.hasPrevious ? audioHandler.skipToPrevious : null,
               );
@@ -726,6 +739,7 @@ class ControlButtons extends StatelessWidget {
                                     icon: const Icon(
                                       Icons.pause_rounded,
                                     ),
+                                    color: Theme.of(context).iconTheme.color,
                                   )
                                 : IconButton(
                                     tooltip: 'Play',
@@ -733,6 +747,7 @@ class ControlButtons extends StatelessWidget {
                                     icon: const Icon(
                                       Icons.play_arrow_rounded,
                                     ),
+                                    color: Theme.of(context).iconTheme.color,
                                   ))
                       else
                         Center(
@@ -777,6 +792,7 @@ class ControlButtons extends StatelessWidget {
                 icon: const Icon(Icons.skip_next_rounded),
                 iconSize: miniplayer ? 24.0 : 45.0,
                 tooltip: 'Skip Next',
+                color: Theme.of(context).iconTheme.color,
                 onPressed: queueState.hasNext ? audioHandler.skipToNext : null,
               );
             },
@@ -907,7 +923,9 @@ class NowPlayingStream extends StatelessWidget {
                                       'album_id':
                                           queue[index].extras?['album_id'],
                                       'subtitle':
-                                          queue[index].extras?['subtitle']
+                                          queue[index].extras?['subtitle'],
+                                      'perma_url':
+                                          queue[index].extras?['perma_url'],
                                     })
                                   ],
                                 )
@@ -1108,14 +1126,16 @@ class _ArtWorkWidgetState extends State<ArtWorkWidget> {
                                   final String lyrics = snapshot.data ?? '';
                                   if (lyrics == '') {
                                     return EmptyScreen().emptyScreen(
-                                        context,
-                                        0,
-                                        ':( ',
-                                        100.0,
-                                        'Lyrics',
-                                        60.0,
-                                        'Not Available',
-                                        20.0);
+                                      context,
+                                      0,
+                                      ':( ',
+                                      100.0,
+                                      'Lyrics',
+                                      60.0,
+                                      'Not Available',
+                                      20.0,
+                                      useWhite: true,
+                                    );
                                   }
                                   return SelectableText(
                                     lyrics,
@@ -1161,7 +1181,9 @@ class _ArtWorkWidgetState extends State<ArtWorkWidget> {
                                                 'Lyrics',
                                                 60.0,
                                                 'Not Available',
-                                                20.0)
+                                                20.0,
+                                                useWhite: true,
+                                              )
                                             : Text(
                                                 lyrics['lyrics'].toString(),
                                                 textAlign: TextAlign.center,
@@ -1405,12 +1427,14 @@ class NameNControls extends StatelessWidget {
                     ),
                   ),
 
+                  const SizedBox(height: 3.0),
+
                   /// Subtitle container
                   Text(
                     mediaItem.artist ?? 'Unknown',
                     textAlign: TextAlign.center,
                     style: const TextStyle(
-                        fontSize: 15, fontWeight: FontWeight.w500),
+                        fontSize: 15, fontWeight: FontWeight.w400),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ],
@@ -1457,11 +1481,11 @@ class NameNControls extends StatelessWidget {
                       final shuffleModeEnabled = snapshot.data ?? false;
                       return IconButton(
                         icon: shuffleModeEnabled
-                            ? Icon(Icons.shuffle,
-                                color: Theme.of(context).accentColor)
-                            : const Icon(
-                                Icons.shuffle,
-                              ),
+                            ? const Icon(
+                                Icons.shuffle_rounded,
+                              )
+                            : Icon(Icons.shuffle_rounded,
+                                color: Theme.of(context).disabledColor),
                         tooltip: 'Shuffle',
                         onPressed: () async {
                           final enable = !shuffleModeEnabled;
@@ -1488,13 +1512,14 @@ class NameNControls extends StatelessWidget {
                           snapshot.data ?? AudioServiceRepeatMode.none;
                       const texts = ['None', 'All', 'One'];
                       final icons = [
+                        Icon(Icons.repeat_rounded,
+                            color: Theme.of(context).disabledColor),
                         const Icon(
                           Icons.repeat_rounded,
                         ),
-                        Icon(Icons.repeat_rounded,
-                            color: Theme.of(context).accentColor),
-                        Icon(Icons.repeat_one_rounded,
-                            color: Theme.of(context).accentColor),
+                        const Icon(
+                          Icons.repeat_one_rounded,
+                        ),
                       ];
                       const cycleModes = [
                         AudioServiceRepeatMode.none,
@@ -1531,7 +1556,8 @@ class NameNControls extends StatelessWidget {
                       'has_lyrics': mediaItem.extras?['has_lyrics'],
                       'release_date': mediaItem.extras!['release_date'],
                       'album_id': mediaItem.extras!['album_id'],
-                      'subtitle': mediaItem.extras!['subtitle']
+                      'subtitle': mediaItem.extras!['subtitle'],
+                      'perma_url': mediaItem.extras!['perma_url'],
                     })
                 ],
               ),
@@ -1556,14 +1582,23 @@ class NameNControls extends StatelessWidget {
                       child: NowPlayingStream(audioHandler));
                 });
           },
-          child: Text(
-            'Now Playing',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: Theme.of(context).iconTheme.color,
-              fontWeight: FontWeight.w600,
-              fontSize: 18,
-            ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.expand_less_rounded,
+                color: Theme.of(context).iconTheme.color,
+              ),
+              Text(
+                'Now Playing',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Theme.of(context).iconTheme.color,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 18,
+                ),
+              ),
+            ],
           ),
         ),
       ],

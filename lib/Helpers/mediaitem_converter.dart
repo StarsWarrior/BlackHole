@@ -51,4 +51,27 @@ class MediaItemConverter {
           'addedByAutoplay': addedByAutoplay,
         });
   }
+
+  MediaItem downMapToMediaItem(Map song) {
+    return MediaItem(
+        id: song['id'].toString(),
+        album: song['album'].toString(),
+        artist: song['artist'].toString(),
+        duration: Duration(
+            seconds: int.parse(
+                (song['duration'] == null || song['duration'] == 'null')
+                    ? '180'
+                    : song['duration'].toString())),
+        title: song['title'].toString(),
+        artUri: Uri.file(song['image'].toString()),
+        genre: song['genre'].toString(),
+        extras: {
+          'url': song['path'].toString(),
+          'year': song['year'],
+          'language': song['genre'],
+          'release_date': song['release_date'],
+          'album_id': song['album_id'],
+          'subtitle': song['subtitle'],
+        });
+  }
 }

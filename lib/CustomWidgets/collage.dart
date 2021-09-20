@@ -1,4 +1,4 @@
-import 'dart:typed_data';
+import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -94,7 +94,11 @@ class OfflineCollage extends StatelessWidget {
                             image: AssetImage('assets/album.png'),
                           )
                         : Image(
-                            image: MemoryImage(image['image'] as Uint8List),
+                            image: FileImage(
+                              File(
+                                image['image'].toString(),
+                              ),
+                            ),
                           );
                   }).toList()),
             ],

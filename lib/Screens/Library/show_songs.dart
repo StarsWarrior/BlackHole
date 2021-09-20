@@ -1,4 +1,4 @@
-import 'dart:typed_data';
+import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -226,9 +226,12 @@ class _SongsListState extends State<SongsList> {
                                                 width: 50.0,
                                                 child: Image(
                                                   fit: BoxFit.cover,
-                                                  image: MemoryImage(
+                                                  image: FileImage(
+                                                    File(
                                                       _songs[index]['image']
-                                                          as Uint8List),
+                                                          .toString(),
+                                                    ),
+                                                  ),
                                                 ),
                                               ),
                                           ],
@@ -265,7 +268,8 @@ class _SongsListState extends State<SongsList> {
                                         data: {
                                           'response': _songs,
                                           'index': index,
-                                          'offline': offline
+                                          'offline': offline,
+                                          'downloaded': offline,
                                         },
                                         fromMiniplayer: false,
                                       ),

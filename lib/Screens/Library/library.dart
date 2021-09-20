@@ -85,17 +85,13 @@ class _LibraryPageState extends State<LibraryPage> {
                     builder: (context) => const DownloadedSongs()));
           },
         ),
-        // LibraryTile(
-        //   title: 'Downloads',
-        //   icon: Icons.download_done_rounded,
-        //   onTap: () {
-        //     Navigator.push(
-        //         context,
-        //         MaterialPageRoute(
-        //             builder: (context) =>
-        //                 const DownloadedSongs(type: 'downloaded')));
-        //   },
-        // ),
+        LibraryTile(
+          title: 'Downloads',
+          icon: Icons.download_done_rounded,
+          onTap: () {
+            Navigator.pushNamed(context, '/downloads');
+          },
+        ),
         LibraryTile(
           title: 'Playlists',
           icon: Icons.playlist_play_rounded,
