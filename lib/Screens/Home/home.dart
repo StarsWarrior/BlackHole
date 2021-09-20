@@ -267,7 +267,7 @@ class _HomePageState extends State<HomePage> {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) =>
-                                          const DownloadedSongs(type: 'all')));
+                                          const DownloadedSongs()));
                             },
                           ),
                           ListTile(

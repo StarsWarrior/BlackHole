@@ -120,9 +120,9 @@ class _AddToQueueButtonState extends State<AddToQueueButton> {
                 audioHandler.moveQueueItem(queue.indexOf(mediaItem),
                     queue.indexOf(currentMediaItem) + 1);
               } else {
-                audioHandler.addQueueItem(mediaItem);
-                audioHandler.moveQueueItem(
-                    queue.length, queue.indexOf(currentMediaItem) + 1);
+                audioHandler.addQueueItem(mediaItem).then((value) =>
+                    audioHandler.moveQueueItem(
+                        queue.length, queue.indexOf(currentMediaItem) + 1));
               }
 
               ShowSnackBar().showSnackBar(

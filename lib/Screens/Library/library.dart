@@ -82,7 +82,7 @@ class _LibraryPageState extends State<LibraryPage> {
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => const DownloadedSongs(type: 'all')));
+                    builder: (context) => const DownloadedSongs()));
           },
         ),
         // LibraryTile(

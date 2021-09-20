@@ -99,7 +99,7 @@ class _PrefScreenState extends State<PrefScreen> {
                                       ),
                                       children: <TextSpan>[
                                         const TextSpan(
-                                          text: 'Abroad',
+                                          text: 'Aboard',
                                           style: TextStyle(
                                             fontWeight: FontWeight.bold,
                                             fontSize: 75,

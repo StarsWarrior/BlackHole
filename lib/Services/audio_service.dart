@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:audio_service/audio_service.dart';
+import 'package:blackhole/APIs/api.dart';
 import 'package:blackhole/Helpers/mediaitem_converter.dart';
 import 'package:blackhole/Screens/Player/audioplayer.dart';
 import 'package:hive/hive.dart';
@@ -13,18 +14,21 @@ import 'package:rxdart/rxdart.dart';
 class AudioPlayerHandlerImpl extends BaseAudioHandler
     with QueueHandler, SeekHandler
     implements AudioPlayerHandler {
-  final _equalizer = AndroidEqualizer();
-  final converter = MediaItemConverter();
-  AndroidEqualizerParameters? _equalizerParams;
-  late AudioPlayer? _player;
   int? count;
   Timer? _sleepTimer;
+  bool recommend = true;
+  bool loadStart = true;
+  AndroidEqualizerParameters? _equalizerParams;
+
+  late AudioPlayer? _player;
   late String preferredQuality;
+  final _equalizer = AndroidEqualizer();
+  final converter = MediaItemConverter();
 
   int? index;
 
-  // final BehaviorSubject<List<MediaItem>> _recentSubject =
-  // BehaviorSubject.seeded(<MediaItem>[]);
+  final BehaviorSubject<List<MediaItem>> _recentSubject =
+      BehaviorSubject.seeded(<MediaItem>[]);
   final _playlist = ConcatenatingAudioSource(children: []);
   @override
   final BehaviorSubject<double> volume = BehaviorSubject.seeded(1.0);
@@ -85,16 +89,26 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
     await session.configure(const AudioSessionConfiguration.music());
 
     await startService();
+
+    speed.debounceTime(const Duration(milliseconds: 250)).listen((speed) {
+      playbackState.add(playbackState.value.copyWith(speed: speed));
+    });
+
     preferredQuality = Hive.box('settings')
         .get('streamingQuality', defaultValue: '96 kbps')
         .toString();
+    recommend =
+        Hive.box('settings').get('autoplay', defaultValue: true) as bool;
+    loadStart =
+        Hive.box('settings').get('loadStart', defaultValue: true) as bool;
+    if (loadStart) {
+      final List recentList = await Hive.box('recentlyPlayed')
+          .get('recentSongs', defaultValue: [])?.toList() as List;
 
-    final List recentList = await Hive.box('recentlyPlayed')
-        .get('recentSongs', defaultValue: [])?.toList() as List;
-
-    final List<MediaItem> lastQueue =
-        recentList.map((e) => converter.mapToMediaItem(e as Map)).toList();
-    await updateQueue(lastQueue);
+      final List<MediaItem> lastQueue =
+          recentList.map((e) => converter.mapToMediaItem(e as Map)).toList();
+      await updateQueue(lastQueue);
+    }
 
     mediaItem.whereType<MediaItem>().listen((item) {
       if (count != null) {
@@ -104,8 +118,28 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
           stop();
         }
       }
-      addRecentlyPlayed(item);
+
+      if (!item.artUri.toString().startsWith('file') &&
+          !item.artUri.toString().startsWith('https://img.youtube.com')) {
+        addRecentlyPlayed(item);
+        _recentSubject.add([item]);
+
+        if (recommend) {
+          Future.delayed(const Duration(seconds: 5), () async {
+            final List value = await SaavnAPI().getReco(item.id);
+
+            for (int i = 0; i < value.length; i++) {
+              final element = converter.mapToMediaItem(value[i] as Map,
+                  addedByAutoplay: true);
+              if (!queue.value.contains(element)) {
+                addQueueItem(element);
+              }
+            }
+          });
+        }
+      }
     });
+
     Rx.combineLatest4<int?, List<MediaItem>, bool, List<int>?, MediaItem?>(
         _player!.currentIndexStream,
         queue,
@@ -164,6 +198,32 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
     }
   }
 
+  @override
+  Future<List<MediaItem>> getChildren(String parentMediaId,
+      [Map<String, dynamic>? options]) async {
+    switch (parentMediaId) {
+      case AudioService.recentRootId:
+        return _recentSubject.value;
+      default:
+        return queue.value;
+    }
+  }
+
+  @override
+  ValueStream<Map<String, dynamic>> subscribeToChildren(String parentMediaId) {
+    switch (parentMediaId) {
+      case AudioService.recentRootId:
+        final stream = _recentSubject.map((_) => <String, dynamic>{});
+        return _recentSubject.hasValue
+            ? stream.shareValueSeeded(<String, dynamic>{})
+            : stream.shareValue();
+      default:
+        return Stream.value(queue.value)
+            .map((_) => <String, dynamic>{})
+            .shareValue();
+    }
+  }
+
   Future<void> startService({bool withPipeline = true}) async {
     if (withPipeline) {
       final AudioPipeline _pipeline = AudioPipeline(
@@ -178,10 +238,6 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
   }
 
   Future<void> addRecentlyPlayed(MediaItem mediaitem) async {
-    if (mediaitem.artUri.toString().startsWith('file') ||
-        mediaitem.artUri.toString().startsWith('https://img.youtube.com')) {
-      return;
-    }
     List recentList = await Hive.box('recentlyPlayed')
         .get('recentSongs', defaultValue: [])?.toList() as List;
 
@@ -228,6 +284,11 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
   @override
   Future<void> removeQueueItem(MediaItem mediaItem) async {
     final index = queue.value.indexOf(mediaItem);
+    await _playlist.removeAt(index);
+  }
+
+  @override
+  Future<void> removeQueueItemAt(int index) async {
     await _playlist.removeAt(index);
   }
 
@@ -339,9 +400,60 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
   }
 
   @override
+  Future<void> setSpeed(double speed) async {
+    this.speed.add(speed);
+    await _player!.setSpeed(speed);
+  }
+
+  @override
   Future<void> setVolume(double volume) async {
     this.volume.add(volume);
     await _player!.setVolume(volume);
+  }
+
+  @override
+  Future<void> click([MediaButton button = MediaButton.media]) async {
+    switch (button) {
+      case MediaButton.media:
+        _handleMediaActionPressed();
+        break;
+      case MediaButton.next:
+        await skipToNext();
+        break;
+      case MediaButton.previous:
+        await skipToPrevious();
+        break;
+    }
+  }
+
+  late BehaviorSubject<int> _tappedMediaActionNumber;
+  Timer? _timer;
+
+  void _handleMediaActionPressed() {
+    if (_timer == null) {
+      _tappedMediaActionNumber = BehaviorSubject.seeded(1);
+      _timer = Timer(const Duration(milliseconds: 600), () {
+        final tappedNumber = _tappedMediaActionNumber.value;
+        if (tappedNumber == 1) {
+          if (playbackState.value.playing) {
+            pause();
+          } else {
+            play();
+          }
+        } else if (tappedNumber == 2) {
+          skipToNext();
+        } else {
+          skipToPrevious();
+        }
+
+        _tappedMediaActionNumber.close();
+        _timer!.cancel();
+        _timer = null;
+      });
+    } else {
+      final current = _tappedMediaActionNumber.value;
+      _tappedMediaActionNumber.add(current + 1);
+    }
   }
 
   /// Broadcasts the current state to all clients.

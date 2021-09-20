@@ -24,8 +24,7 @@ import 'package:blackhole/CustomWidgets/miniplayer.dart';
 import 'package:blackhole/Screens/Player/audioplayer.dart';
 
 class DownloadedSongs extends StatefulWidget {
-  final String type;
-  const DownloadedSongs({Key? key, required this.type}) : super(key: key);
+  const DownloadedSongs({Key? key}) : super(key: key);
   @override
   _DownloadedSongsState createState() => _DownloadedSongsState();
 }
@@ -339,7 +338,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
             child: Scaffold(
               backgroundColor: Colors.transparent,
               appBar: AppBar(
-                title: Text(widget.type == 'all' ? 'My Music' : 'Downloads'),
+                title: const Text('My Music'),
                 // bottom: TabBar(
                 // controller: _tcontroller,
                 // tabs:

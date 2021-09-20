@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:audio_service/audio_service.dart';
+import 'package:blackhole/Helpers/config.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flip_card/flip_card.dart';
 import 'package:flutter/cupertino.dart';
@@ -11,14 +12,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:hive/hive.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:palette_generator/palette_generator.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import 'package:blackhole/APIs/api.dart';
 import 'package:blackhole/CustomWidgets/add_playlist.dart';
-import 'package:blackhole/CustomWidgets/add_queue.dart';
 import 'package:blackhole/CustomWidgets/download_button.dart';
 import 'package:blackhole/CustomWidgets/empty_screen.dart';
 import 'package:blackhole/CustomWidgets/equalizer.dart';
@@ -54,6 +54,8 @@ class _PlayScreenState extends State<PlayScreen> {
       Hive.box('settings').get('enforceRepeat', defaultValue: false) as bool;
   bool shuffle =
       Hive.box('settings').get('shuffle', defaultValue: false) as bool;
+  bool useImageColor =
+      Hive.box('settings').get('useImageColor', defaultValue: true) as bool;
   List<MediaItem> globalQueue = [];
   int globalIndex = 0;
   bool same = false;
@@ -62,6 +64,8 @@ class _PlayScreenState extends State<PlayScreen> {
   bool offline = false;
   bool fromYT = false;
   String defaultCover = '';
+  final ValueNotifier<Color?> gradientColor =
+      ValueNotifier<Color?>(currentTheme.playGradientColor);
 
   GlobalKey<FlipCardState> cardKey = GlobalKey<FlipCardState>();
 
@@ -222,6 +226,13 @@ class _PlayScreenState extends State<PlayScreen> {
       }
     }
 
+    Future<void> getColors(ImageProvider imageProvider) async {
+      final PaletteGenerator paletteGenerator =
+          await PaletteGenerator.fromImageProvider(imageProvider);
+      gradientColor.value = paletteGenerator.dominantColor?.color;
+      currentTheme.setLastPlayGradient(gradientColor.value);
+    }
+
     return Dismissible(
       direction: DismissDirection.down,
       background: Container(color: Colors.transparent),
@@ -229,351 +240,300 @@ class _PlayScreenState extends State<PlayScreen> {
       onDismissed: (direction) {
         Navigator.pop(context);
       },
-      child: GradientContainer(
-        child: SafeArea(
-          child: StreamBuilder<MediaItem?>(
-              stream: audioHandler.mediaItem,
-              builder: (context, snapshot) {
-                final MediaItem? mediaItem = snapshot.data;
-                if (mediaItem == null) return const SizedBox();
-                return Scaffold(
-                  backgroundColor: Colors.transparent,
-                  appBar: AppBar(
-                    elevation: 0,
-                    backgroundColor: Colors.transparent,
-                    centerTitle: true,
-                    leading: IconButton(
-                        icon: const Icon(Icons.expand_more_rounded),
-                        color: Theme.of(context).iconTheme.color,
-                        tooltip: 'Back',
-                        onPressed: () {
-                          Navigator.pop(context);
-                        }),
-                    actions: [
-                      IconButton(
-                        icon: Icon(
-                          CupertinoIcons.textformat,
-                          color: Theme.of(context).iconTheme.color,
-                        ),
-                        tooltip: 'Lyrics',
-                        onPressed: () => cardKey.currentState!.toggleCard(),
+      child: StreamBuilder<MediaItem?>(
+          stream: audioHandler.mediaItem,
+          builder: (context, snapshot) {
+            final MediaItem? mediaItem = snapshot.data;
+            if (mediaItem == null) return const SizedBox();
+            mediaItem.artUri.toString().startsWith('file')
+                ? getColors(FileImage(File(mediaItem.artUri!.toFilePath())))
+                : getColors(
+                    CachedNetworkImageProvider(mediaItem.artUri.toString()));
+            return ValueListenableBuilder(
+                valueListenable: gradientColor,
+                builder: (BuildContext context, Color? value, Widget? child) {
+                  return Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: !useImageColor
+                            ? Alignment.topLeft
+                            : Alignment.topCenter,
+                        end: !useImageColor
+                            ? Alignment.bottomRight
+                            : Alignment.center,
+                        colors: !useImageColor
+                            ? Theme.of(context).brightness == Brightness.dark
+                                ? currentTheme.getBackGradient()
+                                : [
+                                    const Color(0xfff5f9ff),
+                                    Colors.white,
+                                  ]
+                            : Theme.of(context).brightness == Brightness.dark
+                                ? [
+                                    value ?? Colors.grey[900]!,
+                                    currentTheme.getPlayGradient(),
+                                  ]
+                                : [
+                                    value ?? const Color(0xfff5f9ff),
+                                    Colors.white,
+                                  ],
                       ),
-                      if (!offline)
-                        IconButton(
-                            icon: const Icon(Icons.share_rounded),
-                            tooltip: 'Share',
-                            onPressed: () {
-                              Share.share(fromYT
-                                  ? 'https://youtube.com/watch?v=${mediaItem.id}'
-                                  : mediaItem.extras!['perma_url'].toString());
-                            }),
-                      PopupMenuButton(
-                        icon: Icon(
-                          Icons.more_vert_rounded,
-                          color: Theme.of(context).iconTheme.color,
+                    ),
+                    child: SafeArea(
+                      child: Scaffold(
+                        backgroundColor: Colors.transparent,
+                        appBar: AppBar(
+                          elevation: 0,
+                          backgroundColor: Colors.transparent,
+                          centerTitle: true,
+                          leading: IconButton(
+                              icon: const Icon(Icons.expand_more_rounded),
+                              tooltip: 'Back',
+                              onPressed: () {
+                                Navigator.pop(context);
+                              }),
+                          actions: [
+                            IconButton(
+                              icon: Image.asset(
+                                'assets/lyrics.png',
+                              ),
+                              tooltip: 'Lyrics',
+                              onPressed: () =>
+                                  cardKey.currentState!.toggleCard(),
+                            ),
+                            if (!offline)
+                              IconButton(
+                                  icon: const Icon(Icons.share_rounded),
+                                  tooltip: 'Share',
+                                  onPressed: () {
+                                    Share.share(fromYT
+                                        ? 'https://youtube.com/watch?v=${mediaItem.id}'
+                                        : mediaItem.extras!['perma_url']
+                                            .toString());
+                                  }),
+                            PopupMenuButton(
+                              icon: const Icon(
+                                Icons.more_vert_rounded,
+                              ),
+                              shape: const RoundedRectangleBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(15.0))),
+                              onSelected: (int? value) {
+                                if (value == 4) {
+                                  showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return const Equalizer();
+                                      });
+                                }
+                                if (value == 3) {
+                                  launch(fromYT
+                                      ? 'https://youtube.com/watch?v=${mediaItem.id}'
+                                      : 'https://www.youtube.com/results?search_query=${mediaItem.title} by ${mediaItem.artist}');
+                                }
+                                if (value == 1) {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return SimpleDialog(
+                                        title: Text(
+                                          'Sleep Timer',
+                                          style: TextStyle(
+                                            color:
+                                                Theme.of(context).accentColor,
+                                          ),
+                                        ),
+                                        contentPadding:
+                                            const EdgeInsets.all(10.0),
+                                        children: [
+                                          ListTile(
+                                            title: const Text(
+                                                'Sleep after a duration of hh:mm'),
+                                            subtitle: const Text(
+                                                'Music will stop after selected duration'),
+                                            dense: true,
+                                            onTap: () {
+                                              Navigator.pop(context);
+                                              setTimer(
+                                                  context, scaffoldContext);
+                                            },
+                                          ),
+                                          ListTile(
+                                            title: const Text(
+                                                'Sleep after N Songs'),
+                                            subtitle: const Text(
+                                                'Music will stop after playing selected no of songs'),
+                                            dense: true,
+                                            onTap: () {
+                                              Navigator.pop(context);
+                                              setCounter(scaffoldContext!);
+                                            },
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  );
+                                }
+                                if (value == 0) {
+                                  AddToPlaylist()
+                                      .addToPlaylist(context, mediaItem);
+                                }
+                              },
+                              itemBuilder: (context) => offline
+                                  ? [
+                                      PopupMenuItem(
+                                          value: 1,
+                                          child: Row(
+                                            children: [
+                                              Icon(
+                                                CupertinoIcons.timer,
+                                                color: Theme.of(context)
+                                                    .iconTheme
+                                                    .color,
+                                              ),
+                                              const SizedBox(width: 10.0),
+                                              const Text('Sleep Timer'),
+                                            ],
+                                          )),
+                                      if (Hive.box('settings').get('supportEq',
+                                          defaultValue: true) as bool)
+                                        PopupMenuItem(
+                                            value: 4,
+                                            child: Row(
+                                              children: [
+                                                Icon(
+                                                  Icons.equalizer_rounded,
+                                                  color: Theme.of(context)
+                                                      .iconTheme
+                                                      .color,
+                                                ),
+                                                const SizedBox(width: 10.0),
+                                                const Text('Equalizer'),
+                                              ],
+                                            )),
+                                    ]
+                                  : [
+                                      PopupMenuItem(
+                                          value: 0,
+                                          child: Row(
+                                            children: [
+                                              Icon(
+                                                Icons.playlist_add_rounded,
+                                                color: Theme.of(context)
+                                                    .iconTheme
+                                                    .color,
+                                              ),
+                                              const SizedBox(width: 10.0),
+                                              const Text('Add to playlist'),
+                                            ],
+                                          )),
+                                      PopupMenuItem(
+                                          value: 1,
+                                          child: Row(
+                                            children: [
+                                              Icon(
+                                                CupertinoIcons.timer,
+                                                color: Theme.of(context)
+                                                    .iconTheme
+                                                    .color,
+                                              ),
+                                              const SizedBox(width: 10.0),
+                                              const Text('Sleep Timer'),
+                                            ],
+                                          )),
+                                      if (Hive.box('settings').get('supportEq',
+                                          defaultValue: true) as bool)
+                                        PopupMenuItem(
+                                            value: 4,
+                                            child: Row(
+                                              children: [
+                                                Icon(
+                                                  Icons.equalizer_rounded,
+                                                  color: Theme.of(context)
+                                                      .iconTheme
+                                                      .color,
+                                                ),
+                                                const SizedBox(width: 10.0),
+                                                const Text('Equalizer'),
+                                              ],
+                                            )),
+                                      PopupMenuItem(
+                                          value: 3,
+                                          child: Row(
+                                            children: [
+                                              Icon(
+                                                MdiIcons.youtube,
+                                                color: Theme.of(context)
+                                                    .iconTheme
+                                                    .color,
+                                              ),
+                                              const SizedBox(width: 10.0),
+                                              Text(fromYT
+                                                  ? 'Watch Video'
+                                                  : 'Search Video'),
+                                            ],
+                                          )),
+                                    ],
+                            )
+                          ],
                         ),
-                        shape: const RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(15.0))),
-                        onSelected: (int? value) {
-                          if (value == 4) {
-                            showDialog(
-                                context: context,
-                                builder: (context) {
-                                  return const Equalizer();
-                                });
-                          }
-                          if (value == 3) {
-                            launch(fromYT
-                                ? 'https://youtube.com/watch?v=${mediaItem.id}'
-                                : 'https://www.youtube.com/results?search_query=${mediaItem.title} by ${mediaItem.artist}');
-                          }
-                          if (value == 1) {
-                            showDialog(
-                              context: context,
-                              builder: (context) {
-                                return SimpleDialog(
-                                  title: Text(
-                                    'Sleep Timer',
-                                    style: TextStyle(
-                                      color: Theme.of(context).accentColor,
+                        body: Builder(builder: (BuildContext context) {
+                          scaffoldContext = context;
+                          return LayoutBuilder(builder: (BuildContext context,
+                              BoxConstraints constraints) {
+                            if (constraints.maxWidth > constraints.maxHeight) {
+                              return Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  // Artwork
+                                  ArtWorkWidget(
+                                    cardKey,
+                                    mediaItem,
+                                    constraints.maxHeight / 0.9,
+                                    offline: offline,
+                                  ),
+
+                                  // title and controls
+                                  SizedBox(
+                                    width: constraints.maxWidth / 2,
+                                    child: NameNControls(
+                                      mediaItem,
+                                      offline: offline,
                                     ),
                                   ),
-                                  contentPadding: const EdgeInsets.all(10.0),
-                                  children: [
-                                    ListTile(
-                                      title: const Text(
-                                          'Sleep after a duration of hh:mm'),
-                                      subtitle: const Text(
-                                          'Music will stop after selected duration'),
-                                      dense: true,
-                                      onTap: () {
-                                        Navigator.pop(context);
-                                        setTimer(context, scaffoldContext);
-                                      },
-                                    ),
-                                    ListTile(
-                                      title: const Text('Sleep after N Songs'),
-                                      subtitle: const Text(
-                                          'Music will stop after playing selected no of songs'),
-                                      dense: true,
-                                      onTap: () {
-                                        Navigator.pop(context);
-                                        setCounter(scaffoldContext!);
-                                      },
-                                    ),
-                                  ],
-                                );
-                              },
-                            );
-                          }
-                          if (value == 0) {
-                            AddToPlaylist().addToPlaylist(context, mediaItem);
-                          }
-                          if (value == 2) {
-                            SaavnAPI().getReco(mediaItem.id).then((value) {
-                              showModalBottomSheet(
-                                  isDismissible: true,
-                                  backgroundColor: Colors.transparent,
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return BottomGradientContainer(
-                                      padding: EdgeInsets.zero,
-                                      margin: const EdgeInsets.only(
-                                          left: 20, right: 20),
-                                      borderRadius: const BorderRadius.only(
-                                          topLeft: Radius.circular(15.0),
-                                          topRight: Radius.circular(15.0)),
-                                      child: ListView.builder(
-                                          itemCount: value.length,
-                                          physics:
-                                              const BouncingScrollPhysics(),
-                                          shrinkWrap: true,
-                                          padding: const EdgeInsets.all(10.0),
-                                          itemBuilder: (context, index) {
-                                            return ListTile(
-                                              contentPadding:
-                                                  const EdgeInsets.only(
-                                                      left: 15.0),
-                                              title: Text(
-                                                '${value[index]["title"]}',
-                                                overflow: TextOverflow.ellipsis,
-                                                style: const TextStyle(
-                                                    fontWeight:
-                                                        FontWeight.w500),
-                                              ),
-                                              subtitle: Text(
-                                                '${value[index]["subtitle"]}',
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                              leading: Card(
-                                                elevation: 8,
-                                                shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            7.0)),
-                                                clipBehavior: Clip.antiAlias,
-                                                child: CachedNetworkImage(
-                                                  errorWidget:
-                                                      (context, _, __) =>
-                                                          const Image(
-                                                    image: AssetImage(
-                                                        'assets/cover.jpg'),
-                                                  ),
-                                                  imageUrl:
-                                                      '${value[index]["image"].replaceAll('http:', 'https:')}',
-                                                  placeholder: (context, url) =>
-                                                      const Image(
-                                                    image: AssetImage(
-                                                        'assets/cover.jpg'),
-                                                  ),
-                                                ),
-                                              ),
-                                              trailing: Row(
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: [
-                                                  DownloadButton(
-                                                    data: value[index] as Map,
-                                                    icon: 'download',
-                                                  ),
-                                                  AddToQueueButton(
-                                                      data:
-                                                          value[index] as Map),
-                                                ],
-                                              ),
-                                              onTap: () {},
-                                            );
-                                          }),
-                                    );
-                                  });
-                            });
-                          }
-                        },
-                        itemBuilder: (context) => offline
-                            ? [
-                                PopupMenuItem(
-                                    value: 1,
-                                    child: Row(
-                                      children: [
-                                        Icon(
-                                          CupertinoIcons.timer,
-                                          color:
-                                              Theme.of(context).iconTheme.color,
-                                        ),
-                                        const SizedBox(width: 10.0),
-                                        const Text('Sleep Timer'),
-                                      ],
-                                    )),
-                                if (Hive.box('settings').get('supportEq',
-                                    defaultValue: true) as bool)
-                                  PopupMenuItem(
-                                      value: 4,
-                                      child: Row(
-                                        children: [
-                                          Icon(
-                                            Icons.equalizer_rounded,
-                                            color: Theme.of(context)
-                                                .iconTheme
-                                                .color,
-                                          ),
-                                          const SizedBox(width: 10.0),
-                                          const Text('Equalizer'),
-                                        ],
-                                      )),
-                              ]
-                            : [
-                                PopupMenuItem(
-                                    value: 0,
-                                    child: Row(
-                                      children: [
-                                        Icon(
-                                          Icons.playlist_add_rounded,
-                                          color:
-                                              Theme.of(context).iconTheme.color,
-                                        ),
-                                        const SizedBox(width: 10.0),
-                                        const Text('Add to playlist'),
-                                      ],
-                                    )),
-                                PopupMenuItem(
-                                    value: 1,
-                                    child: Row(
-                                      children: [
-                                        Icon(
-                                          CupertinoIcons.timer,
-                                          color:
-                                              Theme.of(context).iconTheme.color,
-                                        ),
-                                        const SizedBox(width: 10.0),
-                                        const Text('Sleep Timer'),
-                                      ],
-                                    )),
-                                if (Hive.box('settings').get('supportEq',
-                                    defaultValue: true) as bool)
-                                  PopupMenuItem(
-                                      value: 4,
-                                      child: Row(
-                                        children: [
-                                          Icon(
-                                            Icons.equalizer_rounded,
-                                            color: Theme.of(context)
-                                                .iconTheme
-                                                .color,
-                                          ),
-                                          const SizedBox(width: 10.0),
-                                          const Text('Equalizer'),
-                                        ],
-                                      )),
-                                PopupMenuItem(
-                                    value: 3,
-                                    child: Row(
-                                      children: [
-                                        Icon(
-                                          MdiIcons.youtube,
-                                          color:
-                                              Theme.of(context).iconTheme.color,
-                                        ),
-                                        const SizedBox(width: 10.0),
-                                        Text(fromYT
-                                            ? 'Watch Video'
-                                            : 'Search Video'),
-                                      ],
-                                    )),
-                                if (!fromYT)
-                                  PopupMenuItem(
-                                      value: 2,
-                                      child: Row(
-                                        children: [
-                                          Icon(
-                                            Icons.music_note_rounded,
-                                            color: Theme.of(context)
-                                                .iconTheme
-                                                .color,
-                                          ),
-                                          const SizedBox(width: 10.0),
-                                          const Text('Recommended Songs'),
-                                        ],
-                                      )),
+                                ],
+                              );
+                            }
+                            return Column(
+                              children: [
+                                // Artwork
+                                ArtWorkWidget(
+                                  cardKey,
+                                  mediaItem,
+                                  constraints.maxWidth,
+                                  offline: offline,
+                                ),
+
+                                // title and controls
+                                Expanded(
+                                  child: NameNControls(
+                                    mediaItem,
+                                    offline: offline,
+                                  ),
+                                ),
                               ],
-                      )
-                    ],
-                  ),
-                  body: Builder(builder: (BuildContext context) {
-                    scaffoldContext = context;
-                    return LayoutBuilder(builder:
-                        (BuildContext context, BoxConstraints constraints) {
-                      if (constraints.maxWidth > constraints.maxHeight) {
-                        return Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            // Artwork
-                            ArtWorkWidget(
-                              cardKey,
-                              mediaItem,
-                              constraints.maxHeight / 0.9,
-                              offline: offline,
-                            ),
+                            );
+                          });
+                        }),
 
-                            // title and controls
-                            SizedBox(
-                              width: constraints.maxWidth / 2,
-                              child: NameNControls(
-                                mediaItem,
-                                offline: offline,
-                              ),
-                            ),
-                          ],
-                        );
-                      }
-                      return Column(
-                        children: [
-                          // Artwork
-                          ArtWorkWidget(
-                            cardKey,
-                            mediaItem,
-                            constraints.maxWidth,
-                            offline: offline,
-                          ),
-
-                          // title and controls
-                          Expanded(
-                            child: NameNControls(
-                              mediaItem,
-                              offline: offline,
-                            ),
-                          ),
-                        ],
-                      );
-                    });
-                  }),
-
-                  // }
-                );
-                // );
-              }),
-        ),
-        // ),
-      ),
+                        // }
+                      ),
+                    ),
+                  );
+                });
+            // );
+          }),
     );
   }
 
@@ -752,7 +712,8 @@ class ControlButtons extends StatelessWidget {
                             width: miniplayer ? 40.0 : 65.0,
                             child: CircularProgressIndicator(
                               valueColor: AlwaysStoppedAnimation<Color>(
-                                  Theme.of(context).accentColor),
+                                Theme.of(context).iconTheme.color!,
+                              ),
                             ),
                           ),
                         ),
@@ -783,21 +744,23 @@ class ControlButtons extends StatelessWidget {
                                     ? FloatingActionButton(
                                         elevation: 10,
                                         tooltip: 'Pause',
+                                        backgroundColor: Colors.white,
                                         onPressed: audioHandler.pause,
                                         child: const Icon(
                                           Icons.pause_rounded,
                                           size: 40.0,
-                                          color: Colors.white,
+                                          color: Colors.black,
                                         ),
                                       )
                                     : FloatingActionButton(
                                         elevation: 10,
                                         tooltip: 'Play',
+                                        backgroundColor: Colors.white,
                                         onPressed: audioHandler.play,
                                         child: const Icon(
                                           Icons.play_arrow_rounded,
                                           size: 40.0,
-                                          color: Colors.white,
+                                          color: Colors.black,
                                         ),
                                       ),
                               )),
@@ -949,47 +912,94 @@ class NowPlayingStream extends StatelessWidget {
                                   ],
                                 )
                               : const SizedBox(),
-                      leading: Card(
-                        elevation: 5,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(7.0),
-                        ),
-                        clipBehavior: Clip.antiAlias,
-                        child: (queue[index].artUri == null)
-                            ? const SizedBox(
-                                height: 50.0,
-                                width: 50.0,
-                                child: Image(
-                                  image: AssetImage('assets/cover.jpg'),
-                                ),
-                              )
-                            : SizedBox(
-                                height: 50.0,
-                                width: 50.0,
-                                child: queue[index]
-                                        .artUri
-                                        .toString()
-                                        .startsWith('file:')
-                                    ? Image(
-                                        fit: BoxFit.cover,
-                                        image: FileImage(File(
-                                            queue[index].artUri!.toFilePath())))
-                                    : CachedNetworkImage(
-                                        fit: BoxFit.cover,
-                                        errorWidget:
-                                            (BuildContext context, _, __) =>
-                                                const Image(
-                                          image: AssetImage('assets/cover.jpg'),
+                      leading: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          if (queue[index].extras?['addedByAutoplay']
+                                  as bool? ??
+                              false)
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    const RotatedBox(
+                                      quarterTurns: 3,
+                                      child: Text(
+                                        'Added by',
+                                        textAlign: TextAlign.start,
+                                        style: TextStyle(
+                                          fontSize: 5.0,
                                         ),
-                                        placeholder:
-                                            (BuildContext context, _) =>
-                                                const Image(
-                                          image: AssetImage('assets/cover.jpg'),
-                                        ),
-                                        imageUrl:
-                                            queue[index].artUri.toString(),
                                       ),
-                              ),
+                                    ),
+                                    RotatedBox(
+                                      quarterTurns: 3,
+                                      child: Text(
+                                        'Autoplay',
+                                        textAlign: TextAlign.start,
+                                        style: TextStyle(
+                                          fontSize: 8.0,
+                                          color: Theme.of(context).accentColor,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(
+                                  height: 5.0,
+                                ),
+                              ],
+                            ),
+                          Card(
+                            elevation: 5,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(7.0),
+                            ),
+                            clipBehavior: Clip.antiAlias,
+                            child: (queue[index].artUri == null)
+                                ? const SizedBox(
+                                    height: 50.0,
+                                    width: 50.0,
+                                    child: Image(
+                                      image: AssetImage('assets/cover.jpg'),
+                                    ),
+                                  )
+                                : SizedBox(
+                                    height: 50.0,
+                                    width: 50.0,
+                                    child: queue[index]
+                                            .artUri
+                                            .toString()
+                                            .startsWith('file:')
+                                        ? Image(
+                                            fit: BoxFit.cover,
+                                            image: FileImage(File(queue[index]
+                                                .artUri!
+                                                .toFilePath())))
+                                        : CachedNetworkImage(
+                                            fit: BoxFit.cover,
+                                            errorWidget:
+                                                (BuildContext context, _, __) =>
+                                                    const Image(
+                                              image: AssetImage(
+                                                  'assets/cover.jpg'),
+                                            ),
+                                            placeholder:
+                                                (BuildContext context, _) =>
+                                                    const Image(
+                                              image: AssetImage(
+                                                  'assets/cover.jpg'),
+                                            ),
+                                            imageUrl:
+                                                queue[index].artUri.toString(),
+                                          ),
+                                  ),
+                          ),
+                        ],
                       ),
                       title: Text(
                         queue[index].title,
@@ -1065,49 +1075,70 @@ class _ArtWorkWidgetState extends State<ArtWorkWidget> {
               back: GestureDetector(
                 onTap: () => widget.cardKey.currentState!.toggleCard(),
                 onDoubleTap: () => widget.cardKey.currentState!.toggleCard(),
-                child: Card(
-                  elevation: 10.0,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15.0)),
-                  clipBehavior: Clip.antiAlias,
-                  child: GradientContainer(
-                    child: ShaderMask(
-                      shaderCallback: (rect) {
-                        return const LinearGradient(
-                          begin: Alignment.center,
-                          end: Alignment.bottomCenter,
-                          colors: [Colors.black, Colors.transparent],
-                        ).createShader(
-                            Rect.fromLTRB(0, 0, rect.width, rect.height));
-                      },
-                      blendMode: BlendMode.dstIn,
-                      child: Center(
-                        child: SingleChildScrollView(
-                          physics: const BouncingScrollPhysics(),
-                          padding: const EdgeInsets.fromLTRB(10, 20, 10, 50),
-                          child: widget.offline
+                child: ShaderMask(
+                  shaderCallback: (rect) {
+                    return const LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.transparent,
+                        Colors.black,
+                        Colors.black,
+                        Colors.black,
+                        Colors.transparent
+                      ],
+                    ).createShader(
+                        Rect.fromLTRB(0, 0, rect.width, rect.height));
+                  },
+                  blendMode: BlendMode.dstIn,
+                  child: Center(
+                    child: SingleChildScrollView(
+                      physics: const BouncingScrollPhysics(),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 55, horizontal: 10),
+                      child: widget.offline
+                          ? FutureBuilder(
+                              future: Lyrics().getOffLyrics(
+                                widget.mediaItem.id.toString(),
+                              ),
+                              builder: (BuildContext context,
+                                  AsyncSnapshot<String> snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.done) {
+                                  final String lyrics = snapshot.data ?? '';
+                                  if (lyrics == '') {
+                                    return EmptyScreen().emptyScreen(
+                                        context,
+                                        0,
+                                        ':( ',
+                                        100.0,
+                                        'Lyrics',
+                                        60.0,
+                                        'Not Available',
+                                        20.0);
+                                  }
+                                  return SelectableText(
+                                    lyrics,
+                                    textAlign: TextAlign.center,
+                                  );
+                                }
+                                return CircularProgressIndicator(
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                      Theme.of(context).accentColor),
+                                );
+                              })
+                          : widget.mediaItem.extras?['has_lyrics'] == 'true'
                               ? FutureBuilder(
-                                  future: Lyrics().getOffLyrics(
-                                    widget.mediaItem.id.toString(),
-                                  ),
+                                  future: Lyrics().getSaavnLyrics(
+                                      widget.mediaItem.id.toString()),
                                   builder: (BuildContext context,
                                       AsyncSnapshot<String> snapshot) {
+                                    String? lyrics;
                                     if (snapshot.connectionState ==
                                         ConnectionState.done) {
-                                      final String lyrics = snapshot.data ?? '';
-                                      if (lyrics == '') {
-                                        return EmptyScreen().emptyScreen(
-                                            context,
-                                            0,
-                                            ':( ',
-                                            100.0,
-                                            'Lyrics',
-                                            60.0,
-                                            'Not Available',
-                                            20.0);
-                                      }
-                                      return SelectableText(
-                                        lyrics,
+                                      lyrics = snapshot.data;
+                                      return Text(
+                                        lyrics!,
                                         textAlign: TextAlign.center,
                                       );
                                     }
@@ -1116,56 +1147,31 @@ class _ArtWorkWidgetState extends State<ArtWorkWidget> {
                                           Theme.of(context).accentColor),
                                     );
                                   })
-                              : widget.mediaItem.extras?['has_lyrics'] == 'true'
-                                  ? FutureBuilder(
-                                      future: Lyrics().getSaavnLyrics(
-                                          widget.mediaItem.id.toString()),
-                                      builder: (BuildContext context,
-                                          AsyncSnapshot<String> snapshot) {
-                                        String? lyrics;
-                                        if (snapshot.connectionState ==
-                                            ConnectionState.done) {
-                                          lyrics = snapshot.data;
-                                          return Text(
-                                            lyrics!,
-                                            textAlign: TextAlign.center,
+                              : ValueListenableBuilder(
+                                  valueListenable: done,
+                                  builder: (BuildContext context, bool value,
+                                      Widget? child) {
+                                    return value
+                                        ? lyrics['lyrics'] == ''
+                                            ? EmptyScreen().emptyScreen(
+                                                context,
+                                                0,
+                                                ':( ',
+                                                100.0,
+                                                'Lyrics',
+                                                60.0,
+                                                'Not Available',
+                                                20.0)
+                                            : Text(
+                                                lyrics['lyrics'].toString(),
+                                                textAlign: TextAlign.center,
+                                              )
+                                        : CircularProgressIndicator(
+                                            valueColor: AlwaysStoppedAnimation<
+                                                    Color>(
+                                                Theme.of(context).accentColor),
                                           );
-                                        }
-                                        return CircularProgressIndicator(
-                                          valueColor: AlwaysStoppedAnimation<
-                                                  Color>(
-                                              Theme.of(context).accentColor),
-                                        );
-                                      })
-                                  : ValueListenableBuilder(
-                                      valueListenable: done,
-                                      builder: (BuildContext context,
-                                          bool value, Widget? child) {
-                                        return value
-                                            ? lyrics['lyrics'] == ''
-                                                ? EmptyScreen().emptyScreen(
-                                                    context,
-                                                    0,
-                                                    ':( ',
-                                                    100.0,
-                                                    'Lyrics',
-                                                    60.0,
-                                                    'Not Available',
-                                                    20.0)
-                                                : Text(
-                                                    lyrics['lyrics'].toString(),
-                                                    textAlign: TextAlign.center,
-                                                  )
-                                            : CircularProgressIndicator(
-                                                valueColor:
-                                                    AlwaysStoppedAnimation<
-                                                            Color>(
-                                                        Theme.of(context)
-                                                            .accentColor),
-                                              );
-                                      }),
-                        ),
-                      ),
+                                  }),
                     ),
                   ),
                 ),
@@ -1234,6 +1240,7 @@ class _ArtWorkWidgetState extends State<ArtWorkWidget> {
                                     fit: BoxFit.cover,
                                     height: widget.width * 0.85,
                                     width: widget.width * 0.85,
+                                    gaplessPlayback: true,
                                     image: FileImage(File(
                                         widget.mediaItem.artUri!.toFilePath())))
                                 : CachedNetworkImage(
@@ -1391,10 +1398,10 @@ class NameNControls extends StatelessWidget {
                     textAlign: TextAlign.center,
                     overflow: TextOverflow.ellipsis,
                     maxLines: 1,
-                    style: TextStyle(
-                      fontSize: 35,
+                    style: const TextStyle(
+                      fontSize: 30,
                       fontWeight: FontWeight.bold,
-                      color: Theme.of(context).accentColor,
+                      // color: Theme.of(context).accentColor,
                     ),
                   ),
 
@@ -1403,7 +1410,7 @@ class NameNControls extends StatelessWidget {
                     mediaItem.artist ?? 'Unknown',
                     textAlign: TextAlign.center,
                     style: const TextStyle(
-                        fontSize: 18, fontWeight: FontWeight.w500),
+                        fontSize: 15, fontWeight: FontWeight.w500),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ],
@@ -1413,6 +1420,7 @@ class NameNControls extends StatelessWidget {
         ),
 
         /// Seekbar starts from here
+
         StreamBuilder<PositionData>(
           stream: _positionDataStream,
           builder: (context, snapshot) {

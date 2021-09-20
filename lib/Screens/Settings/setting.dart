@@ -193,22 +193,22 @@ class _SettingPageState extends State<SettingPage> {
                             context: context,
                             builder: (BuildContext context) {
                               final List<String> colors = [
-                                'Amber',
-                                'Blue',
-                                'Cyan',
-                                'Deep Orange',
+                                'Purple',
                                 'Deep Purple',
-                                'Green',
                                 'Indigo',
+                                'Blue',
                                 'Light Blue',
+                                'Cyan',
+                                'Teal',
+                                'Green',
                                 'Light Green',
                                 'Lime',
-                                'Orange',
-                                'Pink',
-                                'Purple',
-                                'Red',
-                                'Teal',
                                 'Yellow',
+                                'Amber',
+                                'Orange',
+                                'Deep Orange',
+                                'Red',
+                                'Pink',
                               ];
                               return BottomGradientContainer(
                                 borderRadius: BorderRadius.circular(20.0),
@@ -700,6 +700,14 @@ class _SettingPageState extends State<SettingPage> {
                           ],
                         ),
                       ),
+                      const BoxSwitchTile(
+                        title: Text('Use Dominant Color for Play Screen'),
+                        subtitle: Text(
+                            'Dominant Color from Image will be used for Play Screen Background. If turned off, default background Gradient will be used'),
+                        keyName: 'useImageColor',
+                        defaultValue: true,
+                        isThreeLine: true,
+                      ),
                       ListTile(
                           title: const Text('Change to Default'),
                           dense: true,
@@ -948,104 +956,118 @@ class _SettingPageState extends State<SettingPage> {
                         dense: true,
                       ),
                       const BoxSwitchTile(
+                        title: Text('Load Last Session on App Start'),
+                        subtitle: Text(
+                            'Automatically load last session when app starts'),
+                        keyName: 'loadStart',
+                        defaultValue: true,
+                      ),
+                      const BoxSwitchTile(
                         title: Text('Enforce Repeating'),
                         subtitle: Text(
                             'Keep the same repeat option for every session'),
                         keyName: 'enforceRepeat',
                         defaultValue: false,
                       ),
-                      ListTile(
-                          title: const Text('Search Location'),
-                          subtitle: const Text(
-                              'Locations to search for offline music'),
-                          dense: true,
-                          onTap: () {
-                            final GlobalKey<AnimatedListState> _listKey =
-                                GlobalKey<AnimatedListState>();
-                            showModalBottomSheet(
-                                isDismissible: true,
-                                backgroundColor: Colors.transparent,
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return BottomGradientContainer(
-                                    borderRadius: BorderRadius.circular(20.0),
-                                    child: AnimatedList(
-                                      physics: const BouncingScrollPhysics(),
-                                      shrinkWrap: true,
-                                      padding: const EdgeInsets.fromLTRB(
-                                          0, 10, 0, 10),
-                                      key: _listKey,
-                                      initialItemCount: dirPaths.length + 1,
-                                      itemBuilder: (cntxt, idx, animation) {
-                                        return (idx == 0)
-                                            ? ListTile(
-                                                title:
-                                                    const Text('Add Location'),
-                                                leading: const Icon(
-                                                    CupertinoIcons.add),
-                                                onTap: () async {
-                                                  final String temp =
-                                                      await Picker()
-                                                          .selectFolder(context,
-                                                              'Select Folder');
-                                                  if (temp.trim() != '' &&
-                                                      !dirPaths
-                                                          .contains(temp)) {
-                                                    dirPaths.add(temp);
-                                                    Hive.box('settings').put(
-                                                        'searchPaths',
-                                                        dirPaths);
-                                                    _listKey.currentState!
-                                                        .insertItem(
-                                                            dirPaths.length);
-                                                  } else {
-                                                    if (temp.trim() == '') {
-                                                      Navigator.pop(context);
-                                                    }
-                                                    ShowSnackBar().showSnackBar(
-                                                      context,
-                                                      temp.trim() == ''
-                                                          ? 'No folder selected'
-                                                          : 'Already added',
-                                                    );
-                                                  }
-                                                },
-                                              )
-                                            : SizeTransition(
-                                                sizeFactor: animation,
-                                                child: ListTile(
-                                                  leading: const Icon(
-                                                      CupertinoIcons.folder),
-                                                  title: Text(dirPaths[idx - 1]
-                                                      .toString()),
-                                                  trailing: IconButton(
-                                                    icon: const Icon(
-                                                      CupertinoIcons.clear,
-                                                      size: 15.0,
-                                                    ),
-                                                    tooltip: 'Remove',
-                                                    onPressed: () {
-                                                      dirPaths
-                                                          .removeAt(idx - 1);
-                                                      Hive.box('settings').put(
-                                                          'searchPaths',
-                                                          dirPaths);
-                                                      _listKey.currentState!
-                                                          .removeItem(
-                                                              idx,
-                                                              (context,
-                                                                      animation) =>
-                                                                  Container());
-                                                      // setStt(() {});
-                                                    },
-                                                  ),
-                                                ),
-                                              );
-                                      },
-                                    ),
-                                  );
-                                });
-                          })
+                      const BoxSwitchTile(
+                        title: Text('Autoplay'),
+                        subtitle: Text(
+                            'Automatically added related songs to the queue'),
+                        keyName: 'autoplay',
+                        defaultValue: true,
+                      ),
+                      //   ListTile(
+                      //       title: const Text('Search Location'),
+                      //       subtitle: const Text(
+                      //           'Locations to search for offline music'),
+                      //       dense: true,
+                      //       onTap: () {
+                      //         final GlobalKey<AnimatedListState> _listKey =
+                      //             GlobalKey<AnimatedListState>();
+                      //         showModalBottomSheet(
+                      //             isDismissible: true,
+                      //             backgroundColor: Colors.transparent,
+                      //             context: context,
+                      //             builder: (BuildContext context) {
+                      //               return BottomGradientContainer(
+                      //                 borderRadius: BorderRadius.circular(20.0),
+                      //                 child: AnimatedList(
+                      //                   physics: const BouncingScrollPhysics(),
+                      //                   shrinkWrap: true,
+                      //                   padding: const EdgeInsets.fromLTRB(
+                      //                       0, 10, 0, 10),
+                      //                   key: _listKey,
+                      //                   initialItemCount: dirPaths.length + 1,
+                      //                   itemBuilder: (cntxt, idx, animation) {
+                      //                     return (idx == 0)
+                      //                         ? ListTile(
+                      //                             title:
+                      //                                 const Text('Add Location'),
+                      //                             leading: const Icon(
+                      //                                 CupertinoIcons.add),
+                      //                             onTap: () async {
+                      //                               final String temp =
+                      //                                   await Picker()
+                      //                                       .selectFolder(context,
+                      //                                           'Select Folder');
+                      //                               if (temp.trim() != '' &&
+                      //                                   !dirPaths
+                      //                                       .contains(temp)) {
+                      //                                 dirPaths.add(temp);
+                      //                                 Hive.box('settings').put(
+                      //                                     'searchPaths',
+                      //                                     dirPaths);
+                      //                                 _listKey.currentState!
+                      //                                     .insertItem(
+                      //                                         dirPaths.length);
+                      //                               } else {
+                      //                                 if (temp.trim() == '') {
+                      //                                   Navigator.pop(context);
+                      //                                 }
+                      //                                 ShowSnackBar().showSnackBar(
+                      //                                   context,
+                      //                                   temp.trim() == ''
+                      //                                       ? 'No folder selected'
+                      //                                       : 'Already added',
+                      //                                 );
+                      //                               }
+                      //                             },
+                      //                           )
+                      //                         : SizeTransition(
+                      //                             sizeFactor: animation,
+                      //                             child: ListTile(
+                      //                               leading: const Icon(
+                      //                                   CupertinoIcons.folder),
+                      //                               title: Text(dirPaths[idx - 1]
+                      //                                   .toString()),
+                      //                               trailing: IconButton(
+                      //                                 icon: const Icon(
+                      //                                   CupertinoIcons.clear,
+                      //                                   size: 15.0,
+                      //                                 ),
+                      //                                 tooltip: 'Remove',
+                      //                                 onPressed: () {
+                      //                                   dirPaths
+                      //                                       .removeAt(idx - 1);
+                      //                                   Hive.box('settings').put(
+                      //                                       'searchPaths',
+                      //                                       dirPaths);
+                      //                                   _listKey.currentState!
+                      //                                       .removeItem(
+                      //                                           idx,
+                      //                                           (context,
+                      //                                                   animation) =>
+                      //                                               Container());
+                      //                                   // setStt(() {});
+                      //                                 },
+                      //                               ),
+                      //                             ),
+                      //                           );
+                      //                   },
+                      //                 ),
+                      //               );
+                      //             });
+                      //       })
                     ],
                   ),
                 ),
@@ -1156,9 +1178,11 @@ class _SettingPageState extends State<SettingPage> {
                     ),
                     const BoxSwitchTile(
                       title: Text('Download Lyrics'),
-                      subtitle: Text('Default: Off'),
+                      subtitle: Text(
+                          'Downloading lyrics along with song, if available'),
                       keyName: 'downloadLyrics',
                       defaultValue: false,
+                      isThreeLine: true,
                     ),
                   ]),
                 ),
@@ -1181,7 +1205,7 @@ class _SettingPageState extends State<SettingPage> {
                     ListTile(
                         title: const Text('Min Audio Length to search music'),
                         subtitle: const Text(
-                            'Files with audio length smaller than this will not be shown in "My Music" Section'),
+                            'Audios with length smaller than this will not be shown in "My Music" Section'),
                         dense: true,
                         onTap: () {
                           TextInputDialog().showTextInputDialog(
@@ -1208,8 +1232,9 @@ class _SettingPageState extends State<SettingPage> {
                       defaultValue: true,
                     ),
                     BoxSwitchTile(
-                        title: const Text('Show Last Session on Home Screen'),
-                        subtitle: const Text('Default: On'),
+                        title: const Text('Show Last Session'),
+                        subtitle:
+                            const Text('Show Last session on Home Screen'),
                         keyName: 'showRecent',
                         defaultValue: true,
                         onChanged: (val) {
@@ -1224,7 +1249,7 @@ class _SettingPageState extends State<SettingPage> {
                     const BoxSwitchTile(
                       title: Text('Stop music on App Close'),
                       subtitle: Text(
-                          "If turned off, music won't stop even after app close until you press stop button\nDefault: On\n"),
+                          "If turned off, music won't stop even after app is 'closed', until you press stop button. This option is for app 'close' not when app is in 'background'. Music will always play in background you don't need to change any setting for that.\n"),
                       isThreeLine: true,
                       keyName: 'stopForegroundService',
                       defaultValue: true,
@@ -1240,7 +1265,7 @@ class _SettingPageState extends State<SettingPage> {
                     const BoxSwitchTile(
                       title: Text('Auto check for Updates'),
                       subtitle: Text(
-                          "If you download BlackHole from any software repository like 'F-Droid', 'IzzyOnDroid', etc keep this OFF. Whereas, If you download it from 'GitHub' or any other source which doesn't provide auto updates then turn this ON, so as to recieve update alerts"),
+                          "If you downloaded BlackHole from any app repository like 'F-Droid', 'IzzyOnDroid', etc which provide update options, keep this OFF. Whereas, If you downloaded it from 'GitHub' or any other source which doesn't provide auto updates then turn this ON, so as to recieve update alerts\n"),
                       keyName: 'checkUpdate',
                       isThreeLine: true,
                       defaultValue: false,
@@ -1248,7 +1273,7 @@ class _SettingPageState extends State<SettingPage> {
                     BoxSwitchTile(
                       title: const Text('Use Proxy'),
                       subtitle: const Text(
-                          'Turn this on if you are not from India and having issues like getting only Indian Songs. You can even use a VPN'),
+                          'Turn this on if you are not from India and having issues with search, like getting only Indian Songs or not getting any results, etc. You can even use VPN with Indian Server\n'),
                       keyName: 'useProxy',
                       defaultValue: false,
                       isThreeLine: true,
@@ -1549,8 +1574,8 @@ class _SettingPageState extends State<SettingPage> {
 
                       ListTile(
                         title: const Text('Join us on Telegram'),
-                        // subtitle: Text(
-                        //     'Stay updated with the project, test beta versions, and much more :)'),
+                        subtitle: const Text(
+                            'Want to Test beta versions? Join us now!'),
                         onTap: () {
                           showModalBottomSheet(
                               context: context,

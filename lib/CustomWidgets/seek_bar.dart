@@ -1,5 +1,7 @@
 import 'dart:math';
 
+import 'package:blackhole/main.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class SeekBar extends StatefulWidget {
@@ -45,15 +47,16 @@ class _SeekBarState extends State<SeekBar> {
       _dragValue = null;
     }
     return SizedBox(
-      width: MediaQuery.of(context).size.width * 0.975,
+      width: MediaQuery.of(context).size.width * 0.95,
       child: Stack(
         children: [
           SliderTheme(
             data: _sliderThemeData.copyWith(
               thumbShape: HiddenThumbComponentShape(),
-              activeTrackColor: Theme.of(context).accentColor.withOpacity(0.5),
+              activeTrackColor:
+                  Theme.of(context).iconTheme.color!.withOpacity(0.5),
               inactiveTrackColor:
-                  Theme.of(context).accentColor.withOpacity(0.3),
+                  Theme.of(context).iconTheme.color!.withOpacity(0.3),
               trackHeight: 4.0,
               // trackShape: RoundedRectSliderTrackShape(),
               trackShape: const RectangularSliderTrackShape(),
@@ -70,8 +73,8 @@ class _SeekBarState extends State<SeekBar> {
           SliderTheme(
             data: _sliderThemeData.copyWith(
               inactiveTrackColor: Colors.transparent,
-              activeTrackColor: Theme.of(context).accentColor,
-              thumbColor: Theme.of(context).accentColor,
+              activeTrackColor: Theme.of(context).iconTheme.color,
+              thumbColor: Theme.of(context).iconTheme.color,
               trackHeight: 4.0,
             ),
             child: Slider(
@@ -94,6 +97,26 @@ class _SeekBarState extends State<SeekBar> {
                 }
                 _dragging = false;
               },
+            ),
+          ),
+          Positioned(
+            right: 18.0,
+            bottom: 18.0,
+            child: StreamBuilder<double>(
+              stream: audioHandler.speed,
+              builder: (context, snapshot) => IconButton(
+                icon: Text('${snapshot.data?.toStringAsFixed(1) ?? 1.0}x',
+                    style: const TextStyle(fontWeight: FontWeight.bold)),
+                onPressed: () {
+                  showSliderDialog(
+                    context: context,
+                    title: 'Adjust Speed',
+                    divisions: 25,
+                    min: 0.5,
+                    max: 3.0,
+                  );
+                },
+              ),
             ),
           ),
           Positioned(
@@ -146,4 +169,76 @@ class HiddenThumbComponentShape extends SliderComponentShape {
     required double textScaleFactor,
     required Size sizeWithOverflow,
   }) {}
+}
+
+void showSliderDialog({
+  required BuildContext context,
+  required String title,
+  required int divisions,
+  required double min,
+  required double max,
+  String valueSuffix = '',
+}) {
+  showDialog<void>(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: Text(title, textAlign: TextAlign.center),
+      content: StreamBuilder<double>(
+          stream: audioHandler.speed,
+          builder: (context, snapshot) {
+            double value = snapshot.data ?? audioHandler.speed.value;
+            if (value > max) {
+              value = max;
+            }
+            if (value < min) {
+              value = min;
+            }
+            return SizedBox(
+              height: 100.0,
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      IconButton(
+                        icon: const Icon(CupertinoIcons.minus),
+                        onPressed: audioHandler.speed.value > min
+                            ? () {
+                                audioHandler
+                                    .setSpeed(audioHandler.speed.value - 0.1);
+                              }
+                            : null,
+                      ),
+                      Text('${snapshot.data?.toStringAsFixed(1)}$valueSuffix',
+                          style: const TextStyle(
+                              fontFamily: 'Fixed',
+                              fontWeight: FontWeight.bold,
+                              fontSize: 24.0)),
+                      IconButton(
+                        icon: const Icon(CupertinoIcons.plus),
+                        onPressed: audioHandler.speed.value < max
+                            ? () {
+                                audioHandler
+                                    .setSpeed(audioHandler.speed.value + 0.1);
+                              }
+                            : null,
+                      ),
+                    ],
+                  ),
+                  Slider(
+                    inactiveColor:
+                        Theme.of(context).iconTheme.color!.withOpacity(0.4),
+                    activeColor: Theme.of(context).iconTheme.color,
+                    divisions: divisions,
+                    min: min,
+                    max: max,
+                    value: value,
+                    onChanged: audioHandler.setSpeed,
+                  ),
+                ],
+              ),
+            );
+          }),
+    ),
+  );
 }
