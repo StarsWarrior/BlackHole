@@ -24,9 +24,13 @@ class TopCharts extends StatefulWidget {
   _TopChartsState createState() => _TopChartsState();
 }
 
-class _TopChartsState extends State<TopCharts> {
+class _TopChartsState extends State<TopCharts>
+    with AutomaticKeepAliveClientMixin<TopCharts> {
+  @override
+  bool get wantKeepAlive => true;
   @override
   Widget build(BuildContext cntxt) {
+    super.build(context);
     return DefaultTabController(
         length: 2,
         child: Scaffold(
@@ -127,7 +131,8 @@ class TopPage extends StatefulWidget {
   _TopPageState createState() => _TopPageState();
 }
 
-class _TopPageState extends State<TopPage> {
+class _TopPageState extends State<TopPage>
+    with AutomaticKeepAliveClientMixin<TopPage> {
   Future<void> getData(String region) async {
     fetched = true;
     final List temp = await compute(scrapData, region);
@@ -164,6 +169,9 @@ class _TopPageState extends State<TopPage> {
   }
 
   @override
+  bool get wantKeepAlive => true;
+
+  @override
   void initState() {
     super.initState();
     if (widget.region == 'global' && globalItems.isEmpty) {
@@ -179,6 +187,7 @@ class _TopPageState extends State<TopPage> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     final bool isGlobal = widget.region == 'global';
     if (!fetched) {
       getCachedData(widget.region);

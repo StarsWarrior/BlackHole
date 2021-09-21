@@ -263,7 +263,8 @@ class _PlayScreenState extends State<PlayScreen> {
             return ValueListenableBuilder(
                 valueListenable: gradientColor,
                 builder: (BuildContext context, Color? value, Widget? child) {
-                  return Container(
+                  return AnimatedContainer(
+                    duration: const Duration(milliseconds: 300),
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         begin: !useImageColor

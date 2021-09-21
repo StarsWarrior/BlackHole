@@ -21,7 +21,8 @@ class SaavnHomePage extends StatefulWidget {
   _SaavnHomePageState createState() => _SaavnHomePageState();
 }
 
-class _SaavnHomePageState extends State<SaavnHomePage> {
+class _SaavnHomePageState extends State<SaavnHomePage>
+    with AutomaticKeepAliveClientMixin<SaavnHomePage> {
   List recentList =
       Hive.box('recentlyPlayed').get('recentSongs', defaultValue: []) as List;
 
@@ -72,7 +73,11 @@ class _SaavnHomePageState extends State<SaavnHomePage> {
   }
 
   @override
+  bool get wantKeepAlive => true;
+
+  @override
   Widget build(BuildContext context) {
+    super.build(context);
     if (!fetched) {
       getHomePageData();
       fetched = true;

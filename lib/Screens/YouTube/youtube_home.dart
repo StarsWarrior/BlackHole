@@ -18,12 +18,16 @@ class YouTube extends StatefulWidget {
   _YouTubeState createState() => _YouTubeState();
 }
 
-class _YouTubeState extends State<YouTube> {
+class _YouTubeState extends State<YouTube>
+    with AutomaticKeepAliveClientMixin<YouTube> {
   List ytSearch =
       Hive.box('settings').get('ytSearch', defaultValue: []) as List;
   bool showHistory =
       Hive.box('settings').get('showHistory', defaultValue: true) as bool;
   final FloatingSearchBarController _controller = FloatingSearchBarController();
+
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {
@@ -51,6 +55,7 @@ class _YouTubeState extends State<YouTube> {
 
   @override
   Widget build(BuildContext cntxt) {
+    super.build(context);
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: Colors.transparent,
