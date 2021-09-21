@@ -140,7 +140,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
         MapEntry(
             'image',
             await audioQuery.queryArtwork(song.id, ArtworkType.AUDIO,
-                size: 200))
+                size: 350))
       ]);
       _cachedSongsMap.add(songMap);
     }

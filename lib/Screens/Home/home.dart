@@ -16,6 +16,7 @@ import 'package:blackhole/Screens/Top Charts/top.dart';
 import 'package:blackhole/Screens/YouTube/youtube_home.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -340,7 +341,6 @@ class _HomePageState extends State<HomePage> {
                             controller: _scrollController,
                             headerSliverBuilder:
                                 (BuildContext context, bool innerBoxScrolled) {
-                              final controller = TextEditingController();
                               return <Widget>[
                                 SliverAppBar(
                                   expandedHeight: 135,
@@ -457,98 +457,80 @@ class _HomePageState extends State<HomePage> {
                                     child: AnimatedBuilder(
                                         animation: _scrollController,
                                         builder: (context, child) {
-                                          return AnimatedContainer(
-                                            width: (!_scrollController
-                                                        .hasClients ||
-                                                    _scrollController
-                                                            // ignore: invalid_use_of_protected_member
-                                                            .positions
-                                                            .length >
-                                                        1)
-                                                ? MediaQuery.of(context)
-                                                    .size
-                                                    .width
-                                                : max(
-                                                    MediaQuery.of(context)
-                                                            .size
-                                                            .width -
-                                                        _scrollController.offset
-                                                            .roundToDouble(),
-                                                    MediaQuery.of(context)
-                                                            .size
-                                                            .width -
-                                                        75),
-                                            duration: const Duration(
-                                                milliseconds: 150),
-                                            padding: const EdgeInsets.all(2.0),
-                                            // margin: EdgeInsets.zero,
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(10.0),
-                                              color:
-                                                  Theme.of(context).cardColor,
-                                              boxShadow: const [
-                                                BoxShadow(
-                                                  color: Colors.black26,
-                                                  blurRadius: 5.0,
-                                                  offset: Offset(1.5, 1.5),
-                                                  // shadow direction: bottom right
-                                                )
-                                              ],
-                                            ),
-                                            child: TextField(
-                                              controller: controller,
-                                              textAlignVertical:
-                                                  TextAlignVertical.center,
-                                              decoration: InputDecoration(
-                                                focusedBorder:
-                                                    const UnderlineInputBorder(
-                                                  borderSide: BorderSide(
-                                                      width: 1.5,
-                                                      color:
-                                                          Colors.transparent),
-                                                ),
-                                                fillColor: Theme.of(context)
-                                                    .colorScheme
-                                                    .secondary,
-                                                prefixIcon: Icon(
+                                          return GestureDetector(
+                                            child: AnimatedContainer(
+                                              width: (!_scrollController
+                                                          .hasClients ||
+                                                      _scrollController
+                                                              // ignore: invalid_use_of_protected_member
+                                                              .positions
+                                                              .length >
+                                                          1)
+                                                  ? MediaQuery.of(context)
+                                                      .size
+                                                      .width
+                                                  : max(
+                                                      MediaQuery.of(context)
+                                                              .size
+                                                              .width -
+                                                          _scrollController
+                                                              .offset
+                                                              .roundToDouble(),
+                                                      MediaQuery.of(context)
+                                                              .size
+                                                              .width -
+                                                          75),
+                                              height: 52.0,
+                                              duration: const Duration(
+                                                  milliseconds: 150),
+                                              padding:
+                                                  const EdgeInsets.all(2.0),
+                                              // margin: EdgeInsets.zero,
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(10.0),
+                                                color:
+                                                    Theme.of(context).cardColor,
+                                                boxShadow: const [
+                                                  BoxShadow(
+                                                    color: Colors.black26,
+                                                    blurRadius: 5.0,
+                                                    offset: Offset(1.5, 1.5),
+                                                    // shadow direction: bottom right
+                                                  )
+                                                ],
+                                              ),
+                                              child: Row(children: [
+                                                const SizedBox(width: 10.0),
+                                                Icon(
                                                   CupertinoIcons.search,
                                                   color: Theme.of(context)
                                                       .colorScheme
                                                       .secondary,
                                                 ),
-                                                border: InputBorder.none,
-                                                hintText:
-                                                    'Songs, albums or artists',
-                                              ),
-                                              onSubmitted: (query) {
-                                                if (query.trim() != '') {
-                                                  List search =
-                                                      Hive.box('settings').get(
-                                                              'search',
-                                                              defaultValue: [])
-                                                          as List;
-                                                  if (search.contains(query)) {
-                                                    search.remove(query);
-                                                  }
-                                                  search.insert(0, query);
-                                                  if (search.length > 3) {
-                                                    search =
-                                                        search.sublist(0, 3);
-                                                  }
-                                                  Hive.box('settings')
-                                                      .put('search', search);
-                                                  Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                          builder: (context) =>
-                                                              SearchPage(
-                                                                  query:
-                                                                      query)));
-                                                }
-                                                controller.text = '';
-                                              },
+                                                const SizedBox(width: 10.0),
+                                                Text(
+                                                  'Songs, albums or artists',
+                                                  style: TextStyle(
+                                                    fontSize: 16.0,
+                                                    color: Theme.of(context)
+                                                        .textTheme
+                                                        .caption!
+                                                        .color,
+                                                    fontWeight:
+                                                        FontWeight.normal,
+                                                  ),
+                                                ),
+                                              ]),
                                             ),
+                                            onTap: () => Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        const SearchPage(
+                                                          query: '',
+                                                          fromHome: true,
+                                                        ))),
                                           );
                                         }),
                                   ),
