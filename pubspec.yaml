@@ -20,8 +20,8 @@ version: 1.10.2+18
 environment:
   sdk: '>=2.13.0 <3.0.0'
 
-dependency_overrides: 
-  freezed_annotation: 0.14.2
+# dependency_overrides: 
+  # freezed_annotation: 0.14.2
 
 dependencies:
   flutter:
@@ -70,6 +70,9 @@ dependencies:
   file_picker: ^4.0.3
   path_provider: ^2.0.4
   permission_handler: ^8.1.6
+
+  # others
+  flutter_displaymode: ^0.3.2
   
 
 dev_dependencies:

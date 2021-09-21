@@ -3,7 +3,19 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:audio_service/audio_service.dart';
+import 'package:blackhole/CustomWidgets/add_playlist.dart';
+import 'package:blackhole/CustomWidgets/download_button.dart';
+import 'package:blackhole/CustomWidgets/empty_screen.dart';
+import 'package:blackhole/CustomWidgets/equalizer.dart';
+import 'package:blackhole/CustomWidgets/gradient_containers.dart';
+import 'package:blackhole/CustomWidgets/like_button.dart';
+import 'package:blackhole/CustomWidgets/seek_bar.dart';
+import 'package:blackhole/CustomWidgets/snackbar.dart';
+import 'package:blackhole/CustomWidgets/textinput_dialog.dart';
 import 'package:blackhole/Helpers/config.dart';
+import 'package:blackhole/Helpers/lyrics.dart';
+import 'package:blackhole/Helpers/mediaitem_converter.dart';
+import 'package:blackhole/main.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flip_card/flip_card.dart';
 import 'package:flutter/cupertino.dart';
@@ -17,19 +29,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
-
-import 'package:blackhole/CustomWidgets/add_playlist.dart';
-import 'package:blackhole/CustomWidgets/download_button.dart';
-import 'package:blackhole/CustomWidgets/empty_screen.dart';
-import 'package:blackhole/CustomWidgets/equalizer.dart';
-import 'package:blackhole/CustomWidgets/gradient_containers.dart';
-import 'package:blackhole/CustomWidgets/like_button.dart';
-import 'package:blackhole/CustomWidgets/seek_bar.dart';
-import 'package:blackhole/CustomWidgets/snackbar.dart';
-import 'package:blackhole/CustomWidgets/textinput_dialog.dart';
-import 'package:blackhole/Helpers/lyrics.dart';
-import 'package:blackhole/Helpers/mediaitem_converter.dart';
-import 'package:blackhole/main.dart';
 
 class PlayScreen extends StatefulWidget {
   final Map data;
@@ -351,8 +350,9 @@ class _PlayScreenState extends State<PlayScreen> {
                                         title: Text(
                                           'Sleep Timer',
                                           style: TextStyle(
-                                            color:
-                                                Theme.of(context).accentColor,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .secondary,
                                           ),
                                         ),
                                         contentPadding:
@@ -396,15 +396,12 @@ class _PlayScreenState extends State<PlayScreen> {
                                       PopupMenuItem(
                                           value: 1,
                                           child: Row(
-                                            children: [
+                                            children: const [
                                               Icon(
                                                 CupertinoIcons.timer,
-                                                color: Theme.of(context)
-                                                    .iconTheme
-                                                    .color,
                                               ),
-                                              const SizedBox(width: 10.0),
-                                              const Text('Sleep Timer'),
+                                              SizedBox(width: 10.0),
+                                              Text('Sleep Timer'),
                                             ],
                                           )),
                                       if (Hive.box('settings').get('supportEq',
@@ -412,15 +409,12 @@ class _PlayScreenState extends State<PlayScreen> {
                                         PopupMenuItem(
                                             value: 4,
                                             child: Row(
-                                              children: [
+                                              children: const [
                                                 Icon(
                                                   Icons.equalizer_rounded,
-                                                  color: Theme.of(context)
-                                                      .iconTheme
-                                                      .color,
                                                 ),
-                                                const SizedBox(width: 10.0),
-                                                const Text('Equalizer'),
+                                                SizedBox(width: 10.0),
+                                                Text('Equalizer'),
                                               ],
                                             )),
                                     ]
@@ -560,7 +554,7 @@ class _PlayScreenState extends State<PlayScreen> {
             'Select a Duration',
             style: TextStyle(
                 fontWeight: FontWeight.w600,
-                color: Theme.of(context).accentColor),
+                color: Theme.of(context).colorScheme.secondary),
           )),
           children: [
             Center(
@@ -569,11 +563,11 @@ class _PlayScreenState extends State<PlayScreen> {
               width: 200,
               child: CupertinoTheme(
                 data: CupertinoThemeData(
-                  primaryColor: Theme.of(context).accentColor,
+                  primaryColor: Theme.of(context).colorScheme.secondary,
                   textTheme: CupertinoTextThemeData(
                     dateTimePickerTextStyle: TextStyle(
                       fontSize: 16,
-                      color: Theme.of(context).accentColor,
+                      color: Theme.of(context).colorScheme.secondary,
                     ),
                   ),
                 ),
@@ -590,7 +584,7 @@ class _PlayScreenState extends State<PlayScreen> {
               children: [
                 TextButton(
                   style: TextButton.styleFrom(
-                    primary: Theme.of(context).accentColor,
+                    primary: Theme.of(context).colorScheme.secondary,
                   ),
                   onPressed: () {
                     sleepTimer(0);
@@ -604,7 +598,7 @@ class _PlayScreenState extends State<PlayScreen> {
                 TextButton(
                   style: TextButton.styleFrom(
                     primary: Colors.white,
-                    backgroundColor: Theme.of(context).accentColor,
+                    backgroundColor: Theme.of(context).colorScheme.secondary,
                   ),
                   onPressed: () {
                     sleepTimer(_time.inMinutes);
@@ -871,7 +865,7 @@ class NowPlayingStream extends StatelessWidget {
                     audioHandler.removeQueueItemAt(index);
                   },
                   child: ListTileTheme(
-                    selectedColor: Theme.of(context).accentColor,
+                    selectedColor: Theme.of(context).colorScheme.secondary,
                     child: ListTile(
                       contentPadding:
                           const EdgeInsets.only(left: 16.0, right: 10.0),
@@ -960,7 +954,9 @@ class NowPlayingStream extends StatelessWidget {
                                         textAlign: TextAlign.start,
                                         style: TextStyle(
                                           fontSize: 8.0,
-                                          color: Theme.of(context).accentColor,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .secondary,
                                           fontWeight: FontWeight.w600,
                                         ),
                                       ),
@@ -1142,10 +1138,7 @@ class _ArtWorkWidgetState extends State<ArtWorkWidget> {
                                     textAlign: TextAlign.center,
                                   );
                                 }
-                                return CircularProgressIndicator(
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                      Theme.of(context).accentColor),
-                                );
+                                return const CircularProgressIndicator();
                               })
                           : widget.mediaItem.extras?['has_lyrics'] == 'true'
                               ? FutureBuilder(
@@ -1162,10 +1155,7 @@ class _ArtWorkWidgetState extends State<ArtWorkWidget> {
                                         textAlign: TextAlign.center,
                                       );
                                     }
-                                    return CircularProgressIndicator(
-                                      valueColor: AlwaysStoppedAnimation<Color>(
-                                          Theme.of(context).accentColor),
-                                    );
+                                    return const CircularProgressIndicator();
                                   })
                               : ValueListenableBuilder(
                                   valueListenable: done,
@@ -1188,11 +1178,7 @@ class _ArtWorkWidgetState extends State<ArtWorkWidget> {
                                                 lyrics['lyrics'].toString(),
                                                 textAlign: TextAlign.center,
                                               )
-                                        : CircularProgressIndicator(
-                                            valueColor: AlwaysStoppedAnimation<
-                                                    Color>(
-                                                Theme.of(context).accentColor),
-                                          );
+                                        : const CircularProgressIndicator();
                                   }),
                     ),
                   ),
@@ -1325,11 +1311,13 @@ class _ArtWorkWidgetState extends State<ArtWorkWidget> {
                                                             activeTrackColor:
                                                                 Theme.of(
                                                                         context)
-                                                                    .accentColor,
+                                                                    .colorScheme
+                                                                    .secondary,
                                                             inactiveTrackColor:
                                                                 Theme.of(
                                                                         context)
-                                                                    .accentColor
+                                                                    .colorScheme
+                                                                    .secondary
                                                                     .withOpacity(
                                                                         0.4),
                                                             trackShape:
@@ -1584,16 +1572,14 @@ class NameNControls extends StatelessWidget {
           },
           child: Column(
             mainAxisSize: MainAxisSize.min,
-            children: [
+            children: const [
               Icon(
                 Icons.expand_less_rounded,
-                color: Theme.of(context).iconTheme.color,
               ),
               Text(
                 'Now Playing',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: Theme.of(context).iconTheme.color,
                   fontWeight: FontWeight.w600,
                   fontSize: 18,
                 ),

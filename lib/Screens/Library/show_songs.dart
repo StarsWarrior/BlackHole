@@ -1,12 +1,11 @@
 import 'dart:io';
 
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
-
 import 'package:blackhole/CustomWidgets/gradient_containers.dart';
 import 'package:blackhole/CustomWidgets/miniplayer.dart';
 import 'package:blackhole/Screens/Player/audioplayer.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 
 class SongsList extends StatefulWidget {
   final List data;
@@ -179,7 +178,7 @@ class _SongsListState extends State<SongsList> {
                 centerTitle: true,
                 backgroundColor: Theme.of(context).brightness == Brightness.dark
                     ? Colors.transparent
-                    : Theme.of(context).accentColor,
+                    : Theme.of(context).colorScheme.secondary,
                 elevation: 0,
               ),
               body: !processStatus
@@ -188,11 +187,7 @@ class _SongsListState extends State<SongsList> {
                         child: SizedBox(
                             height: MediaQuery.of(context).size.width / 7,
                             width: MediaQuery.of(context).size.width / 7,
-                            child: CircularProgressIndicator(
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                  Theme.of(context).accentColor),
-                              strokeWidth: 5,
-                            )),
+                            child: const CircularProgressIndicator()),
                       ),
                     )
                   : ListView.builder(

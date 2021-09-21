@@ -1,8 +1,7 @@
-import 'package:blackhole/CustomWidgets/snackbar.dart';
-import 'package:flutter/material.dart';
-
 import 'package:blackhole/APIs/api.dart';
+import 'package:blackhole/CustomWidgets/snackbar.dart';
 import 'package:blackhole/Services/download.dart';
+import 'package:flutter/material.dart';
 
 class DownloadButton extends StatefulWidget {
   final Map data;
@@ -37,7 +36,7 @@ class _DownloadButtonState extends State<DownloadButton> {
                       ? Icons.download_done_rounded
                       : Icons.save_alt),
                   tooltip: 'Download Done',
-                  color: Theme.of(context).accentColor,
+                  color: Theme.of(context).colorScheme.secondary,
                   iconSize: 25.0,
                   onPressed: () {},
                 )
@@ -62,8 +61,6 @@ class _DownloadButtonState extends State<DownloadButton> {
                         ),
                         Center(
                           child: CircularProgressIndicator(
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                                Theme.of(context).accentColor),
                             value: down.progress == 1 ? null : down.progress,
                           ),
                         ),
@@ -114,7 +111,7 @@ class _MultiDownloadButtonState extends State<MultiDownloadButton> {
                   icon: const Icon(
                     Icons.download_done_rounded,
                   ),
-                  color: Theme.of(context).accentColor,
+                  color: Theme.of(context).colorScheme.secondary,
                   iconSize: 25.0,
                   tooltip: 'Download Done',
                   onPressed: () {},
@@ -154,8 +151,6 @@ class _MultiDownloadButtonState extends State<MultiDownloadButton> {
                             height: 35,
                             width: 35,
                             child: CircularProgressIndicator(
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                  Theme.of(context).accentColor),
                               value: down.progress == 1 ? null : down.progress,
                             ),
                           ),
@@ -165,8 +160,6 @@ class _MultiDownloadButtonState extends State<MultiDownloadButton> {
                             height: 30,
                             width: 30,
                             child: CircularProgressIndicator(
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                  Theme.of(context).accentColor),
                               value: done / widget.data.length,
                             ),
                           ),
@@ -220,7 +213,7 @@ class _AlbumDownloadButtonState extends State<AlbumDownloadButton> {
                   icon: const Icon(
                     Icons.download_done_rounded,
                   ),
-                  color: Theme.of(context).accentColor,
+                  color: Theme.of(context).colorScheme.secondary,
                   iconSize: 25.0,
                   tooltip: 'Download Done',
                   onPressed: () {},
@@ -268,8 +261,6 @@ class _AlbumDownloadButtonState extends State<AlbumDownloadButton> {
                             height: 35,
                             width: 35,
                             child: CircularProgressIndicator(
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                  Theme.of(context).accentColor),
                               value: down.progress == 1 ? null : down.progress,
                             ),
                           ),
@@ -279,8 +270,6 @@ class _AlbumDownloadButtonState extends State<AlbumDownloadButton> {
                             height: 30,
                             width: 30,
                             child: CircularProgressIndicator(
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                  Theme.of(context).accentColor),
                               value: data.isEmpty ? 0 : done / data.length,
                             ),
                           ),

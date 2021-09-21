@@ -1,9 +1,5 @@
 import 'dart:ui';
 
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/material.dart';
-import 'package:html_unescape/html_unescape_small.dart';
-
 import 'package:blackhole/APIs/api.dart';
 import 'package:blackhole/CustomWidgets/add_list_queue.dart';
 import 'package:blackhole/CustomWidgets/add_queue.dart';
@@ -12,6 +8,9 @@ import 'package:blackhole/CustomWidgets/empty_screen.dart';
 import 'package:blackhole/CustomWidgets/gradient_containers.dart';
 import 'package:blackhole/CustomWidgets/miniplayer.dart';
 import 'package:blackhole/Screens/Player/audioplayer.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/material.dart';
+import 'package:html_unescape/html_unescape_small.dart';
 import 'package:share_plus/share_plus.dart';
 
 class SongsListPage extends StatefulWidget {
@@ -83,11 +82,7 @@ class _SongsListPageState extends State<SongsListPage> {
                           child: SizedBox(
                               height: MediaQuery.of(context).size.width / 7,
                               width: MediaQuery.of(context).size.width / 7,
-                              child: CircularProgressIndicator(
-                                valueColor: AlwaysStoppedAnimation<Color>(
-                                    Theme.of(context).accentColor),
-                                strokeWidth: 5,
-                              )),
+                              child: const CircularProgressIndicator()),
                         ),
                       )
                     : songList.isEmpty
@@ -207,8 +202,9 @@ class _SongsListPageState extends State<SongsListPage> {
                                             decoration: BoxDecoration(
                                               borderRadius:
                                                   BorderRadius.circular(100.0),
-                                              color:
-                                                  Theme.of(context).accentColor,
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .secondary,
                                               boxShadow: const [
                                                 BoxShadow(
                                                   color: Colors.black26,
@@ -224,7 +220,8 @@ class _SongsListPageState extends State<SongsListPage> {
                                                 Icon(
                                                   Icons.play_arrow_rounded,
                                                   color: Theme.of(context)
-                                                              .accentColor ==
+                                                              .colorScheme
+                                                              .secondary ==
                                                           Colors.white
                                                       ? Colors.black
                                                       : Colors.white,
@@ -236,7 +233,8 @@ class _SongsListPageState extends State<SongsListPage> {
                                                     fontWeight: FontWeight.bold,
                                                     fontSize: 18.0,
                                                     color: Theme.of(context)
-                                                                .accentColor ==
+                                                                .colorScheme
+                                                                .secondary ==
                                                             Colors.white
                                                         ? Colors.black
                                                         : Colors.white,

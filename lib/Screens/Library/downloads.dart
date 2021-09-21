@@ -1,17 +1,14 @@
 import 'dart:io';
 
-import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
-
 import 'package:blackhole/CustomWidgets/collage.dart';
 import 'package:blackhole/CustomWidgets/custom_physics.dart';
-import 'package:blackhole/CustomWidgets/download_button.dart';
 import 'package:blackhole/CustomWidgets/empty_screen.dart';
 import 'package:blackhole/CustomWidgets/gradient_containers.dart';
 import 'package:blackhole/CustomWidgets/miniplayer.dart';
-import 'package:blackhole/CustomWidgets/snackbar.dart';
 import 'package:blackhole/Screens/Library/show_songs.dart';
 import 'package:blackhole/Screens/Player/audioplayer.dart';
+import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 
 class Downloads extends StatefulWidget {
   const Downloads({Key? key}) : super(key: key);
@@ -199,7 +196,7 @@ class _DownloadsState extends State<Downloads>
                   backgroundColor:
                       Theme.of(context).brightness == Brightness.dark
                           ? Colors.transparent
-                          : Theme.of(context).accentColor,
+                          : Theme.of(context).colorScheme.secondary,
                   elevation: 0,
                   bottom: TabBar(controller: _tcontroller, tabs: const [
                     Tab(
@@ -445,11 +442,7 @@ class _DownloadsState extends State<Downloads>
                           child: SizedBox(
                               height: MediaQuery.of(context).size.width / 7,
                               width: MediaQuery.of(context).size.width / 7,
-                              child: CircularProgressIndicator(
-                                valueColor: AlwaysStoppedAnimation<Color>(
-                                    Theme.of(context).accentColor),
-                                strokeWidth: 5,
-                              )),
+                              child: const CircularProgressIndicator()),
                         ),
                       )
                     : TabBarView(

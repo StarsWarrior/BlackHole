@@ -18,17 +18,11 @@
 import 'dart:io';
 
 import 'package:audio_service/audio_service.dart';
-import 'package:blackhole/Screens/Library/downloads.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:hive/hive.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-import 'package:path_provider/path_provider.dart';
-
 import 'package:blackhole/Helpers/config.dart';
 import 'package:blackhole/Helpers/route_handler.dart';
 import 'package:blackhole/Screens/About/about.dart';
 import 'package:blackhole/Screens/Home/home.dart';
+import 'package:blackhole/Screens/Library/downloads.dart';
 import 'package:blackhole/Screens/Library/nowplaying.dart';
 import 'package:blackhole/Screens/Library/playlists.dart';
 import 'package:blackhole/Screens/Library/recent.dart';
@@ -37,6 +31,12 @@ import 'package:blackhole/Screens/Login/pref.dart';
 import 'package:blackhole/Screens/Player/audioplayer.dart';
 import 'package:blackhole/Screens/Settings/setting.dart';
 import 'package:blackhole/Services/audio_service.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_displaymode/flutter_displaymode.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:path_provider/path_provider.dart';
 
 // TODO: use getit to register handler in future
 late AudioPlayerHandler audioHandler;
@@ -51,9 +51,26 @@ Future<void> main() async {
   await openHiveBox('recentlyPlayed');
   await openHiveBox('downloads');
   await openHiveBox('songDetails', limit: true);
-
+  setOptimalDisplayMode();
   await startService();
   runApp(MyApp());
+}
+
+Future<void> setOptimalDisplayMode() async {
+  final List<DisplayMode> supported = await FlutterDisplayMode.supported;
+  final DisplayMode active = await FlutterDisplayMode.active;
+
+  final List<DisplayMode> sameResolution = supported
+      .where((DisplayMode m) =>
+          m.width == active.width && m.height == active.height)
+      .toList()
+    ..sort((DisplayMode a, DisplayMode b) =>
+        b.refreshRate.compareTo(a.refreshRate));
+
+  final DisplayMode mostOptimalMode =
+      sameResolution.isNotEmpty ? sameResolution.first : active;
+
+  await FlutterDisplayMode.setPreferredMode(mostOptimalMode);
 }
 
 Future<void> startService() async {
@@ -152,10 +169,20 @@ class _MyAppState extends State<MyApp> {
         appBarTheme: AppBarTheme(
           backgroundColor: currentTheme.currentColor(),
         ),
-        iconTheme: IconThemeData(color: Colors.grey[800]),
         disabledColor: Colors.grey[600],
         brightness: Brightness.light,
-        accentColor: currentTheme.currentColor(),
+        indicatorColor: currentTheme.currentColor(),
+        progressIndicatorTheme: const ProgressIndicatorThemeData()
+            .copyWith(color: currentTheme.currentColor()),
+        iconTheme: IconThemeData(
+          color: Colors.grey[800],
+          opacity: 1.0,
+          size: 24.0,
+        ),
+        colorScheme: Theme.of(context).colorScheme.copyWith(
+            primary: Colors.grey[800],
+            brightness: Brightness.light,
+            secondary: currentTheme.currentColor()),
       ),
       darkTheme: ThemeData(
         textButtonTheme: TextButtonThemeData(
@@ -179,11 +206,24 @@ class _MyAppState extends State<MyApp> {
         brightness: Brightness.dark,
         appBarTheme: AppBarTheme(
           color: currentTheme.getCanvasColor(),
+          foregroundColor: Colors.white,
         ),
         canvasColor: currentTheme.getCanvasColor(),
         cardColor: currentTheme.getCardColor(),
         dialogBackgroundColor: currentTheme.getCardColor(),
-        accentColor: currentTheme.currentColor(),
+        progressIndicatorTheme: const ProgressIndicatorThemeData()
+            .copyWith(color: currentTheme.currentColor()),
+        iconTheme: const IconThemeData(
+          color: Colors.white,
+          opacity: 1.0,
+          size: 24.0,
+        ),
+        indicatorColor: currentTheme.currentColor(),
+        colorScheme: Theme.of(context).colorScheme.copyWith(
+              primary: Colors.white,
+              secondary: currentTheme.currentColor(),
+              brightness: Brightness.dark,
+            ),
       ),
       routes: {
         '/': (context) => initialFuntion(),

@@ -1,8 +1,7 @@
-import 'package:blackhole/Screens/Common/song_list.dart';
-import 'package:flutter/material.dart';
-
 import 'package:blackhole/APIs/api.dart';
+import 'package:blackhole/Screens/Common/song_list.dart';
 import 'package:blackhole/Screens/Player/audioplayer.dart';
+import 'package:flutter/material.dart';
 
 class HandleRoute {
   Route? handleRoute(String? url) {

@@ -1,10 +1,9 @@
-import 'package:flutter/material.dart';
-import 'package:youtube_explode_dart/youtube_explode_dart.dart';
-
 import 'package:blackhole/APIs/api.dart';
 import 'package:blackhole/CustomWidgets/gradient_containers.dart';
 import 'package:blackhole/Helpers/playlist.dart';
 import 'package:blackhole/Services/youtube_services.dart';
+import 'package:flutter/material.dart';
+import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
 class SearchAddPlaylist {
   Future<Map> addYtPlaylist(String link) async {
@@ -89,7 +88,7 @@ class SearchAddPlaylist {
                               width: 75,
                               child: CircularProgressIndicator(
                                   valueColor: AlwaysStoppedAnimation<Color>(
-                                      Theme.of(ctxt).accentColor),
+                                      Theme.of(ctxt).colorScheme.secondary),
                                   value: _done / _total),
                             ),
                             Center(

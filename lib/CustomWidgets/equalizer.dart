@@ -30,7 +30,7 @@ class _EqualizerState extends State<Equalizer> {
             SwitchListTile(
               title: const Text('Equalizer'),
               value: enabled,
-              activeColor: Theme.of(context).accentColor,
+              activeColor: Theme.of(context).colorScheme.secondary,
               onChanged: (value) {
                 enabled = value;
                 Hive.box('settings').put('setEqualizer', value);
@@ -137,8 +137,9 @@ class _VerticalSliderState extends State<VerticalSlider> {
           height: 400.0,
           alignment: Alignment.center,
           child: Slider(
-              activeColor: Theme.of(context).accentColor,
-              inactiveColor: Theme.of(context).accentColor.withOpacity(0.4),
+              activeColor: Theme.of(context).colorScheme.secondary,
+              inactiveColor:
+                  Theme.of(context).colorScheme.secondary.withOpacity(0.4),
               value: sliderValue ?? widget.value!,
               min: widget.min!,
               max: widget.max!,

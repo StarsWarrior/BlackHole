@@ -1,10 +1,9 @@
 import 'package:audio_service/audio_service.dart';
-import 'package:blackhole/main.dart';
-import 'package:flutter/material.dart';
-
 import 'package:blackhole/CustomWidgets/add_playlist.dart';
 import 'package:blackhole/CustomWidgets/snackbar.dart';
 import 'package:blackhole/Helpers/mediaitem_converter.dart';
+import 'package:blackhole/main.dart';
+import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 
 class AddToQueueButton extends StatefulWidget {

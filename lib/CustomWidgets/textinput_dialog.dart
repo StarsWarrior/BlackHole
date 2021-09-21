@@ -20,7 +20,8 @@ class TextInputDialog {
                 children: [
                   Text(
                     title,
-                    style: TextStyle(color: Theme.of(context).accentColor),
+                    style: TextStyle(
+                        color: Theme.of(context).colorScheme.secondary),
                   ),
                 ],
               ),
@@ -50,7 +51,7 @@ class TextInputDialog {
             TextButton(
               style: TextButton.styleFrom(
                 primary: Colors.white,
-                backgroundColor: Theme.of(context).accentColor,
+                backgroundColor: Theme.of(context).colorScheme.secondary,
               ),
               onPressed: () {
                 onSubmitted(_controller.text.trim());

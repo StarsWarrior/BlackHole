@@ -1,10 +1,4 @@
 import 'package:app_links/app_links.dart';
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:url_launcher/url_launcher.dart';
-
 import 'package:blackhole/APIs/api.dart';
 import 'package:blackhole/APIs/spotify_api.dart';
 import 'package:blackhole/CustomWidgets/collage.dart';
@@ -16,6 +10,11 @@ import 'package:blackhole/Helpers/import_export_playlist.dart';
 import 'package:blackhole/Helpers/playlist.dart';
 import 'package:blackhole/Helpers/search_add_playlist.dart';
 import 'package:blackhole/Screens/Library/liked.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class PlaylistScreen extends StatefulWidget {
   @override
@@ -45,7 +44,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                 centerTitle: true,
                 backgroundColor: Theme.of(context).brightness == Brightness.dark
                     ? Colors.transparent
-                    : Theme.of(context).accentColor,
+                    : Theme.of(context).colorScheme.secondary,
                 elevation: 0,
               ),
               body: SingleChildScrollView(
@@ -300,7 +299,8 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                                                     'Rename',
                                                     style: TextStyle(
                                                         color: Theme.of(context)
-                                                            .accentColor),
+                                                            .colorScheme
+                                                            .secondary),
                                                   ),
                                                 ],
                                               ),
@@ -349,7 +349,8 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                                                 primary: Colors.white,
                                                 backgroundColor:
                                                     Theme.of(context)
-                                                        .accentColor,
+                                                        .colorScheme
+                                                        .secondary,
                                               ),
                                               onPressed: () async {
                                                 Navigator.pop(context);

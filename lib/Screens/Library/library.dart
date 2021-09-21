@@ -1,9 +1,8 @@
+import 'package:blackhole/Screens/Library/downloaded.dart';
+import 'package:blackhole/Screens/Library/liked.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-
-import 'package:blackhole/Screens/Library/downloaded.dart';
-import 'package:blackhole/Screens/Library/liked.dart';
 
 class LibraryPage extends StatefulWidget {
   @override

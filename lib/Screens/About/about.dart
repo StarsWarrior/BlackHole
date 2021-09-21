@@ -1,8 +1,7 @@
+import 'package:blackhole/CustomWidgets/gradient_containers.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info/package_info.dart';
 import 'package:url_launcher/url_launcher.dart';
-
-import 'package:blackhole/CustomWidgets/gradient_containers.dart';
 
 class AboutScreen extends StatefulWidget {
   @override
@@ -51,7 +50,7 @@ class _AboutScreenState extends State<AboutScreen> {
             appBar: AppBar(
               backgroundColor: Theme.of(context).brightness == Brightness.dark
                   ? Colors.transparent
-                  : Theme.of(context).accentColor,
+                  : Theme.of(context).colorScheme.secondary,
               elevation: 0,
               title: const Text(
                 'About',

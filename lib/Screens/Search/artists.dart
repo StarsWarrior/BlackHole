@@ -1,8 +1,5 @@
 import 'dart:ui';
 
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/material.dart';
-
 import 'package:blackhole/APIs/api.dart';
 import 'package:blackhole/CustomWidgets/add_queue.dart';
 import 'package:blackhole/CustomWidgets/download_button.dart';
@@ -11,6 +8,8 @@ import 'package:blackhole/CustomWidgets/gradient_containers.dart';
 import 'package:blackhole/CustomWidgets/miniplayer.dart';
 import 'package:blackhole/Screens/Common/song_list.dart';
 import 'package:blackhole/Screens/Player/audioplayer.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/material.dart';
 
 class ArtistSearchPage extends StatefulWidget {
   final String? artistName;
@@ -55,11 +54,7 @@ class _ArtistSearchPageState extends State<ArtistSearchPage> {
                       child: SizedBox(
                           height: MediaQuery.of(context).size.width / 7,
                           width: MediaQuery.of(context).size.width / 7,
-                          child: CircularProgressIndicator(
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                                Theme.of(context).accentColor),
-                            strokeWidth: 5,
-                          )),
+                          child: const CircularProgressIndicator()),
                     ),
                   )
                 : data.isEmpty
@@ -122,7 +117,8 @@ class _ArtistSearchPageState extends State<ArtistSearchPage> {
                                               entry.key,
                                               style: TextStyle(
                                                 color: Theme.of(context)
-                                                    .accentColor,
+                                                    .colorScheme
+                                                    .secondary,
                                                 fontSize: 18,
                                                 fontWeight: FontWeight.w800,
                                               ),

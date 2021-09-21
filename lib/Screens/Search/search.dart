@@ -1,11 +1,5 @@
 import 'dart:ui';
 
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
-import 'package:material_floating_search_bar/material_floating_search_bar.dart';
-
 import 'package:blackhole/APIs/api.dart';
 import 'package:blackhole/CustomWidgets/add_queue.dart';
 import 'package:blackhole/CustomWidgets/download_button.dart';
@@ -16,6 +10,11 @@ import 'package:blackhole/Screens/Common/song_list.dart';
 import 'package:blackhole/Screens/Player/audioplayer.dart';
 import 'package:blackhole/Screens/Search/albums.dart';
 import 'package:blackhole/Screens/Search/artists.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import 'package:material_floating_search_bar/material_floating_search_bar.dart';
 
 class SearchPage extends StatefulWidget {
   final String query;
@@ -246,11 +245,7 @@ class _SearchPageState extends State<SearchPage> {
                             child: SizedBox(
                                 height: MediaQuery.of(context).size.width / 7,
                                 width: MediaQuery.of(context).size.width / 7,
-                                child: CircularProgressIndicator(
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                      Theme.of(context).accentColor),
-                                  strokeWidth: 5,
-                                )),
+                                child: const CircularProgressIndicator()),
                           ),
                         )
                       : (searchedData.isEmpty)
@@ -281,7 +276,8 @@ class _SearchPageState extends State<SearchPage> {
                                               key,
                                               style: TextStyle(
                                                 color: Theme.of(context)
-                                                    .accentColor,
+                                                    .colorScheme
+                                                    .secondary,
                                                 fontSize: 18,
                                                 fontWeight: FontWeight.w800,
                                               ),

@@ -1,11 +1,10 @@
 import 'package:audio_service/audio_service.dart';
-import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
-
 import 'package:blackhole/CustomWidgets/collage.dart';
 import 'package:blackhole/CustomWidgets/gradient_containers.dart';
 import 'package:blackhole/CustomWidgets/snackbar.dart';
 import 'package:blackhole/Helpers/playlist.dart';
+import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 
 class AddToPlaylist {
   Box settingsBox = Hive.box('settings');
@@ -57,7 +56,9 @@ class AddToPlaylist {
                                   Text(
                                     'Create new playlist',
                                     style: TextStyle(
-                                        color: Theme.of(context).accentColor),
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .secondary),
                                   ),
                                 ],
                               ),
@@ -65,7 +66,8 @@ class AddToPlaylist {
                                 height: 10,
                               ),
                               TextField(
-                                  cursorColor: Theme.of(context).accentColor,
+                                  cursorColor:
+                                      Theme.of(context).colorScheme.secondary,
                                   controller: controller,
                                   autofocus: true,
                                   onSubmitted: (String value) {
@@ -99,7 +101,8 @@ class AddToPlaylist {
                             TextButton(
                               style: TextButton.styleFrom(
                                 primary: Colors.white,
-                                backgroundColor: Theme.of(context).accentColor,
+                                backgroundColor:
+                                    Theme.of(context).colorScheme.secondary,
                               ),
                               onPressed: () {
                                 if (controller.text.trim() == '') {

@@ -1,14 +1,13 @@
 import 'dart:io';
 
 import 'package:audio_service/audio_service.dart';
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/material.dart';
-
 import 'package:blackhole/CustomWidgets/empty_screen.dart';
 import 'package:blackhole/CustomWidgets/gradient_containers.dart';
 import 'package:blackhole/CustomWidgets/miniplayer.dart';
 import 'package:blackhole/Screens/Player/audioplayer.dart';
 import 'package:blackhole/main.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/material.dart';
 
 class NowPlaying extends StatefulWidget {
   @override
@@ -37,7 +36,7 @@ class _NowPlayingState extends State<NowPlaying> {
                             backgroundColor:
                                 Theme.of(context).brightness == Brightness.dark
                                     ? Colors.transparent
-                                    : Theme.of(context).accentColor,
+                                    : Theme.of(context).colorScheme.secondary,
                             elevation: 0,
                           ),
                     body: processingState == AudioProcessingState.idle

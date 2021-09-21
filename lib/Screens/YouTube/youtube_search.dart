@@ -1,18 +1,17 @@
 import 'dart:ui';
 
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
-import 'package:material_floating_search_bar/material_floating_search_bar.dart';
-import 'package:youtube_explode_dart/youtube_explode_dart.dart';
-
 import 'package:blackhole/CustomWidgets/empty_screen.dart';
 import 'package:blackhole/CustomWidgets/gradient_containers.dart';
 import 'package:blackhole/CustomWidgets/miniplayer.dart';
 import 'package:blackhole/CustomWidgets/snackbar.dart';
 import 'package:blackhole/Screens/Player/audioplayer.dart';
 import 'package:blackhole/Services/youtube_services.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import 'package:material_floating_search_bar/material_floating_search_bar.dart';
+import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
 class YouTubeSearchPage extends StatefulWidget {
   final String query;
@@ -190,11 +189,7 @@ class _YouTubeSearchPageState extends State<YouTubeSearchPage> {
                             child: SizedBox(
                                 height: MediaQuery.of(context).size.width / 7,
                                 width: MediaQuery.of(context).size.width / 7,
-                                child: CircularProgressIndicator(
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                      Theme.of(context).accentColor),
-                                  strokeWidth: 5,
-                                )),
+                                child: const CircularProgressIndicator()),
                           ),
                         )
                       : searchedList.isEmpty
@@ -396,7 +391,8 @@ class _YouTubeSearchPageState extends State<YouTubeSearchPage> {
                                                           AlwaysStoppedAnimation<
                                                                   Color>(
                                                               Theme.of(context)
-                                                                  .accentColor),
+                                                                  .colorScheme
+                                                                  .secondary),
                                                       strokeWidth: 5,
                                                     )),
                                                 const Text(

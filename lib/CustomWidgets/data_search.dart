@@ -1,9 +1,8 @@
 import 'dart:typed_data';
 
+import 'package:blackhole/Screens/Player/audioplayer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
-import 'package:blackhole/Screens/Player/audioplayer.dart';
 
 class DataSearch extends SearchDelegate {
   final List data;
@@ -125,7 +124,7 @@ class DataSearch extends SearchDelegate {
   ThemeData appBarTheme(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     return theme.copyWith(
-      primaryColor: Theme.of(context).accentColor,
+      primaryColor: Theme.of(context).colorScheme.secondary,
       textSelectionTheme:
           const TextSelectionThemeData(cursorColor: Colors.white),
       hintColor: Colors.white70,

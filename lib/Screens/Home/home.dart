@@ -1,18 +1,9 @@
 import 'dart:math';
 
-import 'package:blackhole/CustomWidgets/snackbar.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:package_info/package_info.dart';
-import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
-import 'package:url_launcher/url_launcher.dart';
-
 import 'package:blackhole/CustomWidgets/custom_physics.dart';
 import 'package:blackhole/CustomWidgets/gradient_containers.dart';
 import 'package:blackhole/CustomWidgets/miniplayer.dart';
+import 'package:blackhole/CustomWidgets/snackbar.dart';
 import 'package:blackhole/CustomWidgets/textinput_dialog.dart';
 import 'package:blackhole/Helpers/countrycodes.dart';
 import 'package:blackhole/Helpers/supabase.dart';
@@ -23,6 +14,14 @@ import 'package:blackhole/Screens/Search/search.dart';
 import 'package:blackhole/Screens/Settings/setting.dart';
 import 'package:blackhole/Screens/Top Charts/top.dart';
 import 'package:blackhole/Screens/YouTube/youtube_home.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:package_info/package_info.dart';
+import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -107,8 +106,8 @@ class _HomePageState extends State<HomePage> {
           .add(const Duration(hours: 5, minutes: 30))
           .toString()
           .split('.')
-            ..removeLast()
-            ..join('.');
+        ..removeLast()
+        ..join('.');
       updateUserDetails('lastLogin', '${lastLogin[0]} IST');
       final String offset =
           now.timeZoneOffset.toString().replaceAll('.000000', '');
@@ -128,7 +127,7 @@ class _HomePageState extends State<HomePage> {
                 'Update Available!',
                 duration: const Duration(seconds: 15),
                 action: SnackBarAction(
-                  textColor: Theme.of(context).accentColor,
+                  textColor: Theme.of(context).colorScheme.secondary,
                   label: 'Update',
                   onPressed: () {
                     Navigator.pop(context);
@@ -239,14 +238,14 @@ class _HomePageState extends State<HomePage> {
                             title: Text(
                               'Home',
                               style: TextStyle(
-                                color: Theme.of(context).accentColor,
+                                color: Theme.of(context).colorScheme.secondary,
                               ),
                             ),
                             contentPadding:
                                 const EdgeInsets.symmetric(horizontal: 20.0),
                             leading: Icon(
                               Icons.home_rounded,
-                              color: Theme.of(context).accentColor,
+                              color: Theme.of(context).colorScheme.secondary,
                             ),
                             selected: true,
                             onTap: () {
@@ -392,7 +391,8 @@ class _HomePageState extends State<HomePage> {
                                                           letterSpacing: 2,
                                                           color:
                                                               Theme.of(context)
-                                                                  .accentColor,
+                                                                  .colorScheme
+                                                                  .secondary,
                                                           fontSize: 30,
                                                           fontWeight:
                                                               FontWeight.bold),
@@ -509,11 +509,13 @@ class _HomePageState extends State<HomePage> {
                                                           Colors.transparent),
                                                 ),
                                                 fillColor: Theme.of(context)
-                                                    .accentColor,
+                                                    .colorScheme
+                                                    .secondary,
                                                 prefixIcon: Icon(
                                                   CupertinoIcons.search,
                                                   color: Theme.of(context)
-                                                      .accentColor,
+                                                      .colorScheme
+                                                      .secondary,
                                                 ),
                                                 border: InputBorder.none,
                                                 hintText:
@@ -564,7 +566,7 @@ class _HomePageState extends State<HomePage> {
                                 child: IconButton(
                                   icon: const Icon(
                                       Icons.horizontal_split_rounded),
-                                  color: Theme.of(context).iconTheme.color,
+                                  // color: Theme.of(context).iconTheme.color,
                                   onPressed: () {
                                     Scaffold.of(context).openDrawer();
                                   },
@@ -609,23 +611,23 @@ class _HomePageState extends State<HomePage> {
                       SalomonBottomBarItem(
                         icon: const Icon(Icons.home_rounded),
                         title: const Text('Home'),
-                        selectedColor: Theme.of(context).accentColor,
+                        selectedColor: Theme.of(context).colorScheme.secondary,
                       ),
 
                       SalomonBottomBarItem(
                         icon: const Icon(Icons.trending_up_rounded),
                         title: const Text('Spotify Charts'),
-                        selectedColor: Theme.of(context).accentColor,
+                        selectedColor: Theme.of(context).colorScheme.secondary,
                       ),
                       SalomonBottomBarItem(
                         icon: const Icon(MdiIcons.youtube),
                         title: const Text('YouTube'),
-                        selectedColor: Theme.of(context).accentColor,
+                        selectedColor: Theme.of(context).colorScheme.secondary,
                       ),
                       SalomonBottomBarItem(
                         icon: const Icon(Icons.my_library_music_rounded),
                         title: const Text('Library'),
-                        selectedColor: Theme.of(context).accentColor,
+                        selectedColor: Theme.of(context).colorScheme.secondary,
                       ),
                     ],
                   ),

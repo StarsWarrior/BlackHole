@@ -2,6 +2,11 @@ import 'dart:io';
 
 import 'package:audiotagger/audiotagger.dart';
 import 'package:audiotagger/models/tag.dart';
+// import 'package:flutter_downloader/flutter_downloader.dart';
+// import 'package:flutter_ffmpeg/flutter_ffmpeg.dart';
+
+import 'package:blackhole/CustomWidgets/snackbar.dart';
+import 'package:blackhole/Helpers/lyrics.dart';
 import 'package:ext_storage/ext_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -10,11 +15,6 @@ import 'package:hive/hive.dart';
 import 'package:http/http.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
-// import 'package:flutter_downloader/flutter_downloader.dart';
-// import 'package:flutter_ffmpeg/flutter_ffmpeg.dart';
-
-import 'package:blackhole/CustomWidgets/snackbar.dart';
-import 'package:blackhole/Helpers/lyrics.dart';
 
 class Download with ChangeNotifier {
   int? rememberOption;
@@ -119,7 +119,8 @@ class Download with ChangeNotifier {
             return AlertDialog(
                 title: Text(
                   'Already Exists',
-                  style: TextStyle(color: Theme.of(context).accentColor),
+                  style:
+                      TextStyle(color: Theme.of(context).colorScheme.secondary),
                 ),
                 content: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -151,7 +152,8 @@ class Download with ChangeNotifier {
                             return Row(
                               children: [
                                 Checkbox(
-                                  activeColor: Theme.of(context).accentColor,
+                                  activeColor:
+                                      Theme.of(context).colorScheme.secondary,
                                   value: remember.value,
                                   onChanged: (bool? value) {
                                     remember.value = value ?? false;
@@ -199,7 +201,8 @@ class Download with ChangeNotifier {
                           TextButton(
                             style: TextButton.styleFrom(
                               primary: Colors.white,
-                              backgroundColor: Theme.of(context).accentColor,
+                              backgroundColor:
+                                  Theme.of(context).colorScheme.secondary,
                             ),
                             onPressed: () async {
                               Navigator.pop(context);
@@ -210,7 +213,15 @@ class Download with ChangeNotifier {
                               rememberOption = 2;
                               downloadSong(context, dlPath, filename, data);
                             },
-                            child: const Text('Yes'),
+                            child: Text(
+                              'Yes',
+                              style: TextStyle(
+                                  color:
+                                      Theme.of(context).colorScheme.secondary ==
+                                              Colors.white
+                                          ? Colors.black
+                                          : null),
+                            ),
                           ),
                           const SizedBox(
                             width: 5,

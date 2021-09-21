@@ -1,7 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
-
 import 'package:blackhole/CustomWidgets/add_playlist.dart';
 import 'package:blackhole/CustomWidgets/collage.dart';
 import 'package:blackhole/CustomWidgets/custom_physics.dart';
@@ -14,6 +10,9 @@ import 'package:blackhole/Helpers/mediaitem_converter.dart';
 import 'package:blackhole/Helpers/songs_count.dart';
 import 'package:blackhole/Screens/Library/show_songs.dart';
 import 'package:blackhole/Screens/Player/audioplayer.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 
 class LikedSongs extends StatefulWidget {
   final String playlistName;
@@ -222,7 +221,7 @@ class _LikedSongsState extends State<LikedSongs>
                   backgroundColor:
                       Theme.of(context).brightness == Brightness.dark
                           ? Colors.transparent
-                          : Theme.of(context).accentColor,
+                          : Theme.of(context).colorScheme.secondary,
                   elevation: 0,
                   bottom: TabBar(controller: _tcontroller, tabs: const [
                     Tab(
@@ -476,11 +475,7 @@ class _LikedSongsState extends State<LikedSongs>
                           child: SizedBox(
                               height: MediaQuery.of(context).size.width / 7,
                               width: MediaQuery.of(context).size.width / 7,
-                              child: CircularProgressIndicator(
-                                valueColor: AlwaysStoppedAnimation<Color>(
-                                    Theme.of(context).accentColor),
-                                strokeWidth: 5,
-                              )),
+                              child: const CircularProgressIndicator()),
                         ),
                       )
                     : TabBarView(

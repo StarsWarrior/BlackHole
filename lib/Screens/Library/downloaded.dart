@@ -1,17 +1,6 @@
 // import 'dart:io';
 // import 'dart:typed_data';
 
-// import 'package:audiotagger/audiotagger.dart';
-// import 'package:audiotagger/models/audiofile.dart';
-// import 'package:audiotagger/models/tag.dart';
-// import 'package:ext_storage/ext_storage.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:hive/hive.dart';
-import 'package:on_audio_query/on_audio_query.dart';
-// import 'package:permission_handler/permission_handler.dart';
-
 // import 'package:blackhole/CustomWidgets/collage.dart';
 // import 'package:blackhole/CustomWidgets/custom_physics.dart';
 // import 'package:blackhole/CustomWidgets/data_search.dart';
@@ -22,6 +11,15 @@ import 'package:blackhole/CustomWidgets/miniplayer.dart';
 // import 'package:blackhole/Helpers/picker.dart';
 // import 'package:blackhole/Screens/Library/show_songs.dart';
 import 'package:blackhole/Screens/Player/audioplayer.dart';
+// import 'package:audiotagger/audiotagger.dart';
+// import 'package:audiotagger/models/audiofile.dart';
+// import 'package:audiotagger/models/tag.dart';
+// import 'package:ext_storage/ext_storage.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:hive/hive.dart';
+import 'package:on_audio_query/on_audio_query.dart';
 
 class DownloadedSongs extends StatefulWidget {
   const DownloadedSongs({Key? key}) : super(key: key);
@@ -617,7 +615,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                 centerTitle: true,
                 backgroundColor: Theme.of(context).brightness == Brightness.dark
                     ? Colors.transparent
-                    : Theme.of(context).accentColor,
+                    : Theme.of(context).colorScheme.secondary,
                 elevation: 0,
               ),
               body: !added
@@ -626,11 +624,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                         child: SizedBox(
                             height: MediaQuery.of(context).size.width / 7,
                             width: MediaQuery.of(context).size.width / 7,
-                            child: CircularProgressIndicator(
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                  Theme.of(context).accentColor),
-                              strokeWidth: 5,
-                            )),
+                            child: const CircularProgressIndicator()),
                       ),
                     )
                   :

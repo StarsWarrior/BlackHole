@@ -1,13 +1,12 @@
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-import 'package:html_unescape/html_unescape_small.dart';
-import 'package:hive/hive.dart';
-import 'package:http/http.dart';
-
 import 'package:blackhole/CustomWidgets/custom_physics.dart';
 import 'package:blackhole/CustomWidgets/empty_screen.dart';
 import 'package:blackhole/Screens/Search/search.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import 'package:html_unescape/html_unescape_small.dart';
+import 'package:http/http.dart';
 
 List items = [];
 List globalItems = [];
@@ -200,11 +199,7 @@ class _TopPageState extends State<TopPage> {
                       SizedBox(
                           height: MediaQuery.of(context).size.width / 7,
                           width: MediaQuery.of(context).size.width / 7,
-                          child: CircularProgressIndicator(
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                                Theme.of(context).accentColor),
-                            strokeWidth: 5,
-                          )),
+                          child: const CircularProgressIndicator()),
                     ],
                   ),
           )

@@ -1,9 +1,8 @@
+import 'package:blackhole/CustomWidgets/gradient_containers.dart';
+import 'package:blackhole/Helpers/supabase.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:uuid/uuid.dart';
-
-import 'package:blackhole/CustomWidgets/gradient_containers.dart';
-import 'package:blackhole/Helpers/supabase.dart';
 
 class AuthScreen extends StatefulWidget {
   @override
@@ -29,8 +28,8 @@ class _AuthScreenState extends State<AuthScreen> {
         .add(const Duration(hours: 5, minutes: 30))
         .toString()
         .split('.')
-          ..removeLast()
-          ..join('.');
+      ..removeLast()
+      ..join('.');
 
     String userId = uuid.v1();
     status = await SupaBase().createUser({
@@ -116,7 +115,9 @@ class _AuthScreenState extends State<AuthScreen> {
                                       height: 0.97,
                                       fontSize: 80,
                                       fontWeight: FontWeight.bold,
-                                      color: Theme.of(context).accentColor,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .secondary,
                                     ),
                                     children: <TextSpan>[
                                       const TextSpan(
@@ -132,7 +133,9 @@ class _AuthScreenState extends State<AuthScreen> {
                                         style: TextStyle(
                                           fontWeight: FontWeight.bold,
                                           fontSize: 80,
-                                          color: Theme.of(context).accentColor,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .secondary,
                                         ),
                                       ),
                                     ],
@@ -173,7 +176,9 @@ class _AuthScreenState extends State<AuthScreen> {
                                         ),
                                         prefixIcon: Icon(
                                           Icons.person,
-                                          color: Theme.of(context).accentColor,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .secondary,
                                         ),
                                         border: InputBorder.none,
                                         hintText: 'Enter Your Name',
@@ -209,7 +214,9 @@ class _AuthScreenState extends State<AuthScreen> {
                                     height: 55.0,
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(10.0),
-                                      color: Theme.of(context).accentColor,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .secondary,
                                       boxShadow: const [
                                         BoxShadow(
                                           color: Colors.black26,

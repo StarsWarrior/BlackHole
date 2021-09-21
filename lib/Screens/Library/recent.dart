@@ -1,11 +1,10 @@
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
-
 import 'package:blackhole/CustomWidgets/empty_screen.dart';
 import 'package:blackhole/CustomWidgets/gradient_containers.dart';
 import 'package:blackhole/CustomWidgets/miniplayer.dart';
 import 'package:blackhole/Screens/Player/audioplayer.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 
 class RecentlyPlayed extends StatefulWidget {
   @override
@@ -41,7 +40,7 @@ class _RecentlyPlayedState extends State<RecentlyPlayed> {
                 centerTitle: true,
                 backgroundColor: Theme.of(context).brightness == Brightness.dark
                     ? Colors.transparent
-                    : Theme.of(context).accentColor,
+                    : Theme.of(context).colorScheme.secondary,
                 elevation: 0,
                 actions: [
                   IconButton(

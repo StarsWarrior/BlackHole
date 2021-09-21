@@ -18,7 +18,7 @@ class ShowSnackBar {
             ? null
             : action ??
                 SnackBarAction(
-                  textColor: Theme.of(context).accentColor,
+                  textColor: Theme.of(context).colorScheme.secondary,
                   label: 'Ok',
                   onPressed: () {},
                 ),

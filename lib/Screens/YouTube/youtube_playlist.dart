@@ -1,13 +1,12 @@
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
-
 import 'package:blackhole/CustomWidgets/gradient_containers.dart';
 import 'package:blackhole/CustomWidgets/miniplayer.dart';
 import 'package:blackhole/Screens/Player/audioplayer.dart';
 import 'package:blackhole/Screens/Search/search.dart';
 import 'package:blackhole/Services/youtube_services.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
 class YouTubePlaylist extends StatefulWidget {
@@ -68,11 +67,7 @@ class _YouTubePlaylistState extends State<YouTubePlaylist> {
                         child: SizedBox(
                             height: MediaQuery.of(context).size.width / 7,
                             width: MediaQuery.of(context).size.width / 7,
-                            child: CircularProgressIndicator(
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                  Theme.of(context).accentColor),
-                              strokeWidth: 5,
-                            )),
+                            child: const CircularProgressIndicator()),
                       ),
                     )
                   else
@@ -295,7 +290,9 @@ class _YouTubePlaylistState extends State<YouTubePlaylist> {
                                       child: CircularProgressIndicator(
                                         valueColor:
                                             AlwaysStoppedAnimation<Color>(
-                                                Theme.of(context).accentColor),
+                                                Theme.of(context)
+                                                    .colorScheme
+                                                    .secondary),
                                         strokeWidth: 5,
                                       )),
                                   const Text('Fetching Audio Stream'),

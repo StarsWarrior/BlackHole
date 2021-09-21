@@ -1,13 +1,12 @@
 import 'dart:io';
 
 import 'package:audio_service/audio_service.dart';
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-
 import 'package:blackhole/CustomWidgets/gradient_containers.dart';
 import 'package:blackhole/Screens/Player/audioplayer.dart';
 import 'package:blackhole/main.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 
 class MiniPlayer extends StatefulWidget {
   @override
@@ -138,12 +137,14 @@ class _MiniPlayerState extends State<MiniPlayer> {
                                                   .copyWith(
                                                 activeTrackColor:
                                                     Theme.of(context)
-                                                        .accentColor,
+                                                        .colorScheme
+                                                        .secondary,
                                                 inactiveTrackColor:
                                                     Colors.transparent,
                                                 trackHeight: 0.5,
                                                 thumbColor: Theme.of(context)
-                                                    .accentColor,
+                                                    .colorScheme
+                                                    .secondary,
                                                 thumbShape:
                                                     const RoundSliderThumbShape(
                                                         enabledThumbRadius:

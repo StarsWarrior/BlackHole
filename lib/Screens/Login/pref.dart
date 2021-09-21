@@ -1,9 +1,8 @@
+import 'package:blackhole/CustomWidgets/gradient_containers.dart';
 import 'package:blackhole/CustomWidgets/snackbar.dart';
 import 'package:blackhole/Helpers/countrycodes.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-
-import 'package:blackhole/CustomWidgets/gradient_containers.dart';
 
 class PrefScreen extends StatefulWidget {
   const PrefScreen({Key? key}) : super(key: key);
@@ -95,7 +94,9 @@ class _PrefScreenState extends State<PrefScreen> {
                                         fontSize: 65,
                                         height: 1.0,
                                         fontWeight: FontWeight.bold,
-                                        color: Theme.of(context).accentColor,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .secondary,
                                       ),
                                       children: <TextSpan>[
                                         const TextSpan(
@@ -111,8 +112,9 @@ class _PrefScreenState extends State<PrefScreen> {
                                           style: TextStyle(
                                             fontWeight: FontWeight.bold,
                                             fontSize: 70,
-                                            color:
-                                                Theme.of(context).accentColor,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .secondary,
                                           ),
                                         ),
                                         const TextSpan(
@@ -206,9 +208,11 @@ class _PrefScreenState extends State<PrefScreen> {
                                                         itemBuilder:
                                                             (context, idx) {
                                                           return CheckboxListTile(
-                                                            activeColor: Theme
-                                                                    .of(context)
-                                                                .accentColor,
+                                                            activeColor:
+                                                                Theme.of(
+                                                                        context)
+                                                                    .colorScheme
+                                                                    .secondary,
                                                             value: checked
                                                                 .contains(
                                                                     languages[
@@ -238,7 +242,8 @@ class _PrefScreenState extends State<PrefScreen> {
                                                             .styleFrom(
                                                           primary:
                                                               Theme.of(context)
-                                                                  .accentColor,
+                                                                  .colorScheme
+                                                                  .secondary,
                                                         ),
                                                         onPressed: () {
                                                           Navigator.pop(
@@ -252,7 +257,8 @@ class _PrefScreenState extends State<PrefScreen> {
                                                             .styleFrom(
                                                           primary:
                                                               Theme.of(context)
-                                                                  .accentColor,
+                                                                  .colorScheme
+                                                                  .secondary,
                                                         ),
                                                         onPressed: () {
                                                           setState(() {
@@ -354,7 +360,8 @@ class _PrefScreenState extends State<PrefScreen> {
                                                     return ListTileTheme(
                                                       selectedColor:
                                                           Theme.of(context)
-                                                              .accentColor,
+                                                              .colorScheme
+                                                              .secondary,
                                                       child: ListTile(
                                                         contentPadding:
                                                             const EdgeInsets
