@@ -47,10 +47,8 @@ Future<void> main() async {
 
   await Hive.initFlutter();
   await openHiveBox('settings');
-  await openHiveBox('cache');
-  await openHiveBox('recentlyPlayed');
   await openHiveBox('downloads');
-  await openHiveBox('songDetails', limit: true);
+  await openHiveBox('cache', limit: true);
   setOptimalDisplayMode();
   await startService();
   runApp(MyApp());
@@ -102,7 +100,7 @@ Future<void> openHiveBox(String boxName, {bool limit = false}) async {
       throw 'Failed to open $boxName Box\nError: $error';
     });
     // clear box if it grows large
-    if (box.length > 1000) {
+    if (box.length > 500) {
       box.clear();
     }
     await Hive.openBox(boxName);

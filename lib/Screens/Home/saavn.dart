@@ -24,7 +24,7 @@ class SaavnHomePage extends StatefulWidget {
 class _SaavnHomePageState extends State<SaavnHomePage>
     with AutomaticKeepAliveClientMixin<SaavnHomePage> {
   List recentList =
-      Hive.box('recentlyPlayed').get('recentSongs', defaultValue: []) as List;
+      Hive.box('cache').get('recentSongs', defaultValue: []) as List;
 
   Future<void> getHomePageData() async {
     Map recievedData = await SaavnAPI().fetchHomePageData();

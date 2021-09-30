@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:blackhole/CustomWidgets/gradient_containers.dart';
 import 'package:blackhole/CustomWidgets/snackbar.dart';
 import 'package:blackhole/CustomWidgets/textinput_dialog.dart';
+import 'package:blackhole/Helpers/backup_restore.dart';
 import 'package:blackhole/Helpers/config.dart';
 import 'package:blackhole/Helpers/countrycodes.dart';
 import 'package:blackhole/Helpers/picker.dart';
@@ -820,6 +823,12 @@ class _SettingPageState extends State<SettingPage> {
                                                   activeColor: Theme.of(context)
                                                       .colorScheme
                                                       .secondary,
+                                                  checkColor: Theme.of(context)
+                                                              .colorScheme
+                                                              .secondary ==
+                                                          Colors.white
+                                                      ? Colors.black
+                                                      : null,
                                                   value: checked
                                                       .contains(languages[idx]),
                                                   title: Text(languages[idx]),
@@ -1037,7 +1046,7 @@ class _SettingPageState extends State<SettingPage> {
                       //                             onTap: () async {
                       //                               final String temp =
                       //                                   await Picker()
-                      //                                       .selectFolder(context,
+                      //                                       .selectFolder(contfext,
                       //                                           'Select Folder');
                       //                               if (temp.trim() != '' &&
                       //                                   !dirPaths
@@ -1311,6 +1320,33 @@ class _SettingPageState extends State<SettingPage> {
                         setState(() {});
                       },
                     ),
+                    ListTile(
+                        title: const Text('Clear Cached Details'),
+                        subtitle: const Text(
+                            'Deletes Cached details including Homepage, Spotify Top Charts, YouTube and Last Session Data. Usually app automatically clears them when data become large\n'),
+                        trailing: SizedBox(
+                          height: 70.0,
+                          width: 70.0,
+                          child: Center(
+                            child: FutureBuilder(
+                                future: File(Hive.box('cache').path!).length(),
+                                builder: (BuildContext context,
+                                    AsyncSnapshot<int> snapshot) {
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.done) {
+                                    return Text(
+                                        '${((snapshot.data ?? 0) / (1024 * 1024)).toStringAsFixed(2)} MB');
+                                  }
+                                  return const Text('');
+                                }),
+                          ),
+                        ),
+                        dense: true,
+                        isThreeLine: true,
+                        onTap: () async {
+                          Hive.box('cache').clear();
+                          setState(() {});
+                        }),
                     Visibility(
                       visible: useProxy,
                       child: ListTile(
@@ -1419,6 +1455,165 @@ class _SettingPageState extends State<SettingPage> {
               Padding(
                 padding: const EdgeInsets.fromLTRB(15, 10, 15, 0),
                 child: Text(
+                  'Backup & Restore',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.secondary,
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(10.0, 0, 10.0, 10.0),
+                child: GradientCard(
+                  child: Column(children: [
+                    ListTile(
+                      title: const Text('Create Backup'),
+                      subtitle: const Text('Create backup of your data'),
+                      dense: true,
+                      onTap: () {
+                        showModalBottomSheet(
+                            isDismissible: true,
+                            backgroundColor: Colors.transparent,
+                            context: context,
+                            builder: (BuildContext context) {
+                              final List playlistNames = Hive.box('settings')
+                                  .get('playlistNames',
+                                      defaultValue: ['Favorite Songs']) as List;
+                              if (!playlistNames.contains('Favorite Songs')) {
+                                playlistNames.insert(0, 'Favorite Songs');
+                                settingsBox.put('playlistNames', playlistNames);
+                              }
+
+                              final List<String> persist = [
+                                'Settings',
+                                'Playlists',
+                              ];
+
+                              final List<String> checked = [
+                                'Settings',
+                                'Downloads',
+                                'Playlists'
+                              ];
+
+                              final List<String> items = [
+                                'Settings',
+                                'Playlists',
+                                'Downloads',
+                                'Cache',
+                              ];
+
+                              final Map<String, List> boxNames = {
+                                'Settings': ['settings'],
+                                'Cache': ['cache'],
+                                'Downloads': ['downloads'],
+                                'Playlists': playlistNames,
+                              };
+                              return StatefulBuilder(builder:
+                                  (BuildContext context, StateSetter setStt) {
+                                return BottomGradientContainer(
+                                  borderRadius: BorderRadius.circular(20.0),
+                                  child: Column(
+                                    children: [
+                                      Expanded(
+                                        child: ListView.builder(
+                                            physics:
+                                                const BouncingScrollPhysics(),
+                                            shrinkWrap: true,
+                                            padding: const EdgeInsets.fromLTRB(
+                                                0, 10, 0, 10),
+                                            itemCount: items.length,
+                                            itemBuilder: (context, idx) {
+                                              return CheckboxListTile(
+                                                activeColor: Theme.of(context)
+                                                    .colorScheme
+                                                    .secondary,
+                                                checkColor: Theme.of(context)
+                                                            .colorScheme
+                                                            .secondary ==
+                                                        Colors.white
+                                                    ? Colors.black
+                                                    : null,
+                                                value: checked
+                                                    .contains(items[idx]),
+                                                title: Text(items[idx]),
+                                                onChanged: persist
+                                                        .contains(items[idx])
+                                                    ? null
+                                                    : (bool? value) {
+                                                        value!
+                                                            ? checked
+                                                                .add(items[idx])
+                                                            : checked.remove(
+                                                                items[idx]);
+                                                        setStt(() {});
+                                                      },
+                                              );
+                                            }),
+                                      ),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        children: [
+                                          TextButton(
+                                            style: TextButton.styleFrom(
+                                              primary: Theme.of(context)
+                                                  .colorScheme
+                                                  .secondary,
+                                            ),
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                            },
+                                            child: const Text('Cancel'),
+                                          ),
+                                          TextButton(
+                                            style: TextButton.styleFrom(
+                                              primary: Theme.of(context)
+                                                  .colorScheme
+                                                  .secondary,
+                                            ),
+                                            onPressed: () {
+                                              BackupNRestore().createBackup(
+                                                  context, checked, boxNames);
+                                              Navigator.pop(context);
+                                            },
+                                            child: const Text(
+                                              'Ok',
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.w600),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              });
+                            });
+                      },
+                    ),
+                    ListTile(
+                      title: const Text('Restore'),
+                      subtitle: const Text(
+                          'Restore your data from Backup.\nYou might need to restart app'),
+                      dense: true,
+                      onTap: () {
+                        BackupNRestore().restore(context);
+                      },
+                    ),
+                    // const BoxSwitchTile(
+                    //   title: Text('Auto Backup'),
+                    //   subtitle:
+                    //       Text('Automatically backup data'),
+                    //   keyName: 'autoBackup',
+                    //   defaultValue: false,
+                    // ),
+                  ]),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(15, 10, 15, 0),
+                child: Text(
                   'About',
                   style: TextStyle(
                       fontSize: 20,
@@ -1465,11 +1660,6 @@ class _SettingPageState extends State<SettingPage> {
                         ),
                         dense: true,
                       ),
-                      // Divider(
-                      //   height: 0,
-                      //   indent: 15,
-                      //   endIndent: 15,
-                      // ),
                       ListTile(
                         title: const Text('Share App'),
                         subtitle: const Text('Let you friends know about us'),
@@ -1479,7 +1669,6 @@ class _SettingPageState extends State<SettingPage> {
                         },
                         dense: true,
                       ),
-
                       ListTile(
                         title: const Text('Liked my work?'),
                         subtitle: const Text('Buy me a coffee'),
@@ -1604,7 +1793,6 @@ class _SettingPageState extends State<SettingPage> {
                               });
                         },
                       ),
-
                       ListTile(
                         title: const Text('Join us on Telegram'),
                         subtitle: const Text(

@@ -22,7 +22,8 @@ class MediaItemConverter {
     };
   }
 
-  MediaItem mapToMediaItem(Map song, {bool addedByAutoplay = false}) {
+  MediaItem mapToMediaItem(Map song,
+      {bool addedByAutoplay = false, bool autoplay = true}) {
     return MediaItem(
         id: song['id'].toString(),
         album: song['album'].toString(),
@@ -49,6 +50,7 @@ class MediaItemConverter {
           'subtitle': song['subtitle'],
           'perma_url': song['perma_url'],
           'addedByAutoplay': addedByAutoplay,
+          'autoplay': autoplay,
         });
   }
 

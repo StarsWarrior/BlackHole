@@ -217,6 +217,7 @@ class _SearchPageState extends State<SearchPage> {
                               Widget? child) {
                             if (value.isEmpty) return const SizedBox();
                             return SingleChildScrollView(
+                              physics: const BouncingScrollPhysics(),
                               child: Column(
                                 children: [
                                   Padding(
@@ -254,7 +255,7 @@ class _SearchPageState extends State<SearchPage> {
                                               _controller.close();
                                               setState(() {
                                                 fetched = false;
-                                                query = value[index];
+                                                query = value[index].trim();
                                                 _controller.query = query;
                                                 status = false;
                                                 fromHome = false;

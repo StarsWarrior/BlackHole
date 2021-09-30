@@ -55,7 +55,7 @@ class FormatResponse {
   }
 
   Future<Map> formatSingleSongResponse(Map response) async {
-    // Map cachedSong = Hive.box('songDetails').get(response['id']);
+    // Map cachedSong = Hive.box('cache').get(response['id']);
     // if (cachedSong != null) {
     //   return cachedSong;
     // }
@@ -119,7 +119,7 @@ class FormatResponse {
         'perma_url': response['perma_url'],
         'url': decode(response['more_info']['encrypted_media_url'].toString()),
       };
-      // Hive.box('songDetails').put(response['id'], info);
+      // Hive.box('cache').put(response['id'], info);
     } catch (e) {
       return {'Error': e};
     }
@@ -459,7 +459,7 @@ class FormatResponse {
         'new_albums',
         'top_playlists',
         'radio',
-        'city_mod',
+        // 'city_mod',
         'artist_recos',
         ...promoList
       ];
@@ -495,11 +495,12 @@ class FormatResponse {
         if (item['type'] == 'song') {
           if (item['mini_obj'] as bool? ?? false) {
             if (fetchDetails) {
-              Map cachedDetails = Hive.box('songDetails')
-                  .get(item['id'], defaultValue: {}) as Map;
+              Map cachedDetails =
+                  Hive.box('cache').get(item['id'], defaultValue: {}) as Map;
               if (cachedDetails.isEmpty) {
                 cachedDetails =
                     await SaavnAPI().fetchSongDetails(item['id'].toString());
+                Hive.box('cache').put(cachedDetails['id'], cachedDetails);
               }
               list[i] = cachedDetails;
             }

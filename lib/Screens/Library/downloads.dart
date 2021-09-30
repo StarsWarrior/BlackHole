@@ -1,14 +1,20 @@
 import 'dart:io';
 
+import 'package:audiotagger/audiotagger.dart';
+import 'package:audiotagger/models/tag.dart';
 import 'package:blackhole/CustomWidgets/collage.dart';
 import 'package:blackhole/CustomWidgets/custom_physics.dart';
 import 'package:blackhole/CustomWidgets/empty_screen.dart';
 import 'package:blackhole/CustomWidgets/gradient_containers.dart';
 import 'package:blackhole/CustomWidgets/miniplayer.dart';
+import 'package:blackhole/CustomWidgets/snackbar.dart';
+import 'package:blackhole/Helpers/picker.dart';
 import 'package:blackhole/Screens/Library/show_songs.dart';
 import 'package:blackhole/Screens/Player/audioplayer.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class Downloads extends StatefulWidget {
   const Downloads({Key? key}) : super(key: key);
@@ -18,7 +24,7 @@ class Downloads extends StatefulWidget {
 
 class _DownloadsState extends State<Downloads>
     with SingleTickerProviderStateMixin {
-  Box? downloadsBox;
+  Box downloadsBox = Hive.box('downloads');
   bool added = false;
   List _songs = [];
   final Map<String, List<Map>> _albums = {};
@@ -41,15 +47,30 @@ class _DownloadsState extends State<Downloads>
     super.initState();
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+    _tcontroller!.dispose();
+  }
+
   void changeTitle() {
     setState(() {
       currentIndex = _tcontroller!.index;
     });
   }
 
+  Future<void> downImage(String filepath, String url) async {
+    final File file = File(filepath);
+
+    final HttpClientRequest request2 =
+        await HttpClient().getUrl(Uri.parse(url));
+    final HttpClientResponse response2 = await request2.close();
+    final bytes2 = await consolidateHttpClientResponseBytes(response2);
+    await file.writeAsBytes(bytes2);
+  }
+
   Future<void> getDownloads() async {
-    downloadsBox = Hive.box('downloads');
-    _songs = downloadsBox?.values.toList() ?? [];
+    _songs = downloadsBox.values.toList();
     setArtistAlbum();
   }
 
@@ -113,7 +134,7 @@ class _DownloadsState extends State<Downloads>
           .compareTo(b['title'].toString().toUpperCase()));
     }
     if (sortValue == 2) {
-      _songs = downloadsBox?.values.toList() ?? [];
+      _songs = downloadsBox.values.toList();
     }
     if (sortValue == 3) {
       _songs.shuffle();
@@ -160,8 +181,10 @@ class _DownloadsState extends State<Downloads>
     }
   }
 
-  void deleteLiked(int index) {
-    downloadsBox!.deleteAt(index);
+  Future<void> deleteSong(int index) async {
+    await downloadsBox.delete(_songs[index]['id']);
+    final audioFile = File(_songs[index]['path'].toString());
+    final imageFile = File(_songs[index]['image'].toString());
     if (_albums[_songs[index]['album']]!.length == 1) {
       sortedAlbumKeysList.remove(_songs[index]['album']);
     }
@@ -178,6 +201,21 @@ class _DownloadsState extends State<Downloads>
     _genres[_songs[index]['genre']]!.remove(_songs[index]);
 
     _songs.remove(_songs[index]);
+    try {
+      audioFile.delete();
+      if (await imageFile.exists()) {
+        imageFile.delete();
+      }
+      ShowSnackBar().showSnackBar(
+        context,
+        'Deleted ${_songs[index]['title']}',
+      );
+    } catch (e) {
+      ShowSnackBar().showSnackBar(
+        context,
+        'Failed to delete file: ${audioFile.path}',
+      );
+    }
   }
 
   @override
@@ -213,6 +251,28 @@ class _DownloadsState extends State<Downloads>
                     ),
                   ]),
                   actions: [
+                    if (_songs.isNotEmpty)
+                      IconButton(
+                          icon: const Icon(Icons.shuffle_rounded),
+                          tooltip: 'Shuffle & Play',
+                          onPressed: () {
+                            final List tempList = List.from(_songs);
+                            tempList.shuffle();
+                            Navigator.of(context).push(
+                              PageRouteBuilder(
+                                opaque: false, // set to false
+                                pageBuilder: (_, __, ___) => PlayScreen(
+                                  data: {
+                                    'index': 0,
+                                    'response': tempList,
+                                    'offline': true,
+                                    'downloaded': true,
+                                  },
+                                  fromMiniplayer: false,
+                                ),
+                              ),
+                            );
+                          }),
                     if (_songs.isNotEmpty)
                       PopupMenuButton(
                           icon: const Icon(Icons.sort_rounded),
@@ -484,6 +544,20 @@ class _DownloadsState extends State<Downloads>
                                           image: FileImage(File(_songs[index]
                                                   ['image']
                                               .toString())),
+                                          errorBuilder: (_, __, ___) {
+                                            if (_songs[index]['image'] !=
+                                                    null &&
+                                                _songs[index]['image_url'] !=
+                                                    null) {
+                                              downImage(
+                                                  _songs[index]['image']
+                                                      .toString(),
+                                                  _songs[index]['image_url']
+                                                      .toString());
+                                            }
+                                            return Image.asset(
+                                                'assets/cover.jpg');
+                                          },
                                         ),
                                       ),
                                     ),
@@ -512,36 +586,57 @@ class _DownloadsState extends State<Downloads>
                                       '${_songs[index]['artist'] ?? 'Artist name'}',
                                       overflow: TextOverflow.ellipsis,
                                     ),
-                                    // trailing: Row(
-                                    // mainAxisSize: MainAxisSize.min,
-                                    // children: [
-                                    // PopupMenuButton(
-                                    //     icon: const Icon(
-                                    //         Icons.more_vert_rounded),
-                                    //     shape:
-                                    //         const RoundedRectangleBorder(
-                                    //             borderRadius:
-                                    //                 BorderRadius.all(
-                                    //                     Radius.circular(
-                                    //                         15.0))),
-                                    //     itemBuilder: (context) => [
-                                    //           PopupMenuItem(
-                                    //             value: 0,
-                                    //             child: Row(
-                                    //               children: const [
-                                    //                 Icon(Icons
-                                    //                     .edit_rounded),
-                                    //                 SizedBox(width: 10.0),
-                                    //                 Text('Edit'),
-                                    //               ],
-                                    //             ),
-                                    //           ),
-                                    //         ],
-                                    //     onSelected: (int? value) async {
-                                    //       if (value == 0) {}
-                                    //     }),
-                                    // ],
-                                    // ),
+                                    trailing: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        PopupMenuButton(
+                                            icon: const Icon(
+                                                Icons.more_vert_rounded),
+                                            shape: const RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(15.0))),
+                                            itemBuilder: (context) => [
+                                                  PopupMenuItem(
+                                                    value: 0,
+                                                    child: Row(
+                                                      children: const [
+                                                        Icon(
+                                                            Icons.edit_rounded),
+                                                        SizedBox(width: 10.0),
+                                                        Text('Edit'),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  PopupMenuItem(
+                                                    value: 1,
+                                                    child: Row(
+                                                      children: const [
+                                                        Icon(Icons
+                                                            .delete_rounded),
+                                                        SizedBox(width: 10.0),
+                                                        Text('Delete'),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ],
+                                            onSelected: (int? value) async {
+                                              if (value == 0) {
+                                                _songs[index] = await editTags(
+                                                    _songs[index] as Map,
+                                                    context);
+                                                Hive.box('downloads').put(
+                                                    _songs[index]['id'],
+                                                    _songs[index]);
+                                                setState(() {});
+                                              }
+                                              if (value == 1) {
+                                                setState(() {
+                                                  deleteSong(index);
+                                                });
+                                              }
+                                            }),
+                                      ],
+                                    ),
                                   );
                                 }),
                           albumsTab(),
@@ -684,4 +779,269 @@ class _DownloadsState extends State<Downloads>
               );
             });
   }
+}
+
+Future<Map> editTags(Map song, BuildContext context) async {
+  await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        final tagger = Audiotagger();
+
+        FileImage songImage = FileImage(File(song['image'].toString()));
+
+        final _titlecontroller =
+            TextEditingController(text: song['title'].toString());
+        final _albumcontroller =
+            TextEditingController(text: song['album'].toString());
+        final _artistcontroller =
+            TextEditingController(text: song['artist'].toString());
+        final _albumArtistController =
+            TextEditingController(text: song['albumArtist'].toString());
+        final _genrecontroller =
+            TextEditingController(text: song['genre'].toString());
+        final _yearcontroller =
+            TextEditingController(text: song['year'].toString());
+        final _pathcontroller =
+            TextEditingController(text: song['path'].toString());
+
+        return AlertDialog(
+          content: SizedBox(
+            height: 400,
+            width: 300,
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  GestureDetector(
+                    onTap: () async {
+                      final String filePath = await Picker().selectFile(
+                          context, ['png', 'jpg', 'jpeg'], 'Pick Image');
+                      if (filePath != '') {
+                        final _imagePath = filePath;
+                        File(_imagePath).copy(song['image'].toString());
+
+                        songImage = FileImage(File(_imagePath));
+
+                        final Tag tag = Tag(
+                          artwork: _imagePath,
+                        );
+                        try {
+                          await [
+                            Permission.manageExternalStorage,
+                          ].request();
+                          await tagger.writeTags(
+                            path: song['path'].toString(),
+                            tag: tag,
+                          );
+                        } catch (e) {
+                          await tagger.writeTags(
+                            path: song['path'].toString(),
+                            tag: tag,
+                          );
+                        }
+                      }
+                    },
+                    child: Card(
+                      elevation: 5,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(7.0),
+                      ),
+                      clipBehavior: Clip.antiAlias,
+                      child: SizedBox(
+                        height: MediaQuery.of(context).size.width / 2,
+                        width: MediaQuery.of(context).size.width / 2,
+                        child: Image(
+                          fit: BoxFit.cover,
+                          image: songImage,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20.0),
+                  Row(
+                    children: [
+                      Text(
+                        'Title',
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.secondary),
+                      ),
+                    ],
+                  ),
+                  TextField(
+                      autofocus: true,
+                      controller: _titlecontroller,
+                      onSubmitted: (value) {}),
+                  const SizedBox(
+                    height: 30,
+                  ),
+                  Row(
+                    children: [
+                      Text(
+                        'Artist',
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.secondary),
+                      ),
+                    ],
+                  ),
+                  TextField(
+                      autofocus: true,
+                      controller: _artistcontroller,
+                      onSubmitted: (value) {}),
+                  const SizedBox(
+                    height: 30,
+                  ),
+                  Row(
+                    children: [
+                      Text(
+                        'Album Artist',
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.secondary),
+                      ),
+                    ],
+                  ),
+                  TextField(
+                      autofocus: true,
+                      controller: _albumArtistController,
+                      onSubmitted: (value) {}),
+                  const SizedBox(
+                    height: 30,
+                  ),
+                  Row(
+                    children: [
+                      Text(
+                        'Album',
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.secondary),
+                      ),
+                    ],
+                  ),
+                  TextField(
+                      autofocus: true,
+                      controller: _albumcontroller,
+                      onSubmitted: (value) {}),
+                  const SizedBox(
+                    height: 30,
+                  ),
+                  Row(
+                    children: [
+                      Text(
+                        'Genre',
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.secondary),
+                      ),
+                    ],
+                  ),
+                  TextField(
+                      autofocus: true,
+                      controller: _genrecontroller,
+                      onSubmitted: (value) {}),
+                  const SizedBox(
+                    height: 30,
+                  ),
+                  Row(
+                    children: [
+                      Text(
+                        'Year',
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.secondary),
+                      ),
+                    ],
+                  ),
+                  TextField(
+                      autofocus: true,
+                      controller: _yearcontroller,
+                      onSubmitted: (value) {}),
+                  const SizedBox(
+                    height: 30,
+                  ),
+                  Row(
+                    children: [
+                      Text(
+                        'Song Path',
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.secondary),
+                      ),
+                    ],
+                  ),
+                  TextField(
+                      autofocus: true,
+                      controller: _pathcontroller,
+                      onSubmitted: (value) {}),
+                ],
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              style: TextButton.styleFrom(
+                primary: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.white
+                    : Colors.grey[700],
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              style: TextButton.styleFrom(
+                primary: Colors.white,
+                backgroundColor: Theme.of(context).colorScheme.secondary,
+              ),
+              onPressed: () async {
+                Navigator.pop(context);
+                song['title'] = _titlecontroller.text;
+                song['album'] = _albumcontroller.text;
+                song['artist'] = _artistcontroller.text;
+                song['albumArtist'] = _albumArtistController.text;
+                song['genre'] = _genrecontroller.text;
+                song['year'] = _yearcontroller.text;
+                song['path'] = _pathcontroller.text;
+                final tag = Tag(
+                  title: _titlecontroller.text,
+                  artist: _artistcontroller.text,
+                  album: _albumcontroller.text,
+                  genre: _genrecontroller.text,
+                  year: _yearcontroller.text,
+                  albumArtist: _albumArtistController.text,
+                );
+                try {
+                  try {
+                    await [
+                      Permission.manageExternalStorage,
+                    ].request();
+                    tagger.writeTags(
+                      path: song['path'].toString(),
+                      tag: tag,
+                    );
+                  } catch (e) {
+                    await tagger.writeTags(
+                      path: song['path'].toString(),
+                      tag: tag,
+                    );
+                    ShowSnackBar().showSnackBar(
+                      context,
+                      'Successfully edited tags',
+                    );
+                  }
+                } catch (e) {
+                  ShowSnackBar().showSnackBar(
+                    context,
+                    'Failed to edit tags',
+                  );
+                }
+              },
+              child: const Text(
+                'Ok',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+            const SizedBox(
+              width: 5,
+            ),
+          ],
+        );
+      });
+  return song;
 }

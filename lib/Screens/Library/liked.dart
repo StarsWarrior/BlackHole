@@ -542,6 +542,7 @@ class _LikedSongsState extends State<LikedSongs>
                                                 'offline': false,
                                               },
                                               fromMiniplayer: false,
+                                              recommend: false,
                                             ),
                                           ),
                                         );

@@ -16,9 +16,7 @@ class _RecentlyPlayedState extends State<RecentlyPlayed> {
   bool added = false;
 
   Future<void> getSongs() async {
-    await Hive.openBox('recentlyPlayed');
-    _songs =
-        Hive.box('recentlyPlayed').get('recentSongs', defaultValue: []) as List;
+    _songs = Hive.box('cache').get('recentSongs', defaultValue: []) as List;
     added = true;
     setState(() {});
   }
@@ -45,7 +43,7 @@ class _RecentlyPlayedState extends State<RecentlyPlayed> {
                 actions: [
                   IconButton(
                     onPressed: () {
-                      Hive.box('recentlyPlayed').put('recentSongs', []);
+                      Hive.box('cache').put('recentSongs', []);
                       setState(() {
                         _songs = [];
                       });
@@ -86,8 +84,7 @@ class _RecentlyPlayedState extends State<RecentlyPlayed> {
                                 onDismissed: (direction) {
                                   _songs.removeAt(index);
                                   setState(() {});
-                                  Hive.box('recentlyPlayed')
-                                      .put('recentSongs', _songs);
+                                  Hive.box('cache').put('recentSongs', _songs);
                                 },
                                 child: ListTile(
                                   leading: Card(

@@ -33,10 +33,12 @@ import 'package:url_launcher/url_launcher.dart';
 class PlayScreen extends StatefulWidget {
   final Map data;
   final bool fromMiniplayer;
+  final bool recommend;
   const PlayScreen({
     Key? key,
     required this.data,
     required this.fromMiniplayer,
+    this.recommend = true,
   }) : super(key: key);
   @override
   _PlayScreenState createState() => _PlayScreenState();
@@ -170,12 +172,14 @@ class _PlayScreenState extends State<PlayScreen> {
 
   void setValues(List response) {
     globalQueue.addAll(
-      response.map((song) => MediaItemConverter().mapToMediaItem(song as Map)),
+      response.map((song) => MediaItemConverter()
+          .mapToMediaItem(song as Map, autoplay: widget.recommend)),
     );
     fetched = true;
   }
 
   Future<void> updateNplay() async {
+    await audioHandler.setShuffleMode(AudioServiceShuffleMode.none);
     await audioHandler.updateQueue(globalQueue);
     await audioHandler.skipToQueueItem(globalIndex);
     await audioHandler.play();
@@ -193,6 +197,8 @@ class _PlayScreenState extends State<PlayScreen> {
         default:
           break;
       }
+    } else {
+      audioHandler.setRepeatMode(AudioServiceRepeatMode.none);
     }
   }
 
@@ -318,10 +324,8 @@ class _PlayScreenState extends State<PlayScreen> {
                                   icon: const Icon(Icons.share_rounded),
                                   tooltip: 'Share',
                                   onPressed: () {
-                                    Share.share(fromYT
-                                        ? 'https://youtube.com/watch?v=${mediaItem.id}'
-                                        : mediaItem.extras!['perma_url']
-                                            .toString());
+                                    Share.share(mediaItem.extras!['perma_url']
+                                        .toString());
                                   }),
                             PopupMenuButton(
                               icon: const Icon(
@@ -1555,8 +1559,23 @@ class NameNControls extends StatelessWidget {
         ),
 
         // Now playing
-        TextButton(
-          onPressed: () {
+        GestureDetector(
+          onVerticalDragEnd: (_) {
+            showModalBottomSheet(
+                isDismissible: true,
+                backgroundColor: Colors.transparent,
+                context: context,
+                builder: (BuildContext context) {
+                  return BottomGradientContainer(
+                      padding: EdgeInsets.zero,
+                      margin: const EdgeInsets.only(left: 20, right: 20),
+                      borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(15.0),
+                          topRight: Radius.circular(15.0)),
+                      child: NowPlayingStream(audioHandler));
+                });
+          },
+          onTap: () {
             showModalBottomSheet(
                 isDismissible: true,
                 backgroundColor: Colors.transparent,
@@ -1574,6 +1593,7 @@ class NameNControls extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: const [
+              SizedBox(height: 5.0),
               Icon(
                 Icons.expand_less_rounded,
               ),
@@ -1585,6 +1605,7 @@ class NameNControls extends StatelessWidget {
                   fontSize: 18,
                 ),
               ),
+              SizedBox(height: 5.0),
             ],
           ),
         ),

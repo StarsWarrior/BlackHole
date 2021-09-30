@@ -2,6 +2,7 @@ import 'package:blackhole/APIs/api.dart';
 import 'package:blackhole/CustomWidgets/snackbar.dart';
 import 'package:blackhole/Services/download.dart';
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 
 class DownloadButton extends StatefulWidget {
   final Map data;
@@ -15,6 +16,7 @@ class DownloadButton extends StatefulWidget {
 
 class _DownloadButtonState extends State<DownloadButton> {
   Download down = Download();
+  final Box downloadsBox = Hive.box('downloads');
 
   @override
   void initState() {
@@ -30,15 +32,15 @@ class _DownloadButtonState extends State<DownloadButton> {
       width: 50,
       height: 50,
       child: Center(
-          child: (down.lastDownloadId == widget.data['id'])
+          child: (downloadsBox.containsKey(widget.data['id']))
               ? IconButton(
-                  icon: Icon(widget.icon == 'download'
-                      ? Icons.download_done_rounded
-                      : Icons.save_alt),
+                  icon: const Icon(Icons.download_done_rounded),
                   tooltip: 'Download Done',
                   color: Theme.of(context).colorScheme.secondary,
                   iconSize: 25.0,
-                  onPressed: () {},
+                  onPressed: () {
+                    down.prepareDownload(context, widget.data);
+                  },
                 )
               : down.progress == 0
                   ? Center(

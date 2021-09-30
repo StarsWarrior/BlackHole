@@ -8,8 +8,8 @@ import 'package:hive/hive.dart';
 
 class AddToPlaylist {
   Box settingsBox = Hive.box('settings');
-  List playlistNames =
-      Hive.box('settings').get('playlistNames', defaultValue: []) as List;
+  List playlistNames = Hive.box('settings')
+      .get('playlistNames', defaultValue: ['Favorite Songs']) as List;
   Map playlistDetails =
       Hive.box('settings').get('playlistDetails', defaultValue: {}) as Map;
 

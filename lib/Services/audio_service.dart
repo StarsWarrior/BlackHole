@@ -102,7 +102,7 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
     loadStart =
         Hive.box('settings').get('loadStart', defaultValue: true) as bool;
     if (loadStart) {
-      final List recentList = await Hive.box('recentlyPlayed')
+      final List recentList = await Hive.box('cache')
           .get('recentSongs', defaultValue: [])?.toList() as List;
 
       final List<MediaItem> lastQueue =
@@ -119,12 +119,12 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
         }
       }
 
-      if (!item.artUri.toString().startsWith('file') &&
+      if (item.artUri.toString().startsWith('http') &&
           !item.artUri.toString().startsWith('https://img.youtube.com')) {
         addRecentlyPlayed(item);
         _recentSubject.add([item]);
 
-        if (recommend) {
+        if (recommend && item.extras!['autoplay'] as bool) {
           Future.delayed(const Duration(seconds: 5), () async {
             final List value = await SaavnAPI().getReco(item.id);
 
@@ -224,7 +224,9 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
     }
   }
 
-  Future<void> startService({bool withPipeline = true}) async {
+  Future<void> startService() async {
+    final bool withPipeline =
+        Hive.box('settings').get('supportEq', defaultValue: true) as bool;
     if (withPipeline) {
       final AudioPipeline _pipeline = AudioPipeline(
         androidAudioEffects: [
@@ -238,7 +240,7 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
   }
 
   Future<void> addRecentlyPlayed(MediaItem mediaitem) async {
-    List recentList = await Hive.box('recentlyPlayed')
+    List recentList = await Hive.box('cache')
         .get('recentSongs', defaultValue: [])?.toList() as List;
 
     final Map item = converter.mediaItemtoMap(mediaitem);
@@ -251,7 +253,7 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
     if (recentList.length > 30) {
       recentList = recentList.sublist(0, 30);
     }
-    Hive.box('recentlyPlayed').put('recentSongs', recentList);
+    Hive.box('cache').put('recentSongs', recentList);
   }
 
   @override
@@ -432,7 +434,7 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
   void _handleMediaActionPressed() {
     if (_timer == null) {
       _tappedMediaActionNumber = BehaviorSubject.seeded(1);
-      _timer = Timer(const Duration(milliseconds: 600), () {
+      _timer = Timer(const Duration(milliseconds: 800), () {
         final tappedNumber = _tappedMediaActionNumber.value;
         if (tappedNumber == 1) {
           if (playbackState.value.playing) {

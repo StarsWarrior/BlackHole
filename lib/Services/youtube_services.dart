@@ -97,7 +97,8 @@ class YouTubeServices {
       'artist': video.author,
       'image': video.thumbnails.maxResUrl.toString(),
       'secondImage': video.thumbnails.highResUrl.toString(),
-      'language': '',
+      'language': 'YouTube',
+      'genre':'YouTube',
       'url': await getUri(video),
       'year': video.uploadDate?.year.toString(),
       '320kbps': 'false',
@@ -105,6 +106,7 @@ class YouTubeServices {
       'release_date': video.publishDate.toString(),
       'album_id': video.channelId.value,
       'subtitle': video.author,
+      'perma_url': 'https://youtube.com/watch?v=${video.id.value}',
     };
   }
 

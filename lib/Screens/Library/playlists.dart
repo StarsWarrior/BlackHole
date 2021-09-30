@@ -27,7 +27,12 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
   Map playlistDetails = {};
   @override
   Widget build(BuildContext context) {
-    playlistNames = settingsBox.get('playlistNames')?.toList() as List? ?? [];
+    playlistNames = settingsBox.get('playlistNames')?.toList() as List? ??
+        ['Favorite Songs'];
+    if (!playlistNames.contains('Favorite Songs')) {
+      playlistNames.insert(0, 'Favorite Songs');
+      settingsBox.put('playlistNames', playlistNames);
+    }
     playlistDetails =
         settingsBox.get('playlistDetails', defaultValue: {}) as Map;
 
@@ -209,22 +214,31 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                                     name
                                 : name;
                             return ListTile(
-                              leading: playlistDetails[name] == null ||
+                              leading: (playlistDetails[name] == null ||
                                       playlistDetails[name]['imagesList'] ==
-                                          null
+                                          null ||
+                                      (playlistDetails[name]['imagesList']
+                                              as List)
+                                          .isEmpty)
                                   ? Card(
                                       elevation: 5,
+                                      color: Colors.transparent,
                                       shape: RoundedRectangleBorder(
                                         borderRadius:
                                             BorderRadius.circular(7.0),
                                       ),
                                       clipBehavior: Clip.antiAlias,
-                                      child: const SizedBox(
+                                      child: SizedBox(
                                         height: 50,
                                         width: 50,
-                                        child: Image(
-                                            image:
-                                                AssetImage('assets/album.png')),
+                                        child:
+                                            name.toString() == 'Favorite Songs'
+                                                ? const Image(
+                                                    image: AssetImage(
+                                                        'assets/cover.jpg'))
+                                                : const Image(
+                                                    image: AssetImage(
+                                                        'assets/album.png')),
                                       ),
                                     )
                                   : Collage(
@@ -389,26 +403,28 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                                   }
                                 },
                                 itemBuilder: (context) => [
-                                  PopupMenuItem(
-                                    value: 3,
-                                    child: Row(
-                                      children: const [
-                                        Icon(Icons.edit_rounded),
-                                        SizedBox(width: 10.0),
-                                        Text('Rename'),
-                                      ],
+                                  if (name != 'Favorite Songs')
+                                    PopupMenuItem(
+                                      value: 3,
+                                      child: Row(
+                                        children: const [
+                                          Icon(Icons.edit_rounded),
+                                          SizedBox(width: 10.0),
+                                          Text('Rename'),
+                                        ],
+                                      ),
                                     ),
-                                  ),
-                                  PopupMenuItem(
-                                    value: 0,
-                                    child: Row(
-                                      children: const [
-                                        Icon(Icons.delete_rounded),
-                                        SizedBox(width: 10.0),
-                                        Text('Delete'),
-                                      ],
+                                  if (name != 'Favorite Songs')
+                                    PopupMenuItem(
+                                      value: 0,
+                                      child: Row(
+                                        children: const [
+                                          Icon(Icons.delete_rounded),
+                                          SizedBox(width: 10.0),
+                                          Text('Delete'),
+                                        ],
+                                      ),
                                     ),
-                                  ),
                                   PopupMenuItem(
                                     value: 1,
                                     child: Row(

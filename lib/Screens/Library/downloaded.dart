@@ -7,6 +7,7 @@
 import 'package:blackhole/CustomWidgets/empty_screen.dart';
 import 'package:blackhole/CustomWidgets/gradient_containers.dart';
 import 'package:blackhole/CustomWidgets/miniplayer.dart';
+import 'package:blackhole/Helpers/audio_query.dart';
 // import 'package:blackhole/CustomWidgets/snackbar.dart';
 // import 'package:blackhole/Helpers/picker.dart';
 // import 'package:blackhole/Screens/Library/show_songs.dart';
@@ -30,7 +31,7 @@ class DownloadedSongs extends StatefulWidget {
 class _DownloadedSongsState extends State<DownloadedSongs>
     with AutomaticKeepAliveClientMixin {
   List<SongModel> _cachedSongs = [];
-  final List<Map> _cachedSongsMap = [];
+  List<Map> _cachedSongsMap = [];
   // List<AlbumModel> _cachedAlbums = [];
   // List<ArtistModel> _cachedArtists = [];
   // List<GenreModel> _cachedGenres = [];
@@ -50,14 +51,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
       Hive.box('settings').get('minDuration', defaultValue: 10) as int;
   // TabController? _tcontroller;
   int currentIndex = 0;
-
-  OnAudioQuery audioQuery = OnAudioQuery();
-
-  Future<void> requestPermission() async {
-    while (!await audioQuery.permissionsStatus()) {
-      await audioQuery.permissionsRequest();
-    }
-  }
+  OfflineAudioQuery offlineAudioQuery = OfflineAudioQuery();
 
   @override
   bool get wantKeepAlive => true;
@@ -83,67 +77,17 @@ class _DownloadedSongsState extends State<DownloadedSongs>
   //   });
   // }
 
-  Future<List<SongModel>> getSongs(
-      {SongSortType? sortType, OrderType? orderType}) async {
-    return audioQuery.querySongs(
-      sortType: sortType ?? SongSortType.DATA_ADDED,
-      orderType: orderType ?? OrderType.DESC_OR_GREATER,
-      uriType: UriType.EXTERNAL,
-    );
-  }
-
-  Future<List<AlbumModel>> getAlbums(
-      {AlbumSortType? sortType, OrderType? orderType}) async {
-    return audioQuery.queryAlbums(
-      sortType: sortType,
-      orderType: orderType,
-      uriType: UriType.EXTERNAL,
-    );
-  }
-
-  Future<List<ArtistModel>> getArtists(
-      {ArtistSortType? sortType, OrderType? orderType}) async {
-    return audioQuery.queryArtists(
-      sortType: sortType,
-      orderType: orderType,
-      uriType: UriType.EXTERNAL,
-    );
-  }
-
-  Future<List<GenreModel>> getGenres(
-      {GenreSortType? sortType, OrderType? orderType}) async {
-    return audioQuery.queryGenres(
-      sortType: sortType,
-      orderType: orderType,
-      uriType: UriType.EXTERNAL,
-    );
-  }
-
   Future<void> getCached() async {
-    await requestPermission();
-    final List<SongModel> temp = await getSongs();
+    await offlineAudioQuery.requestPermission();
+    final List<SongModel> temp = await offlineAudioQuery.getSongs();
     _cachedSongs =
         temp.where((i) => (i.duration ?? 60000) > 1000 * minDuration).toList();
     // _cachedAlbums = await getAlbums();
     // _cachedArtists = await getArtists();
     // _cachedGenres = await getGenres();
     added = true;
-    // print(_cachedSongs);
     setState(() {});
-    getArtwork();
-  }
-
-  Future<void> getArtwork() async {
-    for (final SongModel song in _cachedSongs) {
-      final songMap = song.getMap;
-      songMap.addEntries([
-        MapEntry(
-            'image',
-            await audioQuery.queryArtwork(song.id, ArtworkType.AUDIO,
-                size: 350))
-      ]);
-      _cachedSongsMap.add(songMap);
-    }
+    _cachedSongsMap = await offlineAudioQuery.getArtwork(_cachedSongs);
   }
 
   // Future<void> fetchDownloaded() async {
