@@ -1014,9 +1014,13 @@ Future<Map> editTags(Map song, BuildContext context) async {
                   );
                 }
               },
-              child: const Text(
+              child: Text(
                 'Ok',
-                style: TextStyle(color: Colors.white),
+                style: TextStyle(
+                    color:
+                        Theme.of(context).colorScheme.secondary == Colors.white
+                            ? Colors.black
+                            : null),
               ),
             ),
             const SizedBox(

@@ -17,6 +17,7 @@ class DownloadButton extends StatefulWidget {
 class _DownloadButtonState extends State<DownloadButton> {
   Download down = Download();
   final Box downloadsBox = Hive.box('downloads');
+  final ValueNotifier<bool> showStopButton = ValueNotifier<bool>(false);
 
   @override
   void initState() {
@@ -54,19 +55,61 @@ class _DownloadButtonState extends State<DownloadButton> {
                           onPressed: () {
                             down.prepareDownload(context, widget.data);
                           }))
-                  : Stack(
-                      children: [
-                        Center(
-                          child: Text(down.progress == null
-                              ? '0%'
-                              : '${(100 * down.progress!).round()}%'),
-                        ),
-                        Center(
-                          child: CircularProgressIndicator(
-                            value: down.progress == 1 ? null : down.progress,
+                  : GestureDetector(
+                      child: Stack(
+                        children: [
+                          Center(
+                            child: CircularProgressIndicator(
+                              value: down.progress == 1 ? null : down.progress,
+                            ),
                           ),
-                        ),
-                      ],
+                          Center(
+                            child: ValueListenableBuilder(
+                                valueListenable: showStopButton,
+                                builder: (BuildContext context, bool showValue,
+                                    Widget? child) {
+                                  return AnimatedContainer(
+                                    duration: const Duration(milliseconds: 200),
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Visibility(
+                                          visible: !showValue,
+                                          child: Center(
+                                            child: Text(down.progress == null
+                                                ? '0%'
+                                                : '${(100 * down.progress!).round()}%'),
+                                          ),
+                                        ),
+                                        Visibility(
+                                          visible: showValue,
+                                          child: Center(
+                                              child: IconButton(
+                                                  icon: const Icon(
+                                                      Icons.close_rounded),
+                                                  iconSize: 25.0,
+                                                  color: Theme.of(context)
+                                                      .iconTheme
+                                                      .color,
+                                                  tooltip: 'Stop Download',
+                                                  onPressed: () {
+                                                    down.download = false;
+                                                  })),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                }),
+                          )
+                        ],
+                      ),
+                      onTap: () {
+                        showStopButton.value = true;
+                        Future.delayed(const Duration(seconds: 2), () async {
+                          showStopButton.value = false;
+                        });
+                      },
                     )),
     );
   }

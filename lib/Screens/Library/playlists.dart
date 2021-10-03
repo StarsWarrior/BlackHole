@@ -76,21 +76,22 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                       ),
                       onTap: () async {
                         await TextInputDialog().showTextInputDialog(
-                            context,
-                            'Create New playlist',
-                            '',
-                            TextInputType.name, (String value) {
-                          if (value.trim() == '') {
-                            value = 'Playlist ${playlistNames.length}';
-                          }
-                          while (playlistNames.contains(value)) {
-                            // ignore: use_string_buffers
-                            value = '$value (1)';
-                          }
-                          playlistNames.add(value);
-                          settingsBox.put('playlistNames', playlistNames);
-                          Navigator.pop(context);
-                        });
+                            context: context,
+                            title: 'Create New playlist',
+                            initialText: '',
+                            keyboardType: TextInputType.name,
+                            onSubmitted: (String value) {
+                              if (value.trim() == '') {
+                                value = 'Playlist ${playlistNames.length}';
+                              }
+                              while (playlistNames.contains(value)) {
+                                // ignore: use_string_buffers
+                                value = '$value (1)';
+                              }
+                              playlistNames.add(value);
+                              settingsBox.put('playlistNames', playlistNames);
+                              Navigator.pop(context);
+                            });
                         setState(() {});
                       },
                     ),
@@ -168,36 +169,39 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                         ),
                         onTap: () async {
                           await TextInputDialog().showTextInputDialog(
-                              context,
-                              'Enter Playlist Link',
-                              '',
-                              TextInputType.url, (value) async {
-                            final SearchAddPlaylist searchAdd =
-                                SearchAddPlaylist();
-                            final String link = value.trim();
-                            Navigator.pop(context);
-                            final Map data =
-                                await searchAdd.addYtPlaylist(link);
-                            if (data.isNotEmpty) {
-                              playlistNames.add(data['title']);
-                              settingsBox.put('playlistNames', playlistNames);
+                              context: context,
+                              title: 'Enter Playlist Link',
+                              initialText: '',
+                              keyboardType: TextInputType.url,
+                              onSubmitted: (value) async {
+                                final SearchAddPlaylist searchAdd =
+                                    SearchAddPlaylist();
+                                final String link = value.trim();
+                                Navigator.pop(context);
+                                final Map data =
+                                    await searchAdd.addYtPlaylist(link);
+                                if (data.isNotEmpty) {
+                                  playlistNames.add(data['title']);
+                                  settingsBox.put(
+                                      'playlistNames', playlistNames);
 
-                              await searchAdd.showProgress(
-                                data['count'] as int,
-                                context,
-                                searchAdd.songsAdder(data['title'].toString(),
-                                    data['tracks'] as List),
-                              );
-                              setState(() {
-                                playlistNames = playlistNames;
+                                  await searchAdd.showProgress(
+                                    data['count'] as int,
+                                    context,
+                                    searchAdd.songsAdder(
+                                        data['title'].toString(),
+                                        data['tracks'] as List),
+                                  );
+                                  setState(() {
+                                    playlistNames = playlistNames;
+                                  });
+                                } else {
+                                  ShowSnackBar().showSnackBar(
+                                    context,
+                                    'Failed to Import',
+                                  );
+                                }
                               });
-                            } else {
-                              ShowSnackBar().showSnackBar(
-                                context,
-                                'Failed to Import',
-                              );
-                            }
-                          });
                         }),
                     if (playlistNames.isEmpty)
                       const SizedBox()
@@ -387,10 +391,15 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                                                     playlistDetails);
                                                 setState(() {});
                                               },
-                                              child: const Text(
+                                              child: Text(
                                                 'Ok',
                                                 style: TextStyle(
-                                                    color: Colors.white),
+                                                    color: Theme.of(context)
+                                                                .colorScheme
+                                                                .secondary ==
+                                                            Colors.white
+                                                        ? Colors.black
+                                                        : null),
                                               ),
                                             ),
                                             const SizedBox(
@@ -515,61 +524,64 @@ Future<void> fetchPlaylists(String code, BuildContext context,
                       ),
                       onTap: () async {
                         await TextInputDialog().showTextInputDialog(
-                            context,
-                            'Enter Playlist Link',
-                            '',
-                            TextInputType.url, (String value) async {
-                          Navigator.pop(context);
-                          value = value.split('?')[0].split('/').last;
+                            context: context,
+                            title: 'Enter Playlist Link',
+                            initialText: '',
+                            keyboardType: TextInputType.url,
+                            onSubmitted: (String value) async {
+                              Navigator.pop(context);
+                              value = value.split('?')[0].split('/').last;
 
-                          final Map data = await SpotifyApi()
-                              .getTracksOfPlaylist(accessToken, value, 0);
-                          final int _total = data['total'] as int;
-
-                          Stream<Map> songsAdder() async* {
-                            int _done = 0;
-                            final List tracks = [];
-                            for (int i = 0; i * 100 <= _total; i++) {
                               final Map data = await SpotifyApi()
-                                  .getTracksOfPlaylist(
-                                      accessToken, value, i * 100);
-                              tracks.addAll(data['tracks'] as List);
-                            }
+                                  .getTracksOfPlaylist(accessToken, value, 0);
+                              final int _total = data['total'] as int;
 
-                            String playName = 'Spotify Public';
-                            while (playlistNames.contains(playName)) {
-                              // ignore: use_string_buffers
-                              playName = '$playName (1)';
-                            }
-                            playlistNames.add(playName);
-                            settingsBox.put('playlistNames', playlistNames);
+                              Stream<Map> songsAdder() async* {
+                                int _done = 0;
+                                final List tracks = [];
+                                for (int i = 0; i * 100 <= _total; i++) {
+                                  final Map data = await SpotifyApi()
+                                      .getTracksOfPlaylist(
+                                          accessToken, value, i * 100);
+                                  tracks.addAll(data['tracks'] as List);
+                                }
 
-                            for (final track in tracks) {
-                              String? trackArtist;
-                              String? trackName;
-                              try {
-                                trackArtist = track['track']['artists'][0]
-                                        ['name']
-                                    .toString();
-                                trackName = track['track']['name'].toString();
-                                yield {'done': ++_done, 'name': trackName};
-                              } catch (e) {
-                                yield {'done': ++_done, 'name': ''};
+                                String playName = 'Spotify Public';
+                                while (playlistNames.contains(playName)) {
+                                  // ignore: use_string_buffers
+                                  playName = '$playName (1)';
+                                }
+                                playlistNames.add(playName);
+                                settingsBox.put('playlistNames', playlistNames);
+
+                                for (final track in tracks) {
+                                  String? trackArtist;
+                                  String? trackName;
+                                  try {
+                                    trackArtist = track['track']['artists'][0]
+                                            ['name']
+                                        .toString();
+                                    trackName =
+                                        track['track']['name'].toString();
+                                    yield {'done': ++_done, 'name': trackName};
+                                  } catch (e) {
+                                    yield {'done': ++_done, 'name': ''};
+                                  }
+                                  try {
+                                    final List result = await SaavnAPI()
+                                        .fetchTopSearchResult(
+                                            '$trackName by $trackArtist');
+                                    addMapToPlaylist(
+                                        playName, result[0] as Map);
+                                  } catch (e) {
+                                    // print('Error in $_done: $e');
+                                  }
+                                }
                               }
-                              try {
-                                final List result = await SaavnAPI()
-                                    .fetchTopSearchResult(
-                                        '$trackName by $trackArtist');
-                                addMapToPlaylist(playName, result[0] as Map);
-                              } catch (e) {
-                                // print('Error in $_done: $e');
-                              }
-                            }
-                          }
 
-                          await SearchAddPlaylist()
-                              .showProgress(_total, context, songsAdder());
-                        });
+                              await SearchAddPlaylist()
+                                  .showProgress(_total, context, songsAdder());
+                            });
                         Navigator.pop(context);
                       },
                     );

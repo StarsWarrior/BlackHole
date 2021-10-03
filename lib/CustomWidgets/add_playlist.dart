@@ -2,6 +2,7 @@ import 'package:audio_service/audio_service.dart';
 import 'package:blackhole/CustomWidgets/collage.dart';
 import 'package:blackhole/CustomWidgets/gradient_containers.dart';
 import 'package:blackhole/CustomWidgets/snackbar.dart';
+import 'package:blackhole/CustomWidgets/textinput_dialog.dart';
 import 'package:blackhole/Helpers/playlist.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
@@ -43,92 +44,21 @@ class AddToPlaylist {
                     ),
                   ),
                   onTap: () {
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        final controller = TextEditingController();
-                        return AlertDialog(
-                          content: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Row(
-                                children: [
-                                  Text(
-                                    'Create new playlist',
-                                    style: TextStyle(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .secondary),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              TextField(
-                                  cursorColor:
-                                      Theme.of(context).colorScheme.secondary,
-                                  controller: controller,
-                                  autofocus: true,
-                                  onSubmitted: (String value) {
-                                    if (value.trim() == '') {
-                                      value =
-                                          'Playlist ${playlistNames.length}';
-                                    }
-                                    if (playlistNames.contains(value)) {
-                                      value = '$value (1)';
-                                    }
-                                    playlistNames.add(value);
-                                    settingsBox.put(
-                                        'playlistNames', playlistNames);
-                                    Navigator.pop(context);
-                                  }),
-                            ],
-                          ),
-                          actions: [
-                            TextButton(
-                              style: TextButton.styleFrom(
-                                primary: Theme.of(context).brightness ==
-                                        Brightness.dark
-                                    ? Colors.white
-                                    : Colors.grey[700],
-                              ),
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                              child: const Text('Cancel'),
-                            ),
-                            TextButton(
-                              style: TextButton.styleFrom(
-                                primary: Colors.white,
-                                backgroundColor:
-                                    Theme.of(context).colorScheme.secondary,
-                              ),
-                              onPressed: () {
-                                if (controller.text.trim() == '') {
-                                  controller.text =
-                                      'Playlist ${playlistNames.length}';
-                                }
-                                if (playlistNames.contains(controller.text)) {
-                                  controller.text = '${controller.text} (1)';
-                                }
-                                playlistNames.add(controller.text);
-
-                                settingsBox.put('playlistNames', playlistNames);
-                                Navigator.pop(context);
-                              },
-                              child: const Text(
-                                'Ok',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                            ),
-                            const SizedBox(
-                              width: 5,
-                            ),
-                          ],
-                        );
-                      },
-                    );
+                    TextInputDialog().showTextInputDialog(
+                        context: context,
+                        keyboardType: TextInputType.text,
+                        title: 'Create new playlist',
+                        onSubmitted: (String value) {
+                          if (value.trim() == '') {
+                            value = 'Playlist ${playlistNames.length}';
+                          }
+                          if (playlistNames.contains(value)) {
+                            value = '$value (1)';
+                          }
+                          playlistNames.add(value);
+                          settingsBox.put('playlistNames', playlistNames);
+                          Navigator.pop(context);
+                        });
                   },
                 ),
                 if (playlistNames.isEmpty)

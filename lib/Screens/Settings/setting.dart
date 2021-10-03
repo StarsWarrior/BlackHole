@@ -1254,19 +1254,21 @@ class _SettingPageState extends State<SettingPage> {
                             dense: true,
                             onTap: () {
                               TextInputDialog().showTextInputDialog(
-                                  context,
-                                  'Min Audio Length (in sec)',
-                                  (Hive.box('settings').get('minDuration',
+                                  context: context,
+                                  title: 'Min Audio Length (in sec)',
+                                  initialText: (Hive.box('settings').get(
+                                          'minDuration',
                                           defaultValue: 10) as int)
                                       .toString(),
-                                  TextInputType.number, (String value) {
-                                if (value.trim() == '') {
-                                  value = '0';
-                                }
-                                Hive.box('settings')
-                                    .put('minDuration', int.parse(value));
-                                Navigator.pop(context);
-                              });
+                                  keyboardType: TextInputType.number,
+                                  onSubmitted: (String value) {
+                                    if (value.trim() == '') {
+                                      value = '0';
+                                    }
+                                    Hive.box('settings')
+                                        .put('minDuration', int.parse(value));
+                                    Navigator.pop(context);
+                                  });
                             }),
                         const BoxSwitchTile(
                           title: Text('Support Equalizer'),
@@ -1434,7 +1436,12 @@ class _SettingPageState extends State<SettingPage> {
                                       ),
                                       TextButton(
                                         style: TextButton.styleFrom(
-                                          primary: Colors.white,
+                                          primary: Theme.of(context)
+                                                      .colorScheme
+                                                      .secondary ==
+                                                  Colors.white
+                                              ? Colors.black
+                                              : null,
                                           backgroundColor: Theme.of(context)
                                               .colorScheme
                                               .secondary,
@@ -1603,9 +1610,15 @@ class _SettingPageState extends State<SettingPage> {
                                                       boxNames);
                                                   Navigator.pop(context);
                                                 },
-                                                child: const Text(
+                                                child: Text(
                                                   'Ok',
                                                   style: TextStyle(
+                                                      color: Theme.of(context)
+                                                                  .colorScheme
+                                                                  .secondary ==
+                                                              Colors.white
+                                                          ? Colors.black
+                                                          : null,
                                                       fontWeight:
                                                           FontWeight.w600),
                                                 ),

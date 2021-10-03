@@ -602,9 +602,11 @@ class _PlayScreenState extends State<PlayScreen> {
                 ),
                 TextButton(
                   style: TextButton.styleFrom(
-                    primary: Colors.white,
-                    backgroundColor: Theme.of(context).colorScheme.secondary,
-                  ),
+                      backgroundColor: Theme.of(context).colorScheme.secondary,
+                      primary: Theme.of(context).colorScheme.secondary ==
+                              Colors.white
+                          ? Colors.black
+                          : Colors.white),
                   onPressed: () {
                     sleepTimer(_time.inMinutes);
                     Navigator.pop(context);
@@ -628,15 +630,18 @@ class _PlayScreenState extends State<PlayScreen> {
 
   Future<dynamic> setCounter(BuildContext scaffoldContext) async {
     await TextInputDialog().showTextInputDialog(
-        scaffoldContext, 'Enter no of Songs', '', TextInputType.number,
-        (String value) {
-      sleepCounter(int.parse(value));
-      Navigator.pop(scaffoldContext);
-      ShowSnackBar().showSnackBar(
-        context,
-        'Sleep timer set for $value songs',
-      );
-    });
+        context: scaffoldContext,
+        title: 'Enter no of Songs',
+        initialText: '',
+        keyboardType: TextInputType.number,
+        onSubmitted: (String value) {
+          sleepCounter(int.parse(value));
+          Navigator.pop(scaffoldContext);
+          ShowSnackBar().showSnackBar(
+            context,
+            'Sleep timer set for $value songs',
+          );
+        });
   }
 }
 

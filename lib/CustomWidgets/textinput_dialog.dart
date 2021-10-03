@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
 class TextInputDialog {
-  Future<void> showTextInputDialog(
-    BuildContext context,
-    String title,
+  Future<void> showTextInputDialog({
+    required BuildContext context,
+    required String title,
     String? initialText,
-    TextInputType keyboardType,
-    Function(String) onSubmitted,
-  ) async {
+    required TextInputType keyboardType,
+    required Function(String) onSubmitted,
+  }) async {
     await showDialog(
       context: context,
       builder: (BuildContext ctxt) {
@@ -56,9 +56,13 @@ class TextInputDialog {
               onPressed: () {
                 onSubmitted(_controller.text.trim());
               },
-              child: const Text(
+              child: Text(
                 'Ok',
-                style: TextStyle(color: Colors.white),
+                style: TextStyle(
+                    color:
+                        Theme.of(context).colorScheme.secondary == Colors.white
+                            ? Colors.black
+                            : null),
               ),
             ),
             const SizedBox(
