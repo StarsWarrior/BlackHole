@@ -33,8 +33,8 @@ class _SettingPageState extends State<SettingPage> {
   Box settingsBox = Hive.box('settings');
   String downloadPath = Hive.box('settings')
       .get('downloadPath', defaultValue: '/storage/emulated/0/Music') as String;
-  List dirPaths =
-      Hive.box('settings').get('searchPaths', defaultValue: []) as List;
+  // List dirPaths =
+  // Hive.box('settings').get('blacklistedPaths', defaultValue: []) as List;
   String streamingQuality = Hive.box('settings')
       .get('streamingQuality', defaultValue: '96 kbps') as String;
   String downloadQuality = Hive.box('settings')
@@ -143,21 +143,22 @@ class _SettingPageState extends State<SettingPage> {
           delegate: SliverChildListDelegate(
             [
               Padding(
-                padding: const EdgeInsets.fromLTRB(15, 5, 15, 0),
-                child: Text(
-                  'Theme',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.secondary,
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(10.0, 0, 10.0, 10.0),
+                padding: const EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 10.0),
                 child: GradientCard(
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(15, 15, 15, 0),
+                        child: Text(
+                          'Theme',
+                          style: TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).colorScheme.secondary,
+                          ),
+                        ),
+                      ),
                       BoxSwitchTile(
                           title: const Text('Dark Mode'),
                           keyName: 'darkMode',
@@ -766,20 +767,21 @@ class _SettingPageState extends State<SettingPage> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.fromLTRB(15, 10, 15, 0),
-                child: Text(
-                  'Music & Playback',
-                  style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).colorScheme.secondary),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(10.0, 0, 10.0, 10.0),
+                padding: const EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 10.0),
                 child: GradientCard(
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(15, 15, 15, 0),
+                        child: Text(
+                          'Music & Playback',
+                          style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.secondary),
+                        ),
+                      ),
                       ListTile(
                         title: const Text('Music Language'),
                         subtitle: const Text('To display songs on Home Screen'),
@@ -1015,9 +1017,9 @@ class _SettingPageState extends State<SettingPage> {
                         defaultValue: true,
                       ),
                       //   ListTile(
-                      //       title: const Text('Search Location'),
+                      //       title: const Text('BlackList Location'),
                       //       subtitle: const Text(
-                      //           'Locations to search for offline music'),
+                      //           'Locations blacklisted from "My Music" section'),
                       //       dense: true,
                       //       onTap: () {
                       //         final GlobalKey<AnimatedListState> _listKey =
@@ -1046,14 +1048,14 @@ class _SettingPageState extends State<SettingPage> {
                       //                             onTap: () async {
                       //                               final String temp =
                       //                                   await Picker()
-                      //                                       .selectFolder(contfext,
+                      //                                       .selectFolder(context,
                       //                                           'Select Folder');
                       //                               if (temp.trim() != '' &&
                       //                                   !dirPaths
                       //                                       .contains(temp)) {
                       //                                 dirPaths.add(temp);
                       //                                 Hive.box('settings').put(
-                      //                                     'searchPaths',
+                      //                                     'blacklistedPaths',
                       //                                     dirPaths);
                       //                                 _listKey.currentState!
                       //                                     .insertItem(
@@ -1088,7 +1090,7 @@ class _SettingPageState extends State<SettingPage> {
                       //                                   dirPaths
                       //                                       .removeAt(idx - 1);
                       //                                   Hive.box('settings').put(
-                      //                                       'searchPaths',
+                      //                                       'blacklistedPaths',
                       //                                       dirPaths);
                       //                                   _listKey.currentState!
                       //                                       .removeItem(
@@ -1096,7 +1098,6 @@ class _SettingPageState extends State<SettingPage> {
                       //                                           (context,
                       //                                                   animation) =>
                       //                                               Container());
-                      //                                   // setStt(() {});
                       //                                 },
                       //                               ),
                       //                             ),
@@ -1111,521 +1112,548 @@ class _SettingPageState extends State<SettingPage> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.fromLTRB(15, 10, 15, 0),
-                child: Text(
-                  'Download',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.secondary,
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(10.0, 0, 10.0, 10.0),
+                padding: const EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 10.0),
                 child: GradientCard(
-                  child: Column(children: [
-                    ListTile(
-                      title: const Text('Download Quality'),
-                      subtitle:
-                          const Text('Higher quality uses more disk space'),
-                      onTap: () {},
-                      trailing: DropdownButton(
-                        value: downloadQuality,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Theme.of(context).textTheme.bodyText1!.color,
-                        ),
-                        underline: const SizedBox(),
-                        onChanged: (String? newValue) {
-                          if (newValue != null) {
-                            setState(() {
-                              downloadQuality = newValue;
-                              Hive.box('settings')
-                                  .put('downloadQuality', newValue);
-                            });
-                          }
-                        },
-                        items: <String>['96 kbps', '160 kbps', '320 kbps']
-                            .map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(
-                              value,
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(15, 15, 15, 0),
+                          child: Text(
+                            'Download',
+                            style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.secondary,
                             ),
-                          );
-                        }).toList(),
-                      ),
-                      dense: true,
-                    ),
-                    ListTile(
-                      title: const Text('Download Location'),
-                      subtitle: Text(downloadPath),
-                      trailing: TextButton(
-                        style: TextButton.styleFrom(
-                          primary:
-                              Theme.of(context).brightness == Brightness.dark
-                                  ? Colors.white
-                                  : Colors.grey[700],
-                          //       backgroundColor: Theme.of(context).accentColor,
-                        ),
-                        onPressed: () async {
-                          downloadPath = await ExtStorage
-                                  .getExternalStoragePublicDirectory(
-                                      ExtStorage.DIRECTORY_MUSIC) ??
-                              '/storage/emulated/0/Music';
-                          Hive.box('settings')
-                              .put('downloadPath', downloadPath);
-                          setState(() {});
-                        },
-                        child: const Text('Reset'),
-                      ),
-                      onTap: () async {
-                        final String temp = await Picker()
-                            .selectFolder(context, 'Select Download Location');
-                        if (temp.trim() != '') {
-                          downloadPath = temp;
-                          Hive.box('settings').put('downloadPath', temp);
-                          setState(() {});
-                        } else {
-                          ShowSnackBar().showSnackBar(
-                            context,
-                            'No folder selected',
-                          );
-                        }
-                      },
-                      dense: true,
-                    ),
-                    const BoxSwitchTile(
-                      title:
-                          Text('Create folder for Album & Playlist Download'),
-                      subtitle: Text(
-                          'Creates common folder for Songs when Album or Playlist is downloaded'),
-                      keyName: 'createDownloadFolder',
-                      isThreeLine: true,
-                      defaultValue: false,
-                    ),
-                    const BoxSwitchTile(
-                      title:
-                          Text('Create different folder for YouTube Downloads'),
-                      subtitle: Text(
-                          'Creates a different folder for Songs downloaded from YouTube'),
-                      keyName: 'createYoutubeFolder',
-                      isThreeLine: true,
-                      defaultValue: false,
-                    ),
-                    const BoxSwitchTile(
-                      title: Text('Download Lyrics'),
-                      subtitle: Text(
-                          'Downloading lyrics along with song, if available'),
-                      keyName: 'downloadLyrics',
-                      defaultValue: false,
-                      isThreeLine: true,
-                    ),
-                  ]),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(15, 10, 15, 0),
-                child: Text(
-                  'Others',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.secondary,
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(10.0, 0, 10.0, 10.0),
-                child: GradientCard(
-                  child: Column(children: [
-                    ListTile(
-                        title: const Text('Min Audio Length to search music'),
-                        subtitle: const Text(
-                            'Audios with length smaller than this will not be shown in "My Music" Section'),
-                        dense: true,
-                        onTap: () {
-                          TextInputDialog().showTextInputDialog(
-                              context,
-                              'Min Audio Length (in sec)',
-                              (Hive.box('settings').get('minDuration',
-                                      defaultValue: 10) as int)
-                                  .toString(),
-                              TextInputType.number, (String value) {
-                            if (value.trim() == '') {
-                              value = '0';
-                            }
-                            Hive.box('settings')
-                                .put('minDuration', int.parse(value));
-                            Navigator.pop(context);
-                          });
-                        }),
-                    const BoxSwitchTile(
-                      title: Text('Support Equalizer'),
-                      subtitle: Text(
-                          'Turn this off if you are unable to play songs (in both online and offline mode)'),
-                      keyName: 'supportEq',
-                      isThreeLine: true,
-                      defaultValue: true,
-                    ),
-                    BoxSwitchTile(
-                        title: const Text('Show Last Session'),
-                        subtitle:
-                            const Text('Show Last session on Home Screen'),
-                        keyName: 'showRecent',
-                        defaultValue: true,
-                        onChanged: (val) {
-                          widget.callback!();
-                        }),
-                    const BoxSwitchTile(
-                      title: Text('Show Search History'),
-                      subtitle: Text('Show Search History below Search Bar'),
-                      keyName: 'showHistory',
-                      defaultValue: true,
-                    ),
-                    const BoxSwitchTile(
-                      title: Text('Stop music on App Close'),
-                      subtitle: Text(
-                          "If turned off, music won't stop even after app is 'closed', until you press stop button. This option is for app 'close' not when app is in 'background'. Music will always play in background you don't need to change any setting for that.\n"),
-                      isThreeLine: true,
-                      keyName: 'stopForegroundService',
-                      defaultValue: true,
-                    ),
-                    // const BoxSwitchTile(
-                    //   title: Text('Remove Service from foreground when paused'),
-                    //   subtitle: Text(
-                    //       "If turned on, you can slide notification when paused to stop the service. But Service can also be stopped by android to release memory. If you don't want android to stop service while paused, turn it off\nDefault: On\n"),
-                    //   isThreeLine: true,
-                    //   keyName: 'stopServiceOnPause',
-                    //   defaultValue: true,
-                    // ),
-                    const BoxSwitchTile(
-                      title: Text('Auto check for Updates'),
-                      subtitle: Text(
-                          "If you downloaded BlackHole from any app repository like 'F-Droid', 'IzzyOnDroid', etc which provide update options, keep this OFF. Whereas, If you downloaded it from 'GitHub' or any other source which doesn't provide auto updates then turn this ON, so as to recieve update alerts\n"),
-                      keyName: 'checkUpdate',
-                      isThreeLine: true,
-                      defaultValue: false,
-                    ),
-                    BoxSwitchTile(
-                      title: const Text('Use Proxy'),
-                      subtitle: const Text(
-                          'Turn this on if you are not from India and having issues with search, like getting only Indian Songs or not getting any results, etc. You can even use VPN with Indian Server\n'),
-                      keyName: 'useProxy',
-                      defaultValue: false,
-                      isThreeLine: true,
-                      onChanged: (bool val) {
-                        useProxy = val;
-                        setState(() {});
-                      },
-                    ),
-                    ListTile(
-                        title: const Text('Clear Cached Details'),
-                        subtitle: const Text(
-                            'Deletes Cached details including Homepage, Spotify Top Charts, YouTube and Last Session Data. Usually app automatically clears them when data become large\n'),
-                        trailing: SizedBox(
-                          height: 70.0,
-                          width: 70.0,
-                          child: Center(
-                            child: FutureBuilder(
-                                future: File(Hive.box('cache').path!).length(),
-                                builder: (BuildContext context,
-                                    AsyncSnapshot<int> snapshot) {
-                                  if (snapshot.connectionState ==
-                                      ConnectionState.done) {
-                                    return Text(
-                                        '${((snapshot.data ?? 0) / (1024 * 1024)).toStringAsFixed(2)} MB');
-                                  }
-                                  return const Text('');
-                                }),
                           ),
                         ),
-                        dense: true,
-                        isThreeLine: true,
-                        onTap: () async {
-                          Hive.box('cache').clear();
-                          setState(() {});
-                        }),
-                    Visibility(
-                      visible: useProxy,
-                      child: ListTile(
-                        title: const Text('Proxy Settings'),
-                        subtitle: const Text('Change Proxy IP and Port'),
-                        dense: true,
-                        trailing: Text(
-                          '${Hive.box('settings').get("proxyIp")}:${Hive.box('settings').get("proxyPort")}',
-                          style: const TextStyle(fontSize: 12),
-                        ),
-                        onTap: () {
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              final _controller = TextEditingController(
-                                  text: settingsBox.get('proxyIp').toString());
-                              final _controller2 = TextEditingController(
-                                  text:
-                                      settingsBox.get('proxyPort').toString());
-                              return AlertDialog(
-                                content: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Text(
-                                          'IP Address',
-                                          style: TextStyle(
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .secondary),
-                                        ),
-                                      ],
-                                    ),
-                                    TextField(
-                                      autofocus: true,
-                                      controller: _controller,
-                                    ),
-                                    const SizedBox(
-                                      height: 30,
-                                    ),
-                                    Row(
-                                      children: [
-                                        Text(
-                                          'Port',
-                                          style: TextStyle(
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .secondary),
-                                        ),
-                                      ],
-                                    ),
-                                    TextField(
-                                      autofocus: true,
-                                      controller: _controller2,
-                                    ),
-                                  ],
+                        ListTile(
+                          title: const Text('Download Quality'),
+                          subtitle:
+                              const Text('Higher quality uses more disk space'),
+                          onTap: () {},
+                          trailing: DropdownButton(
+                            value: downloadQuality,
+                            style: TextStyle(
+                              fontSize: 12,
+                              color:
+                                  Theme.of(context).textTheme.bodyText1!.color,
+                            ),
+                            underline: const SizedBox(),
+                            onChanged: (String? newValue) {
+                              if (newValue != null) {
+                                setState(() {
+                                  downloadQuality = newValue;
+                                  Hive.box('settings')
+                                      .put('downloadQuality', newValue);
+                                });
+                              }
+                            },
+                            items: <String>['96 kbps', '160 kbps', '320 kbps']
+                                .map<DropdownMenuItem<String>>((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(
+                                  value,
                                 ),
-                                actions: [
-                                  TextButton(
-                                    style: TextButton.styleFrom(
-                                      primary: Theme.of(context).brightness ==
-                                              Brightness.dark
-                                          ? Colors.white
-                                          : Colors.grey[700],
-                                      // backgroundColor: Theme.of(context).accentColor,
+                              );
+                            }).toList(),
+                          ),
+                          dense: true,
+                        ),
+                        ListTile(
+                          title: const Text('Download Location'),
+                          subtitle: Text(downloadPath),
+                          trailing: TextButton(
+                            style: TextButton.styleFrom(
+                              primary: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? Colors.white
+                                  : Colors.grey[700],
+                              //       backgroundColor: Theme.of(context).accentColor,
+                            ),
+                            onPressed: () async {
+                              downloadPath = await ExtStorage
+                                      .getExternalStoragePublicDirectory(
+                                          ExtStorage.DIRECTORY_MUSIC) ??
+                                  '/storage/emulated/0/Music';
+                              Hive.box('settings')
+                                  .put('downloadPath', downloadPath);
+                              setState(() {});
+                            },
+                            child: const Text('Reset'),
+                          ),
+                          onTap: () async {
+                            final String temp = await Picker().selectFolder(
+                                context, 'Select Download Location');
+                            if (temp.trim() != '') {
+                              downloadPath = temp;
+                              Hive.box('settings').put('downloadPath', temp);
+                              setState(() {});
+                            } else {
+                              ShowSnackBar().showSnackBar(
+                                context,
+                                'No folder selected',
+                              );
+                            }
+                          },
+                          dense: true,
+                        ),
+                        const BoxSwitchTile(
+                          title: Text(
+                              'Create folder for Album & Playlist Download'),
+                          subtitle: Text(
+                              'Creates common folder for Songs when Album or Playlist is downloaded'),
+                          keyName: 'createDownloadFolder',
+                          isThreeLine: true,
+                          defaultValue: false,
+                        ),
+                        const BoxSwitchTile(
+                          title: Text(
+                              'Create different folder for YouTube Downloads'),
+                          subtitle: Text(
+                              'Creates a different folder for Songs downloaded from YouTube'),
+                          keyName: 'createYoutubeFolder',
+                          isThreeLine: true,
+                          defaultValue: false,
+                        ),
+                        const BoxSwitchTile(
+                          title: Text('Download Lyrics'),
+                          subtitle: Text(
+                              'Downloading lyrics along with song, if available'),
+                          keyName: 'downloadLyrics',
+                          defaultValue: false,
+                          isThreeLine: true,
+                        ),
+                      ]),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 10.0),
+                child: GradientCard(
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(15, 15, 15, 0),
+                          child: Text(
+                            'Others',
+                            style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.secondary,
+                            ),
+                          ),
+                        ),
+                        ListTile(
+                            title: const Text(
+                                '\nMin Audio Length to search music'),
+                            subtitle: const Text(
+                                'Audios with length smaller than this will not be shown in "My Music" Section'),
+                            dense: true,
+                            onTap: () {
+                              TextInputDialog().showTextInputDialog(
+                                  context,
+                                  'Min Audio Length (in sec)',
+                                  (Hive.box('settings').get('minDuration',
+                                          defaultValue: 10) as int)
+                                      .toString(),
+                                  TextInputType.number, (String value) {
+                                if (value.trim() == '') {
+                                  value = '0';
+                                }
+                                Hive.box('settings')
+                                    .put('minDuration', int.parse(value));
+                                Navigator.pop(context);
+                              });
+                            }),
+                        const BoxSwitchTile(
+                          title: Text('Support Equalizer'),
+                          subtitle: Text(
+                              'Turn this off if you are unable to play songs (in both online and offline mode)'),
+                          keyName: 'supportEq',
+                          isThreeLine: true,
+                          defaultValue: true,
+                        ),
+                        BoxSwitchTile(
+                            title: const Text('Show Last Session'),
+                            subtitle:
+                                const Text('Show Last session on Home Screen'),
+                            keyName: 'showRecent',
+                            defaultValue: true,
+                            onChanged: (val) {
+                              widget.callback!();
+                            }),
+                        const BoxSwitchTile(
+                          title: Text('Show Search History'),
+                          subtitle:
+                              Text('Show Search History below Search Bar'),
+                          keyName: 'showHistory',
+                          defaultValue: true,
+                        ),
+                        const BoxSwitchTile(
+                          title: Text('Stop music on App Close'),
+                          subtitle: Text(
+                              "If turned off, music won't stop even after app is 'closed', until you press stop button. This option is for app 'close' not when app is in 'background'. Music will always play in background you don't need to change any setting for that.\n"),
+                          isThreeLine: true,
+                          keyName: 'stopForegroundService',
+                          defaultValue: true,
+                        ),
+                        // const BoxSwitchTile(
+                        //   title: Text('Remove Service from foreground when paused'),
+                        //   subtitle: Text(
+                        //       "If turned on, you can slide notification when paused to stop the service. But Service can also be stopped by android to release memory. If you don't want android to stop service while paused, turn it off\nDefault: On\n"),
+                        //   isThreeLine: true,
+                        //   keyName: 'stopServiceOnPause',
+                        //   defaultValue: true,
+                        // ),
+                        const BoxSwitchTile(
+                          title: Text('Auto check for Updates'),
+                          subtitle: Text(
+                              "If you downloaded BlackHole from any app repository like 'F-Droid', 'IzzyOnDroid', etc which provide update options, keep this OFF. Whereas, If you downloaded it from 'GitHub' or any other source which doesn't provide auto updates then turn this ON, so as to recieve update alerts\n"),
+                          keyName: 'checkUpdate',
+                          isThreeLine: true,
+                          defaultValue: false,
+                        ),
+                        BoxSwitchTile(
+                          title: const Text('Use Proxy'),
+                          subtitle: const Text(
+                              'Turn this on if you are not from India and having issues with search, like getting only Indian Songs or not getting any results, etc. You can even use VPN with Indian Server\n'),
+                          keyName: 'useProxy',
+                          defaultValue: false,
+                          isThreeLine: true,
+                          onChanged: (bool val) {
+                            useProxy = val;
+                            setState(() {});
+                          },
+                        ),
+                        ListTile(
+                            title: const Text('Clear Cached Details'),
+                            subtitle: const Text(
+                                'Deletes Cached details including Homepage, Spotify Top Charts, YouTube and Last Session Data. Usually app automatically clears them when data become large\n'),
+                            trailing: SizedBox(
+                              height: 70.0,
+                              width: 70.0,
+                              child: Center(
+                                child: FutureBuilder(
+                                    future:
+                                        File(Hive.box('cache').path!).length(),
+                                    builder: (BuildContext context,
+                                        AsyncSnapshot<int> snapshot) {
+                                      if (snapshot.connectionState ==
+                                          ConnectionState.done) {
+                                        return Text(
+                                            '${((snapshot.data ?? 0) / (1024 * 1024)).toStringAsFixed(2)} MB');
+                                      }
+                                      return const Text('');
+                                    }),
+                              ),
+                            ),
+                            dense: true,
+                            isThreeLine: true,
+                            onTap: () async {
+                              Hive.box('cache').clear();
+                              setState(() {});
+                            }),
+                        Visibility(
+                          visible: useProxy,
+                          child: ListTile(
+                            title: const Text('Proxy Settings'),
+                            subtitle: const Text('Change Proxy IP and Port'),
+                            dense: true,
+                            trailing: Text(
+                              '${Hive.box('settings').get("proxyIp")}:${Hive.box('settings').get("proxyPort")}',
+                              style: const TextStyle(fontSize: 12),
+                            ),
+                            onTap: () {
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  final _controller = TextEditingController(
+                                      text: settingsBox
+                                          .get('proxyIp')
+                                          .toString());
+                                  final _controller2 = TextEditingController(
+                                      text: settingsBox
+                                          .get('proxyPort')
+                                          .toString());
+                                  return AlertDialog(
+                                    content: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Text(
+                                              'IP Address',
+                                              style: TextStyle(
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .secondary),
+                                            ),
+                                          ],
+                                        ),
+                                        TextField(
+                                          autofocus: true,
+                                          controller: _controller,
+                                        ),
+                                        const SizedBox(
+                                          height: 30,
+                                        ),
+                                        Row(
+                                          children: [
+                                            Text(
+                                              'Port',
+                                              style: TextStyle(
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .secondary),
+                                            ),
+                                          ],
+                                        ),
+                                        TextField(
+                                          autofocus: true,
+                                          controller: _controller2,
+                                        ),
+                                      ],
                                     ),
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                    },
-                                    child: const Text('Cancel'),
-                                  ),
-                                  TextButton(
-                                    style: TextButton.styleFrom(
-                                      primary: Colors.white,
-                                      backgroundColor: Theme.of(context)
-                                          .colorScheme
-                                          .secondary,
-                                    ),
-                                    onPressed: () {
-                                      settingsBox.put(
-                                          'proxyIp', _controller.text.trim());
-                                      settingsBox.put('proxyPort',
-                                          int.parse(_controller2.text.trim()));
-                                      Navigator.pop(context);
-                                      setState(() {});
-                                    },
-                                    child: const Text(
-                                      'Ok',
-                                      style: TextStyle(color: Colors.white),
-                                    ),
-                                  ),
-                                  const SizedBox(
-                                    width: 5,
-                                  ),
-                                ],
+                                    actions: [
+                                      TextButton(
+                                        style: TextButton.styleFrom(
+                                          primary:
+                                              Theme.of(context).brightness ==
+                                                      Brightness.dark
+                                                  ? Colors.white
+                                                  : Colors.grey[700],
+                                          // backgroundColor: Theme.of(context).accentColor,
+                                        ),
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                        },
+                                        child: const Text('Cancel'),
+                                      ),
+                                      TextButton(
+                                        style: TextButton.styleFrom(
+                                          primary: Colors.white,
+                                          backgroundColor: Theme.of(context)
+                                              .colorScheme
+                                              .secondary,
+                                        ),
+                                        onPressed: () {
+                                          settingsBox.put('proxyIp',
+                                              _controller.text.trim());
+                                          settingsBox.put(
+                                              'proxyPort',
+                                              int.parse(
+                                                  _controller2.text.trim()));
+                                          Navigator.pop(context);
+                                          setState(() {});
+                                        },
+                                        child: const Text(
+                                          'Ok',
+                                          style: TextStyle(color: Colors.white),
+                                        ),
+                                      ),
+                                      const SizedBox(
+                                        width: 5,
+                                      ),
+                                    ],
+                                  );
+                                },
                               );
                             },
-                          );
-                        },
-                      ),
-                    ),
-                  ]),
+                          ),
+                        ),
+                      ]),
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.fromLTRB(15, 10, 15, 0),
-                child: Text(
-                  'Backup & Restore',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.secondary,
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(10.0, 0, 10.0, 10.0),
+                padding: const EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 10.0),
                 child: GradientCard(
-                  child: Column(children: [
-                    ListTile(
-                      title: const Text('Create Backup'),
-                      subtitle: const Text('Create backup of your data'),
-                      dense: true,
-                      onTap: () {
-                        showModalBottomSheet(
-                            isDismissible: true,
-                            backgroundColor: Colors.transparent,
-                            context: context,
-                            builder: (BuildContext context) {
-                              final List playlistNames = Hive.box('settings')
-                                  .get('playlistNames',
-                                      defaultValue: ['Favorite Songs']) as List;
-                              if (!playlistNames.contains('Favorite Songs')) {
-                                playlistNames.insert(0, 'Favorite Songs');
-                                settingsBox.put('playlistNames', playlistNames);
-                              }
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(15, 15, 15, 0),
+                          child: Text(
+                            'Backup & Restore',
+                            style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.secondary,
+                            ),
+                          ),
+                        ),
+                        ListTile(
+                          title: const Text('Create Backup'),
+                          subtitle: const Text('Create backup of your data'),
+                          dense: true,
+                          onTap: () {
+                            showModalBottomSheet(
+                                isDismissible: true,
+                                backgroundColor: Colors.transparent,
+                                context: context,
+                                builder: (BuildContext context) {
+                                  final List playlistNames =
+                                      Hive.box('settings').get('playlistNames',
+                                              defaultValue: ['Favorite Songs'])
+                                          as List;
+                                  if (!playlistNames
+                                      .contains('Favorite Songs')) {
+                                    playlistNames.insert(0, 'Favorite Songs');
+                                    settingsBox.put(
+                                        'playlistNames', playlistNames);
+                                  }
 
-                              final List<String> persist = [
-                                'Settings',
-                                'Playlists',
-                              ];
+                                  final List<String> persist = [
+                                    'Settings',
+                                    'Playlists',
+                                  ];
 
-                              final List<String> checked = [
-                                'Settings',
-                                'Downloads',
-                                'Playlists'
-                              ];
+                                  final List<String> checked = [
+                                    'Settings',
+                                    'Downloads',
+                                    'Playlists'
+                                  ];
 
-                              final List<String> items = [
-                                'Settings',
-                                'Playlists',
-                                'Downloads',
-                                'Cache',
-                              ];
+                                  final List<String> items = [
+                                    'Settings',
+                                    'Playlists',
+                                    'Downloads',
+                                    'Cache',
+                                  ];
 
-                              final Map<String, List> boxNames = {
-                                'Settings': ['settings'],
-                                'Cache': ['cache'],
-                                'Downloads': ['downloads'],
-                                'Playlists': playlistNames,
-                              };
-                              return StatefulBuilder(builder:
-                                  (BuildContext context, StateSetter setStt) {
-                                return BottomGradientContainer(
-                                  borderRadius: BorderRadius.circular(20.0),
-                                  child: Column(
-                                    children: [
-                                      Expanded(
-                                        child: ListView.builder(
-                                            physics:
-                                                const BouncingScrollPhysics(),
-                                            shrinkWrap: true,
-                                            padding: const EdgeInsets.fromLTRB(
-                                                0, 10, 0, 10),
-                                            itemCount: items.length,
-                                            itemBuilder: (context, idx) {
-                                              return CheckboxListTile(
-                                                activeColor: Theme.of(context)
-                                                    .colorScheme
-                                                    .secondary,
-                                                checkColor: Theme.of(context)
-                                                            .colorScheme
-                                                            .secondary ==
-                                                        Colors.white
-                                                    ? Colors.black
-                                                    : null,
-                                                value: checked
-                                                    .contains(items[idx]),
-                                                title: Text(items[idx]),
-                                                onChanged: persist
-                                                        .contains(items[idx])
-                                                    ? null
-                                                    : (bool? value) {
-                                                        value!
-                                                            ? checked
-                                                                .add(items[idx])
-                                                            : checked.remove(
-                                                                items[idx]);
-                                                        setStt(() {});
-                                                      },
-                                              );
-                                            }),
-                                      ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.end,
+                                  final Map<String, List> boxNames = {
+                                    'Settings': ['settings'],
+                                    'Cache': ['cache'],
+                                    'Downloads': ['downloads'],
+                                    'Playlists': playlistNames,
+                                  };
+                                  return StatefulBuilder(builder:
+                                      (BuildContext context,
+                                          StateSetter setStt) {
+                                    return BottomGradientContainer(
+                                      borderRadius: BorderRadius.circular(20.0),
+                                      child: Column(
                                         children: [
-                                          TextButton(
-                                            style: TextButton.styleFrom(
-                                              primary: Theme.of(context)
-                                                  .colorScheme
-                                                  .secondary,
-                                            ),
-                                            onPressed: () {
-                                              Navigator.pop(context);
-                                            },
-                                            child: const Text('Cancel'),
+                                          Expanded(
+                                            child: ListView.builder(
+                                                physics:
+                                                    const BouncingScrollPhysics(),
+                                                shrinkWrap: true,
+                                                padding:
+                                                    const EdgeInsets.fromLTRB(
+                                                        0, 10, 0, 10),
+                                                itemCount: items.length,
+                                                itemBuilder: (context, idx) {
+                                                  return CheckboxListTile(
+                                                    activeColor:
+                                                        Theme.of(context)
+                                                            .colorScheme
+                                                            .secondary,
+                                                    checkColor: Theme.of(
+                                                                    context)
+                                                                .colorScheme
+                                                                .secondary ==
+                                                            Colors.white
+                                                        ? Colors.black
+                                                        : null,
+                                                    value: checked
+                                                        .contains(items[idx]),
+                                                    title: Text(items[idx]),
+                                                    onChanged: persist.contains(
+                                                            items[idx])
+                                                        ? null
+                                                        : (bool? value) {
+                                                            value!
+                                                                ? checked.add(
+                                                                    items[idx])
+                                                                : checked.remove(
+                                                                    items[idx]);
+                                                            setStt(() {});
+                                                          },
+                                                  );
+                                                }),
                                           ),
-                                          TextButton(
-                                            style: TextButton.styleFrom(
-                                              primary: Theme.of(context)
-                                                  .colorScheme
-                                                  .secondary,
-                                            ),
-                                            onPressed: () {
-                                              BackupNRestore().createBackup(
-                                                  context, checked, boxNames);
-                                              Navigator.pop(context);
-                                            },
-                                            child: const Text(
-                                              'Ok',
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.w600),
-                                            ),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.end,
+                                            children: [
+                                              TextButton(
+                                                style: TextButton.styleFrom(
+                                                  primary: Theme.of(context)
+                                                      .colorScheme
+                                                      .secondary,
+                                                ),
+                                                onPressed: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: const Text('Cancel'),
+                                              ),
+                                              TextButton(
+                                                style: TextButton.styleFrom(
+                                                  primary: Theme.of(context)
+                                                      .colorScheme
+                                                      .secondary,
+                                                ),
+                                                onPressed: () {
+                                                  BackupNRestore().createBackup(
+                                                      context,
+                                                      checked,
+                                                      boxNames);
+                                                  Navigator.pop(context);
+                                                },
+                                                child: const Text(
+                                                  'Ok',
+                                                  style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.w600),
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                         ],
                                       ),
-                                    ],
-                                  ),
-                                );
-                              });
-                            });
-                      },
-                    ),
-                    ListTile(
-                      title: const Text('Restore'),
-                      subtitle: const Text(
-                          'Restore your data from Backup.\nYou might need to restart app'),
-                      dense: true,
-                      onTap: () {
-                        BackupNRestore().restore(context);
-                      },
-                    ),
-                    // const BoxSwitchTile(
-                    //   title: Text('Auto Backup'),
-                    //   subtitle:
-                    //       Text('Automatically backup data'),
-                    //   keyName: 'autoBackup',
-                    //   defaultValue: false,
-                    // ),
-                  ]),
+                                    );
+                                  });
+                                });
+                          },
+                        ),
+                        ListTile(
+                          title: const Text('Restore'),
+                          subtitle: const Text(
+                              'Restore your data from Backup.\nYou might need to restart app\n'),
+                          dense: true,
+                          onTap: () {
+                            BackupNRestore().restore(context);
+                          },
+                        ),
+                        // const BoxSwitchTile(
+                        //   title: Text('Auto Backup'),
+                        //   subtitle:
+                        //       Text('Automatically backup data'),
+                        //   keyName: 'autoBackup',
+                        //   defaultValue: false,
+                        // ),
+                      ]),
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.fromLTRB(15, 10, 15, 0),
-                child: Text(
-                  'About',
-                  style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).colorScheme.secondary),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(10.0, 0, 10.0, 10.0),
+                padding: const EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 10.0),
                 child: GradientCard(
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(15, 15, 15, 0),
+                        child: Text(
+                          'About',
+                          style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.secondary),
+                        ),
+                      ),
                       ListTile(
                         title: const Text('Version'),
                         subtitle: const Text('Tap to check for updates'),

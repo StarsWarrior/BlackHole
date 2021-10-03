@@ -186,8 +186,12 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
     return audioSource;
   }
 
-  List<AudioSource> _itemsToSources(List<MediaItem> mediaItems) =>
-      mediaItems.map(_itemToSource).toList();
+  List<AudioSource> _itemsToSources(List<MediaItem> mediaItems) {
+    preferredQuality = Hive.box('settings')
+        .get('streamingQuality', defaultValue: '96 kbps')
+        .toString();
+    return mediaItems.map(_itemToSource).toList();
+  }
 
   @override
   Future<void> onTaskRemoved() async {
@@ -225,18 +229,18 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
   }
 
   Future<void> startService() async {
-    final bool withPipeline =
-        Hive.box('settings').get('supportEq', defaultValue: true) as bool;
-    if (withPipeline) {
-      final AudioPipeline _pipeline = AudioPipeline(
-        androidAudioEffects: [
-          _equalizer,
-        ],
-      );
-      _player = AudioPlayer(audioPipeline: _pipeline);
-    } else {
-      _player = AudioPlayer();
-    }
+    // final bool withPipeline =
+    // Hive.box('settings').get('supportEq', defaultValue: true) as bool;
+    // if (withPipeline) {
+    // final AudioPipeline _pipeline = AudioPipeline(
+    // androidAudioEffects: [
+    // _equalizer,
+    // ],
+    // );
+    // _player = AudioPlayer(audioPipeline: _pipeline);
+    // } else {
+    _player = AudioPlayer();
+    // }
   }
 
   Future<void> addRecentlyPlayed(MediaItem mediaitem) async {

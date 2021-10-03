@@ -8,7 +8,7 @@ import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 class SearchAddPlaylist {
   Future<Map> addYtPlaylist(String link) async {
     try {
-      final RegExpMatch? id = RegExp(r'.*list\=(.*)').firstMatch(link);
+      final RegExpMatch? id = RegExp(r'.*list\=(.*)&').firstMatch(link);
       if (id != null) {
         final Playlist metadata =
             await YouTubeServices().getPlaylistDetails(id[1]!);

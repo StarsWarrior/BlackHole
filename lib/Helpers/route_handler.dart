@@ -1,14 +1,11 @@
 import 'package:blackhole/APIs/api.dart';
-import 'package:blackhole/Helpers/audio_query.dart';
 import 'package:blackhole/Screens/Common/song_list.dart';
 import 'package:blackhole/Screens/Player/audioplayer.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-import 'package:on_audio_query/on_audio_query.dart';
 
 class HandleRoute {
   Route? handleRoute(String? url) {
-    // media/external/audio/media/17137
     final List<String> paths = url?.replaceAll('?', '/').split('/') ?? [];
     if (paths.isNotEmpty &&
         paths.length > 3 &&
@@ -81,18 +78,19 @@ class OfflinePlayHandler extends StatelessWidget {
   const OfflinePlayHandler({Key? key, required this.id}) : super(key: key);
 
   Future<List> playOfflineSong(String id) async {
-    final OfflineAudioQuery offlineAudioQuery = OfflineAudioQuery();
-    await offlineAudioQuery.requestPermission();
-    final List<SongModel> temp = await offlineAudioQuery.getSongs();
-    final int minDuration =
-        Hive.box('settings').get('minDuration', defaultValue: 10) as int;
-    final List<SongModel> cachedSongs =
-        temp.where((i) => (i.duration ?? 60000) > 1000 * minDuration).toList();
-    final List<Map> cachedSongsMap =
-        await offlineAudioQuery.getArtwork(cachedSongs);
-    final int index =
-        cachedSongsMap.indexWhere((i) => i['_uri'].toString() == id);
+    final List cachedSongsMap =
+        Hive.box('cache').get('offlineSongsData', defaultValue: []) as List;
 
+    // final OfflineAudioQuery offlineAudioQuery = OfflineAudioQuery();
+    // await offlineAudioQuery.requestPermission();
+    // final List<SongModel> temp = await offlineAudioQuery.getSongs();
+    // final int minDuration =
+    // Hive.box('settings').get('minDuration', defaultValue: 10) as int;
+    // final List<SongModel> cachedSongs =
+    // temp.where((i) => (i.duration ?? 60000) > 1000 * minDuration).toList();
+    // final List cachedSongsMap = await offlineAudioQuery.getArtwork(cachedSongs);
+    final int index =
+        cachedSongsMap.indexWhere((i) => i['_id'].toString() == id);
     return [index, cachedSongsMap];
   }
 

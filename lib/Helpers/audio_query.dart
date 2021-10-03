@@ -45,7 +45,7 @@ class OfflineAudioQuery {
     );
   }
 
-  Future<List<Map>> getArtwork(List<SongModel> songs) async {
+  Future<List> getArtwork(List<SongModel> songs) async {
     final List<Map> songsMap = [];
     for (final SongModel song in songs) {
       final songMap = song.getMap;

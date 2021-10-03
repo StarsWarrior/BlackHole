@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:blackhole/CustomWidgets/gradient_containers.dart';
 import 'package:blackhole/Screens/YouTube/youtube_playlist.dart';
 import 'package:blackhole/Screens/YouTube/youtube_search.dart';
@@ -10,6 +12,7 @@ import 'package:material_floating_search_bar/material_floating_search_bar.dart';
 
 bool status = false;
 List searchedList = Hive.box('cache').get('ytHome', defaultValue: []) as List;
+List headList = Hive.box('cache').get('ytHomeHead', defaultValue: []) as List;
 
 class YouTube extends StatefulWidget {
   const YouTube({Key? key}) : super(key: key);
@@ -25,6 +28,8 @@ class _YouTubeState extends State<YouTube>
   bool showHistory =
       Hive.box('settings').get('showHistory', defaultValue: true) as bool;
   final FloatingSearchBarController _controller = FloatingSearchBarController();
+  int _currentPage = 0;
+  final PageController _pageController = PageController();
 
   @override
   bool get wantKeepAlive => true;
@@ -36,14 +41,30 @@ class _YouTubeState extends State<YouTube>
         status = true;
         if (value.isNotEmpty) {
           setState(() {
-            searchedList = value;
-            Hive.box('cache').put('ytHome', value);
+            searchedList = value['body'] ?? [];
+            headList = value['head'] ?? [];
+
+            Hive.box('cache').put('ytHome', value['body']);
+            Hive.box('cache').put('ytHomeHead', value['head']);
           });
         } else {
           status = false;
         }
       });
     }
+    Timer.periodic(const Duration(seconds: 5), (Timer timer) {
+      if (_currentPage < headList.length) {
+        _currentPage++;
+      } else {
+        _currentPage = 0;
+      }
+
+      _pageController.animateToPage(
+        _currentPage,
+        duration: const Duration(milliseconds: 350),
+        curve: Curves.easeIn,
+      );
+    });
     super.initState();
   }
 
@@ -56,6 +77,10 @@ class _YouTubeState extends State<YouTube>
   @override
   Widget build(BuildContext cntxt) {
     super.build(context);
+    final double boxSize =
+        MediaQuery.of(context).size.height > MediaQuery.of(context).size.width
+            ? MediaQuery.of(context).size.width
+            : MediaQuery.of(context).size.height;
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: Colors.transparent,
@@ -189,127 +214,222 @@ class _YouTubeState extends State<YouTube>
             );
           }
         },
-        body: Stack(
-          children: [
-            if (searchedList.isEmpty)
-              SizedBox(
-                child: Center(
-                  child: SizedBox(
-                      height: MediaQuery.of(context).size.width / 7,
-                      width: MediaQuery.of(context).size.width / 7,
-                      child: const CircularProgressIndicator()),
-                ),
-              )
-            else
-              ListView.builder(
-                  itemCount: searchedList.length,
-                  physics: const BouncingScrollPhysics(),
-                  shrinkWrap: true,
-                  padding: const EdgeInsets.fromLTRB(10, 70, 10, 0),
-                  itemBuilder: (context, index) {
-                    return Column(
-                      children: [
-                        Row(
+        body: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
+          padding: const EdgeInsets.fromLTRB(10, 80, 10, 0),
+          child: Column(
+            children: [
+              if (headList.isNotEmpty)
+                SizedBox(
+                  height: boxSize / 2 + 20,
+                  width: double.infinity,
+                  child: PageView.builder(
+                    controller: _pageController,
+                    itemCount: headList.length,
+                    onPageChanged: (int value) {
+                      _currentPage = value;
+                    },
+                    itemBuilder: (context, index) => GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          PageRouteBuilder(
+                            opaque: false,
+                            pageBuilder: (_, __, ___) => YouTubeSearchPage(
+                              query: headList[index]['title'].toString(),
+                            ),
+                          ),
+                        );
+                      },
+                      child: SizedBox(
+                        width: boxSize,
+                        child: Column(
                           children: [
-                            Padding(
-                              padding: const EdgeInsets.fromLTRB(10, 10, 0, 5),
-                              child: Text(
-                                '${searchedList[index]["title"]}',
-                                style: TextStyle(
-                                  color:
-                                      Theme.of(context).colorScheme.secondary,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w800,
+                            Card(
+                              elevation: 5,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10.0),
+                              ),
+                              clipBehavior: Clip.antiAlias,
+                              child: CachedNetworkImage(
+                                fit: BoxFit.cover,
+                                errorWidget: (context, _, __) => const Image(
+                                    image: AssetImage('assets/ytCover.png')),
+                                imageUrl: headList[index]['image'].toString(),
+                                placeholder: (context, url) => const Image(
+                                  image: AssetImage('assets/ytCover.png'),
                                 ),
                               ),
                             ),
+                            // Text(
+                            //   '${headList[index]["title"]}',
+                            //   textAlign: TextAlign.center,
+                            //   softWrap: false,
+                            //   overflow: TextOverflow.ellipsis,
+                            // ),
+                            // Text(
+                            //   '${headList[index]["description"]}',
+                            //   textAlign: TextAlign.center,
+                            //   softWrap: false,
+                            //   overflow: TextOverflow.ellipsis,
+                            //   style: TextStyle(
+                            //       fontSize: 11,
+                            //       color: Theme.of(context)
+                            //           .textTheme
+                            //           .caption!
+                            //           .color),
+                            // )
                           ],
                         ),
-                        SizedBox(
-                          height: MediaQuery.of(context).size.height / 4 + 5,
-                          child: ListView.builder(
-                            physics: const BouncingScrollPhysics(),
-                            scrollDirection: Axis.horizontal,
-                            padding: const EdgeInsets.symmetric(horizontal: 5),
-                            itemCount:
-                                (searchedList[index]['playlists'] as List)
-                                    .length,
-                            itemBuilder: (context, idx) {
-                              final item =
-                                  searchedList[index]['playlists'][idx];
-                              return GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    PageRouteBuilder(
-                                      opaque: false,
-                                      pageBuilder: (_, __, ___) =>
-                                          YouTubePlaylist(
-                                        playlistId:
-                                            item['playlistId'].toString(),
-                                        playlistImage:
-                                            item['imageStandard'].toString(),
-                                        playlistName: item['title'].toString(),
-                                      ),
-                                    ),
-                                  );
-                                },
-                                child: SizedBox(
-                                  width:
-                                      MediaQuery.of(context).size.height / 4 -
-                                          30,
-                                  child: Column(
-                                    children: [
-                                      Card(
-                                        elevation: 5,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(10.0),
-                                        ),
-                                        clipBehavior: Clip.antiAlias,
-                                        child: CachedNetworkImage(
-                                          errorWidget: (context, _, __) =>
-                                              const Image(
-                                            image:
-                                                AssetImage('assets/cover.jpg'),
-                                          ),
-                                          imageUrl: item['image'].toString(),
-                                          placeholder: (context, url) =>
-                                              const Image(
-                                            image:
-                                                AssetImage('assets/cover.jpg'),
-                                          ),
-                                        ),
-                                      ),
-                                      Text(
-                                        '${item["title"]}',
-                                        textAlign: TextAlign.center,
-                                        softWrap: false,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                      Text(
-                                        "${item["count"]} Tracks | ${item["description"]}",
-                                        textAlign: TextAlign.center,
-                                        softWrap: false,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: TextStyle(
-                                            fontSize: 11,
-                                            color: Theme.of(context)
-                                                .textTheme
-                                                .caption!
-                                                .color),
-                                      )
-                                    ],
+                      ),
+                    ),
+                  ),
+                ),
+              if (searchedList.isEmpty)
+                SizedBox(
+                  child: Center(
+                    child: SizedBox(
+                        height: boxSize / 7,
+                        width: boxSize / 7,
+                        child: const CircularProgressIndicator()),
+                  ),
+                )
+              else
+                ListView.builder(
+                    itemCount: searchedList.length,
+                    physics: const BouncingScrollPhysics(),
+                    shrinkWrap: true,
+                    padding: const EdgeInsets.only(bottom: 10),
+                    itemBuilder: (context, index) {
+                      return Column(
+                        children: [
+                          Row(
+                            children: [
+                              Padding(
+                                padding:
+                                    const EdgeInsets.fromLTRB(10, 10, 0, 5),
+                                child: Text(
+                                  '${searchedList[index]["title"]}',
+                                  style: TextStyle(
+                                    color:
+                                        Theme.of(context).colorScheme.secondary,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w800,
                                   ),
                                 ),
-                              );
-                            },
+                              ),
+                            ],
                           ),
-                        ),
-                      ],
-                    );
-                  }),
-          ],
+                          SizedBox(
+                            height: boxSize / 2 + 10,
+                            width: double.infinity,
+                            child: ListView.builder(
+                              physics: const BouncingScrollPhysics(),
+                              scrollDirection: Axis.horizontal,
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 5),
+                              itemCount:
+                                  (searchedList[index]['playlists'] as List)
+                                      .length,
+                              itemBuilder: (context, idx) {
+                                final item =
+                                    searchedList[index]['playlists'][idx];
+                                return GestureDetector(
+                                  onTap: () {
+                                    item['type'] == 'video'
+                                        ? Navigator.push(
+                                            context,
+                                            PageRouteBuilder(
+                                              opaque: false,
+                                              pageBuilder: (_, __, ___) =>
+                                                  YouTubeSearchPage(
+                                                query: item['title'].toString(),
+                                              ),
+                                            ),
+                                          )
+                                        : Navigator.push(
+                                            context,
+                                            PageRouteBuilder(
+                                              opaque: false,
+                                              pageBuilder: (_, __, ___) =>
+                                                  YouTubePlaylist(
+                                                playlistId: item['playlistId']
+                                                    .toString(),
+                                                playlistImage:
+                                                    item['imageStandard']
+                                                        .toString(),
+                                                playlistName:
+                                                    item['title'].toString(),
+                                              ),
+                                            ),
+                                          );
+                                  },
+                                  child: SizedBox(
+                                    width: item['type'] != 'playlist'
+                                        ? boxSize - 110
+                                        : boxSize / 2 - 30,
+                                    child: Column(
+                                      children: [
+                                        Card(
+                                          elevation: 5,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(10.0),
+                                          ),
+                                          clipBehavior: Clip.antiAlias,
+                                          child: CachedNetworkImage(
+                                            fit: BoxFit.cover,
+                                            errorWidget: (context, _, __) =>
+                                                Image(
+                                              image: item['type'] != 'playlist'
+                                                  ? const AssetImage(
+                                                      'assets/ytCover.png')
+                                                  : const AssetImage(
+                                                      'assets/cover.jpg'),
+                                            ),
+                                            imageUrl: item['image'].toString(),
+                                            placeholder: (context, url) =>
+                                                Image(
+                                              image: item['type'] != 'playlist'
+                                                  ? const AssetImage(
+                                                      'assets/ytCover.png')
+                                                  : const AssetImage(
+                                                      'assets/cover.jpg'),
+                                            ),
+                                          ),
+                                        ),
+                                        Text(
+                                          '${item["title"]}',
+                                          textAlign: TextAlign.center,
+                                          softWrap: false,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                        Text(
+                                          item['type'] != 'video'
+                                              ? '${item["count"]} Tracks | ${item["description"]}'
+                                              : '${item["count"]} | ${item["description"]}',
+                                          textAlign: TextAlign.center,
+                                          softWrap: false,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(
+                                              fontSize: 11,
+                                              color: Theme.of(context)
+                                                  .textTheme
+                                                  .caption!
+                                                  .color),
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ],
+                      );
+                    }),
+            ],
+          ),
         ),
       ),
     );

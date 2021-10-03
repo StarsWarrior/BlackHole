@@ -54,7 +54,7 @@ and much more...
 Check it yourself :)
 
 ## Screenshots
-<img src="https://github.com/Sangwan5688/BlackHole/blob/main/Screenshots/home.png?raw=true" width="32%"> <img src="https://github.com/Sangwan5688/BlackHole/blob/main/Screenshots/play.png?raw=true" width="32%"> <img src="https://github.com/Sangwan5688/BlackHole/blob/main/Screenshots/artist.png?raw=true" width="32%"> <img src="https://github.com/Sangwan5688/BlackHole/blob/main/Screenshots/topCharts.png?raw=true" width="32%"> <img src="https://github.com/Sangwan5688/BlackHole/blob/main/Screenshots/youtube.png?raw=true" width="32%"> <img src="https://github.com/Sangwan5688/BlackHole/blob/main/Screenshots/playlist.png?raw=true" width="32%">
+<img src="https://github.com/Sangwan5688/BlackHole/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/1.png?raw=true" width="32%"> <img src="https://github.com/Sangwan5688/BlackHole/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/2.png?raw=true" width="32%"> <img src="https://github.com/Sangwan5688/BlackHole/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/3.png?raw=true" width="32%"> <img src="https://github.com/Sangwan5688/BlackHole/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/4.png?raw=true" width="32%"> <img src="https://github.com/Sangwan5688/BlackHole/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/5.png?raw=true" width="32%"> <img src="https://github.com/Sangwan5688/BlackHole/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/6.png?raw=true" width="32%">
 
 ## License
 ```

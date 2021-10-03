@@ -413,6 +413,7 @@ class Download with ChangeNotifier {
         'image': filepath2,
         'image_url': data['image'].toString(),
         'fromYt': data['url'].toString().contains('google'),
+        'dateAdded': DateTime.now().toString(),
       };
       Hive.box('downloads').put(songData['id'], songData);
     });

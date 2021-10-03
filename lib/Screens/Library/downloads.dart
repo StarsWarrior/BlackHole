@@ -4,6 +4,7 @@ import 'package:audiotagger/audiotagger.dart';
 import 'package:audiotagger/models/tag.dart';
 import 'package:blackhole/CustomWidgets/collage.dart';
 import 'package:blackhole/CustomWidgets/custom_physics.dart';
+import 'package:blackhole/CustomWidgets/data_search.dart';
 import 'package:blackhole/CustomWidgets/empty_screen.dart';
 import 'package:blackhole/CustomWidgets/gradient_containers.dart';
 import 'package:blackhole/CustomWidgets/miniplayer.dart';
@@ -11,6 +12,7 @@ import 'package:blackhole/CustomWidgets/snackbar.dart';
 import 'package:blackhole/Helpers/picker.dart';
 import 'package:blackhole/Screens/Library/show_songs.dart';
 import 'package:blackhole/Screens/Player/audioplayer.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
@@ -59,14 +61,23 @@ class _DownloadsState extends State<Downloads>
     });
   }
 
-  Future<void> downImage(String filepath, String url) async {
-    final File file = File(filepath);
+  Future<void> downImage(
+      String imageFilePath, String songFilePath, String url) async {
+    final File file = File(imageFilePath);
 
-    final HttpClientRequest request2 =
-        await HttpClient().getUrl(Uri.parse(url));
-    final HttpClientResponse response2 = await request2.close();
-    final bytes2 = await consolidateHttpClientResponseBytes(response2);
-    await file.writeAsBytes(bytes2);
+    try {
+      await file.create();
+      final image = await Audiotagger().readArtwork(path: songFilePath);
+      if (image != null) {
+        file.writeAsBytesSync(image);
+      }
+    } catch (e) {
+      final HttpClientRequest request2 =
+          await HttpClient().getUrl(Uri.parse(url));
+      final HttpClientResponse response2 = await request2.close();
+      final bytes2 = await consolidateHttpClientResponseBytes(response2);
+      await file.writeAsBytes(bytes2);
+    }
   }
 
   Future<void> getDownloads() async {
@@ -135,6 +146,10 @@ class _DownloadsState extends State<Downloads>
     }
     if (sortValue == 2) {
       _songs = downloadsBox.values.toList();
+      _songs.sort((b, a) => a['dateAdded']
+          .toString()
+          .toUpperCase()
+          .compareTo(b['dateAdded'].toString().toUpperCase()));
     }
     if (sortValue == 3) {
       _songs.shuffle();
@@ -273,6 +288,15 @@ class _DownloadsState extends State<Downloads>
                               ),
                             );
                           }),
+                    IconButton(
+                      icon: const Icon(CupertinoIcons.search),
+                      tooltip: 'Search',
+                      onPressed: () {
+                        showSearch(
+                            context: context,
+                            delegate: DownloadsSearch(_songs));
+                      },
+                    ),
                     if (_songs.isNotEmpty)
                       PopupMenuButton(
                           icon: const Icon(Icons.sort_rounded),
@@ -356,28 +380,6 @@ class _DownloadsState extends State<Downloads>
                                             const SizedBox(),
                                           const SizedBox(width: 10),
                                           const Text('Last Added'),
-                                        ],
-                                      ),
-                                    ),
-                                    PopupMenuItem(
-                                      value: 3,
-                                      child: Row(
-                                        children: [
-                                          if (sortValue == 3)
-                                            Icon(
-                                              Icons.shuffle_rounded,
-                                              color: Theme.of(context)
-                                                          .brightness ==
-                                                      Brightness.dark
-                                                  ? Colors.white
-                                                  : Colors.grey[700],
-                                            )
-                                          else
-                                            const SizedBox(),
-                                          const SizedBox(width: 10),
-                                          const Text(
-                                            'Shuffle',
-                                          ),
                                         ],
                                       ),
                                     ),
@@ -471,28 +473,6 @@ class _DownloadsState extends State<Downloads>
                                         ],
                                       ),
                                     ),
-                                    PopupMenuItem(
-                                      value: 4,
-                                      child: Row(
-                                        children: [
-                                          if (albumSortValue == 4)
-                                            Icon(
-                                              Icons.shuffle_rounded,
-                                              color: Theme.of(context)
-                                                          .brightness ==
-                                                      Brightness.dark
-                                                  ? Colors.white
-                                                  : Colors.grey[700],
-                                            )
-                                          else
-                                            const SizedBox(),
-                                          const SizedBox(width: 10),
-                                          const Text(
-                                            'Shuffle',
-                                          ),
-                                        ],
-                                      ),
-                                    ),
                                   ]),
                   ],
                 ),
@@ -551,6 +531,8 @@ class _DownloadsState extends State<Downloads>
                                                     null) {
                                               downImage(
                                                   _songs[index]['image']
+                                                      .toString(),
+                                                  _songs[index]['path']
                                                       .toString(),
                                                   _songs[index]['image_url']
                                                       .toString());
