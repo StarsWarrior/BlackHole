@@ -229,18 +229,18 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
   }
 
   Future<void> startService() async {
-    // final bool withPipeline =
-    // Hive.box('settings').get('supportEq', defaultValue: true) as bool;
-    // if (withPipeline) {
-    // final AudioPipeline _pipeline = AudioPipeline(
-    // androidAudioEffects: [
-    // _equalizer,
-    // ],
-    // );
-    // _player = AudioPlayer(audioPipeline: _pipeline);
-    // } else {
-    _player = AudioPlayer();
-    // }
+    final bool withPipeline =
+        Hive.box('settings').get('supportEq', defaultValue: true) as bool;
+    if (withPipeline) {
+      final AudioPipeline _pipeline = AudioPipeline(
+        androidAudioEffects: [
+          _equalizer,
+        ],
+      );
+      _player = AudioPlayer(audioPipeline: _pipeline);
+    } else {
+      _player = AudioPlayer();
+    }
   }
 
   Future<void> addRecentlyPlayed(MediaItem mediaitem) async {

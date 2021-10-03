@@ -1372,21 +1372,40 @@ class SongsTab extends StatelessWidget {
                 //     ),
                 //   ],
                 // ),
-                onTap: () {
-                  Navigator.of(context).push(
-                    PageRouteBuilder(
-                      opaque: false,
-                      pageBuilder: (_, __, ___) => PlayScreen(
-                        data: {
-                          'response': cachedSongsMap,
-                          'index': cachedSongsMap.indexWhere((element) =>
-                              element['_id'] == cachedSongs[index].id),
-                          'offline': true
-                        },
-                        fromMiniplayer: false,
+                onTap: () async {
+                  final int playIndex = cachedSongsMap.indexWhere(
+                      (element) => element['_id'] == cachedSongs[index].id);
+                  if (playIndex == -1) {
+                    final singleSongMap = await OfflineAudioQuery()
+                        .getArtwork([cachedSongs[index]]);
+                    Navigator.of(context).push(
+                      PageRouteBuilder(
+                        opaque: false,
+                        pageBuilder: (_, __, ___) => PlayScreen(
+                          data: {
+                            'response': singleSongMap,
+                            'index': 0,
+                            'offline': true
+                          },
+                          fromMiniplayer: false,
+                        ),
                       ),
-                    ),
-                  );
+                    );
+                  } else {
+                    Navigator.of(context).push(
+                      PageRouteBuilder(
+                        opaque: false,
+                        pageBuilder: (_, __, ___) => PlayScreen(
+                          data: {
+                            'response': cachedSongsMap,
+                            'index': playIndex,
+                            'offline': true
+                          },
+                          fromMiniplayer: false,
+                        ),
+                      ),
+                    );
+                  }
                 },
               );
             });

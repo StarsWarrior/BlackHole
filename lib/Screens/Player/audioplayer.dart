@@ -121,14 +121,14 @@ class _PlayScreenState extends State<PlayScreen> {
     }
 
     final MediaItem tempDict = MediaItem(
-        id: response['_data'].toString(),
+        id: response['_id'].toString(),
         album: playAlbum,
         duration: Duration(milliseconds: playDuration),
         title: playTitle != null ? playTitle.split('(')[0] : 'Unknown',
         artist: playArtist ?? 'Unknown',
         artUri: Uri.file(filePath!),
         extras: {
-          'url': response['_data'],
+          'url': response['_data'].toString(),
         });
     return tempDict;
   }
@@ -211,6 +211,9 @@ class _PlayScreenState extends State<PlayScreen> {
     }
     response = data['response'] as List;
     globalIndex = data['index'] as int;
+    if (globalIndex == -1) {
+      globalIndex = 0;
+    }
     fromYT = data['fromYT'] as bool? ?? false;
     downloaded = data['downloaded'] as bool? ?? false;
     if (data['offline'] == null) {
@@ -1123,7 +1126,7 @@ class _ArtWorkWidgetState extends State<ArtWorkWidget> {
                       child: widget.offline
                           ? FutureBuilder(
                               future: Lyrics().getOffLyrics(
-                                widget.mediaItem.id.toString(),
+                                widget.mediaItem.extras!['url'].toString(),
                               ),
                               builder: (BuildContext context,
                                   AsyncSnapshot<String> snapshot) {

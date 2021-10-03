@@ -52,19 +52,21 @@ class _YouTubeState extends State<YouTube>
         }
       });
     }
-    Timer.periodic(const Duration(seconds: 5), (Timer timer) {
-      if (_currentPage < headList.length) {
-        _currentPage++;
-      } else {
-        _currentPage = 0;
-      }
+    if (headList.isNotEmpty) {
+      Timer.periodic(const Duration(seconds: 5), (Timer timer) {
+        if (_currentPage < headList.length) {
+          _currentPage++;
+        } else {
+          _currentPage = 0;
+        }
 
-      _pageController.animateToPage(
-        _currentPage,
-        duration: const Duration(milliseconds: 350),
-        curve: Curves.easeIn,
-      );
-    });
+        _pageController.animateToPage(
+          _currentPage,
+          duration: const Duration(milliseconds: 350),
+          curve: Curves.easeIn,
+        );
+      });
+    }
     super.initState();
   }
 
