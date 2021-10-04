@@ -44,7 +44,7 @@ Y hay más por venir...
 
 <h3 align="center">Demostración</h3>
 
-<img src="https://github.com/Sangwan5688/BlackHole/blob/main/Screenshots/home.png?raw=true" width="32%"> <img src="https://github.com/Sangwan5688/BlackHole/blob/main/Screenshots/play.png?raw=true" width="32%"> <img src="https://github.com/Sangwan5688/BlackHole/blob/main/Screenshots/local200.png?raw=true" width="32%"> <img src="https://github.com/Sangwan5688/BlackHole/blob/main/Screenshots/global200.png?raw=true" width="32%"> <img src="https://github.com/Sangwan5688/BlackHole/blob/main/Screenshots/mymusic.png?raw=true" width="32%"> <img src="https://github.com/Sangwan5688/BlackHole/blob/main/Screenshots/favorites.png?raw=true" width="32%">
+<img src="/fastlane/metadata/android/en-US/images/phoneScreenshots/1.png" loading="lazy" width="32%"> <img src="/fastlane/metadata/android/en-US/images/phoneScreenshots/2.png" loading="lazy" width="32%"> <img src="/fastlane/metadata/android/en-US/images/phoneScreenshots/3.png" loading="lazy" width="32%"> <img src="/fastlane/metadata/android/en-US/images/phoneScreenshots/4.png" loading="lazy" width="32%"> <img src="/fastlane/metadata/android/en-US/images/phoneScreenshots/5.png" loading="lazy" width="32%"> <img src="/fastlane/metadata/android/en-US/images/phoneScreenshots/6.png" loading="lazy" width="32%">
 
 ## [Descargar la última versión](https://github.com/Sangwan5688/BlackHole/releases)
 

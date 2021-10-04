@@ -34,3 +34,6 @@ $('a[href*="#"]')
     }
   }
 });
+
+// Copyright year dynamic update
+document.getElementById("copy-year").textContent = new Date().getFullYear();
