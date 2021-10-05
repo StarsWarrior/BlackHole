@@ -14,6 +14,7 @@ Un increible reproductor de música basado en Flutter
 ## Traducciones
 
 - [English :uk:](/README.md)
+- [Russian :ru:](/README.RU.md)
 
 ## Características
 
@@ -84,42 +85,6 @@ Puedes unirte a nuestro [Grupo de Telegram](https://t.me/joinchat/fHDC1AWnOhw0Zm
 
 <a href="https://www.buymeacoffee.com/ankitsangwan" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" alt="Buy Me A Coffee" style="height: 41px !important;width: 174px !important;box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;-webkit-box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;" ></a>
 
-# ¿Qué hay de nuevo?
+## ¿Qué hay de nuevo?
 
-## v1.8
-
-### Características nuevas:
-
-* Selección de la ruta de descarga.
-* Búsqueda de música por folders.
-* Almacenamiento en caché de canciones sin conexión.
-* Pestaña de género junto con canciones, álbumes y artistas.
-* Display the total song number in a playlist.
-* Mostrar el número total de canciones en una lista de reproducción.
-* Añadido "Reproduciendo ahora" en la pantalla de reproducción.
-* Añadidos los detalles del artista del álbum para las pistas.
-* Opción de me gusta y descarga en la cola de reproducción actual.
-* Diapositiva de imagen en el reproductor.
-* Importa/Exporta listas de reproducción en un archivo JSON.
-* Opción para compartir listas de reproducción en un archivo JSON.
-* Diálogos de alerta reemplazados con bocadillos en barra.
-* Opción para descargar en listas de reproducción.
-* Se modificó el monto de la donación de Cómprame un café y se agregó GPay.
-* Opción para descargar listas de reproducción completas.
-* Se cambió la posición del boton 'stop' en la notificación.C
-* Cacheo de las listas de reproducción tendencia en caso que algún error ocurriese.
-* Reproducción sin pausas (no más esperas en la reproducción automática).
-* Añadido el formato «.opus» para vídeos.
-* Se han añadido los álbumes en los resultados de búsqueda.
-* Añadida una barra de búsqueda en la pantalla de resultados.
-* Opción para borrar y darse de baja de la última sesión.
-* Se simplificó y se hizo más fácil de localizar la opción de genero durante el inicio de sesión.
-* Opción para descargar todo el álbum desde los resultados de búsqueda.
-
-### 'Bugs' corregidos:
-
-* La música se pausaba cuando una notificación era entregada
-* Se eliminó el espacio entre el cajón de navegación inferior y el mini reproductor.
-* La imagen no cambiaba en el modo auto-reproducción.
-* Corregido el botón siguiente y anterior inactivo incluso cuando la repetición todo está activada.
-* Para leer el historial de cambios completo, visite [la wiki](https://github.com/Sangwan5688/BlackHole/wiki/Changelog)
+Para leer el historial de cambios completo, visite [la wiki](https://github.com/Sangwan5688/BlackHole/wiki/Changelog)
