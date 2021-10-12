@@ -86,8 +86,7 @@ class BackupNRestore {
         }
       }
     } catch (e) {
-      // ignore: avoid_print
-      print(e);
+      // print(e);
     }
   }
 }

@@ -48,9 +48,7 @@ class _SaavnHomePageState extends State<SaavnHomePage>
     final type = item['type'];
     if (type == 'charts') {
       return '';
-    } else if (type == 'playlist') {
-      return formatString(item['subtitle']?.toString());
-    } else if (type == 'radio_station') {
+    } else if (type == 'playlist' || type == 'radio_station') {
       return formatString(item['subtitle']?.toString());
     } else if (type == 'song') {
       return formatString(item['artist']?.toString());

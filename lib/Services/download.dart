@@ -387,15 +387,11 @@ class Download with ChangeNotifier {
         lastDownloadId = data['id'].toString();
         progress = 0.0;
         notifyListeners();
-        try {
-          ShowSnackBar().showSnackBar(
-            context,
-            '"${data['title'].toString()}" ${AppLocalizations.of(context)!.downed}',
-          );
-        } catch (e) {
-          // ignore: avoid_print
-          print('Failed to show Snackbar');
-        }
+
+        ShowSnackBar().showSnackBar(
+          context,
+          '"${data['title'].toString()}" ${AppLocalizations.of(context)!.downed}',
+        );
 
         final songData = {
           'id': data['id'].toString(),

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:typed_data';
 
 import 'package:blackhole/APIs/api.dart';
@@ -45,8 +46,7 @@ class FormatResponse {
       }
 
       if (response!.containsKey('Error')) {
-        // ignore: avoid_print
-        print('Error at index $i inside FormatResponse: ${response["Error"]}');
+        log('Error at index $i inside FormatResponse: ${response["Error"]}');
       } else {
         searchedList.add(response);
       }
@@ -61,16 +61,17 @@ class FormatResponse {
     // }
     try {
       final List artistNames = [];
-      if (response['more_info']['artistMap']['primary_artists'] == null ||
-          response['more_info']['artistMap']['primary_artists'].length == 0) {
-        if (response['more_info']['artistMap']['featured_artists'] == null ||
-            response['more_info']['artistMap']['featured_artists'].length ==
+      if (response['more_info']?['artistMap']?['primary_artists'] == null ||
+          response['more_info']?['artistMap']?['primary_artists'].length == 0) {
+        if (response['more_info']?['artistMap']?['featured_artists'] == null ||
+            response['more_info']?['artistMap']?['featured_artists'].length ==
                 0) {
-          if (response['more_info']['artistMap']['artists'] == null ||
-              response['more_info']['artistMap']['artists'].length == 0) {
+          if (response['more_info']?['artistMap']?['artists'] == null ||
+              response['more_info']?['artistMap']?['artists'].length == 0) {
             artistNames.add('Unknown');
           } else {
-            response['more_info']['artistMap']['artists'].forEach((element) {
+            response['more_info']['artistMap']['artists'][0]['id']
+                .forEach((element) {
               artistNames.add(element['name']);
             });
           }
@@ -91,8 +92,6 @@ class FormatResponse {
         'id': response['id'],
         'type': response['type'],
         'album': formatString(response['more_info']['album'].toString()),
-        // .split('(')
-        // .first
         'year': response['year'],
         'duration': response['more_info']['duration'],
         'language': capitalize(response['language'].toString()),
@@ -105,8 +104,6 @@ class FormatResponse {
         'album_id': response['more_info']['album_id'],
         'subtitle': formatString(response['subtitle'].toString()),
         'title': formatString(response['title'].toString()),
-        // .split('(')
-        // .first
         'artist': formatString(artistNames.join(', ')),
         'album_artist': response['more_info'] == null
             ? response['music']
@@ -207,9 +204,7 @@ class FormatResponse {
           break;
       }
       if (response!.containsKey('Error')) {
-        // ignore: avoid_print
-        print(
-            'Error at index $i inside FormatAlbumResponse: ${response["Error"]}');
+        log('Error at index $i inside FormatAlbumResponse: ${response["Error"]}');
       } else {
         searchedAlbumList.add(response);
       }
@@ -344,8 +339,7 @@ class FormatResponse {
       final Map response =
           await formatSingleArtistTopAlbumSongResponse(responseList[i] as Map);
       if (response.containsKey('Error')) {
-        // ignore: avoid_print
-        print('Error at index $i inside FormatResponse: ${response["Error"]}');
+        log('Error at index $i inside FormatResponse: ${response["Error"]}');
       } else {
         result.add(response);
       }
@@ -437,6 +431,10 @@ class FormatResponse {
       data['new_trending'] = await formatSongsInList(
           data['new_trending'] as List,
           fetchDetails: false);
+      data['new_albums'] = await formatSongsInList(data['new_albums'] as List,
+          fetchDetails: false);
+      data['city_mod'] =
+          await formatSongsInList(data['city_mod'] as List, fetchDetails: true);
       final List promoList = [];
       final List promoListTemp = [];
       data['modules'].forEach((k, v) {
@@ -459,14 +457,13 @@ class FormatResponse {
         'new_albums',
         'top_playlists',
         'radio',
-        // 'city_mod',
+        'city_mod',
         'artist_recos',
         ...promoList
       ];
       data['collections_temp'] = promoListTemp;
     } catch (e) {
-      // ignore: avoid_print
-      print('Error in formatHomePageData: $e');
+      log('Error in formatHomePageData: $e');
     }
     return data;
   }
@@ -481,8 +478,7 @@ class FormatResponse {
       data['collections'].addAll(promoList);
       data['collections_temp'] = [];
     } catch (e) {
-      // ignore: avoid_print
-      print('Error in formatPromoLists: $e');
+      log('Error in formatPromoLists: $e');
     }
     return data;
   }

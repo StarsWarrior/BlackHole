@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -26,8 +28,7 @@ class ShowSnackBar {
         ),
       );
     } catch (e) {
-      // ignore: avoid_print
-      print('Failed to show Snackbar with title:$title');
+      log('Failed to show Snackbar with title:$title');
     }
   }
 }

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:blackhole/Helpers/format.dart';
@@ -63,8 +64,7 @@ class SaavnAPI {
         result = await FormatResponse().formatHomePageData(data);
       }
     } catch (e) {
-      // ignore: avoid_print
-      print('Error in fetchHomePageData: $e');
+      log('Error in fetchHomePageData: $e');
     }
     return result;
   }
@@ -83,8 +83,7 @@ class SaavnAPI {
         };
       }
     } catch (e) {
-      // ignore: avoid_print
-      print('Error in getSongFromToken: $e');
+      log('Error in getSongFromToken: $e');
     }
     return {'songs': List.empty()};
   }
@@ -143,8 +142,7 @@ class SaavnAPI {
         }).toList();
       }
     } catch (e) {
-      // ignore: avoid_print
-      print('Error in getTopSearches: $e');
+      log('Error in getTopSearches: $e');
     }
     return List.empty();
   }
@@ -161,8 +159,7 @@ class SaavnAPI {
         return await FormatResponse().formatSongsResponse(responseList, 'song');
       }
     } catch (e) {
-      // ignore: avoid_print
-      print('Error in fetchSongSearchResults: $e');
+      log('Error in fetchSongSearchResults: $e');
     }
     return List.empty();
   }
@@ -365,8 +362,7 @@ class SaavnAPI {
             .formatSingleSongResponse(data['songs'][0] as Map);
       }
     } catch (e) {
-      // ignore: avoid_print
-      print('Error in fetchSongDetails: $e');
+      log('Error in fetchSongDetails: $e');
     }
     return {};
   }
