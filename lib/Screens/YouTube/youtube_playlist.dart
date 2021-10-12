@@ -6,6 +6,7 @@ import 'package:blackhole/Services/youtube_services.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:hive/hive.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
@@ -231,8 +232,10 @@ class _YouTubePlaylistState extends State<YouTubePlaylist> {
                                                         ),
                                                         const SizedBox(
                                                             width: 10.0),
-                                                        const Text(
-                                                            'Search Home'),
+                                                        Text(
+                                                            AppLocalizations.of(
+                                                                    context)!
+                                                                .searchHome),
                                                       ],
                                                     )),
                                               ],
@@ -275,11 +278,11 @@ class _YouTubePlaylistState extends State<YouTubePlaylist> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceEvenly,
                                 children: [
-                                  const Padding(
-                                    padding:
-                                        EdgeInsets.symmetric(horizontal: 8.0),
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 8.0),
                                     child: Text(
-                                        'Use Main Section for Better Quality and Download Support',
+                                        AppLocalizations.of(context)!.useHome,
                                         textAlign: TextAlign.center),
                                   ),
                                   SizedBox(
@@ -295,7 +298,8 @@ class _YouTubePlaylistState extends State<YouTubePlaylist> {
                                                     .secondary),
                                         strokeWidth: 5,
                                       )),
-                                  const Text('Fetching Audio Stream'),
+                                  Text(AppLocalizations.of(context)!
+                                      .fetchingStream),
                                 ],
                               ),
                             ),

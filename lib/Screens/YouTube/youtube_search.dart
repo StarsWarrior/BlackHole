@@ -9,6 +9,7 @@ import 'package:blackhole/Services/youtube_services.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:hive/hive.dart';
 import 'package:material_floating_search_bar/material_floating_search_bar.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
@@ -87,7 +88,7 @@ class _YouTubeSearchPageState extends State<YouTubeSearchPage> {
                       },
                     ),
                   ],
-                  hint: 'Search on YouTube',
+                  hint: AppLocalizations.of(context)!.searchYt,
                   height: 52.0,
                   margins: const EdgeInsets.fromLTRB(18.0, 8.0, 18.0, 15.0),
                   scrollPadding: const EdgeInsets.only(bottom: 50),
@@ -157,7 +158,9 @@ class _YouTubeSearchPageState extends State<YouTubeSearchPage> {
                                                 CupertinoIcons.clear,
                                                 size: 15.0,
                                               ),
-                                              tooltip: 'Remove',
+                                              tooltip:
+                                                  AppLocalizations.of(context)!
+                                                      .remove,
                                               onPressed: () {
                                                 setState(() {
                                                   ytSearch.remove(e);
@@ -193,8 +196,15 @@ class _YouTubeSearchPageState extends State<YouTubeSearchPage> {
                           ),
                         )
                       : searchedList.isEmpty
-                          ? EmptyScreen().emptyScreen(context, 0, ':( ', 100,
-                              'SORRY', 60, 'Results Not Found', 20)
+                          ? EmptyScreen().emptyScreen(
+                              context,
+                              0,
+                              ':( ',
+                              100,
+                              AppLocalizations.of(context)!.sorry,
+                              60,
+                              AppLocalizations.of(context)!.resultsNotFound,
+                              20)
                           : Stack(
                               children: [
                                 ListView.builder(
@@ -229,7 +239,9 @@ class _YouTubeSearchPageState extends State<YouTubeSearchPage> {
                                               response == null
                                                   ? ShowSnackBar().showSnackBar(
                                                       context,
-                                                      'Video is live. Please wait until the live stream finishes and try again.',
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .ytLiveAlert,
                                                     )
                                                   : Navigator.push(
                                                       context,
@@ -321,7 +333,10 @@ class _YouTubeSearchPageState extends State<YouTubeSearchPage> {
                                                                       .duration
                                                                       .toString() ==
                                                                   'null'
-                                                              ? 'LIVE NOW'
+                                                              ? AppLocalizations
+                                                                      .of(
+                                                                          context)!
+                                                                  .live
                                                               : searchedList[
                                                                       index]
                                                                   .duration
@@ -395,8 +410,9 @@ class _YouTubeSearchPageState extends State<YouTubeSearchPage> {
                                                                   .secondary),
                                                       strokeWidth: 5,
                                                     )),
-                                                const Text(
-                                                    'Fetching Audio Stream'),
+                                                Text(AppLocalizations.of(
+                                                        context)!
+                                                    .fetchingStream),
                                               ],
                                             ),
                                           ),

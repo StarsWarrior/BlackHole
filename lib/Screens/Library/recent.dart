@@ -4,6 +4,7 @@ import 'package:blackhole/CustomWidgets/miniplayer.dart';
 import 'package:blackhole/Screens/Player/audioplayer.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:hive/hive.dart';
 
 class RecentlyPlayed extends StatefulWidget {
@@ -34,7 +35,7 @@ class _RecentlyPlayedState extends State<RecentlyPlayed> {
             child: Scaffold(
               backgroundColor: Colors.transparent,
               appBar: AppBar(
-                title: const Text('Last Session'),
+                title: Text(AppLocalizations.of(context)!.lastSession),
                 centerTitle: true,
                 backgroundColor: Theme.of(context).brightness == Brightness.dark
                     ? Colors.transparent
@@ -48,14 +49,21 @@ class _RecentlyPlayedState extends State<RecentlyPlayed> {
                         _songs = [];
                       });
                     },
-                    tooltip: 'Clear All',
+                    tooltip: AppLocalizations.of(context)!.clearAll,
                     icon: const Icon(Icons.clear_all_rounded),
                   ),
                 ],
               ),
               body: _songs.isEmpty
-                  ? EmptyScreen().emptyScreen(context, 3, 'Nothing to ', 15,
-                      'Show Here', 50.0, 'Go and Play Something', 23.0)
+                  ? EmptyScreen().emptyScreen(
+                      context,
+                      3,
+                      AppLocalizations.of(context)!.nothingTo,
+                      15,
+                      AppLocalizations.of(context)!.showHere,
+                      50.0,
+                      AppLocalizations.of(context)!.playSomething,
+                      23.0)
                   : ListView.builder(
                       physics: const BouncingScrollPhysics(),
                       padding: const EdgeInsets.only(top: 10, bottom: 10),

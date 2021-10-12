@@ -23,6 +23,8 @@ Or [Download from Github](https://github.com/Sangwan5688/BlackHole/releases)
 - [Spanish :es:](/README.ES.md)
 - [Russian :ru:](/README.RU.md)
 
+Thanks to [Euri](https://github.com/EuriNaiz) and [Nikita](https://github.com/TireX228) for translations
+
 ## Features
 
 * Best Streaming Quality (320kbps aac)

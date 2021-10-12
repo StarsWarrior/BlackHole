@@ -6,6 +6,7 @@ import 'package:blackhole/Screens/Player/audioplayer.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:hive/hive.dart';
 
 bool fetched = false;
@@ -104,7 +105,7 @@ class _SaavnHomePageState extends State<SaavnHomePage>
                           Padding(
                             padding: const EdgeInsets.fromLTRB(15, 10, 0, 5),
                             child: Text(
-                              'Last Session',
+                              AppLocalizations.of(context)!.lastSession,
                               style: TextStyle(
                                 color: Theme.of(context).colorScheme.secondary,
                                 fontSize: 18,
@@ -328,7 +329,7 @@ class _SaavnHomePageState extends State<SaavnHomePage>
                           if (item['type'] == 'radio_station') {
                             ShowSnackBar().showSnackBar(
                               context,
-                              'Connecting to Radio...',
+                              AppLocalizations.of(context)!.connectingRadio,
                               duration: const Duration(seconds: 2),
                             );
                             SaavnAPI()
@@ -462,8 +463,8 @@ class _SaavnHomePageState extends State<SaavnHomePage>
                                         : const Icon(
                                             Icons.favorite_border_rounded),
                                     tooltip: likedRadio.contains(item)
-                                        ? 'Unlike'
-                                        : 'Like',
+                                        ? AppLocalizations.of(context)!.unlike
+                                        : AppLocalizations.of(context)!.like,
                                     onPressed: () {
                                       likedRadio.contains(item)
                                           ? likedRadio.remove(item)

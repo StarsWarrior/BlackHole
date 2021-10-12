@@ -2,6 +2,7 @@ import 'package:audio_service/audio_service.dart';
 import 'package:blackhole/CustomWidgets/snackbar.dart';
 import 'package:blackhole/Helpers/playlist.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class LikeButton extends StatefulWidget {
   final MediaItem mediaItem;
@@ -29,7 +30,9 @@ class _LikeButtonState extends State<LikeButton> {
           color: liked ? Colors.redAccent : Theme.of(context).iconTheme.color,
         ),
         iconSize: widget.size ?? 24.0,
-        tooltip: liked ? 'Unlike' : 'Like',
+        tooltip: liked
+            ? AppLocalizations.of(context)!.unlike
+            : AppLocalizations.of(context)!.like,
         onPressed: () {
           liked
               ? removeLiked(widget.mediaItem.id)
@@ -40,10 +43,12 @@ class _LikeButtonState extends State<LikeButton> {
           });
           ShowSnackBar().showSnackBar(
             context,
-            liked ? 'Added to Favorites' : 'Removed from Favorites',
+            liked
+                ? AppLocalizations.of(context)!.addedToFav
+                : AppLocalizations.of(context)!.removedFromFav,
             action: SnackBarAction(
                 textColor: Theme.of(context).colorScheme.secondary,
-                label: 'Undo',
+                label: AppLocalizations.of(context)!.undo,
                 onPressed: () {
                   liked
                       ? removeLiked(widget.mediaItem.id)

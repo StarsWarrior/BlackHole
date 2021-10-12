@@ -2,15 +2,15 @@ import 'dart:io';
 
 import 'package:audiotagger/audiotagger.dart';
 import 'package:audiotagger/models/tag.dart';
-// import 'package:flutter_downloader/flutter_downloader.dart';
-// import 'package:flutter_ffmpeg/flutter_ffmpeg.dart';
-
 import 'package:blackhole/CustomWidgets/snackbar.dart';
 import 'package:blackhole/Helpers/lyrics.dart';
 import 'package:ext_storage/ext_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+// import 'package:flutter_downloader/flutter_downloader.dart';
+// import 'package:flutter_ffmpeg/flutter_ffmpeg.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart';
 import 'package:path_provider/path_provider.dart';
@@ -120,7 +120,7 @@ class Download with ChangeNotifier {
           builder: (BuildContext context) {
             return AlertDialog(
                 title: Text(
-                  'Already Exists',
+                  AppLocalizations.of(context)!.alreadyExists,
                   style:
                       TextStyle(color: Theme.of(context).colorScheme.secondary),
                 ),
@@ -128,7 +128,7 @@ class Download with ChangeNotifier {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      '"${data['title']}" already exists.\nDo you want to download it again?',
+                      '"${data['title']}" ${AppLocalizations.of(context)!.downAgain}',
                       softWrap: true,
                     ),
                     const SizedBox(
@@ -153,7 +153,8 @@ class Download with ChangeNotifier {
                                     remember.value = value ?? false;
                                   },
                                 ),
-                                const Text('Remember my choice'),
+                                Text(AppLocalizations.of(context)!
+                                    .rememberChoice),
                               ],
                             );
                           }),
@@ -172,9 +173,9 @@ class Download with ChangeNotifier {
                               Navigator.pop(context);
                               rememberOption = 0;
                             },
-                            child: const Text(
-                              'No',
-                              style: TextStyle(color: Colors.white),
+                            child: Text(
+                              AppLocalizations.of(context)!.no,
+                              style: const TextStyle(color: Colors.white),
                             ),
                           ),
                           TextButton(
@@ -190,7 +191,8 @@ class Download with ChangeNotifier {
                               downloadSong(context, dlPath, filename, data);
                               rememberOption = 1;
                             },
-                            child: const Text('Yes, but Replace Old'),
+                            child:
+                                Text(AppLocalizations.of(context)!.yesReplace),
                           ),
                           const SizedBox(width: 5.0),
                           TextButton(
@@ -209,7 +211,7 @@ class Download with ChangeNotifier {
                               downloadSong(context, dlPath, filename, data);
                             },
                             child: Text(
-                              'Yes',
+                              AppLocalizations.of(context)!.yes,
                               style: TextStyle(
                                   color:
                                       Theme.of(context).colorScheme.secondary ==
@@ -388,7 +390,7 @@ class Download with ChangeNotifier {
         try {
           ShowSnackBar().showSnackBar(
             context,
-            '"${data['title'].toString()}" has been downloaded',
+            '"${data['title'].toString()}" ${AppLocalizations.of(context)!.downed}',
           );
         } catch (e) {
           // ignore: avoid_print

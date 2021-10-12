@@ -3,12 +3,14 @@ import 'package:blackhole/CustomWidgets/gradient_containers.dart';
 import 'package:blackhole/Helpers/playlist.dart';
 import 'package:blackhole/Services/youtube_services.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
 class SearchAddPlaylist {
-  Future<Map> addYtPlaylist(String link) async {
+  Future<Map> addYtPlaylist(String inLink) async {
+    final String link = '$inLink&';
     try {
-      final RegExpMatch? id = RegExp(r'.*list\=(.*)&').firstMatch(link);
+      final RegExpMatch? id = RegExp(r'.*list\=(.*?)&').firstMatch(link);
       if (id != null) {
         final Playlist metadata =
             await YouTubeServices().getPlaylistDetails(id[1]!);
@@ -78,10 +80,11 @@ class SearchAddPlaylist {
                         Column(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            const Center(
+                            Center(
                                 child: Text(
-                              'Converting Songs',
-                              style: TextStyle(fontWeight: FontWeight.w600),
+                              AppLocalizations.of(context)!.convertingSongs,
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.w600),
                             )),
                             SizedBox(
                               height: 75,

@@ -16,6 +16,8 @@ Un increible reproductor de música basado en Flutter
 - [English :uk:](/README.md)
 - [Russian :ru:](/README.RU.md)
 
+Gracias a [Euri](https://github.com/EuriNaiz) por esta traducción
+
 ## Características
 
 * La mejor calidad de streaming (320kbps)

@@ -1,5 +1,6 @@
 import 'package:blackhole/CustomWidgets/gradient_containers.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:package_info/package_info.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -52,9 +53,9 @@ class _AboutScreenState extends State<AboutScreen> {
                   ? Colors.transparent
                   : Theme.of(context).colorScheme.secondary,
               elevation: 0,
-              title: const Text(
-                'About',
-                style: TextStyle(
+              title: Text(
+                AppLocalizations.of(context)!.about,
+                style: const TextStyle(
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -81,10 +82,10 @@ class _AboutScreenState extends State<AboutScreen> {
                               image: AssetImage('assets/ic_launcher.png'))),
                     ),
                     const SizedBox(height: 20),
-                    const Text(
-                      'BlackHole',
-                      style:
-                          TextStyle(fontSize: 35, fontWeight: FontWeight.bold),
+                    Text(
+                      AppLocalizations.of(context)!.appTitle,
+                      style: const TextStyle(
+                          fontSize: 35, fontWeight: FontWeight.bold),
                     ),
                     Text('v$appVersion'),
                   ],
@@ -93,10 +94,10 @@ class _AboutScreenState extends State<AboutScreen> {
                   padding: const EdgeInsets.fromLTRB(20.0, 20.0, 20.0, 0.0),
                   child: Column(
                     children: [
-                      const Text(
-                        'This is an open-source project and can be found on',
+                      Text(
+                        AppLocalizations.of(context)!.aboutLine1,
                         textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 16),
+                        style: const TextStyle(fontSize: 16),
                       ),
                       TextButton(
                           onPressed: () {
@@ -112,10 +113,10 @@ class _AboutScreenState extends State<AboutScreen> {
                                   : const AssetImage('assets/GitHub_Logo.png'),
                             ),
                           )),
-                      const Text(
-                        'If you liked my work\nshow some ♥ and ⭐ the repo',
+                      Text(
+                        AppLocalizations.of(context)!.aboutLine2,
                         textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 16),
+                        style: const TextStyle(fontSize: 16),
                       ),
                     ],
                   ),
@@ -137,10 +138,10 @@ class _AboutScreenState extends State<AboutScreen> {
                         ),
                       ),
                     ),
-                    const Text(
-                      'OR',
+                    Text(
+                      AppLocalizations.of(context)!.or,
                       textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 12),
+                      style: const TextStyle(fontSize: 12),
                     ),
                     TextButton(
                       style: TextButton.styleFrom(
@@ -163,19 +164,19 @@ class _AboutScreenState extends State<AboutScreen> {
                         ),
                       ),
                     ),
-                    const Text(
-                      'Sponsor this project',
+                    Text(
+                      AppLocalizations.of(context)!.sponsor,
                       textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 12),
+                      style: const TextStyle(fontSize: 12),
                     ),
                   ],
                 ),
-                const Padding(
-                  padding: EdgeInsets.fromLTRB(5, 30, 5, 20),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(5, 30, 5, 20),
                   child: Center(
                     child: Text(
-                      'Made with ♥ by Ankit Sangwan',
-                      style: TextStyle(fontSize: 12),
+                      AppLocalizations.of(context)!.madeBy,
+                      style: const TextStyle(fontSize: 12),
                       textAlign: TextAlign.center,
                     ),
                   ),

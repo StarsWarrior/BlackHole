@@ -7,6 +7,9 @@ class MyTheme with ChangeNotifier {
   bool _isDark =
       Hive.box('settings').get('darkMode', defaultValue: true) as bool;
 
+  bool _useSystemTheme =
+      Hive.box('settings').get('useSystemTheme', defaultValue: false) as bool;
+
   String? accentColor = Hive.box('settings').get('themeColor') as String?;
   String canvasColor =
       Hive.box('settings').get('canvasColor', defaultValue: 'Grey') as String;
@@ -109,21 +112,32 @@ class MyTheme with ChangeNotifier {
     ]
   ];
 
-  void switchTheme({required bool isDark}) {
-    _isDark = isDark;
-    _isDark ? switchColor('Teal', 400) : switchColor('Light Blue', 400);
+  void switchTheme({bool? useSystemTheme, bool? isDark, bool notify = true}) {
+    if (isDark != null) {
+      _isDark = isDark;
+    }
+    if (useSystemTheme != null) {
+      _useSystemTheme = useSystemTheme;
+    }
+    Hive.box('settings').put('darkMode', _isDark);
+    Hive.box('settings').put('useSystemTheme', _useSystemTheme);
+    if (notify) notifyListeners();
   }
 
-  void switchColor(String color, int hue) {
+  void switchColor(String color, int hue, {bool notify = true}) {
     Hive.box('settings').put('themeColor', color);
     accentColor = color;
     Hive.box('settings').put('colorHue', hue);
     colorHue = hue;
-    notifyListeners();
+    if (notify) notifyListeners();
   }
 
   ThemeMode currentTheme() {
-    return _isDark ? ThemeMode.dark : ThemeMode.light;
+    if (_useSystemTheme == true) {
+      return ThemeMode.system;
+    } else {
+      return _isDark ? ThemeMode.dark : ThemeMode.light;
+    }
   }
 
   int currentHue() {
@@ -182,10 +196,10 @@ class MyTheme with ChangeNotifier {
     return Colors.grey[900]!;
   }
 
-  void switchCanvasColor(String color) {
+  void switchCanvasColor(String color, {bool notify = true}) {
     Hive.box('settings').put('canvasColor', color);
     canvasColor = color;
-    notifyListeners();
+    if (notify) notifyListeners();
   }
 
   Color getCardColor() {
@@ -196,10 +210,10 @@ class MyTheme with ChangeNotifier {
     return Colors.grey[850]!;
   }
 
-  void switchCardColor(String color) {
+  void switchCardColor(String color, {bool notify = true}) {
     Hive.box('settings').put('cardColor', color);
     cardColor = color;
-    notifyListeners();
+    if (notify) notifyListeners();
   }
 
   List<Color> getCardGradient({bool miniplayer = false}) {

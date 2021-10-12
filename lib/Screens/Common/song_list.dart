@@ -10,6 +10,7 @@ import 'package:blackhole/CustomWidgets/miniplayer.dart';
 import 'package:blackhole/Screens/Player/audioplayer.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:html_unescape/html_unescape_small.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -86,8 +87,15 @@ class _SongsListPageState extends State<SongsListPage> {
                         ),
                       )
                     : songList.isEmpty
-                        ? EmptyScreen().emptyScreen(context, 0, ':( ', 100,
-                            'SORRY', 60, 'Results Not Found', 20)
+                        ? EmptyScreen().emptyScreen(
+                            context,
+                            0,
+                            ':( ',
+                            100,
+                            AppLocalizations.of(context)!.sorry,
+                            60,
+                            AppLocalizations.of(context)!.resultsNotFound,
+                            20)
                         : CustomScrollView(
                             physics: const BouncingScrollPhysics(),
                             slivers: [
@@ -106,7 +114,8 @@ class _SongsListPageState extends State<SongsListPage> {
                                   actions: [
                                     IconButton(
                                         icon: const Icon(Icons.share_rounded),
-                                        tooltip: 'Share',
+                                        tooltip:
+                                            AppLocalizations.of(context)!.share,
                                         onPressed: () {
                                           Share.share(widget
                                               .listItem['perma_url']
@@ -228,7 +237,8 @@ class _SongsListPageState extends State<SongsListPage> {
                                                 ),
                                                 const SizedBox(width: 5.0),
                                                 Text(
-                                                  'Play',
+                                                  AppLocalizations.of(context)!
+                                                      .play,
                                                   style: TextStyle(
                                                     fontWeight: FontWeight.bold,
                                                     fontSize: 18.0,
@@ -288,15 +298,16 @@ class _SongsListPageState extends State<SongsListPage> {
                                             child: Row(
                                               mainAxisAlignment:
                                                   MainAxisAlignment.center,
-                                              children: const [
-                                                Icon(
+                                              children: [
+                                                const Icon(
                                                   Icons.shuffle_rounded,
                                                   color: Colors.black,
                                                 ),
-                                                SizedBox(width: 5.0),
+                                                const SizedBox(width: 5.0),
                                                 Text(
-                                                  'Shuffle',
-                                                  style: TextStyle(
+                                                  AppLocalizations.of(context)!
+                                                      .shuffle,
+                                                  style: const TextStyle(
                                                     fontWeight: FontWeight.bold,
                                                     fontSize: 18.0,
                                                     color: Colors.black,

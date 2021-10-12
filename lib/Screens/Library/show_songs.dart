@@ -5,6 +5,7 @@ import 'package:blackhole/CustomWidgets/miniplayer.dart';
 import 'package:blackhole/Screens/Player/audioplayer.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:hive/hive.dart';
 
 class SongsList extends StatefulWidget {
@@ -75,7 +76,8 @@ class _SongsListState extends State<SongsList> {
             child: Scaffold(
               backgroundColor: Colors.transparent,
               appBar: AppBar(
-                title: Text(widget.title ?? 'Songs'),
+                title:
+                    Text(widget.title ?? AppLocalizations.of(context)!.songs),
                 actions: [
                   PopupMenuButton(
                       icon: const Icon(Icons.sort_rounded),
@@ -104,8 +106,8 @@ class _SongsListState extends State<SongsList> {
                                   else
                                     const SizedBox(),
                                   const SizedBox(width: 10),
-                                  const Text(
-                                    'A-Z',
+                                  Text(
+                                    AppLocalizations.of(context)!.az,
                                   ),
                                 ],
                               ),
@@ -125,8 +127,8 @@ class _SongsListState extends State<SongsList> {
                                   else
                                     const SizedBox(),
                                   const SizedBox(width: 10),
-                                  const Text(
-                                    'Z-A',
+                                  Text(
+                                    AppLocalizations.of(context)!.za,
                                   ),
                                 ],
                               ),
@@ -147,8 +149,10 @@ class _SongsListState extends State<SongsList> {
                                     const SizedBox(),
                                   const SizedBox(width: 10),
                                   Text(offline!
-                                      ? 'Last Modified'
-                                      : 'Last Added'),
+                                      ? AppLocalizations.of(context)!
+                                          .lastModified
+                                      : AppLocalizations.of(context)!
+                                          .lastAdded),
                                 ],
                               ),
                             ),
@@ -167,8 +171,8 @@ class _SongsListState extends State<SongsList> {
                                   else
                                     const SizedBox(),
                                   const SizedBox(width: 10),
-                                  const Text(
-                                    'Shuffle',
+                                  Text(
+                                    AppLocalizations.of(context)!.shuffle,
                                   ),
                                 ],
                               ),

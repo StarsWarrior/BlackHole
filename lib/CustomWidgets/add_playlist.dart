@@ -5,6 +5,7 @@ import 'package:blackhole/CustomWidgets/snackbar.dart';
 import 'package:blackhole/CustomWidgets/textinput_dialog.dart';
 import 'package:blackhole/Helpers/playlist.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:hive/hive.dart';
 
 class AddToPlaylist {
@@ -26,7 +27,7 @@ class AddToPlaylist {
               mainAxisSize: MainAxisSize.min,
               children: [
                 ListTile(
-                  title: const Text('Create Playlist'),
+                  title: Text(AppLocalizations.of(context)!.createPlaylist),
                   leading: Card(
                     elevation: 0,
                     color: Colors.transparent,
@@ -47,7 +48,7 @@ class AddToPlaylist {
                     TextInputDialog().showTextInputDialog(
                         context: context,
                         keyboardType: TextInputType.text,
-                        title: 'Create new playlist',
+                        title: AppLocalizations.of(context)!.createNewPlaylist,
                         onSubmitted: (String value) {
                           if (value.trim() == '') {
                             value = 'Playlist ${playlistNames.length}';
@@ -102,7 +103,7 @@ class AddToPlaylist {
                                 playlistNames[index].toString(), mediaItem);
                             ShowSnackBar().showSnackBar(
                               context,
-                              'Added to ${playlistDetails.containsKey(playlistNames[index]) ? playlistDetails[playlistNames[index]]["name"] ?? playlistNames[index] : playlistNames[index]}',
+                              '${AppLocalizations.of(context)!.addedTo} ${playlistDetails.containsKey(playlistNames[index]) ? playlistDetails[playlistNames[index]]["name"] ?? playlistNames[index] : playlistNames[index]}',
                             );
                           }
                         },

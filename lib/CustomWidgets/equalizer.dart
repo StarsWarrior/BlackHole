@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:blackhole/main.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:hive/hive.dart';
 
 class Equalizer extends StatefulWidget {
@@ -28,7 +29,7 @@ class _EqualizerState extends State<Equalizer> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             SwitchListTile(
-              title: const Text('Equalizer'),
+              title: Text(AppLocalizations.of(context)!.equalizer),
               value: enabled,
               activeColor: Theme.of(context).colorScheme.secondary,
               onChanged: (value) {

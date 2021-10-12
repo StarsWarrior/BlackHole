@@ -1,6 +1,7 @@
 import 'package:blackhole/Screens/Library/downloaded.dart';
 import 'package:blackhole/Screens/Library/liked.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:hive/hive.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
@@ -24,8 +25,8 @@ class _LibraryPageState extends State<LibraryPage> {
       physics: const BouncingScrollPhysics(),
       children: [
         AppBar(
-          title: const Text(
-            'Library',
+          title: Text(
+            AppLocalizations.of(context)!.library,
           ),
           centerTitle: true,
           backgroundColor: Colors.transparent,
@@ -49,21 +50,21 @@ class _LibraryPageState extends State<LibraryPage> {
           ),
         ),
         LibraryTile(
-          title: 'Now Playing',
+          title: AppLocalizations.of(context)!.nowPlaying,
           icon: Icons.queue_music_rounded,
           onTap: () {
             Navigator.pushNamed(context, '/nowplaying');
           },
         ),
         LibraryTile(
-          title: 'Last Session',
+          title: AppLocalizations.of(context)!.lastSession,
           icon: Icons.history_rounded,
           onTap: () {
             Navigator.pushNamed(context, '/recent');
           },
         ),
         LibraryTile(
-          title: 'Favorites',
+          title: AppLocalizations.of(context)!.favorites,
           icon: Icons.favorite_rounded,
           onTap: () async {
             await Hive.openBox('Favorite Songs');
@@ -75,7 +76,7 @@ class _LibraryPageState extends State<LibraryPage> {
           },
         ),
         LibraryTile(
-          title: 'My Music',
+          title: AppLocalizations.of(context)!.myMusic,
           icon: MdiIcons.folderMusic,
           onTap: () {
             Navigator.push(
@@ -85,14 +86,14 @@ class _LibraryPageState extends State<LibraryPage> {
           },
         ),
         LibraryTile(
-          title: 'Downloads',
+          title: AppLocalizations.of(context)!.downs,
           icon: Icons.download_done_rounded,
           onTap: () {
             Navigator.pushNamed(context, '/downloads');
           },
         ),
         LibraryTile(
-          title: 'Playlists',
+          title: AppLocalizations.of(context)!.playlists,
           icon: Icons.playlist_play_rounded,
           onTap: () {
             Navigator.pushNamed(context, '/playlists');

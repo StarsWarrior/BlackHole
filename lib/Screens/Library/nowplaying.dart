@@ -8,6 +8,7 @@ import 'package:blackhole/Screens/Player/audioplayer.dart';
 import 'package:blackhole/main.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class NowPlaying extends StatefulWidget {
   @override
@@ -31,7 +32,8 @@ class _NowPlayingState extends State<NowPlaying> {
                     appBar: processingState != AudioProcessingState.idle
                         ? null
                         : AppBar(
-                            title: const Text('Now Playing'),
+                            title:
+                                Text(AppLocalizations.of(context)!.nowPlaying),
                             centerTitle: true,
                             backgroundColor:
                                 Theme.of(context).brightness == Brightness.dark
@@ -40,8 +42,15 @@ class _NowPlayingState extends State<NowPlaying> {
                             elevation: 0,
                           ),
                     body: processingState == AudioProcessingState.idle
-                        ? EmptyScreen().emptyScreen(context, 3, 'Nothing is ',
-                            18.0, 'PLAYING', 60, 'Go and Play Something', 23.0)
+                        ? EmptyScreen().emptyScreen(
+                            context,
+                            3,
+                            AppLocalizations.of(context)!.nothingIs,
+                            18.0,
+                            AppLocalizations.of(context)!.playingCap,
+                            60,
+                            AppLocalizations.of(context)!.playSomething,
+                            23.0)
                         : StreamBuilder<MediaItem?>(
                             stream: audioHandler.mediaItem,
                             builder: (context, snapshot) {
@@ -62,8 +71,9 @@ class _NowPlayingState extends State<NowPlaying> {
                                                         .height *
                                                     0.4,
                                             flexibleSpace: FlexibleSpaceBar(
-                                              title: const Text(
-                                                'Now Playing',
+                                              title: Text(
+                                                AppLocalizations.of(context)!
+                                                    .nowPlaying,
                                                 textAlign: TextAlign.center,
                                               ),
                                               centerTitle: true,

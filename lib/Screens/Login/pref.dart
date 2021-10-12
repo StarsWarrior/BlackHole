@@ -2,6 +2,7 @@ import 'package:blackhole/CustomWidgets/gradient_containers.dart';
 import 'package:blackhole/CustomWidgets/snackbar.dart';
 import 'package:blackhole/Helpers/countrycodes.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:hive/hive.dart';
 
 class PrefScreen extends StatefulWidget {
@@ -68,9 +69,9 @@ class _PrefScreenState extends State<PrefScreen> {
                         onPressed: () {
                           Navigator.popAndPushNamed(context, '/');
                         },
-                        child: const Text(
-                          'Skip',
-                          style: TextStyle(
+                        child: Text(
+                          AppLocalizations.of(context)!.skip,
+                          style: const TextStyle(
                             decoration: TextDecoration.underline,
                           ),
                         ),
@@ -89,7 +90,8 @@ class _PrefScreenState extends State<PrefScreen> {
                                 children: [
                                   RichText(
                                     text: TextSpan(
-                                      text: 'Welcome\n',
+                                      text:
+                                          '${AppLocalizations.of(context)!.welcome}\n',
                                       style: TextStyle(
                                         fontSize: 65,
                                         height: 1.0,
@@ -99,9 +101,10 @@ class _PrefScreenState extends State<PrefScreen> {
                                             .secondary,
                                       ),
                                       children: <TextSpan>[
-                                        const TextSpan(
-                                          text: 'Aboard',
-                                          style: TextStyle(
+                                        TextSpan(
+                                          text: AppLocalizations.of(context)!
+                                              .aboard,
+                                          style: const TextStyle(
                                             fontWeight: FontWeight.bold,
                                             fontSize: 75,
                                             color: Colors.white,
@@ -117,9 +120,10 @@ class _PrefScreenState extends State<PrefScreen> {
                                                 .secondary,
                                           ),
                                         ),
-                                        const TextSpan(
-                                          text: 'Mind telling us a few things?',
-                                          style: TextStyle(
+                                        TextSpan(
+                                          text: AppLocalizations.of(context)!
+                                              .prefReq,
+                                          style: const TextStyle(
                                             height: 1.5,
                                             fontWeight: FontWeight.bold,
                                             fontSize: 20,
@@ -144,9 +148,9 @@ class _PrefScreenState extends State<PrefScreen> {
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
                                 ListTile(
-                                  title: const Text(
-                                    'Which language songs would you prefer to listen to?',
-                                    style: TextStyle(
+                                  title: Text(
+                                    AppLocalizations.of(context)!.langQue,
+                                    style: const TextStyle(
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
@@ -249,8 +253,10 @@ class _PrefScreenState extends State<PrefScreen> {
                                                           Navigator.pop(
                                                               context);
                                                         },
-                                                        child: const Text(
-                                                            'Cancel'),
+                                                        child: Text(
+                                                            AppLocalizations.of(
+                                                                    context)!
+                                                                .cancel),
                                                       ),
                                                       TextButton(
                                                         style: TextButton
@@ -276,13 +282,17 @@ class _PrefScreenState extends State<PrefScreen> {
                                                             ShowSnackBar()
                                                                 .showSnackBar(
                                                               context,
-                                                              'No Music language selected. Select a language to see songs on Home Screen',
+                                                              AppLocalizations.of(
+                                                                      context)!
+                                                                  .noLangSelected,
                                                             );
                                                           }
                                                         },
-                                                        child: const Text(
-                                                          'Ok',
-                                                          style: TextStyle(
+                                                        child: Text(
+                                                          AppLocalizations.of(
+                                                                  context)!
+                                                              .ok,
+                                                          style: const TextStyle(
                                                               fontWeight:
                                                                   FontWeight
                                                                       .w600),
@@ -301,9 +311,9 @@ class _PrefScreenState extends State<PrefScreen> {
                                   height: 30.0,
                                 ),
                                 ListTile(
-                                    title: const Text(
-                                      'For which country would you like to see Spotify Local Charts?',
-                                      style: TextStyle(
+                                    title: Text(
+                                      AppLocalizations.of(context)!.countryQue,
+                                      style: const TextStyle(
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
@@ -416,10 +426,10 @@ class _PrefScreenState extends State<PrefScreen> {
                                         )
                                       ],
                                     ),
-                                    child: const Center(
+                                    child: Center(
                                         child: Text(
-                                      'Finish',
-                                      style: TextStyle(
+                                      AppLocalizations.of(context)!.finish,
+                                      style: const TextStyle(
                                         color: Colors.black,
                                         fontWeight: FontWeight.bold,
                                         fontSize: 20.0,

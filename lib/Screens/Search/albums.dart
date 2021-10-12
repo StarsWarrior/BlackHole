@@ -9,6 +9,7 @@ import 'package:blackhole/Screens/Common/song_list.dart';
 import 'package:blackhole/Screens/Search/artists.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class AlbumSearchPage extends StatefulWidget {
   final String query;
@@ -78,8 +79,15 @@ class _AlbumSearchPageState extends State<AlbumSearchPage> {
                       ),
                     )
                   : searchedList.isEmpty
-                      ? EmptyScreen().emptyScreen(context, 0, ':( ', 100,
-                          'SORRY', 60, 'Results Not Found', 20)
+                      ? EmptyScreen().emptyScreen(
+                          context,
+                          0,
+                          ':( ',
+                          100,
+                          AppLocalizations.of(context)!.sorry,
+                          60,
+                          AppLocalizations.of(context)!.resultsNotFound,
+                          20)
                       : CustomScrollView(
                           physics: const BouncingScrollPhysics(),
                           slivers: [

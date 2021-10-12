@@ -2,6 +2,7 @@ import 'package:blackhole/APIs/api.dart';
 import 'package:blackhole/CustomWidgets/snackbar.dart';
 import 'package:blackhole/Services/download.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:hive/hive.dart';
 
 class DownloadButton extends StatefulWidget {
@@ -92,7 +93,9 @@ class _DownloadButtonState extends State<DownloadButton> {
                                                   color: Theme.of(context)
                                                       .iconTheme
                                                       .color,
-                                                  tooltip: 'Stop Download',
+                                                  tooltip: AppLocalizations.of(
+                                                          context)!
+                                                      .stopDown,
                                                   onPressed: () {
                                                     down.download = false;
                                                   })),
@@ -158,7 +161,7 @@ class _MultiDownloadButtonState extends State<MultiDownloadButton> {
                   ),
                   color: Theme.of(context).colorScheme.secondary,
                   iconSize: 25.0,
-                  tooltip: 'Download Done',
+                  tooltip: AppLocalizations.of(context)!.downDone,
                   onPressed: () {},
                 )
               : down.progress == 0
@@ -169,7 +172,7 @@ class _MultiDownloadButtonState extends State<MultiDownloadButton> {
                           ),
                           iconSize: 25.0,
                           color: Theme.of(context).iconTheme.color,
-                          tooltip: 'Download',
+                          tooltip: AppLocalizations.of(context)!.down,
                           onPressed: () async {
                             for (final items in widget.data) {
                               down.prepareDownload(
@@ -260,7 +263,7 @@ class _AlbumDownloadButtonState extends State<AlbumDownloadButton> {
                   ),
                   color: Theme.of(context).colorScheme.secondary,
                   iconSize: 25.0,
-                  tooltip: 'Download Done',
+                  tooltip: AppLocalizations.of(context)!.downDone,
                   onPressed: () {},
                 )
               : down.progress == 0
@@ -271,11 +274,11 @@ class _AlbumDownloadButtonState extends State<AlbumDownloadButton> {
                           ),
                           iconSize: 25.0,
                           color: Theme.of(context).iconTheme.color,
-                          tooltip: 'Download',
+                          tooltip: AppLocalizations.of(context)!.down,
                           onPressed: () async {
                             ShowSnackBar().showSnackBar(
                               context,
-                              'Downloading Album "${widget.albumName}"',
+                              '${AppLocalizations.of(context)!.downingAlbum} "${widget.albumName}"',
                             );
 
                             data = await SaavnAPI()

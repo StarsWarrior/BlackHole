@@ -15,6 +15,7 @@ import 'package:blackhole/Screens/Player/audioplayer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:hive/hive.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -223,12 +224,12 @@ class _DownloadsState extends State<Downloads>
       }
       ShowSnackBar().showSnackBar(
         context,
-        'Deleted ${_songs[index]['title']}',
+        '${AppLocalizations.of(context)!.deleted} ${_songs[index]['title']}',
       );
     } catch (e) {
       ShowSnackBar().showSnackBar(
         context,
-        'Failed to delete file: ${audioFile.path}',
+        '${AppLocalizations.of(context)!.failedDelete}: ${audioFile.path}',
       );
     }
   }
@@ -244,25 +245,25 @@ class _DownloadsState extends State<Downloads>
               child: Scaffold(
                 backgroundColor: Colors.transparent,
                 appBar: AppBar(
-                  title: const Text('Downloads'),
+                  title: Text(AppLocalizations.of(context)!.downs),
                   centerTitle: true,
                   backgroundColor:
                       Theme.of(context).brightness == Brightness.dark
                           ? Colors.transparent
                           : Theme.of(context).colorScheme.secondary,
                   elevation: 0,
-                  bottom: TabBar(controller: _tcontroller, tabs: const [
+                  bottom: TabBar(controller: _tcontroller, tabs: [
                     Tab(
-                      text: 'Songs',
+                      text: AppLocalizations.of(context)!.songs,
                     ),
                     Tab(
-                      text: 'Albums',
+                      text: AppLocalizations.of(context)!.albums,
                     ),
                     Tab(
-                      text: 'Artists',
+                      text: AppLocalizations.of(context)!.artists,
                     ),
                     Tab(
-                      text: 'Genres',
+                      text: AppLocalizations.of(context)!.genres,
                     ),
                   ]),
                   actions: [
@@ -290,7 +291,7 @@ class _DownloadsState extends State<Downloads>
                           }),
                     IconButton(
                       icon: const Icon(CupertinoIcons.search),
-                      tooltip: 'Search',
+                      tooltip: AppLocalizations.of(context)!.search,
                       onPressed: () {
                         showSearch(
                             context: context,
@@ -335,8 +336,8 @@ class _DownloadsState extends State<Downloads>
                                           else
                                             const SizedBox(),
                                           const SizedBox(width: 10),
-                                          const Text(
-                                            'A-Z',
+                                          Text(
+                                            AppLocalizations.of(context)!.az,
                                           ),
                                         ],
                                       ),
@@ -357,8 +358,8 @@ class _DownloadsState extends State<Downloads>
                                           else
                                             const SizedBox(),
                                           const SizedBox(width: 10),
-                                          const Text(
-                                            'Z-A',
+                                          Text(
+                                            AppLocalizations.of(context)!.za,
                                           ),
                                         ],
                                       ),
@@ -379,7 +380,8 @@ class _DownloadsState extends State<Downloads>
                                           else
                                             const SizedBox(),
                                           const SizedBox(width: 10),
-                                          const Text('Last Added'),
+                                          Text(AppLocalizations.of(context)!
+                                              .lastAdded),
                                         ],
                                       ),
                                     ),
@@ -401,8 +403,8 @@ class _DownloadsState extends State<Downloads>
                                           else
                                             const SizedBox(),
                                           const SizedBox(width: 10),
-                                          const Text(
-                                            'A-Z',
+                                          Text(
+                                            AppLocalizations.of(context)!.az,
                                           ),
                                         ],
                                       ),
@@ -423,8 +425,8 @@ class _DownloadsState extends State<Downloads>
                                           else
                                             const SizedBox(),
                                           const SizedBox(width: 10),
-                                          const Text(
-                                            'Z-A',
+                                          Text(
+                                            AppLocalizations.of(context)!.za,
                                           ),
                                         ],
                                       ),
@@ -445,9 +447,8 @@ class _DownloadsState extends State<Downloads>
                                           else
                                             const SizedBox(),
                                           const SizedBox(width: 10),
-                                          const Text(
-                                            '10-1',
-                                          ),
+                                          Text(AppLocalizations.of(context)!
+                                              .tenToOne),
                                         ],
                                       ),
                                     ),
@@ -467,9 +468,8 @@ class _DownloadsState extends State<Downloads>
                                           else
                                             const SizedBox(),
                                           const SizedBox(width: 10),
-                                          const Text(
-                                            '1-10',
-                                          ),
+                                          Text(AppLocalizations.of(context)!
+                                              .oneToTen),
                                         ],
                                       ),
                                     ),
@@ -493,11 +493,11 @@ class _DownloadsState extends State<Downloads>
                             EmptyScreen().emptyScreen(
                                 context,
                                 3,
-                                'Nothing to ',
+                                AppLocalizations.of(context)!.nothingTo,
                                 15.0,
-                                'Show Here',
+                                AppLocalizations.of(context)!.showHere,
                                 50,
-                                'Download Something',
+                                AppLocalizations.of(context)!.downloadSomething,
                                 23.0)
                           else
                             ListView.builder(
@@ -581,22 +581,30 @@ class _DownloadsState extends State<Downloads>
                                                   PopupMenuItem(
                                                     value: 0,
                                                     child: Row(
-                                                      children: const [
-                                                        Icon(
+                                                      children: [
+                                                        const Icon(
                                                             Icons.edit_rounded),
-                                                        SizedBox(width: 10.0),
-                                                        Text('Edit'),
+                                                        const SizedBox(
+                                                            width: 10.0),
+                                                        Text(
+                                                            AppLocalizations.of(
+                                                                    context)!
+                                                                .edit),
                                                       ],
                                                     ),
                                                   ),
                                                   PopupMenuItem(
                                                     value: 1,
                                                     child: Row(
-                                                      children: const [
-                                                        Icon(Icons
+                                                      children: [
+                                                        const Icon(Icons
                                                             .delete_rounded),
-                                                        SizedBox(width: 10.0),
-                                                        Text('Delete'),
+                                                        const SizedBox(
+                                                            width: 10.0),
+                                                        Text(
+                                                            AppLocalizations.of(
+                                                                    context)!
+                                                                .delete),
                                                       ],
                                                     ),
                                                   ),
@@ -637,8 +645,15 @@ class _DownloadsState extends State<Downloads>
 
   Widget albumsTab() {
     return sortedAlbumKeysList.isEmpty
-        ? EmptyScreen().emptyScreen(context, 3, 'Nothing to ', 15.0,
-            'Show Here', 50, 'Download Something', 23.0)
+        ? EmptyScreen().emptyScreen(
+            context,
+            3,
+            AppLocalizations.of(context)!.nothingTo,
+            15.0,
+            AppLocalizations.of(context)!.showHere,
+            50,
+            AppLocalizations.of(context)!.downloadSomething,
+            23.0)
         : ListView.builder(
             physics: const BouncingScrollPhysics(),
             padding: const EdgeInsets.only(top: 20, bottom: 10),
@@ -660,8 +675,8 @@ class _DownloadsState extends State<Downloads>
                 ),
                 subtitle: Text(
                   _albums[sortedAlbumKeysList[index]]!.length == 1
-                      ? '${_albums[sortedAlbumKeysList[index]]!.length} Song'
-                      : '${_albums[sortedAlbumKeysList[index]]!.length} Songs',
+                      ? '${_albums[sortedAlbumKeysList[index]]!.length} ${AppLocalizations.of(context)!.song}'
+                      : '${_albums[sortedAlbumKeysList[index]]!.length} ${AppLocalizations.of(context)!.songs}',
                 ),
                 onTap: () {
                   Navigator.of(context).push(
@@ -680,8 +695,15 @@ class _DownloadsState extends State<Downloads>
 
   Widget artistsTab() {
     return (sortedArtistKeysList.isEmpty)
-        ? EmptyScreen().emptyScreen(context, 3, 'Nothing to ', 15.0,
-            'Show Here', 50, 'Download Something', 23.0)
+        ? EmptyScreen().emptyScreen(
+            context,
+            3,
+            AppLocalizations.of(context)!.nothingTo,
+            15.0,
+            AppLocalizations.of(context)!.showHere,
+            50,
+            AppLocalizations.of(context)!.downloadSomething,
+            23.0)
         : ListView.builder(
             physics: const BouncingScrollPhysics(),
             padding: const EdgeInsets.only(top: 20, bottom: 10),
@@ -701,8 +723,8 @@ class _DownloadsState extends State<Downloads>
                     overflow: TextOverflow.ellipsis),
                 subtitle: Text(
                   _artists[sortedArtistKeysList[index]]!.length == 1
-                      ? '${_artists[sortedArtistKeysList[index]]!.length} Song'
-                      : '${_artists[sortedArtistKeysList[index]]!.length} Songs',
+                      ? '${_artists[sortedArtistKeysList[index]]!.length} ${AppLocalizations.of(context)!.song}'
+                      : '${_artists[sortedArtistKeysList[index]]!.length} ${AppLocalizations.of(context)!.songs}',
                 ),
                 onTap: () {
                   Navigator.of(context).push(
@@ -721,8 +743,15 @@ class _DownloadsState extends State<Downloads>
 
   Widget genresTab() {
     return (sortedGenreKeysList.isEmpty)
-        ? EmptyScreen().emptyScreen(context, 3, 'Nothing to ', 15.0,
-            'Show Here', 50, 'Download Something', 23.0)
+        ? EmptyScreen().emptyScreen(
+            context,
+            3,
+            AppLocalizations.of(context)!.nothingTo,
+            15.0,
+            AppLocalizations.of(context)!.showHere,
+            50,
+            AppLocalizations.of(context)!.downloadSomething,
+            23.0)
         : ListView.builder(
             physics: const BouncingScrollPhysics(),
             padding: const EdgeInsets.only(top: 20, bottom: 10),
@@ -744,8 +773,8 @@ class _DownloadsState extends State<Downloads>
                 ),
                 subtitle: Text(
                   _genres[sortedGenreKeysList[index]]!.length == 1
-                      ? '${_genres[sortedGenreKeysList[index]]!.length} Song'
-                      : '${_genres[sortedGenreKeysList[index]]!.length} Songs',
+                      ? '${_genres[sortedGenreKeysList[index]]!.length} ${AppLocalizations.of(context)!.song}'
+                      : '${_genres[sortedGenreKeysList[index]]!.length} ${AppLocalizations.of(context)!.songs}',
                 ),
                 onTap: () {
                   Navigator.of(context).push(
@@ -844,7 +873,7 @@ Future<Map> editTags(Map song, BuildContext context) async {
                   Row(
                     children: [
                       Text(
-                        'Title',
+                        AppLocalizations.of(context)!.title,
                         style: TextStyle(
                             color: Theme.of(context).colorScheme.secondary),
                       ),
@@ -860,7 +889,7 @@ Future<Map> editTags(Map song, BuildContext context) async {
                   Row(
                     children: [
                       Text(
-                        'Artist',
+                        AppLocalizations.of(context)!.artist,
                         style: TextStyle(
                             color: Theme.of(context).colorScheme.secondary),
                       ),
@@ -876,7 +905,7 @@ Future<Map> editTags(Map song, BuildContext context) async {
                   Row(
                     children: [
                       Text(
-                        'Album Artist',
+                        AppLocalizations.of(context)!.albumArtist,
                         style: TextStyle(
                             color: Theme.of(context).colorScheme.secondary),
                       ),
@@ -892,7 +921,7 @@ Future<Map> editTags(Map song, BuildContext context) async {
                   Row(
                     children: [
                       Text(
-                        'Album',
+                        AppLocalizations.of(context)!.album,
                         style: TextStyle(
                             color: Theme.of(context).colorScheme.secondary),
                       ),
@@ -908,7 +937,7 @@ Future<Map> editTags(Map song, BuildContext context) async {
                   Row(
                     children: [
                       Text(
-                        'Genre',
+                        AppLocalizations.of(context)!.genre,
                         style: TextStyle(
                             color: Theme.of(context).colorScheme.secondary),
                       ),
@@ -924,7 +953,7 @@ Future<Map> editTags(Map song, BuildContext context) async {
                   Row(
                     children: [
                       Text(
-                        'Year',
+                        AppLocalizations.of(context)!.year,
                         style: TextStyle(
                             color: Theme.of(context).colorScheme.secondary),
                       ),
@@ -940,7 +969,7 @@ Future<Map> editTags(Map song, BuildContext context) async {
                   Row(
                     children: [
                       Text(
-                        'Song Path',
+                        AppLocalizations.of(context)!.songPath,
                         style: TextStyle(
                             color: Theme.of(context).colorScheme.secondary),
                       ),
@@ -964,7 +993,7 @@ Future<Map> editTags(Map song, BuildContext context) async {
               onPressed: () {
                 Navigator.pop(context);
               },
-              child: const Text('Cancel'),
+              child: Text(AppLocalizations.of(context)!.cancel),
             ),
             TextButton(
               style: TextButton.styleFrom(
@@ -1004,18 +1033,18 @@ Future<Map> editTags(Map song, BuildContext context) async {
                     );
                     ShowSnackBar().showSnackBar(
                       context,
-                      'Successfully edited tags',
+                      AppLocalizations.of(context)!.successTagEdit,
                     );
                   }
                 } catch (e) {
                   ShowSnackBar().showSnackBar(
                     context,
-                    'Failed to edit tags',
+                    AppLocalizations.of(context)!.failedTagEdit,
                   );
                 }
               },
               child: Text(
-                'Ok',
+                AppLocalizations.of(context)!.ok,
                 style: TextStyle(
                     color:
                         Theme.of(context).colorScheme.secondary == Colors.white

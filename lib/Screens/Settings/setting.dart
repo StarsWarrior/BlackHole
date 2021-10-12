@@ -14,6 +14,7 @@ import 'package:ext_storage/ext_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -126,11 +127,11 @@ class _SettingPageState extends State<SettingPage> {
                 ).createShader(Rect.fromLTRB(0, 0, rect.width, rect.height));
               },
               blendMode: BlendMode.dstIn,
-              child: const Center(
+              child: Center(
                 child: Text(
-                  'Settings',
+                  AppLocalizations.of(context)!.settings,
                   textAlign: TextAlign.center,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 80,
                     color: Colors.white,
                   ),
@@ -142,627 +143,677 @@ class _SettingPageState extends State<SettingPage> {
         SliverList(
           delegate: SliverChildListDelegate(
             [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 10.0),
-                child: GradientCard(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(15, 15, 15, 0),
-                        child: Text(
-                          'Theme',
-                          style: TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                            color: Theme.of(context).colorScheme.secondary,
-                          ),
-                        ),
-                      ),
-                      BoxSwitchTile(
-                          title: const Text('Dark Mode'),
-                          keyName: 'darkMode',
-                          defaultValue: true,
-                          onChanged: (bool val) {
-                            currentTheme.switchTheme(isDark: val);
-                            themeColor = val ? 'Teal' : 'Light Blue';
-                            colorHue = 400;
-                          }),
-                      ListTile(
-                        title: const Text('Accent Color & Hue'),
-                        subtitle: Text('$themeColor, $colorHue'),
-                        trailing: Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: Container(
-                            height: 25,
-                            width: 25,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(100.0),
+              SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 10.0),
+                  child: GradientCard(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(15, 15, 15, 0),
+                          child: Text(
+                            AppLocalizations.of(context)!.theme,
+                            style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
                               color: Theme.of(context).colorScheme.secondary,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.grey[900]!,
-                                  blurRadius: 5.0,
-                                  offset: const Offset(0.0, 3.0),
-                                )
-                              ],
                             ),
                           ),
                         ),
-                        onTap: () {
-                          showModalBottomSheet(
-                            isDismissible: true,
-                            backgroundColor: Colors.transparent,
-                            context: context,
-                            builder: (BuildContext context) {
-                              final List<String> colors = [
-                                'Purple',
-                                'Deep Purple',
-                                'Indigo',
-                                'Blue',
-                                'Light Blue',
-                                'Cyan',
-                                'Teal',
-                                'Green',
-                                'Light Green',
-                                'Lime',
-                                'Yellow',
-                                'Amber',
-                                'Orange',
-                                'Deep Orange',
-                                'Red',
-                                'Pink',
-                                'White',
-                              ];
-                              return BottomGradientContainer(
-                                borderRadius: BorderRadius.circular(20.0),
-                                child: ListView.builder(
-                                    shrinkWrap: true,
-                                    physics: const BouncingScrollPhysics(),
-                                    padding:
-                                        const EdgeInsets.fromLTRB(0, 10, 0, 10),
-                                    itemCount: colors.length,
-                                    itemBuilder: (context, index) {
-                                      return Padding(
-                                        padding:
-                                            const EdgeInsets.only(bottom: 15.0),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceEvenly,
-                                          children: [
-                                            for (int hue in [
-                                              100,
-                                              200,
-                                              400,
-                                              700
-                                            ])
-                                              GestureDetector(
-                                                  onTap: () {
-                                                    themeColor = colors[index];
-                                                    colorHue = hue;
-                                                    currentTheme.switchColor(
-                                                        colors[index],
-                                                        colorHue);
-                                                    setState(() {});
-                                                    Navigator.pop(context);
-                                                  },
-                                                  child: Container(
-                                                    width:
-                                                        MediaQuery.of(context)
-                                                                .size
-                                                                .width *
-                                                            0.125,
-                                                    height:
-                                                        MediaQuery.of(context)
-                                                                .size
-                                                                .width *
-                                                            0.125,
-                                                    decoration: BoxDecoration(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              100.0),
-                                                      color: MyTheme().getColor(
-                                                          colors[index], hue),
-                                                      boxShadow: [
-                                                        BoxShadow(
-                                                          color:
-                                                              Colors.grey[900]!,
-                                                          blurRadius: 5.0,
-                                                          offset: const Offset(
-                                                              0.0, 3.0),
-                                                        )
-                                                      ],
-                                                    ),
-                                                    child: (themeColor ==
-                                                                colors[index] &&
-                                                            colorHue == hue)
-                                                        ? const Icon(
-                                                            Icons.done_rounded)
-                                                        : const SizedBox(),
-                                                  )),
-                                          ],
-                                        ),
-                                      );
-                                    }),
-                              );
-                            },
-                          );
-                        },
-                        dense: true,
-                      ),
-                      Visibility(
-                        visible:
-                            Theme.of(context).brightness == Brightness.dark,
-                        child: Column(
-                          children: [
-                            ListTile(
-                              title: const Text('Background Gradient'),
-                              subtitle: const Text(
-                                  'Gradient used as background everywhere'),
-                              trailing: Padding(
-                                padding: const EdgeInsets.all(10.0),
-                                child: Container(
-                                  height: 25,
-                                  width: 25,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(100.0),
-                                    color:
-                                        Theme.of(context).colorScheme.secondary,
-                                    gradient: LinearGradient(
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
-                                      colors: Theme.of(context).brightness ==
-                                              Brightness.dark
-                                          ? currentTheme.getBackGradient()
-                                          : [
-                                              Colors.white,
-                                              Theme.of(context).canvasColor,
-                                            ],
-                                    ),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.grey[900]!,
-                                        blurRadius: 5.0,
-                                        offset: const Offset(0.0, 3.0),
-                                      )
-                                    ],
-                                  ),
-                                ),
+                        BoxSwitchTile(
+                            title: Text(AppLocalizations.of(context)!.darkMode),
+                            keyName: 'darkMode',
+                            defaultValue: true,
+                            onChanged: (bool val, Box box) {
+                              box.put('useSystemTheme', false);
+                              currentTheme.switchTheme(
+                                  isDark: val, useSystemTheme: false);
+                            }),
+                        BoxSwitchTile(
+                            title: Text(
+                                AppLocalizations.of(context)!.useSystemTheme),
+                            keyName: 'useSystemTheme',
+                            defaultValue: true,
+                            onChanged: (bool val, Box box) {
+                              currentTheme.switchTheme(useSystemTheme: val);
+                            }),
+                        ListTile(
+                          title: Text(AppLocalizations.of(context)!.accent),
+                          subtitle: Text('$themeColor, $colorHue'),
+                          trailing: Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: Container(
+                              height: 25,
+                              width: 25,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(100.0),
+                                color: Theme.of(context).colorScheme.secondary,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey[900]!,
+                                    blurRadius: 5.0,
+                                    offset: const Offset(0.0, 3.0),
+                                  )
+                                ],
                               ),
-                              onTap: () {
-                                showModalBottomSheet(
-                                  isDismissible: true,
-                                  backgroundColor: Colors.transparent,
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    final List<List<Color>> gradients =
-                                        currentTheme.backOpt;
-                                    return BottomGradientContainer(
-                                      borderRadius: BorderRadius.circular(20.0),
-                                      child: ListView.builder(
-                                          shrinkWrap: true,
-                                          physics:
-                                              const BouncingScrollPhysics(),
-                                          padding: const EdgeInsets.fromLTRB(
-                                              0, 10, 0, 10),
-                                          itemCount: gradients.length,
-                                          itemBuilder: (context, index) {
-                                            return Padding(
-                                              padding: const EdgeInsets.only(
-                                                  bottom: 15.0),
-                                              child: GestureDetector(
-                                                  onTap: () {
-                                                    settingsBox.put(
-                                                        'backGrad', index);
-                                                    currentTheme.backGrad =
-                                                        index;
-                                                    widget.callback!();
-                                                    Navigator.pop(context);
-                                                    setState(() {});
-                                                  },
-                                                  child: Container(
-                                                    width:
-                                                        MediaQuery.of(context)
-                                                                .size
-                                                                .width *
-                                                            0.125,
-                                                    height:
-                                                        MediaQuery.of(context)
-                                                                .size
-                                                                .width *
-                                                            0.125,
-                                                    decoration: BoxDecoration(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              100.0),
-                                                      gradient: LinearGradient(
-                                                        begin:
-                                                            Alignment.topLeft,
-                                                        end: Alignment
-                                                            .bottomRight,
-                                                        colors:
-                                                            gradients[index],
+                            ),
+                          ),
+                          onTap: () {
+                            showModalBottomSheet(
+                              isDismissible: true,
+                              backgroundColor: Colors.transparent,
+                              context: context,
+                              builder: (BuildContext context) {
+                                final List<String> colors = [
+                                  'Purple',
+                                  'Deep Purple',
+                                  'Indigo',
+                                  'Blue',
+                                  'Light Blue',
+                                  'Cyan',
+                                  'Teal',
+                                  'Green',
+                                  'Light Green',
+                                  'Lime',
+                                  'Yellow',
+                                  'Amber',
+                                  'Orange',
+                                  'Deep Orange',
+                                  'Red',
+                                  'Pink',
+                                  'White',
+                                ];
+                                return BottomGradientContainer(
+                                  borderRadius: BorderRadius.circular(20.0),
+                                  child: ListView.builder(
+                                      shrinkWrap: true,
+                                      physics: const BouncingScrollPhysics(),
+                                      padding: const EdgeInsets.fromLTRB(
+                                          0, 10, 0, 10),
+                                      itemCount: colors.length,
+                                      itemBuilder: (context, index) {
+                                        return Padding(
+                                          padding: const EdgeInsets.only(
+                                              bottom: 15.0),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceEvenly,
+                                            children: [
+                                              for (int hue in [
+                                                100,
+                                                200,
+                                                400,
+                                                700
+                                              ])
+                                                GestureDetector(
+                                                    onTap: () {
+                                                      themeColor =
+                                                          colors[index];
+                                                      colorHue = hue;
+                                                      currentTheme.switchColor(
+                                                          colors[index],
+                                                          colorHue);
+                                                      setState(() {});
+                                                      Navigator.pop(context);
+                                                    },
+                                                    child: Container(
+                                                      width:
+                                                          MediaQuery.of(context)
+                                                                  .size
+                                                                  .width *
+                                                              0.125,
+                                                      height:
+                                                          MediaQuery.of(context)
+                                                                  .size
+                                                                  .width *
+                                                              0.125,
+                                                      decoration: BoxDecoration(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(
+                                                                    100.0),
+                                                        color: MyTheme()
+                                                            .getColor(
+                                                                colors[index],
+                                                                hue),
+                                                        boxShadow: [
+                                                          BoxShadow(
+                                                            color: Colors
+                                                                .grey[900]!,
+                                                            blurRadius: 5.0,
+                                                            offset:
+                                                                const Offset(
+                                                                    0.0, 3.0),
+                                                          )
+                                                        ],
                                                       ),
-                                                      boxShadow: [
-                                                        BoxShadow(
-                                                          color:
-                                                              Colors.grey[900]!,
-                                                          blurRadius: 5.0,
-                                                          offset: const Offset(
-                                                              0.0, 3.0),
-                                                        )
-                                                      ],
-                                                    ),
-                                                    child: (currentTheme
-                                                                .getBackGradient() ==
-                                                            gradients[index])
-                                                        ? const Icon(
-                                                            Icons.done_rounded)
-                                                        : const SizedBox(),
-                                                  )),
-                                            );
-                                          }),
-                                    );
-                                  },
+                                                      child: (themeColor ==
+                                                                  colors[
+                                                                      index] &&
+                                                              colorHue == hue)
+                                                          ? const Icon(Icons
+                                                              .done_rounded)
+                                                          : const SizedBox(),
+                                                    )),
+                                            ],
+                                          ),
+                                        );
+                                      }),
                                 );
                               },
-                              dense: true,
-                            ),
-                            ListTile(
-                              title: const Text('Card Gradient'),
-                              subtitle: const Text('Gradient used in Cards'),
-                              trailing: Padding(
-                                padding: const EdgeInsets.all(10.0),
-                                child: Container(
-                                  height: 25,
-                                  width: 25,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(100.0),
-                                    color:
-                                        Theme.of(context).colorScheme.secondary,
-                                    gradient: LinearGradient(
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
-                                      colors: Theme.of(context).brightness ==
-                                              Brightness.dark
-                                          ? currentTheme.getCardGradient()
-                                          : [
-                                              Colors.white,
-                                              Theme.of(context).canvasColor,
-                                            ],
-                                    ),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.grey[900]!,
-                                        blurRadius: 5.0,
-                                        offset: const Offset(0.0, 3.0),
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              onTap: () {
-                                showModalBottomSheet(
-                                  isDismissible: true,
-                                  backgroundColor: Colors.transparent,
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    final List<List<Color>> gradients =
-                                        currentTheme.cardOpt;
-                                    return BottomGradientContainer(
-                                      borderRadius: BorderRadius.circular(20.0),
-                                      child: ListView.builder(
-                                          shrinkWrap: true,
-                                          physics:
-                                              const BouncingScrollPhysics(),
-                                          padding: const EdgeInsets.fromLTRB(
-                                              0, 10, 0, 10),
-                                          itemCount: gradients.length,
-                                          itemBuilder: (context, index) {
-                                            return Padding(
-                                              padding: const EdgeInsets.only(
-                                                  bottom: 15.0),
-                                              child: GestureDetector(
-                                                  onTap: () {
-                                                    settingsBox.put(
-                                                        'cardGrad', index);
-                                                    currentTheme.cardGrad =
-                                                        index;
-                                                    widget.callback!();
-                                                    Navigator.pop(context);
-                                                    setState(() {});
-                                                  },
-                                                  child: Container(
-                                                    width:
-                                                        MediaQuery.of(context)
-                                                                .size
-                                                                .width *
-                                                            0.125,
-                                                    height:
-                                                        MediaQuery.of(context)
-                                                                .size
-                                                                .width *
-                                                            0.125,
-                                                    decoration: BoxDecoration(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              100.0),
-                                                      gradient: LinearGradient(
-                                                        begin:
-                                                            Alignment.topLeft,
-                                                        end: Alignment
-                                                            .bottomRight,
-                                                        colors:
-                                                            gradients[index],
-                                                      ),
-                                                      boxShadow: [
-                                                        BoxShadow(
-                                                          color:
-                                                              Colors.grey[900]!,
-                                                          blurRadius: 5.0,
-                                                          offset: const Offset(
-                                                              0.0, 3.0),
-                                                        )
-                                                      ],
-                                                    ),
-                                                    child: (currentTheme
-                                                                .getCardGradient() ==
-                                                            gradients[index])
-                                                        ? const Icon(
-                                                            Icons.done_rounded)
-                                                        : const SizedBox(),
-                                                  )),
-                                            );
-                                          }),
-                                    );
-                                  },
-                                );
-                              },
-                              dense: true,
-                            ),
-                            ListTile(
-                              title: const Text('Bottom Sheets Gradient'),
-                              subtitle:
-                                  const Text('Gradient used in Bottom Sheets'),
-                              trailing: Padding(
-                                padding: const EdgeInsets.all(10.0),
-                                child: Container(
-                                  height: 25,
-                                  width: 25,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(100.0),
-                                    color:
-                                        Theme.of(context).colorScheme.secondary,
-                                    gradient: LinearGradient(
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
-                                      colors: Theme.of(context).brightness ==
-                                              Brightness.dark
-                                          ? currentTheme.getBottomGradient()
-                                          : [
-                                              Colors.white,
-                                              Theme.of(context).canvasColor,
-                                            ],
-                                    ),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.grey[900]!,
-                                        blurRadius: 5.0,
-                                        offset: const Offset(0.0, 3.0),
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              onTap: () {
-                                showModalBottomSheet(
-                                  isDismissible: true,
-                                  backgroundColor: Colors.transparent,
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    final List<List<Color>> gradients =
-                                        currentTheme.backOpt;
-                                    return BottomGradientContainer(
-                                      borderRadius: BorderRadius.circular(20.0),
-                                      child: ListView.builder(
-                                          shrinkWrap: true,
-                                          physics:
-                                              const BouncingScrollPhysics(),
-                                          padding: const EdgeInsets.fromLTRB(
-                                              0, 10, 0, 10),
-                                          itemCount: gradients.length,
-                                          itemBuilder: (context, index) {
-                                            return Padding(
-                                              padding: const EdgeInsets.only(
-                                                  bottom: 15.0),
-                                              child: GestureDetector(
-                                                  onTap: () {
-                                                    settingsBox.put(
-                                                        'bottomGrad', index);
-                                                    currentTheme.bottomGrad =
-                                                        index;
-                                                    Navigator.pop(context);
-                                                    setState(() {});
-                                                  },
-                                                  child: Container(
-                                                    width:
-                                                        MediaQuery.of(context)
-                                                                .size
-                                                                .width *
-                                                            0.125,
-                                                    height:
-                                                        MediaQuery.of(context)
-                                                                .size
-                                                                .width *
-                                                            0.125,
-                                                    decoration: BoxDecoration(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              100.0),
-                                                      gradient: LinearGradient(
-                                                        begin:
-                                                            Alignment.topLeft,
-                                                        end: Alignment
-                                                            .bottomRight,
-                                                        colors:
-                                                            gradients[index],
-                                                      ),
-                                                      boxShadow: [
-                                                        BoxShadow(
-                                                          color:
-                                                              Colors.grey[900]!,
-                                                          blurRadius: 5.0,
-                                                          offset: const Offset(
-                                                              0.0, 3.0),
-                                                        )
-                                                      ],
-                                                    ),
-                                                    child: (currentTheme
-                                                                .getBottomGradient() ==
-                                                            gradients[index])
-                                                        ? const Icon(
-                                                            Icons.done_rounded)
-                                                        : const SizedBox(),
-                                                  )),
-                                            );
-                                          }),
-                                    );
-                                  },
-                                );
-                              },
-                              dense: true,
-                            ),
-                            ListTile(
-                              title: const Text('Canvas Color'),
-                              subtitle:
-                                  const Text('Color of Background Canvas'),
-                              onTap: () {},
-                              trailing: DropdownButton(
-                                value: canvasColor,
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Theme.of(context)
-                                      .textTheme
-                                      .bodyText1!
-                                      .color,
-                                ),
-                                underline: const SizedBox(),
-                                onChanged: (String? newValue) {
-                                  if (newValue != null) {
-                                    setState(() {
-                                      currentTheme.switchCanvasColor(newValue);
-                                      canvasColor = newValue;
-                                    });
-                                  }
-                                },
-                                items: <String>[
-                                  'Grey',
-                                  'Black'
-                                ].map<DropdownMenuItem<String>>((String value) {
-                                  return DropdownMenuItem<String>(
-                                    value: value,
-                                    child: Text(value),
-                                  );
-                                }).toList(),
-                              ),
-                              dense: true,
-                            ),
-                            ListTile(
-                              title: const Text('Card Color'),
-                              subtitle: const Text(
-                                  'Color of Search Bar, Alert Dialogs, Cards'),
-                              onTap: () {},
-                              trailing: DropdownButton(
-                                value: cardColor,
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Theme.of(context)
-                                      .textTheme
-                                      .bodyText1!
-                                      .color,
-                                ),
-                                underline: const SizedBox(),
-                                onChanged: (String? newValue) {
-                                  if (newValue != null) {
-                                    setState(() {
-                                      currentTheme.switchCardColor(newValue);
-                                      cardColor = newValue;
-                                    });
-                                  }
-                                },
-                                items: <String>[
-                                  'Grey800',
-                                  'Grey850',
-                                  'Grey900',
-                                  'Black'
-                                ].map<DropdownMenuItem<String>>((String value) {
-                                  return DropdownMenuItem<String>(
-                                    value: value,
-                                    child: Text(value),
-                                  );
-                                }).toList(),
-                              ),
-                              dense: true,
-                            ),
-                          ],
+                            );
+                          },
+                          dense: true,
                         ),
-                      ),
-                      const BoxSwitchTile(
-                        title: Text('Use Dominant Color for Play Screen'),
-                        subtitle: Text(
-                            'Dominant Color from Image will be used for Play Screen Background. If turned off, default background Gradient will be used'),
-                        keyName: 'useImageColor',
-                        defaultValue: true,
-                        isThreeLine: true,
-                      ),
-                      ListTile(
-                          title: const Text('Use Amoled Dark Mode Settings'),
-                          dense: true,
-                          onTap: () {
-                            currentTheme.switchTheme(isDark: true);
-                            Hive.box('settings').put('darkMode', true);
+                        Visibility(
+                          visible:
+                              Theme.of(context).brightness == Brightness.dark,
+                          child: Column(
+                            children: [
+                              ListTile(
+                                title:
+                                    Text(AppLocalizations.of(context)!.bgGrad),
+                                subtitle: Text(
+                                    AppLocalizations.of(context)!.bgGradSub),
+                                trailing: Padding(
+                                  padding: const EdgeInsets.all(10.0),
+                                  child: Container(
+                                    height: 25,
+                                    width: 25,
+                                    decoration: BoxDecoration(
+                                      borderRadius:
+                                          BorderRadius.circular(100.0),
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .secondary,
+                                      gradient: LinearGradient(
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight,
+                                        colors: Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? currentTheme.getBackGradient()
+                                            : [
+                                                Colors.white,
+                                                Theme.of(context).canvasColor,
+                                              ],
+                                      ),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.grey[900]!,
+                                          blurRadius: 5.0,
+                                          offset: const Offset(0.0, 3.0),
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                onTap: () {
+                                  showModalBottomSheet(
+                                    isDismissible: true,
+                                    backgroundColor: Colors.transparent,
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      final List<List<Color>> gradients =
+                                          currentTheme.backOpt;
+                                      return BottomGradientContainer(
+                                        borderRadius:
+                                            BorderRadius.circular(20.0),
+                                        child: ListView.builder(
+                                            shrinkWrap: true,
+                                            physics:
+                                                const BouncingScrollPhysics(),
+                                            padding: const EdgeInsets.fromLTRB(
+                                                0, 10, 0, 10),
+                                            itemCount: gradients.length,
+                                            itemBuilder: (context, index) {
+                                              return Padding(
+                                                padding: const EdgeInsets.only(
+                                                    bottom: 15.0),
+                                                child: GestureDetector(
+                                                    onTap: () {
+                                                      settingsBox.put(
+                                                          'backGrad', index);
+                                                      currentTheme.backGrad =
+                                                          index;
+                                                      widget.callback!();
+                                                      Navigator.pop(context);
+                                                      setState(() {});
+                                                    },
+                                                    child: Container(
+                                                      width:
+                                                          MediaQuery.of(context)
+                                                                  .size
+                                                                  .width *
+                                                              0.125,
+                                                      height:
+                                                          MediaQuery.of(context)
+                                                                  .size
+                                                                  .width *
+                                                              0.125,
+                                                      decoration: BoxDecoration(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(
+                                                                    100.0),
+                                                        gradient:
+                                                            LinearGradient(
+                                                          begin:
+                                                              Alignment.topLeft,
+                                                          end: Alignment
+                                                              .bottomRight,
+                                                          colors:
+                                                              gradients[index],
+                                                        ),
+                                                        boxShadow: [
+                                                          BoxShadow(
+                                                            color: Colors
+                                                                .grey[900]!,
+                                                            blurRadius: 5.0,
+                                                            offset:
+                                                                const Offset(
+                                                                    0.0, 3.0),
+                                                          )
+                                                        ],
+                                                      ),
+                                                      child: (currentTheme
+                                                                  .getBackGradient() ==
+                                                              gradients[index])
+                                                          ? const Icon(Icons
+                                                              .done_rounded)
+                                                          : const SizedBox(),
+                                                    )),
+                                              );
+                                            }),
+                                      );
+                                    },
+                                  );
+                                },
+                                dense: true,
+                              ),
+                              ListTile(
+                                title: Text(
+                                    AppLocalizations.of(context)!.cardGrad),
+                                subtitle: Text(
+                                    AppLocalizations.of(context)!.cardGradSub),
+                                trailing: Padding(
+                                  padding: const EdgeInsets.all(10.0),
+                                  child: Container(
+                                    height: 25,
+                                    width: 25,
+                                    decoration: BoxDecoration(
+                                      borderRadius:
+                                          BorderRadius.circular(100.0),
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .secondary,
+                                      gradient: LinearGradient(
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight,
+                                        colors: Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? currentTheme.getCardGradient()
+                                            : [
+                                                Colors.white,
+                                                Theme.of(context).canvasColor,
+                                              ],
+                                      ),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.grey[900]!,
+                                          blurRadius: 5.0,
+                                          offset: const Offset(0.0, 3.0),
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                onTap: () {
+                                  showModalBottomSheet(
+                                    isDismissible: true,
+                                    backgroundColor: Colors.transparent,
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      final List<List<Color>> gradients =
+                                          currentTheme.cardOpt;
+                                      return BottomGradientContainer(
+                                        borderRadius:
+                                            BorderRadius.circular(20.0),
+                                        child: ListView.builder(
+                                            shrinkWrap: true,
+                                            physics:
+                                                const BouncingScrollPhysics(),
+                                            padding: const EdgeInsets.fromLTRB(
+                                                0, 10, 0, 10),
+                                            itemCount: gradients.length,
+                                            itemBuilder: (context, index) {
+                                              return Padding(
+                                                padding: const EdgeInsets.only(
+                                                    bottom: 15.0),
+                                                child: GestureDetector(
+                                                    onTap: () {
+                                                      settingsBox.put(
+                                                          'cardGrad', index);
+                                                      currentTheme.cardGrad =
+                                                          index;
+                                                      widget.callback!();
+                                                      Navigator.pop(context);
+                                                      setState(() {});
+                                                    },
+                                                    child: Container(
+                                                      width:
+                                                          MediaQuery.of(context)
+                                                                  .size
+                                                                  .width *
+                                                              0.125,
+                                                      height:
+                                                          MediaQuery.of(context)
+                                                                  .size
+                                                                  .width *
+                                                              0.125,
+                                                      decoration: BoxDecoration(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(
+                                                                    100.0),
+                                                        gradient:
+                                                            LinearGradient(
+                                                          begin:
+                                                              Alignment.topLeft,
+                                                          end: Alignment
+                                                              .bottomRight,
+                                                          colors:
+                                                              gradients[index],
+                                                        ),
+                                                        boxShadow: [
+                                                          BoxShadow(
+                                                            color: Colors
+                                                                .grey[900]!,
+                                                            blurRadius: 5.0,
+                                                            offset:
+                                                                const Offset(
+                                                                    0.0, 3.0),
+                                                          )
+                                                        ],
+                                                      ),
+                                                      child: (currentTheme
+                                                                  .getCardGradient() ==
+                                                              gradients[index])
+                                                          ? const Icon(Icons
+                                                              .done_rounded)
+                                                          : const SizedBox(),
+                                                    )),
+                                              );
+                                            }),
+                                      );
+                                    },
+                                  );
+                                },
+                                dense: true,
+                              ),
+                              ListTile(
+                                title: Text(
+                                    AppLocalizations.of(context)!.bottomGrad),
+                                subtitle: Text(AppLocalizations.of(context)!
+                                    .bottomGradSub),
+                                trailing: Padding(
+                                  padding: const EdgeInsets.all(10.0),
+                                  child: Container(
+                                    height: 25,
+                                    width: 25,
+                                    decoration: BoxDecoration(
+                                      borderRadius:
+                                          BorderRadius.circular(100.0),
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .secondary,
+                                      gradient: LinearGradient(
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight,
+                                        colors: Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? currentTheme.getBottomGradient()
+                                            : [
+                                                Colors.white,
+                                                Theme.of(context).canvasColor,
+                                              ],
+                                      ),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.grey[900]!,
+                                          blurRadius: 5.0,
+                                          offset: const Offset(0.0, 3.0),
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                onTap: () {
+                                  showModalBottomSheet(
+                                    isDismissible: true,
+                                    backgroundColor: Colors.transparent,
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      final List<List<Color>> gradients =
+                                          currentTheme.backOpt;
+                                      return BottomGradientContainer(
+                                        borderRadius:
+                                            BorderRadius.circular(20.0),
+                                        child: ListView.builder(
+                                            shrinkWrap: true,
+                                            physics:
+                                                const BouncingScrollPhysics(),
+                                            padding: const EdgeInsets.fromLTRB(
+                                                0, 10, 0, 10),
+                                            itemCount: gradients.length,
+                                            itemBuilder: (context, index) {
+                                              return Padding(
+                                                padding: const EdgeInsets.only(
+                                                    bottom: 15.0),
+                                                child: GestureDetector(
+                                                    onTap: () {
+                                                      settingsBox.put(
+                                                          'bottomGrad', index);
+                                                      currentTheme.bottomGrad =
+                                                          index;
+                                                      Navigator.pop(context);
+                                                      setState(() {});
+                                                    },
+                                                    child: Container(
+                                                      width:
+                                                          MediaQuery.of(context)
+                                                                  .size
+                                                                  .width *
+                                                              0.125,
+                                                      height:
+                                                          MediaQuery.of(context)
+                                                                  .size
+                                                                  .width *
+                                                              0.125,
+                                                      decoration: BoxDecoration(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(
+                                                                    100.0),
+                                                        gradient:
+                                                            LinearGradient(
+                                                          begin:
+                                                              Alignment.topLeft,
+                                                          end: Alignment
+                                                              .bottomRight,
+                                                          colors:
+                                                              gradients[index],
+                                                        ),
+                                                        boxShadow: [
+                                                          BoxShadow(
+                                                            color: Colors
+                                                                .grey[900]!,
+                                                            blurRadius: 5.0,
+                                                            offset:
+                                                                const Offset(
+                                                                    0.0, 3.0),
+                                                          )
+                                                        ],
+                                                      ),
+                                                      child: (currentTheme
+                                                                  .getBottomGradient() ==
+                                                              gradients[index])
+                                                          ? const Icon(Icons
+                                                              .done_rounded)
+                                                          : const SizedBox(),
+                                                    )),
+                                              );
+                                            }),
+                                      );
+                                    },
+                                  );
+                                },
+                                dense: true,
+                              ),
+                              ListTile(
+                                title: Text(
+                                    AppLocalizations.of(context)!.canvasColor),
+                                subtitle: Text(AppLocalizations.of(context)!
+                                    .canvasColorSub),
+                                onTap: () {},
+                                trailing: DropdownButton(
+                                  value: canvasColor,
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Theme.of(context)
+                                        .textTheme
+                                        .bodyText1!
+                                        .color,
+                                  ),
+                                  underline: const SizedBox(),
+                                  onChanged: (String? newValue) {
+                                    if (newValue != null) {
+                                      setState(() {
+                                        currentTheme
+                                            .switchCanvasColor(newValue);
+                                        canvasColor = newValue;
+                                      });
+                                    }
+                                  },
+                                  items: <String>['Grey', 'Black']
+                                      .map<DropdownMenuItem<String>>(
+                                          (String value) {
+                                    return DropdownMenuItem<String>(
+                                      value: value,
+                                      child: Text(value),
+                                    );
+                                  }).toList(),
+                                ),
+                                dense: true,
+                              ),
+                              ListTile(
+                                title: Text(
+                                    AppLocalizations.of(context)!.cardColor),
+                                subtitle: Text(
+                                    AppLocalizations.of(context)!.cardColorSub),
+                                onTap: () {},
+                                trailing: DropdownButton(
+                                  value: cardColor,
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Theme.of(context)
+                                        .textTheme
+                                        .bodyText1!
+                                        .color,
+                                  ),
+                                  underline: const SizedBox(),
+                                  onChanged: (String? newValue) {
+                                    if (newValue != null) {
+                                      setState(() {
+                                        currentTheme.switchCardColor(newValue);
+                                        cardColor = newValue;
+                                      });
+                                    }
+                                  },
+                                  items: <String>[
+                                    'Grey800',
+                                    'Grey850',
+                                    'Grey900',
+                                    'Black'
+                                  ].map<DropdownMenuItem<String>>(
+                                      (String value) {
+                                    return DropdownMenuItem<String>(
+                                      value: value,
+                                      child: Text(value),
+                                    );
+                                  }).toList(),
+                                ),
+                                dense: true,
+                              ),
+                            ],
+                          ),
+                        ),
+                        BoxSwitchTile(
+                          title:
+                              Text(AppLocalizations.of(context)!.useDominant),
+                          subtitle: Text(
+                              AppLocalizations.of(context)!.useDominantSub),
+                          keyName: 'useImageColor',
+                          defaultValue: true,
+                          isThreeLine: true,
+                        ),
+                        ListTile(
+                            title:
+                                Text(AppLocalizations.of(context)!.useAmoled),
+                            dense: true,
+                            onTap: () {
+                              currentTheme.switchTheme(
+                                  useSystemTheme: false, isDark: true);
+                              Hive.box('settings').put('darkMode', true);
 
-                            settingsBox.put('backGrad', 4);
-                            currentTheme.backGrad = 4;
-                            settingsBox.put('cardGrad', 6);
-                            currentTheme.cardGrad = 6;
-                            settingsBox.put('bottomGrad', 4);
-                            currentTheme.bottomGrad = 4;
+                              settingsBox.put('backGrad', 4);
+                              currentTheme.backGrad = 4;
+                              settingsBox.put('cardGrad', 6);
+                              currentTheme.cardGrad = 6;
+                              settingsBox.put('bottomGrad', 4);
+                              currentTheme.bottomGrad = 4;
 
-                            currentTheme.switchCanvasColor('Black');
-                            canvasColor = 'Black';
+                              currentTheme.switchCanvasColor('Black');
+                              canvasColor = 'Black';
 
-                            currentTheme.switchCardColor('Grey900');
-                            cardColor = 'Grey900';
+                              currentTheme.switchCardColor('Grey900');
+                              cardColor = 'Grey900';
 
-                            themeColor = 'White';
-                            colorHue = 400;
-                            currentTheme.switchColor('White', colorHue);
-                          }),
-                      ListTile(
-                          title: const Text('Change to Default'),
-                          dense: true,
-                          onTap: () {
-                            Hive.box('settings').put('darkMode', true);
+                              themeColor = 'White';
+                              colorHue = 400;
+                              currentTheme.switchColor('White', colorHue);
+                            }),
+                        ListTile(
+                            title: Text(
+                                AppLocalizations.of(context)!.changeDefault),
+                            dense: true,
+                            onTap: () {
+                              settingsBox.put('backGrad', 1);
+                              currentTheme.backGrad = 1;
+                              settingsBox.put('cardGrad', 3);
+                              currentTheme.cardGrad = 3;
+                              settingsBox.put('bottomGrad', 2);
+                              currentTheme.bottomGrad = 2;
 
-                            settingsBox.put('backGrad', 1);
-                            currentTheme.backGrad = 1;
-                            settingsBox.put('cardGrad', 3);
-                            currentTheme.cardGrad = 3;
-                            settingsBox.put('bottomGrad', 2);
-                            currentTheme.bottomGrad = 2;
+                              currentTheme.switchCanvasColor('Grey',
+                                  notify: false);
+                              canvasColor = 'Grey';
 
-                            currentTheme.switchCanvasColor('Grey');
-                            canvasColor = 'Grey';
+                              currentTheme.switchCardColor('Grey850',
+                                  notify: false);
+                              cardColor = 'Grey850';
 
-                            currentTheme.switchCardColor('Grey850');
-                            cardColor = 'Grey850';
+                              themeColor = 'Teal';
+                              colorHue = 400;
 
-                            themeColor = 'Teal';
-                            colorHue = 400;
-                            currentTheme.switchTheme(isDark: true);
-                          }),
-                    ],
+                              currentTheme.switchColor(themeColor, colorHue,
+                                  notify: false);
+
+                              currentTheme.switchTheme(
+                                  useSystemTheme: false, isDark: true);
+                            }),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -775,7 +826,7 @@ class _SettingPageState extends State<SettingPage> {
                       Padding(
                         padding: const EdgeInsets.fromLTRB(15, 15, 15, 0),
                         child: Text(
-                          'Music & Playback',
+                          AppLocalizations.of(context)!.musicPlayback,
                           style: TextStyle(
                               fontSize: 22,
                               fontWeight: FontWeight.bold,
@@ -783,8 +834,9 @@ class _SettingPageState extends State<SettingPage> {
                         ),
                       ),
                       ListTile(
-                        title: const Text('Music Language'),
-                        subtitle: const Text('To display songs on Home Screen'),
+                        title: Text(AppLocalizations.of(context)!.musicLang),
+                        subtitle:
+                            Text(AppLocalizations.of(context)!.musicLangSub),
                         trailing: SizedBox(
                           width: 150,
                           child: Text(
@@ -858,7 +910,9 @@ class _SettingPageState extends State<SettingPage> {
                                               onPressed: () {
                                                 Navigator.pop(context);
                                               },
-                                              child: const Text('Cancel'),
+                                              child: Text(
+                                                  AppLocalizations.of(context)!
+                                                      .cancel),
                                             ),
                                             TextButton(
                                               style: TextButton.styleFrom(
@@ -882,13 +936,16 @@ class _SettingPageState extends State<SettingPage> {
                                                 if (preferredLanguage.isEmpty) {
                                                   ShowSnackBar().showSnackBar(
                                                     context,
-                                                    'No Music language selected. Select a language to see songs on Home Screen',
+                                                    AppLocalizations.of(
+                                                            context)!
+                                                        .noLangSelected,
                                                   );
                                                 }
                                               },
-                                              child: const Text(
-                                                'Ok',
-                                                style: TextStyle(
+                                              child: Text(
+                                                AppLocalizations.of(context)!
+                                                    .ok,
+                                                style: const TextStyle(
                                                     fontWeight:
                                                         FontWeight.w600),
                                               ),
@@ -903,9 +960,10 @@ class _SettingPageState extends State<SettingPage> {
                         },
                       ),
                       ListTile(
-                          title: const Text('Spotify Local Charts Location'),
-                          subtitle: const Text(
-                              'Country for Top Spotify Local Charts'),
+                          title:
+                              Text(AppLocalizations.of(context)!.chartLocation),
+                          subtitle: Text(
+                              AppLocalizations.of(context)!.chartLocationSub),
                           trailing: SizedBox(
                             width: 150,
                             child: Text(
@@ -966,8 +1024,10 @@ class _SettingPageState extends State<SettingPage> {
                                 });
                           }),
                       ListTile(
-                        title: const Text('Streaming Quality'),
-                        subtitle: const Text('Higher quality uses more data'),
+                        title:
+                            Text(AppLocalizations.of(context)!.streamQuality),
+                        subtitle: Text(
+                            AppLocalizations.of(context)!.streamQualitySub),
                         onTap: () {},
                         trailing: DropdownButton(
                           value: streamingQuality,
@@ -995,24 +1055,25 @@ class _SettingPageState extends State<SettingPage> {
                         ),
                         dense: true,
                       ),
-                      const BoxSwitchTile(
-                        title: Text('Load Last Session on App Start'),
-                        subtitle: Text(
-                            'Automatically load last session when app starts'),
+                      BoxSwitchTile(
+                        title: Text(AppLocalizations.of(context)!.loadLast),
+                        subtitle:
+                            Text(AppLocalizations.of(context)!.loadLastSub),
                         keyName: 'loadStart',
                         defaultValue: true,
                       ),
-                      const BoxSwitchTile(
-                        title: Text('Enforce Repeating'),
+                      BoxSwitchTile(
+                        title:
+                            Text(AppLocalizations.of(context)!.enforceRepeat),
                         subtitle: Text(
-                            'Keep the same repeat option for every session'),
+                            AppLocalizations.of(context)!.enforceRepeatSub),
                         keyName: 'enforceRepeat',
                         defaultValue: false,
                       ),
-                      const BoxSwitchTile(
-                        title: Text('Autoplay'),
-                        subtitle: Text(
-                            'Automatically added related songs to the queue'),
+                      BoxSwitchTile(
+                        title: Text(AppLocalizations.of(context)!.autoplay),
+                        subtitle:
+                            Text(AppLocalizations.of(context)!.autoplaySub),
                         keyName: 'autoplay',
                         defaultValue: true,
                       ),
@@ -1120,7 +1181,7 @@ class _SettingPageState extends State<SettingPage> {
                         Padding(
                           padding: const EdgeInsets.fromLTRB(15, 15, 15, 0),
                           child: Text(
-                            'Download',
+                            AppLocalizations.of(context)!.down,
                             style: TextStyle(
                               fontSize: 22,
                               fontWeight: FontWeight.bold,
@@ -1129,9 +1190,10 @@ class _SettingPageState extends State<SettingPage> {
                           ),
                         ),
                         ListTile(
-                          title: const Text('Download Quality'),
-                          subtitle:
-                              const Text('Higher quality uses more disk space'),
+                          title:
+                              Text(AppLocalizations.of(context)!.downQuality),
+                          subtitle: Text(
+                              AppLocalizations.of(context)!.downQualitySub),
                           onTap: () {},
                           trailing: DropdownButton(
                             value: downloadQuality,
@@ -1163,7 +1225,8 @@ class _SettingPageState extends State<SettingPage> {
                           dense: true,
                         ),
                         ListTile(
-                          title: const Text('Download Location'),
+                          title:
+                              Text(AppLocalizations.of(context)!.downLocation),
                           subtitle: Text(downloadPath),
                           trailing: TextButton(
                             style: TextButton.styleFrom(
@@ -1171,7 +1234,6 @@ class _SettingPageState extends State<SettingPage> {
                                       Brightness.dark
                                   ? Colors.white
                                   : Colors.grey[700],
-                              //       backgroundColor: Theme.of(context).accentColor,
                             ),
                             onPressed: () async {
                               downloadPath = await ExtStorage
@@ -1182,11 +1244,13 @@ class _SettingPageState extends State<SettingPage> {
                                   .put('downloadPath', downloadPath);
                               setState(() {});
                             },
-                            child: const Text('Reset'),
+                            child: Text(AppLocalizations.of(context)!.reset),
                           ),
                           onTap: () async {
                             final String temp = await Picker().selectFolder(
-                                context, 'Select Download Location');
+                                context,
+                                AppLocalizations.of(context)!
+                                    .selectDownLocation);
                             if (temp.trim() != '') {
                               downloadPath = temp;
                               Hive.box('settings').put('downloadPath', temp);
@@ -1194,34 +1258,34 @@ class _SettingPageState extends State<SettingPage> {
                             } else {
                               ShowSnackBar().showSnackBar(
                                 context,
-                                'No folder selected',
+                                AppLocalizations.of(context)!.noFolderSelected,
                               );
                             }
                           },
                           dense: true,
                         ),
-                        const BoxSwitchTile(
+                        BoxSwitchTile(
                           title: Text(
-                              'Create folder for Album & Playlist Download'),
+                              AppLocalizations.of(context)!.createAlbumFold),
                           subtitle: Text(
-                              'Creates common folder for Songs when Album or Playlist is downloaded'),
+                              AppLocalizations.of(context)!.createAlbumFoldSub),
                           keyName: 'createDownloadFolder',
                           isThreeLine: true,
                           defaultValue: false,
                         ),
-                        const BoxSwitchTile(
-                          title: Text(
-                              'Create different folder for YouTube Downloads'),
+                        BoxSwitchTile(
+                          title:
+                              Text(AppLocalizations.of(context)!.createYtFold),
                           subtitle: Text(
-                              'Creates a different folder for Songs downloaded from YouTube'),
+                              AppLocalizations.of(context)!.createYtFoldSub),
                           keyName: 'createYoutubeFolder',
                           isThreeLine: true,
                           defaultValue: false,
                         ),
-                        const BoxSwitchTile(
-                          title: Text('Download Lyrics'),
-                          subtitle: Text(
-                              'Downloading lyrics along with song, if available'),
+                        BoxSwitchTile(
+                          title: Text(AppLocalizations.of(context)!.downLyrics),
+                          subtitle:
+                              Text(AppLocalizations.of(context)!.downLyricsSub),
                           keyName: 'downloadLyrics',
                           defaultValue: false,
                           isThreeLine: true,
@@ -1238,7 +1302,7 @@ class _SettingPageState extends State<SettingPage> {
                         Padding(
                           padding: const EdgeInsets.fromLTRB(15, 15, 15, 0),
                           child: Text(
-                            'Others',
+                            AppLocalizations.of(context)!.others,
                             style: TextStyle(
                               fontSize: 22,
                               fontWeight: FontWeight.bold,
@@ -1247,15 +1311,16 @@ class _SettingPageState extends State<SettingPage> {
                           ),
                         ),
                         ListTile(
-                            title: const Text(
-                                '\nMin Audio Length to search music'),
-                            subtitle: const Text(
-                                'Audios with length smaller than this will not be shown in "My Music" Section'),
+                            title: Text(
+                                '\n${AppLocalizations.of(context)!.minAudioLen}'),
+                            subtitle: Text(
+                                AppLocalizations.of(context)!.minAudioLenSub),
                             dense: true,
                             onTap: () {
                               TextInputDialog().showTextInputDialog(
                                   context: context,
-                                  title: 'Min Audio Length (in sec)',
+                                  title: AppLocalizations.of(context)!
+                                      .minAudioAlert,
                                   initialText: (Hive.box('settings').get(
                                           'minDuration',
                                           defaultValue: 10) as int)
@@ -1270,34 +1335,36 @@ class _SettingPageState extends State<SettingPage> {
                                     Navigator.pop(context);
                                   });
                             }),
-                        const BoxSwitchTile(
-                          title: Text('Support Equalizer'),
-                          subtitle: Text(
-                              'Turn this off if you are unable to play songs (in both online and offline mode)'),
+                        BoxSwitchTile(
+                          title: Text(AppLocalizations.of(context)!.supportEq),
+                          subtitle:
+                              Text(AppLocalizations.of(context)!.supportEqSub),
                           keyName: 'supportEq',
                           isThreeLine: true,
                           defaultValue: true,
                         ),
                         BoxSwitchTile(
-                            title: const Text('Show Last Session'),
+                            title: Text(AppLocalizations.of(context)!.showLast),
                             subtitle:
-                                const Text('Show Last session on Home Screen'),
+                                Text(AppLocalizations.of(context)!.showLastSub),
                             keyName: 'showRecent',
                             defaultValue: true,
-                            onChanged: (val) {
+                            onChanged: (val, box) {
                               widget.callback!();
                             }),
-                        const BoxSwitchTile(
-                          title: Text('Show Search History'),
-                          subtitle:
-                              Text('Show Search History below Search Bar'),
+                        BoxSwitchTile(
+                          title:
+                              Text(AppLocalizations.of(context)!.showHistory),
+                          subtitle: Text(
+                              AppLocalizations.of(context)!.showHistorySub),
                           keyName: 'showHistory',
                           defaultValue: true,
                         ),
-                        const BoxSwitchTile(
-                          title: Text('Stop music on App Close'),
+                        BoxSwitchTile(
+                          title:
+                              Text(AppLocalizations.of(context)!.stopOnClose),
                           subtitle: Text(
-                              "If turned off, music won't stop even after app is 'closed', until you press stop button. This option is for app 'close' not when app is in 'background'. Music will always play in background you don't need to change any setting for that.\n"),
+                              AppLocalizations.of(context)!.stopOnCloseSub),
                           isThreeLine: true,
                           keyName: 'stopForegroundService',
                           defaultValue: true,
@@ -1310,59 +1377,33 @@ class _SettingPageState extends State<SettingPage> {
                         //   keyName: 'stopServiceOnPause',
                         //   defaultValue: true,
                         // ),
-                        const BoxSwitchTile(
-                          title: Text('Auto check for Updates'),
+                        BoxSwitchTile(
+                          title:
+                              Text(AppLocalizations.of(context)!.checkUpdate),
                           subtitle: Text(
-                              "If you downloaded BlackHole from any app repository like 'F-Droid', 'IzzyOnDroid', etc which provide update options, keep this OFF. Whereas, If you downloaded it from 'GitHub' or any other source which doesn't provide auto updates then turn this ON, so as to recieve update alerts\n"),
+                              AppLocalizations.of(context)!.checkUpdateSub),
                           keyName: 'checkUpdate',
                           isThreeLine: true,
                           defaultValue: false,
                         ),
                         BoxSwitchTile(
-                          title: const Text('Use Proxy'),
-                          subtitle: const Text(
-                              'Turn this on if you are not from India and having issues with search, like getting only Indian Songs or not getting any results, etc. You can even use VPN with Indian Server\n'),
+                          title: Text(AppLocalizations.of(context)!.useProxy),
+                          subtitle:
+                              Text(AppLocalizations.of(context)!.useProxySub),
                           keyName: 'useProxy',
                           defaultValue: false,
                           isThreeLine: true,
-                          onChanged: (bool val) {
+                          onChanged: (bool val, Box box) {
                             useProxy = val;
                             setState(() {});
                           },
                         ),
-                        ListTile(
-                            title: const Text('Clear Cached Details'),
-                            subtitle: const Text(
-                                'Deletes Cached details including Homepage, Spotify Top Charts, YouTube and Last Session Data. Usually app automatically clears them when data become large\n'),
-                            trailing: SizedBox(
-                              height: 70.0,
-                              width: 70.0,
-                              child: Center(
-                                child: FutureBuilder(
-                                    future:
-                                        File(Hive.box('cache').path!).length(),
-                                    builder: (BuildContext context,
-                                        AsyncSnapshot<int> snapshot) {
-                                      if (snapshot.connectionState ==
-                                          ConnectionState.done) {
-                                        return Text(
-                                            '${((snapshot.data ?? 0) / (1024 * 1024)).toStringAsFixed(2)} MB');
-                                      }
-                                      return const Text('');
-                                    }),
-                              ),
-                            ),
-                            dense: true,
-                            isThreeLine: true,
-                            onTap: () async {
-                              Hive.box('cache').clear();
-                              setState(() {});
-                            }),
                         Visibility(
                           visible: useProxy,
                           child: ListTile(
-                            title: const Text('Proxy Settings'),
-                            subtitle: const Text('Change Proxy IP and Port'),
+                            title: Text(AppLocalizations.of(context)!.proxySet),
+                            subtitle:
+                                Text(AppLocalizations.of(context)!.proxySetSub),
                             dense: true,
                             trailing: Text(
                               '${Hive.box('settings').get("proxyIp")}:${Hive.box('settings').get("proxyPort")}',
@@ -1387,7 +1428,8 @@ class _SettingPageState extends State<SettingPage> {
                                         Row(
                                           children: [
                                             Text(
-                                              'IP Address',
+                                              AppLocalizations.of(context)!
+                                                  .ipAdd,
                                               style: TextStyle(
                                                   color: Theme.of(context)
                                                       .colorScheme
@@ -1405,7 +1447,8 @@ class _SettingPageState extends State<SettingPage> {
                                         Row(
                                           children: [
                                             Text(
-                                              'Port',
+                                              AppLocalizations.of(context)!
+                                                  .port,
                                               style: TextStyle(
                                                   color: Theme.of(context)
                                                       .colorScheme
@@ -1427,12 +1470,13 @@ class _SettingPageState extends State<SettingPage> {
                                                       Brightness.dark
                                                   ? Colors.white
                                                   : Colors.grey[700],
-                                          // backgroundColor: Theme.of(context).accentColor,
                                         ),
                                         onPressed: () {
                                           Navigator.pop(context);
                                         },
-                                        child: const Text('Cancel'),
+                                        child: Text(
+                                            AppLocalizations.of(context)!
+                                                .cancel),
                                       ),
                                       TextButton(
                                         style: TextButton.styleFrom(
@@ -1456,9 +1500,10 @@ class _SettingPageState extends State<SettingPage> {
                                           Navigator.pop(context);
                                           setState(() {});
                                         },
-                                        child: const Text(
-                                          'Ok',
-                                          style: TextStyle(color: Colors.white),
+                                        child: Text(
+                                          AppLocalizations.of(context)!.ok,
+                                          style: const TextStyle(
+                                              color: Colors.white),
                                         ),
                                       ),
                                       const SizedBox(
@@ -1471,6 +1516,35 @@ class _SettingPageState extends State<SettingPage> {
                             },
                           ),
                         ),
+                        ListTile(
+                            title:
+                                Text(AppLocalizations.of(context)!.clearCache),
+                            subtitle: Text(
+                                AppLocalizations.of(context)!.clearCacheSub),
+                            trailing: SizedBox(
+                              height: 70.0,
+                              width: 70.0,
+                              child: Center(
+                                child: FutureBuilder(
+                                    future:
+                                        File(Hive.box('cache').path!).length(),
+                                    builder: (BuildContext context,
+                                        AsyncSnapshot<int> snapshot) {
+                                      if (snapshot.connectionState ==
+                                          ConnectionState.done) {
+                                        return Text(
+                                            '${((snapshot.data ?? 0) / (1024 * 1024)).toStringAsFixed(2)} MB');
+                                      }
+                                      return const Text('');
+                                    }),
+                              ),
+                            ),
+                            dense: true,
+                            isThreeLine: true,
+                            onTap: () async {
+                              Hive.box('cache').clear();
+                              setState(() {});
+                            }),
                       ]),
                 ),
               ),
@@ -1483,7 +1557,7 @@ class _SettingPageState extends State<SettingPage> {
                         Padding(
                           padding: const EdgeInsets.fromLTRB(15, 15, 15, 0),
                           child: Text(
-                            'Backup & Restore',
+                            AppLocalizations.of(context)!.backNRest,
                             style: TextStyle(
                               fontSize: 22,
                               fontWeight: FontWeight.bold,
@@ -1492,8 +1566,9 @@ class _SettingPageState extends State<SettingPage> {
                           ),
                         ),
                         ListTile(
-                          title: const Text('Create Backup'),
-                          subtitle: const Text('Create backup of your data'),
+                          title: Text(AppLocalizations.of(context)!.createBack),
+                          subtitle:
+                              Text(AppLocalizations.of(context)!.createBackSub),
                           dense: true,
                           onTap: () {
                             showModalBottomSheet(
@@ -1513,28 +1588,35 @@ class _SettingPageState extends State<SettingPage> {
                                   }
 
                                   final List<String> persist = [
-                                    'Settings',
-                                    'Playlists',
+                                    AppLocalizations.of(context)!.settings,
+                                    AppLocalizations.of(context)!.playlists,
                                   ];
 
                                   final List<String> checked = [
-                                    'Settings',
-                                    'Downloads',
-                                    'Playlists'
+                                    AppLocalizations.of(context)!.settings,
+                                    AppLocalizations.of(context)!.downs,
+                                    AppLocalizations.of(context)!.playlists,
                                   ];
 
                                   final List<String> items = [
-                                    'Settings',
-                                    'Playlists',
-                                    'Downloads',
-                                    'Cache',
+                                    AppLocalizations.of(context)!.settings,
+                                    AppLocalizations.of(context)!.playlists,
+                                    AppLocalizations.of(context)!.downs,
+                                    AppLocalizations.of(context)!.cache,
                                   ];
 
                                   final Map<String, List> boxNames = {
-                                    'Settings': ['settings'],
-                                    'Cache': ['cache'],
-                                    'Downloads': ['downloads'],
-                                    'Playlists': playlistNames,
+                                    AppLocalizations.of(context)!.settings: [
+                                      'settings'
+                                    ],
+                                    AppLocalizations.of(context)!.cache: [
+                                      'cache'
+                                    ],
+                                    AppLocalizations.of(context)!.downs: [
+                                      'downloads'
+                                    ],
+                                    AppLocalizations.of(context)!.playlists:
+                                        playlistNames,
                                   };
                                   return StatefulBuilder(builder:
                                       (BuildContext context,
@@ -1595,7 +1677,9 @@ class _SettingPageState extends State<SettingPage> {
                                                 onPressed: () {
                                                   Navigator.pop(context);
                                                 },
-                                                child: const Text('Cancel'),
+                                                child: Text(AppLocalizations.of(
+                                                        context)!
+                                                    .cancel),
                                               ),
                                               TextButton(
                                                 style: TextButton.styleFrom(
@@ -1611,7 +1695,8 @@ class _SettingPageState extends State<SettingPage> {
                                                   Navigator.pop(context);
                                                 },
                                                 child: Text(
-                                                  'Ok',
+                                                  AppLocalizations.of(context)!
+                                                      .ok,
                                                   style: TextStyle(
                                                       color: Theme.of(context)
                                                                   .colorScheme
@@ -1633,18 +1718,18 @@ class _SettingPageState extends State<SettingPage> {
                           },
                         ),
                         ListTile(
-                          title: const Text('Restore'),
-                          subtitle: const Text(
-                              'Restore your data from Backup.\nYou might need to restart app\n'),
+                          title: Text(AppLocalizations.of(context)!.restore),
+                          subtitle:
+                              Text(AppLocalizations.of(context)!.restoreSub),
                           dense: true,
                           onTap: () {
                             BackupNRestore().restore(context);
                           },
                         ),
-                        // const BoxSwitchTile(
-                        //   title: Text('Auto Backup'),
+                        // BoxSwitchTile(
+                        //   title: Text(AppLocalizations.of(context)!.autoBack),
                         //   subtitle:
-                        //       Text('Automatically backup data'),
+                        //       Text(AppLocalizations.of(context)!.autoBackSub),
                         //   keyName: 'autoBackup',
                         //   defaultValue: false,
                         // ),
@@ -1660,7 +1745,7 @@ class _SettingPageState extends State<SettingPage> {
                       Padding(
                         padding: const EdgeInsets.fromLTRB(15, 15, 15, 0),
                         child: Text(
-                          'About',
+                          AppLocalizations.of(context)!.about,
                           style: TextStyle(
                               fontSize: 22,
                               fontWeight: FontWeight.bold,
@@ -1668,8 +1753,9 @@ class _SettingPageState extends State<SettingPage> {
                         ),
                       ),
                       ListTile(
-                        title: const Text('Version'),
-                        subtitle: const Text('Tap to check for updates'),
+                        title: Text(AppLocalizations.of(context)!.version),
+                        subtitle:
+                            Text(AppLocalizations.of(context)!.versionSub),
                         onTap: () {
                           SupaBase().getUpdate().then((Map value) {
                             if (compareVersion(
@@ -1677,11 +1763,11 @@ class _SettingPageState extends State<SettingPage> {
                                 appVersion!)) {
                               ShowSnackBar().showSnackBar(
                                 context,
-                                'Update Available!',
+                                AppLocalizations.of(context)!.updateAvailable,
                                 action: SnackBarAction(
                                   textColor:
                                       Theme.of(context).colorScheme.secondary,
-                                  label: 'Update',
+                                  label: AppLocalizations.of(context)!.update,
                                   onPressed: () {
                                     launch(value['LatestUrl'].toString());
                                   },
@@ -1690,7 +1776,7 @@ class _SettingPageState extends State<SettingPage> {
                             } else {
                               ShowSnackBar().showSnackBar(
                                 context,
-                                'Congrats! You are using the latest version :)',
+                                AppLocalizations.of(context)!.latest,
                               );
                             }
                           });
@@ -1702,26 +1788,27 @@ class _SettingPageState extends State<SettingPage> {
                         dense: true,
                       ),
                       ListTile(
-                        title: const Text('Share App'),
-                        subtitle: const Text('Let you friends know about us'),
+                        title: Text(AppLocalizations.of(context)!.shareApp),
+                        subtitle:
+                            Text(AppLocalizations.of(context)!.shareAppSub),
                         onTap: () {
                           Share.share(
-                              'Hey! Check out this cool music player app: https://github.com/Sangwan5688/BlackHole');
+                              '${AppLocalizations.of(context)!.shareAppText}: https://github.com/Sangwan5688/BlackHole');
                         },
                         dense: true,
                       ),
                       ListTile(
-                        title: const Text('Liked my work?'),
-                        subtitle: const Text('Buy me a coffee'),
+                        title: Text(AppLocalizations.of(context)!.likedWork),
+                        subtitle: Text(AppLocalizations.of(context)!.buyCoffee),
                         dense: true,
                         onTap: () {
                           launch('https://www.buymeacoffee.com/ankitsangwan');
                         },
                       ),
                       ListTile(
-                        title: const Text('Donate with GPay'),
-                        subtitle: const Text(
-                            'Even ₹1 makes me smile :)\nTap to donate or Long press to copy UPI ID'),
+                        title: Text(AppLocalizations.of(context)!.donateGpay),
+                        subtitle:
+                            Text(AppLocalizations.of(context)!.donateGpaySub),
                         dense: true,
                         isThreeLine: true,
                         onTap: () {
@@ -1734,7 +1821,7 @@ class _SettingPageState extends State<SettingPage> {
                               text: 'ankit.sangwan.5688@oksbi'));
                           ShowSnackBar().showSnackBar(
                             context,
-                            'UPI ID Copied!',
+                            AppLocalizations.of(context)!.upiCopied,
                           );
                         },
                         trailing: TextButton(
@@ -1756,15 +1843,16 @@ class _SettingPageState extends State<SettingPage> {
                                               AssetImage('assets/gpayQR.png')));
                                 });
                           },
-                          child: const Text(
-                            'Show QR Code',
-                            style: TextStyle(fontWeight: FontWeight.w500),
+                          child: Text(
+                            AppLocalizations.of(context)!.showQr,
+                            style: const TextStyle(fontWeight: FontWeight.w500),
                           ),
                         ),
                       ),
                       ListTile(
-                        title: const Text('Contact Us'),
-                        subtitle: const Text('Feedbacks Appreciated!'),
+                        title: Text(AppLocalizations.of(context)!.contactUs),
+                        subtitle:
+                            Text(AppLocalizations.of(context)!.contactUsSub),
                         dense: true,
                         onTap: () {
                           showModalBottomSheet(
@@ -1783,14 +1871,17 @@ class _SettingPageState extends State<SettingPage> {
                                             IconButton(
                                               icon: const Icon(MdiIcons.gmail),
                                               iconSize: 40,
-                                              tooltip: 'Gmail',
+                                              tooltip:
+                                                  AppLocalizations.of(context)!
+                                                      .gmail,
                                               onPressed: () {
                                                 Navigator.pop(context);
                                                 launch(
                                                     'https://mail.google.com/mail/?extsrc=mailto&url=mailto%3A%3Fto%3Dblackholeyoucantescape%40gmail.com%26subject%3DRegarding%2520Mobile%2520App');
                                               },
                                             ),
-                                            const Text('Gmail'),
+                                            Text(AppLocalizations.of(context)!
+                                                .gmail),
                                           ],
                                         ),
                                         Column(
@@ -1800,14 +1891,17 @@ class _SettingPageState extends State<SettingPage> {
                                               icon:
                                                   const Icon(MdiIcons.telegram),
                                               iconSize: 40,
-                                              tooltip: 'Telegram',
+                                              tooltip:
+                                                  AppLocalizations.of(context)!
+                                                      .tg,
                                               onPressed: () {
                                                 Navigator.pop(context);
                                                 launch(
                                                     'https://t.me/joinchat/fHDC1AWnOhw0ZmI9');
                                               },
                                             ),
-                                            const Text('Telegram'),
+                                            Text(AppLocalizations.of(context)!
+                                                .tg),
                                           ],
                                         ),
                                         Column(
@@ -1817,14 +1911,17 @@ class _SettingPageState extends State<SettingPage> {
                                               icon: const Icon(
                                                   MdiIcons.instagram),
                                               iconSize: 40,
-                                              tooltip: 'Instagram',
+                                              tooltip:
+                                                  AppLocalizations.of(context)!
+                                                      .insta,
                                               onPressed: () {
                                                 Navigator.pop(context);
                                                 launch(
                                                     'https://instagram.com/sangwan5688');
                                               },
                                             ),
-                                            const Text('Instagram'),
+                                            Text(AppLocalizations.of(context)!
+                                                .insta),
                                           ],
                                         ),
                                       ],
@@ -1835,9 +1932,8 @@ class _SettingPageState extends State<SettingPage> {
                         },
                       ),
                       ListTile(
-                        title: const Text('Join us on Telegram'),
-                        subtitle: const Text(
-                            'Want to Test beta versions? Join us now!'),
+                        title: Text(AppLocalizations.of(context)!.joinTg),
+                        subtitle: Text(AppLocalizations.of(context)!.joinTgSub),
                         onTap: () {
                           showModalBottomSheet(
                               context: context,
@@ -1856,14 +1952,17 @@ class _SettingPageState extends State<SettingPage> {
                                               icon:
                                                   const Icon(MdiIcons.telegram),
                                               iconSize: 40,
-                                              tooltip: 'Telegram Group',
+                                              tooltip:
+                                                  AppLocalizations.of(context)!
+                                                      .tgGp,
                                               onPressed: () {
                                                 Navigator.pop(context);
                                                 launch(
                                                     'https://t.me/joinchat/fHDC1AWnOhw0ZmI9');
                                               },
                                             ),
-                                            const Text('Group'),
+                                            Text(AppLocalizations.of(context)!
+                                                .tgGp),
                                           ],
                                         ),
                                         Column(
@@ -1873,14 +1972,17 @@ class _SettingPageState extends State<SettingPage> {
                                               icon:
                                                   const Icon(MdiIcons.telegram),
                                               iconSize: 40,
-                                              tooltip: 'Telegram Channel',
+                                              tooltip:
+                                                  AppLocalizations.of(context)!
+                                                      .tgCh,
                                               onPressed: () {
                                                 Navigator.pop(context);
                                                 launch(
                                                     'https://t.me/blackhole_official');
                                               },
                                             ),
-                                            const Text('Channel'),
+                                            Text(AppLocalizations.of(context)!
+                                                .tgCh),
                                           ],
                                         ),
                                       ],
@@ -1892,7 +1994,7 @@ class _SettingPageState extends State<SettingPage> {
                         dense: true,
                       ),
                       ListTile(
-                        title: const Text('More info'),
+                        title: Text(AppLocalizations.of(context)!.moreInfo),
                         dense: true,
                         onTap: () {
                           Navigator.pushNamed(context, '/about');
@@ -1902,12 +2004,12 @@ class _SettingPageState extends State<SettingPage> {
                   ),
                 ),
               ),
-              const Padding(
-                padding: EdgeInsets.fromLTRB(5, 30, 5, 20),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(5, 30, 5, 20),
                 child: Center(
                   child: Text(
-                    'Made with ♥ by Ankit Sangwan',
-                    style: TextStyle(fontSize: 12),
+                    AppLocalizations.of(context)!.madeBy,
+                    style: const TextStyle(fontSize: 12),
                   ),
                 ),
               ),
@@ -1935,7 +2037,7 @@ class BoxSwitchTile extends StatelessWidget {
   final String keyName;
   final bool defaultValue;
   final bool? isThreeLine;
-  final Function(bool)? onChanged;
+  final Function(bool, Box box)? onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -1948,11 +2050,12 @@ class BoxSwitchTile extends StatelessWidget {
               subtitle: subtitle,
               isThreeLine: isThreeLine ?? false,
               dense: true,
-              value: box.get(keyName, defaultValue: defaultValue) as bool,
+              value: box.get(keyName, defaultValue: defaultValue) as bool? ??
+                  defaultValue,
               onChanged: (val) {
                 box.put(keyName, val);
                 if (onChanged != null) {
-                  onChanged!(val);
+                  onChanged!(val, box);
                 }
               });
         });

@@ -4,6 +4,7 @@ import 'package:blackhole/CustomWidgets/snackbar.dart';
 import 'package:blackhole/Helpers/mediaitem_converter.dart';
 import 'package:blackhole/main.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:share_plus/share_plus.dart';
 
 class AddToQueueButton extends StatefulWidget {
@@ -34,7 +35,7 @@ class _AddToQueueButtonState extends State<AddToQueueButton> {
                         color: Theme.of(context).iconTheme.color,
                       ),
                       const SizedBox(width: 10.0),
-                      const Text('Play Next'),
+                      Text(AppLocalizations.of(context)!.playNext),
                     ],
                   )),
               PopupMenuItem(
@@ -46,7 +47,7 @@ class _AddToQueueButtonState extends State<AddToQueueButton> {
                         color: Theme.of(context).iconTheme.color,
                       ),
                       const SizedBox(width: 10.0),
-                      const Text('Add to Queue'),
+                      Text(AppLocalizations.of(context)!.addToQueue),
                     ],
                   )),
               PopupMenuItem(
@@ -58,7 +59,7 @@ class _AddToQueueButtonState extends State<AddToQueueButton> {
                         color: Theme.of(context).iconTheme.color,
                       ),
                       const SizedBox(width: 10.0),
-                      const Text('Add to playlist'),
+                      Text(AppLocalizations.of(context)!.addToPlaylist),
                     ],
                   )),
               PopupMenuItem(
@@ -70,7 +71,7 @@ class _AddToQueueButtonState extends State<AddToQueueButton> {
                         color: Theme.of(context).iconTheme.color,
                       ),
                       const SizedBox(width: 10.0),
-                      const Text('Share'),
+                      Text(AppLocalizations.of(context)!.share),
                     ],
                   )),
             ],
@@ -90,22 +91,22 @@ class _AddToQueueButtonState extends State<AddToQueueButton> {
               if (audioHandler.queue.value.contains(mediaItem)) {
                 ShowSnackBar().showSnackBar(
                   context,
-                  '"${mediaItem.title}" already in Queue',
+                  AppLocalizations.of(context)!.alreadyInQueue,
                 );
               } else {
                 audioHandler.addQueueItem(mediaItem);
 
                 ShowSnackBar().showSnackBar(
                   context,
-                  'Added "${mediaItem.title}" to Queue',
+                  AppLocalizations.of(context)!.addedToQueue,
                 );
               }
             } else {
               ShowSnackBar().showSnackBar(
                 context,
                 currentMediaItem == null
-                    ? 'Nothing is Playing'
-                    : "Can't add Online Song to Offline Queue",
+                    ? AppLocalizations.of(context)!.nothingPlaying
+                    : AppLocalizations.of(context)!.cantAddToQueue,
               );
             }
           }
@@ -126,15 +127,14 @@ class _AddToQueueButtonState extends State<AddToQueueButton> {
 
               ShowSnackBar().showSnackBar(
                 context,
-                '"${mediaItem.title}" will play next',
+                '"${mediaItem.title}" ${AppLocalizations.of(context)!.willPlayNext}',
               );
             } else {
               ShowSnackBar().showSnackBar(
-                context,
-                currentMediaItem == null
-                    ? 'Nothing is Playing'
-                    : "Can't add Online Song to Offline Queue",
-              );
+                  context,
+                  currentMediaItem == null
+                      ? AppLocalizations.of(context)!.nothingPlaying
+                      : AppLocalizations.of(context)!.cantAddToQueue);
             }
           }
         });

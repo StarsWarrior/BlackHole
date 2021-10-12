@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:blackhole/main.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SeekBar extends StatefulWidget {
   final Duration duration;
@@ -121,7 +122,7 @@ class _SeekBarState extends State<SeekBar> {
                     onPressed: () {
                       showSliderDialog(
                         context: context,
-                        title: 'Adjust Speed',
+                        title: AppLocalizations.of(context)!.adjustSpeed,
                         divisions: 25,
                         min: 0.5,
                         max: 3.0,

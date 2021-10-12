@@ -22,6 +22,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:hive/hive.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:palette_generator/palette_generator.dart';
@@ -309,7 +310,7 @@ class _PlayScreenState extends State<PlayScreen> {
                           centerTitle: true,
                           leading: IconButton(
                               icon: const Icon(Icons.expand_more_rounded),
-                              tooltip: 'Back',
+                              tooltip: AppLocalizations.of(context)!.back,
                               onPressed: () {
                                 Navigator.pop(context);
                               }),
@@ -318,14 +319,14 @@ class _PlayScreenState extends State<PlayScreen> {
                               icon: Image.asset(
                                 'assets/lyrics.png',
                               ),
-                              tooltip: 'Lyrics',
+                              tooltip: AppLocalizations.of(context)!.lyrics,
                               onPressed: () =>
                                   cardKey.currentState!.toggleCard(),
                             ),
                             if (!offline)
                               IconButton(
                                   icon: const Icon(Icons.share_rounded),
-                                  tooltip: 'Share',
+                                  tooltip: AppLocalizations.of(context)!.share,
                                   onPressed: () {
                                     Share.share(mediaItem.extras!['perma_url']
                                         .toString());
@@ -356,7 +357,8 @@ class _PlayScreenState extends State<PlayScreen> {
                                     builder: (context) {
                                       return SimpleDialog(
                                         title: Text(
-                                          'Sleep Timer',
+                                          AppLocalizations.of(context)!
+                                              .sleepTimer,
                                           style: TextStyle(
                                             color: Theme.of(context)
                                                 .colorScheme
@@ -367,10 +369,12 @@ class _PlayScreenState extends State<PlayScreen> {
                                             const EdgeInsets.all(10.0),
                                         children: [
                                           ListTile(
-                                            title: const Text(
-                                                'Sleep after a duration of hh:mm'),
-                                            subtitle: const Text(
-                                                'Music will stop after selected duration'),
+                                            title: Text(
+                                                AppLocalizations.of(context)!
+                                                    .sleepDur),
+                                            subtitle: Text(
+                                                AppLocalizations.of(context)!
+                                                    .sleepDurSub),
                                             dense: true,
                                             onTap: () {
                                               Navigator.pop(context);
@@ -379,10 +383,12 @@ class _PlayScreenState extends State<PlayScreen> {
                                             },
                                           ),
                                           ListTile(
-                                            title: const Text(
-                                                'Sleep after N Songs'),
-                                            subtitle: const Text(
-                                                'Music will stop after playing selected no of songs'),
+                                            title: Text(
+                                                AppLocalizations.of(context)!
+                                                    .sleepAfter),
+                                            subtitle: Text(
+                                                AppLocalizations.of(context)!
+                                                    .sleepAfterSub),
                                             dense: true,
                                             onTap: () {
                                               Navigator.pop(context);
@@ -404,12 +410,13 @@ class _PlayScreenState extends State<PlayScreen> {
                                       PopupMenuItem(
                                           value: 1,
                                           child: Row(
-                                            children: const [
-                                              Icon(
+                                            children: [
+                                              const Icon(
                                                 CupertinoIcons.timer,
                                               ),
-                                              SizedBox(width: 10.0),
-                                              Text('Sleep Timer'),
+                                              const SizedBox(width: 10.0),
+                                              Text(AppLocalizations.of(context)!
+                                                  .sleepTimer),
                                             ],
                                           )),
                                       if (Hive.box('settings').get('supportEq',
@@ -417,12 +424,14 @@ class _PlayScreenState extends State<PlayScreen> {
                                         PopupMenuItem(
                                             value: 4,
                                             child: Row(
-                                              children: const [
-                                                Icon(
+                                              children: [
+                                                const Icon(
                                                   Icons.equalizer_rounded,
                                                 ),
-                                                SizedBox(width: 10.0),
-                                                Text('Equalizer'),
+                                                const SizedBox(width: 10.0),
+                                                Text(AppLocalizations.of(
+                                                        context)!
+                                                    .equalizer),
                                               ],
                                             )),
                                     ]
@@ -438,7 +447,8 @@ class _PlayScreenState extends State<PlayScreen> {
                                                     .color,
                                               ),
                                               const SizedBox(width: 10.0),
-                                              const Text('Add to playlist'),
+                                              Text(AppLocalizations.of(context)!
+                                                  .addToPlaylist),
                                             ],
                                           )),
                                       PopupMenuItem(
@@ -452,7 +462,8 @@ class _PlayScreenState extends State<PlayScreen> {
                                                     .color,
                                               ),
                                               const SizedBox(width: 10.0),
-                                              const Text('Sleep Timer'),
+                                              Text(AppLocalizations.of(context)!
+                                                  .sleepTimer),
                                             ],
                                           )),
                                       if (Hive.box('settings').get('supportEq',
@@ -468,7 +479,9 @@ class _PlayScreenState extends State<PlayScreen> {
                                                       .color,
                                                 ),
                                                 const SizedBox(width: 10.0),
-                                                const Text('Equalizer'),
+                                                Text(AppLocalizations.of(
+                                                        context)!
+                                                    .equalizer),
                                               ],
                                             )),
                                       PopupMenuItem(
@@ -483,8 +496,12 @@ class _PlayScreenState extends State<PlayScreen> {
                                               ),
                                               const SizedBox(width: 10.0),
                                               Text(fromYT
-                                                  ? 'Watch Video'
-                                                  : 'Search Video'),
+                                                  ? AppLocalizations.of(
+                                                          context)!
+                                                      .watchVideo
+                                                  : AppLocalizations.of(
+                                                          context)!
+                                                      .searchVideo),
                                             ],
                                           )),
                                     ],
@@ -559,7 +576,7 @@ class _PlayScreenState extends State<PlayScreen> {
         return SimpleDialog(
           title: Center(
               child: Text(
-            'Select a Duration',
+            AppLocalizations.of(context)!.selectDur,
             style: TextStyle(
                 fontWeight: FontWeight.w600,
                 color: Theme.of(context).colorScheme.secondary),
@@ -598,7 +615,7 @@ class _PlayScreenState extends State<PlayScreen> {
                     sleepTimer(0);
                     Navigator.pop(context);
                   },
-                  child: const Text('Cancel'),
+                  child: Text(AppLocalizations.of(context)!.cancel),
                 ),
                 const SizedBox(
                   width: 10,
@@ -615,10 +632,10 @@ class _PlayScreenState extends State<PlayScreen> {
                     Navigator.pop(context);
                     ShowSnackBar().showSnackBar(
                       context,
-                      'Sleep timer set for ${_time.inMinutes} minutes',
+                      '${AppLocalizations.of(context)!.sleepTimerSetFor} ${_time.inMinutes} ${AppLocalizations.of(context)!.minutes}',
                     );
                   },
-                  child: const Text('Ok'),
+                  child: Text(AppLocalizations.of(context)!.ok),
                 ),
                 const SizedBox(
                   width: 20,
@@ -634,7 +651,7 @@ class _PlayScreenState extends State<PlayScreen> {
   Future<dynamic> setCounter(BuildContext scaffoldContext) async {
     await TextInputDialog().showTextInputDialog(
         context: scaffoldContext,
-        title: 'Enter no of Songs',
+        title: AppLocalizations.of(context)!.enterSongsCount,
         initialText: '',
         keyboardType: TextInputType.number,
         onSubmitted: (String value) {
@@ -642,7 +659,7 @@ class _PlayScreenState extends State<PlayScreen> {
           Navigator.pop(scaffoldContext);
           ShowSnackBar().showSnackBar(
             context,
-            'Sleep timer set for $value songs',
+            '${AppLocalizations.of(context)!.sleepTimerSetFor} $value ${AppLocalizations.of(context)!.songs}',
           );
         });
   }
@@ -706,7 +723,7 @@ class ControlButtons extends StatelessWidget {
               return IconButton(
                 icon: const Icon(Icons.skip_previous_rounded),
                 iconSize: miniplayer ? 24.0 : 45.0,
-                tooltip: 'Skip Previous',
+                tooltip: AppLocalizations.of(context)!.skipPrevious,
                 color: Theme.of(context).iconTheme.color,
                 onPressed:
                     queueState.hasPrevious ? audioHandler.skipToPrevious : null,
@@ -741,7 +758,8 @@ class ControlButtons extends StatelessWidget {
                         Center(
                             child: playing
                                 ? IconButton(
-                                    tooltip: 'Pause',
+                                    tooltip:
+                                        AppLocalizations.of(context)!.pause,
                                     onPressed: audioHandler.pause,
                                     icon: const Icon(
                                       Icons.pause_rounded,
@@ -749,7 +767,7 @@ class ControlButtons extends StatelessWidget {
                                     color: Theme.of(context).iconTheme.color,
                                   )
                                 : IconButton(
-                                    tooltip: 'Play',
+                                    tooltip: AppLocalizations.of(context)!.play,
                                     onPressed: audioHandler.play,
                                     icon: const Icon(
                                       Icons.play_arrow_rounded,
@@ -765,7 +783,8 @@ class ControlButtons extends StatelessWidget {
                                 child: playing
                                     ? FloatingActionButton(
                                         elevation: 10,
-                                        tooltip: 'Pause',
+                                        tooltip:
+                                            AppLocalizations.of(context)!.pause,
                                         backgroundColor: Colors.white,
                                         onPressed: audioHandler.pause,
                                         child: const Icon(
@@ -776,7 +795,8 @@ class ControlButtons extends StatelessWidget {
                                       )
                                     : FloatingActionButton(
                                         elevation: 10,
-                                        tooltip: 'Play',
+                                        tooltip:
+                                            AppLocalizations.of(context)!.play,
                                         backgroundColor: Colors.white,
                                         onPressed: audioHandler.play,
                                         child: const Icon(
@@ -798,7 +818,7 @@ class ControlButtons extends StatelessWidget {
               return IconButton(
                 icon: const Icon(Icons.skip_next_rounded),
                 iconSize: miniplayer ? 24.0 : 45.0,
-                tooltip: 'Skip Next',
+                tooltip: AppLocalizations.of(context)!.skipNext,
                 color: Theme.of(context).iconTheme.color,
                 onPressed: queueState.hasNext ? audioHandler.skipToNext : null,
               );
@@ -846,10 +866,10 @@ class NowPlayingStream extends StatelessWidget {
                             onPressed: () {
                               Navigator.pop(context);
                             },
-                            child: const Text(
-                              'Now Playing',
+                            child: Text(
+                              AppLocalizations.of(context)!.nowPlaying,
                               textAlign: TextAlign.center,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontWeight: FontWeight.w600,
                                 fontSize: 18,
                               ),
@@ -888,7 +908,7 @@ class NowPlayingStream extends StatelessWidget {
                               icon: const Icon(
                                 Icons.bar_chart_rounded,
                               ),
-                              tooltip: 'Playing',
+                              tooltip: AppLocalizations.of(context)!.playing,
                               onPressed: () {},
                             )
                           : queue[index]
@@ -950,12 +970,12 @@ class NowPlayingStream extends StatelessWidget {
                                 Row(
                                   crossAxisAlignment: CrossAxisAlignment.end,
                                   children: [
-                                    const RotatedBox(
+                                    RotatedBox(
                                       quarterTurns: 3,
                                       child: Text(
-                                        'Added by',
+                                        AppLocalizations.of(context)!.addedBy,
                                         textAlign: TextAlign.start,
-                                        style: TextStyle(
+                                        style: const TextStyle(
                                           fontSize: 5.0,
                                         ),
                                       ),
@@ -963,7 +983,7 @@ class NowPlayingStream extends StatelessWidget {
                                     RotatedBox(
                                       quarterTurns: 3,
                                       child: Text(
-                                        'Autoplay',
+                                        AppLocalizations.of(context)!.autoplay,
                                         textAlign: TextAlign.start,
                                         style: TextStyle(
                                           fontSize: 8.0,
@@ -1139,9 +1159,10 @@ class _ArtWorkWidgetState extends State<ArtWorkWidget> {
                                       0,
                                       ':( ',
                                       100.0,
-                                      'Lyrics',
+                                      AppLocalizations.of(context)!.lyrics,
                                       60.0,
-                                      'Not Available',
+                                      AppLocalizations.of(context)!
+                                          .notAvailable,
                                       20.0,
                                       useWhite: true,
                                     );
@@ -1181,9 +1202,11 @@ class _ArtWorkWidgetState extends State<ArtWorkWidget> {
                                                 0,
                                                 ':( ',
                                                 100.0,
-                                                'Lyrics',
+                                                AppLocalizations.of(context)!
+                                                    .lyrics,
                                                 60.0,
-                                                'Not Available',
+                                                AppLocalizations.of(context)!
+                                                    .notAvailable,
                                                 20.0,
                                                 useWhite: true,
                                               )
@@ -1487,7 +1510,7 @@ class NameNControls extends StatelessWidget {
                               )
                             : Icon(Icons.shuffle_rounded,
                                 color: Theme.of(context).disabledColor),
-                        tooltip: 'Shuffle',
+                        tooltip: AppLocalizations.of(context)!.shuffle,
                         onPressed: () async {
                           final enable = !shuffleModeEnabled;
                           await audioHandler.setShuffleMode(enable
@@ -1600,20 +1623,20 @@ class NameNControls extends StatelessWidget {
           },
           child: Column(
             mainAxisSize: MainAxisSize.min,
-            children: const [
-              SizedBox(height: 5.0),
-              Icon(
+            children: [
+              const SizedBox(height: 5.0),
+              const Icon(
                 Icons.expand_less_rounded,
               ),
               Text(
-                'Now Playing',
+                AppLocalizations.of(context)!.nowPlaying,
                 textAlign: TextAlign.center,
-                style: TextStyle(
+                style: const TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 18,
                 ),
               ),
-              SizedBox(height: 5.0),
+              const SizedBox(height: 5.0),
             ],
           ),
         ),

@@ -7,6 +7,7 @@ import 'package:blackhole/Services/youtube_services.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:hive/hive.dart';
 import 'package:material_floating_search_bar/material_floating_search_bar.dart';
 
@@ -113,7 +114,7 @@ class _YouTubeState extends State<YouTube>
             },
           ),
         ],
-        hint: 'Search on YouTube',
+        hint: AppLocalizations.of(context)!.searchYt,
         height: 52.0,
         margins: const EdgeInsets.fromLTRB(18.0, 8.0, 18.0, 15.0),
         scrollPadding: const EdgeInsets.only(bottom: 50),
@@ -185,7 +186,7 @@ class _YouTubeState extends State<YouTube>
                                   CupertinoIcons.clear,
                                   size: 15.0,
                                 ),
-                                tooltip: 'Remove',
+                                tooltip: AppLocalizations.of(context)!.remove,
                                 onPressed: () {
                                   setState(() {
                                     ytSearch.remove(e);

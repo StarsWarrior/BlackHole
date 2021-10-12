@@ -13,6 +13,7 @@ import 'package:blackhole/Screens/Search/artists.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:hive/hive.dart';
 import 'package:material_floating_search_bar/material_floating_search_bar.dart';
 
@@ -109,7 +110,7 @@ class _SearchPageState extends State<SearchPage> {
                       },
                     ),
                   ],
-                  hint: 'Songs, albums or artists',
+                  hint: AppLocalizations.of(context)!.searchText,
                   height: 52.0,
                   margins: const EdgeInsets.fromLTRB(18.0, 8.0, 18.0, 15.0),
                   scrollPadding: const EdgeInsets.only(bottom: 50),
@@ -179,7 +180,8 @@ class _SearchPageState extends State<SearchPage> {
                                           CupertinoIcons.clear,
                                           size: 15.0,
                                         ),
-                                        tooltip: 'Remove',
+                                        tooltip: AppLocalizations.of(context)!
+                                            .remove,
                                         onPressed: () {
                                           setState(() {
                                             search.remove(e);
@@ -226,7 +228,8 @@ class _SearchPageState extends State<SearchPage> {
                                     child: Row(
                                       children: [
                                         Text(
-                                          'Trending Search',
+                                          AppLocalizations.of(context)!
+                                              .trendingSearch,
                                           style: TextStyle(
                                             color: Theme.of(context)
                                                 .colorScheme
@@ -285,8 +288,15 @@ class _SearchPageState extends State<SearchPage> {
                               ),
                             )
                           : (searchedData.isEmpty)
-                              ? EmptyScreen().emptyScreen(context, 0, ':( ',
-                                  100, 'SORRY', 60, 'Results Not Found', 20)
+                              ? EmptyScreen().emptyScreen(
+                                  context,
+                                  0,
+                                  ':( ',
+                                  100,
+                                  AppLocalizations.of(context)!.sorry,
+                                  60,
+                                  AppLocalizations.of(context)!.resultsNotFound,
+                                  20)
                               : SingleChildScrollView(
                                   padding: const EdgeInsets.only(top: 80),
                                   physics: const BouncingScrollPhysics(),
@@ -338,8 +348,10 @@ class _SearchPageState extends State<SearchPage> {
                                                       ['artist']
                                                   .toString();
                                               count > 1
-                                                  ? countText = '$count Songs'
-                                                  : countText = '$count Song';
+                                                  ? countText =
+                                                      '$count ${AppLocalizations.of(context)!.songs}'
+                                                  : countText =
+                                                      '$count ${AppLocalizations.of(context)!.song}';
                                               return ListTile(
                                                 contentPadding:
                                                     const EdgeInsets.only(
@@ -554,7 +566,9 @@ class _SearchPageState extends State<SearchPage> {
                                                     child: Row(
                                                       children: [
                                                         Text(
-                                                          'View All',
+                                                          AppLocalizations.of(
+                                                                  context)!
+                                                              .viewAll,
                                                           style: TextStyle(
                                                             color: Theme.of(
                                                                     context)

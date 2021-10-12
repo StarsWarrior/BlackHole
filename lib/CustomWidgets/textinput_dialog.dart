@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class TextInputDialog {
   Future<void> showTextInputDialog({
@@ -46,7 +47,7 @@ class TextInputDialog {
               onPressed: () {
                 Navigator.pop(context);
               },
-              child: const Text('Cancel'),
+              child: Text(AppLocalizations.of(context)!.cancel),
             ),
             TextButton(
               style: TextButton.styleFrom(
@@ -57,7 +58,7 @@ class TextInputDialog {
                 onSubmitted(_controller.text.trim());
               },
               child: Text(
-                'Ok',
+                AppLocalizations.of(context)!.ok,
                 style: TextStyle(
                     color:
                         Theme.of(context).colorScheme.secondary == Colors.white

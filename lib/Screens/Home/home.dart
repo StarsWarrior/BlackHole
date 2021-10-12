@@ -17,6 +17,7 @@ import 'package:blackhole/Screens/YouTube/youtube_home.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -88,7 +89,7 @@ class _HomePageState extends State<HomePage> {
       backButtonPressTime = now;
       ShowSnackBar().showSnackBar(
         context,
-        'Press Back Again to Exit App',
+        AppLocalizations.of(context)!.exitConfirm,
         duration: const Duration(seconds: 2),
         noAction: true,
       );
@@ -125,11 +126,11 @@ class _HomePageState extends State<HomePage> {
             if (compareVersion(value['LatestVersion'] as String, appVersion!)) {
               ShowSnackBar().showSnackBar(
                 context,
-                'Update Available!',
+                AppLocalizations.of(context)!.updateAvailable,
                 duration: const Duration(seconds: 15),
                 action: SnackBarAction(
                   textColor: Theme.of(context).colorScheme.secondary,
-                  label: 'Update',
+                  label: AppLocalizations.of(context)!.update,
                   onPressed: () {
                     Navigator.pop(context);
                     launch(value['LatestUrl'] as String);
@@ -191,7 +192,7 @@ class _HomePageState extends State<HomePage> {
                       flexibleSpace: FlexibleSpaceBar(
                         title: RichText(
                           text: TextSpan(
-                            text: 'BlackHole',
+                            text: AppLocalizations.of(context)!.appTitle,
                             style: const TextStyle(
                               fontSize: 30.0,
                               fontWeight: FontWeight.w500,
@@ -237,7 +238,7 @@ class _HomePageState extends State<HomePage> {
                         [
                           ListTile(
                             title: Text(
-                              'Home',
+                              AppLocalizations.of(context)!.home,
                               style: TextStyle(
                                 color: Theme.of(context).colorScheme.secondary,
                               ),
@@ -254,7 +255,7 @@ class _HomePageState extends State<HomePage> {
                             },
                           ),
                           ListTile(
-                            title: const Text('My Music'),
+                            title: Text(AppLocalizations.of(context)!.myMusic),
                             contentPadding:
                                 const EdgeInsets.symmetric(horizontal: 20.0),
                             leading: Icon(
@@ -271,7 +272,7 @@ class _HomePageState extends State<HomePage> {
                             },
                           ),
                           ListTile(
-                            title: const Text('Settings'),
+                            title: Text(AppLocalizations.of(context)!.settings),
                             contentPadding:
                                 const EdgeInsets.symmetric(horizontal: 20.0),
                             leading: Icon(
@@ -289,7 +290,7 @@ class _HomePageState extends State<HomePage> {
                             },
                           ),
                           ListTile(
-                            title: const Text('About'),
+                            title: Text(AppLocalizations.of(context)!.about),
                             contentPadding:
                                 const EdgeInsets.symmetric(horizontal: 20.0),
                             leading: Icon(
@@ -306,13 +307,13 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ],
                 ),
-                const Padding(
-                  padding: EdgeInsets.fromLTRB(5, 30, 5, 20),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(5, 30, 5, 20),
                   child: Center(
                     child: Text(
-                      'Made with ♥ by Ankit Sangwan',
+                      AppLocalizations.of(context)!.madeBy,
                       textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 12),
+                      style: const TextStyle(fontSize: 12),
                     ),
                   ),
                 ),
@@ -387,7 +388,9 @@ class _HomePageState extends State<HomePage> {
                                                         const EdgeInsets.only(
                                                             left: 15.0),
                                                     child: Text(
-                                                      'Hi There,',
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .homeGreet,
                                                       style: TextStyle(
                                                           letterSpacing: 2,
                                                           color:
@@ -511,7 +514,8 @@ class _HomePageState extends State<HomePage> {
                                                 ),
                                                 const SizedBox(width: 10.0),
                                                 Text(
-                                                  'Songs, albums or artists',
+                                                  AppLocalizations.of(context)!
+                                                      .searchText,
                                                   style: TextStyle(
                                                     fontSize: 16.0,
                                                     color: Theme.of(context)
@@ -593,23 +597,24 @@ class _HomePageState extends State<HomePage> {
                       /// Home
                       SalomonBottomBarItem(
                         icon: const Icon(Icons.home_rounded),
-                        title: const Text('Home'),
+                        title: Text(AppLocalizations.of(context)!.home),
                         selectedColor: Theme.of(context).colorScheme.secondary,
                       ),
 
                       SalomonBottomBarItem(
                         icon: const Icon(Icons.trending_up_rounded),
-                        title: const Text('Spotify Charts'),
+                        title:
+                            Text(AppLocalizations.of(context)!.spotifyCharts),
                         selectedColor: Theme.of(context).colorScheme.secondary,
                       ),
                       SalomonBottomBarItem(
                         icon: const Icon(MdiIcons.youtube),
-                        title: const Text('YouTube'),
+                        title: Text(AppLocalizations.of(context)!.youTube),
                         selectedColor: Theme.of(context).colorScheme.secondary,
                       ),
                       SalomonBottomBarItem(
                         icon: const Icon(Icons.my_library_music_rounded),
-                        title: const Text('Library'),
+                        title: Text(AppLocalizations.of(context)!.library),
                         selectedColor: Theme.of(context).colorScheme.secondary,
                       ),
                     ],

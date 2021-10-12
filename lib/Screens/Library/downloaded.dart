@@ -20,6 +20,7 @@ import 'package:blackhole/Screens/Player/audioplayer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:hive/hive.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 
@@ -340,49 +341,49 @@ class _DownloadedSongsState extends State<DownloadedSongs>
             child: Scaffold(
               backgroundColor: Colors.transparent,
               appBar: AppBar(
-                title: const Text('My Music'),
+                title: Text(AppLocalizations.of(context)!.myMusic),
                 // bottom: TabBar(
                 // controller: _tcontroller,
                 // tabs:
                 // widget.type == 'all'
                 // ?
                 //  [
-                //     const Tab(
-                //       text: 'Songs',
+                //     Tab(
+                //       text: AppLocalizations.of(context)!.songs,
                 //     ),
-                //     const Tab(
-                //       text: 'Albums',
+                //     Tab(
+                //       text: AppLocalizations.of(context)!.albums,
                 //     ),
-                //     const Tab(
-                //       text: 'Artists',
+                //     Tab(
+                //       text: AppLocalizations.of(context)!.artists,
                 //     ),
-                //     const Tab(
-                //       text: 'Genres',
+                //     Tab(
+                //       text: AppLocalizations.of(context)!.genres,
                 //     ),
-                //     const Tab(
-                //       text: 'Videos',
+                //     Tab(
+                //       text: AppLocalizations.of(context)!.videos,
                 //     )
                 //   ]
                 // :
-                // const [
+                // [
                 // Tab(
-                //   text: 'Songs',
+                //   text: AppLocalizations.of(context)!.songs,
                 // ),
                 // Tab(
-                //   text: 'Albums',
+                //   text: AppLocalizations.of(context)!.albums,
                 // ),
                 // Tab(
-                //   text: 'Artists',
+                //   text: AppLocalizations.of(context)!.artists,
                 // ),
                 // Tab(
-                //   text: 'Genres',
+                //   text: AppLocalizations.of(context)!.denres,
                 // ),
                 // ],
                 // ),
                 actions: [
                   IconButton(
                     icon: const Icon(CupertinoIcons.search),
-                    tooltip: 'Search',
+                    tooltip: AppLocalizations.of(context)!.search,
                     onPressed: () {
                       showSearch(
                           context: context,
@@ -401,12 +402,12 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                     },
                     itemBuilder: (context) {
                       final List<String> sortTypes = [
-                        'Display Name',
-                        'Date Added',
-                        'Album',
-                        'Artist',
-                        'Duration',
-                        'Size'
+                        AppLocalizations.of(context)!.displayName,
+                        AppLocalizations.of(context)!.dateAdded,
+                        AppLocalizations.of(context)!.album,
+                        AppLocalizations.of(context)!.artist,
+                        AppLocalizations.of(context)!.duration,
+                        AppLocalizations.of(context)!.size,
                       ];
                       return sortTypes
                           .map(
@@ -447,8 +448,8 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                     },
                     itemBuilder: (context) {
                       final List<String> orderTypes = [
-                        'Increasing',
-                        'Decreasing',
+                        AppLocalizations.of(context)!.inc,
+                        AppLocalizations.of(context)!.dec,
                       ];
                       return orderTypes
                           .map(
@@ -813,8 +814,15 @@ class SongsTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return cachedSongs.isEmpty
-        ? EmptyScreen().emptyScreen(context, 3, 'Nothing to ', 15.0,
-            'Show Here', 45, 'Download Something', 23.0)
+        ? EmptyScreen().emptyScreen(
+            context,
+            3,
+            AppLocalizations.of(context)!.nothingTo,
+            15.0,
+            AppLocalizations.of(context)!.showHere,
+            45,
+            AppLocalizations.of(context)!.downloadSomething,
+            23.0)
         : ListView.builder(
             physics: const BouncingScrollPhysics(),
             padding: const EdgeInsets.only(top: 20, bottom: 10),
@@ -881,7 +889,7 @@ class SongsTab extends StatelessWidget {
                   cachedSongs[index]
                           .artist
                           ?.replaceAll('<unknown>', 'Unknown') ??
-                      'Unknown',
+                      AppLocalizations.of(context)!.unknown,
                   overflow: TextOverflow.ellipsis,
                 ),
                 // trailing: PopupMenuButton(

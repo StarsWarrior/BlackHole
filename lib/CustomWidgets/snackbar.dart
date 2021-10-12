@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ShowSnackBar {
   void showSnackBar(BuildContext context, String title,
@@ -19,7 +20,7 @@ class ShowSnackBar {
               : action ??
                   SnackBarAction(
                     textColor: Theme.of(context).colorScheme.secondary,
-                    label: 'Ok',
+                    label: AppLocalizations.of(context)!.ok,
                     onPressed: () {},
                   ),
         ),

@@ -4,6 +4,7 @@ import 'package:blackhole/Screens/Search/search.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:hive/hive.dart';
 import 'package:html_unescape/html_unescape_small.dart';
 import 'package:http/http.dart';
@@ -40,14 +41,14 @@ class _TopChartsState extends State<TopCharts>
               tabs: [
                 Tab(
                   child: Text(
-                    'Local',
+                    AppLocalizations.of(context)!.local,
                     style: TextStyle(
                         color: Theme.of(context).textTheme.bodyText1!.color),
                   ),
                 ),
                 Tab(
                   child: Text(
-                    'Global',
+                    AppLocalizations.of(context)!.global,
                     style: TextStyle(
                         color: Theme.of(context).textTheme.bodyText1!.color),
                   ),
@@ -55,7 +56,7 @@ class _TopChartsState extends State<TopCharts>
               ],
             ),
             title: Text(
-              'Spotify Top Charts',
+              AppLocalizations.of(context)!.spotifyTopCharts,
               style: TextStyle(
                 fontSize: 18,
                 color: Theme.of(context).textTheme.bodyText1!.color,

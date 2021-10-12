@@ -12,6 +12,7 @@ import 'package:blackhole/Helpers/search_add_playlist.dart';
 import 'package:blackhole/Screens/Library/liked.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:hive/hive.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -43,8 +44,8 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
             child: Scaffold(
               backgroundColor: Colors.transparent,
               appBar: AppBar(
-                title: const Text(
-                  'Playlists',
+                title: Text(
+                  AppLocalizations.of(context)!.playlists,
                 ),
                 centerTitle: true,
                 backgroundColor: Theme.of(context).brightness == Brightness.dark
@@ -59,7 +60,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                   children: [
                     const SizedBox(height: 5),
                     ListTile(
-                      title: const Text('Create Playlist'),
+                      title: Text(AppLocalizations.of(context)!.createPlaylist),
                       leading: Card(
                         elevation: 0,
                         color: Colors.transparent,
@@ -77,7 +78,8 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                       onTap: () async {
                         await TextInputDialog().showTextInputDialog(
                             context: context,
-                            title: 'Create New playlist',
+                            title:
+                                AppLocalizations.of(context)!.createNewPlaylist,
                             initialText: '',
                             keyboardType: TextInputType.name,
                             onSubmitted: (String value) {
@@ -96,7 +98,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                       },
                     ),
                     ListTile(
-                        title: const Text('Import from File'),
+                        title: Text(AppLocalizations.of(context)!.importFile),
                         leading: Card(
                           elevation: 0,
                           color: Colors.transparent,
@@ -118,7 +120,8 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                           setState(() {});
                         }),
                     ListTile(
-                        title: const Text('Import from Spotify'),
+                        title:
+                            Text(AppLocalizations.of(context)!.importSpotify),
                         leading: Card(
                           elevation: 0,
                           color: Colors.transparent,
@@ -152,7 +155,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                           });
                         }),
                     ListTile(
-                        title: const Text('Import from YouTube'),
+                        title: Text(AppLocalizations.of(context)!.importYt),
                         leading: Card(
                           elevation: 0,
                           color: Colors.transparent,
@@ -170,7 +173,8 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                         onTap: () async {
                           await TextInputDialog().showTextInputDialog(
                               context: context,
-                              title: 'Enter Playlist Link',
+                              title: AppLocalizations.of(context)!
+                                  .enterPlaylistLink,
                               initialText: '',
                               keyboardType: TextInputType.url,
                               onSubmitted: (value) async {
@@ -198,7 +202,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                                 } else {
                                   ShowSnackBar().showSnackBar(
                                     context,
-                                    'Failed to Import',
+                                    AppLocalizations.of(context)!.failedImport,
                                   );
                                 }
                               });
@@ -288,7 +292,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                                   if (value == 0) {
                                     ShowSnackBar().showSnackBar(
                                       context,
-                                      'Deleted $showName',
+                                      '${AppLocalizations.of(context)!.deleted} $showName',
                                     );
                                     playlistDetails.remove(name);
                                     await settingsBox.put(
@@ -314,7 +318,9 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                                               Row(
                                                 children: [
                                                   Text(
-                                                    'Rename',
+                                                    AppLocalizations.of(
+                                                            context)!
+                                                        .rename,
                                                     style: TextStyle(
                                                         color: Theme.of(context)
                                                             .colorScheme
@@ -360,7 +366,9 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                                               onPressed: () {
                                                 Navigator.pop(context);
                                               },
-                                              child: const Text('Cancel'),
+                                              child: Text(
+                                                  AppLocalizations.of(context)!
+                                                      .cancel),
                                             ),
                                             TextButton(
                                               style: TextButton.styleFrom(
@@ -392,7 +400,8 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                                                 setState(() {});
                                               },
                                               child: Text(
-                                                'Ok',
+                                                AppLocalizations.of(context)!
+                                                    .ok,
                                                 style: TextStyle(
                                                     color: Theme.of(context)
                                                                 .colorScheme
@@ -416,10 +425,11 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                                     PopupMenuItem(
                                       value: 3,
                                       child: Row(
-                                        children: const [
-                                          Icon(Icons.edit_rounded),
-                                          SizedBox(width: 10.0),
-                                          Text('Rename'),
+                                        children: [
+                                          const Icon(Icons.edit_rounded),
+                                          const SizedBox(width: 10.0),
+                                          Text(AppLocalizations.of(context)!
+                                              .rename),
                                         ],
                                       ),
                                     ),
@@ -427,30 +437,33 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                                     PopupMenuItem(
                                       value: 0,
                                       child: Row(
-                                        children: const [
-                                          Icon(Icons.delete_rounded),
-                                          SizedBox(width: 10.0),
-                                          Text('Delete'),
+                                        children: [
+                                          const Icon(Icons.delete_rounded),
+                                          const SizedBox(width: 10.0),
+                                          Text(AppLocalizations.of(context)!
+                                              .delete),
                                         ],
                                       ),
                                     ),
                                   PopupMenuItem(
                                     value: 1,
                                     child: Row(
-                                      children: const [
-                                        Icon(MdiIcons.export),
-                                        SizedBox(width: 10.0),
-                                        Text('Export'),
+                                      children: [
+                                        const Icon(MdiIcons.export),
+                                        const SizedBox(width: 10.0),
+                                        Text(AppLocalizations.of(context)!
+                                            .export),
                                       ],
                                     ),
                                   ),
                                   PopupMenuItem(
                                     value: 2,
                                     child: Row(
-                                      children: const [
-                                        Icon(MdiIcons.share),
-                                        SizedBox(width: 10.0),
-                                        Text('Share'),
+                                      children: [
+                                        const Icon(MdiIcons.share),
+                                        const SizedBox(width: 10.0),
+                                        Text(AppLocalizations.of(context)!
+                                            .share),
                                       ],
                                     ),
                                   ),
@@ -507,7 +520,8 @@ Future<void> fetchPlaylists(String code, BuildContext context,
                 itemBuilder: (ctxt, idx) {
                   if (idx == 0) {
                     return ListTile(
-                      title: const Text('Import Public Playlist'),
+                      title: Text(
+                          AppLocalizations.of(context)!.importPublicPlaylist),
                       leading: Card(
                         elevation: 0,
                         color: Colors.transparent,
@@ -525,7 +539,8 @@ Future<void> fetchPlaylists(String code, BuildContext context,
                       onTap: () async {
                         await TextInputDialog().showTextInputDialog(
                             context: context,
-                            title: 'Enter Playlist Link',
+                            title:
+                                AppLocalizations.of(context)!.enterPlaylistLink,
                             initialText: '',
                             keyboardType: TextInputType.url,
                             onSubmitted: (String value) async {
@@ -546,7 +561,8 @@ Future<void> fetchPlaylists(String code, BuildContext context,
                                   tracks.addAll(data['tracks'] as List);
                                 }
 
-                                String playName = 'Spotify Public';
+                                String playName =
+                                    AppLocalizations.of(context)!.spotifyPublic;
                                 while (playlistNames.contains(playName)) {
                                   // ignore: use_string_buffers
                                   playName = '$playName (1)';

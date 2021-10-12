@@ -12,6 +12,7 @@ import 'package:blackhole/Screens/Library/show_songs.dart';
 import 'package:blackhole/Screens/Player/audioplayer.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:hive/hive.dart';
 
 class LikedSongs extends StatefulWidget {
@@ -223,18 +224,18 @@ class _LikedSongsState extends State<LikedSongs>
                           ? Colors.transparent
                           : Theme.of(context).colorScheme.secondary,
                   elevation: 0,
-                  bottom: TabBar(controller: _tcontroller, tabs: const [
+                  bottom: TabBar(controller: _tcontroller, tabs: [
                     Tab(
-                      text: 'Songs',
+                      text: AppLocalizations.of(context)!.songs,
                     ),
                     Tab(
-                      text: 'Albums',
+                      text: AppLocalizations.of(context)!.albums,
                     ),
                     Tab(
-                      text: 'Artists',
+                      text: AppLocalizations.of(context)!.artists,
                     ),
                     Tab(
-                      text: 'Genres',
+                      text: AppLocalizations.of(context)!.genres,
                     ),
                   ]),
                   actions: [
@@ -284,8 +285,8 @@ class _LikedSongsState extends State<LikedSongs>
                                         else
                                           const SizedBox(),
                                         const SizedBox(width: 10),
-                                        const Text(
-                                          'A-Z',
+                                        Text(
+                                          AppLocalizations.of(context)!.az,
                                         ),
                                       ],
                                     ),
@@ -306,8 +307,8 @@ class _LikedSongsState extends State<LikedSongs>
                                         else
                                           const SizedBox(),
                                         const SizedBox(width: 10),
-                                        const Text(
-                                          'Z-A',
+                                        Text(
+                                          AppLocalizations.of(context)!.za,
                                         ),
                                       ],
                                     ),
@@ -328,7 +329,8 @@ class _LikedSongsState extends State<LikedSongs>
                                         else
                                           const SizedBox(),
                                         const SizedBox(width: 10),
-                                        const Text('Last Added'),
+                                        Text(AppLocalizations.of(context)!
+                                            .lastAdded),
                                       ],
                                     ),
                                   ),
@@ -348,8 +350,8 @@ class _LikedSongsState extends State<LikedSongs>
                                         else
                                           const SizedBox(),
                                         const SizedBox(width: 10),
-                                        const Text(
-                                          'Shuffle',
+                                        Text(
+                                          AppLocalizations.of(context)!.shuffle,
                                         ),
                                       ],
                                     ),
@@ -372,8 +374,8 @@ class _LikedSongsState extends State<LikedSongs>
                                         else
                                           const SizedBox(),
                                         const SizedBox(width: 10),
-                                        const Text(
-                                          'A-Z',
+                                        Text(
+                                          AppLocalizations.of(context)!.az,
                                         ),
                                       ],
                                     ),
@@ -394,8 +396,8 @@ class _LikedSongsState extends State<LikedSongs>
                                         else
                                           const SizedBox(),
                                         const SizedBox(width: 10),
-                                        const Text(
-                                          'Z-A',
+                                        Text(
+                                          AppLocalizations.of(context)!.za,
                                         ),
                                       ],
                                     ),
@@ -416,8 +418,9 @@ class _LikedSongsState extends State<LikedSongs>
                                         else
                                           const SizedBox(),
                                         const SizedBox(width: 10),
-                                        const Text(
-                                          '10-1',
+                                        Text(
+                                          AppLocalizations.of(context)!
+                                              .tenToOne,
                                         ),
                                       ],
                                     ),
@@ -438,8 +441,9 @@ class _LikedSongsState extends State<LikedSongs>
                                         else
                                           const SizedBox(),
                                         const SizedBox(width: 10),
-                                        const Text(
-                                          '1-10',
+                                        Text(
+                                          AppLocalizations.of(context)!
+                                              .oneToTen,
                                         ),
                                       ],
                                     ),
@@ -460,8 +464,8 @@ class _LikedSongsState extends State<LikedSongs>
                                         else
                                           const SizedBox(),
                                         const SizedBox(width: 10),
-                                        const Text(
-                                          'Shuffle',
+                                        Text(
+                                          AppLocalizations.of(context)!.shuffle,
                                         ),
                                       ],
                                     ),
@@ -486,11 +490,11 @@ class _LikedSongsState extends State<LikedSongs>
                             EmptyScreen().emptyScreen(
                                 context,
                                 3,
-                                'Nothing to ',
+                                AppLocalizations.of(context)!.nothingTo,
                                 15.0,
-                                'Show Here',
+                                AppLocalizations.of(context)!.showHere,
                                 50,
-                                'Go and Add Something',
+                                AppLocalizations.of(context)!.addSomething,
                                 23.0)
                           else
                             ListView.builder(
@@ -574,23 +578,28 @@ class _LikedSongsState extends State<LikedSongs>
                                                     PopupMenuItem(
                                                       value: 0,
                                                       child: Row(
-                                                        children: const [
-                                                          Icon(Icons
+                                                        children: [
+                                                          const Icon(Icons
                                                               .delete_rounded),
-                                                          SizedBox(width: 10.0),
-                                                          Text('Remove'),
+                                                          const SizedBox(
+                                                              width: 10.0),
+                                                          Text(AppLocalizations
+                                                                  .of(context)!
+                                                              .remove),
                                                         ],
                                                       ),
                                                     ),
                                                     PopupMenuItem(
                                                       value: 1,
                                                       child: Row(
-                                                        children: const [
-                                                          Icon(Icons
+                                                        children: [
+                                                          const Icon(Icons
                                                               .playlist_add_rounded),
-                                                          SizedBox(width: 10.0),
-                                                          Text(
-                                                              'Add to Playlist'),
+                                                          const SizedBox(
+                                                              width: 10.0),
+                                                          Text(AppLocalizations
+                                                                  .of(context)!
+                                                              .addToPlaylist),
                                                         ],
                                                       ),
                                                     ),
@@ -607,7 +616,7 @@ class _LikedSongsState extends State<LikedSongs>
                                                 if (value == 0) {
                                                   ShowSnackBar().showSnackBar(
                                                     context,
-                                                    'Removed ${_songs[index]["title"]} from ${widget.playlistName}',
+                                                    '${AppLocalizations.of(context)!.removed} ${_songs[index]["title"]} ${AppLocalizations.of(context)!.from} ${widget.playlistName}',
                                                   );
                                                   setState(() {
                                                     deleteLiked(index);
@@ -633,8 +642,15 @@ class _LikedSongsState extends State<LikedSongs>
 
   Widget albumsTab() {
     return sortedAlbumKeysList.isEmpty
-        ? EmptyScreen().emptyScreen(context, 3, 'Nothing to ', 15.0,
-            'Show Here', 50, 'Go and Add Something', 23.0)
+        ? EmptyScreen().emptyScreen(
+            context,
+            3,
+            AppLocalizations.of(context)!.nothingTo,
+            15.0,
+            AppLocalizations.of(context)!.showHere,
+            50,
+            AppLocalizations.of(context)!.addSomething,
+            23.0)
         : ListView.builder(
             physics: const BouncingScrollPhysics(),
             padding: const EdgeInsets.only(top: 20, bottom: 10),
@@ -656,8 +672,8 @@ class _LikedSongsState extends State<LikedSongs>
                 ),
                 subtitle: Text(
                   _albums[sortedAlbumKeysList[index]]!.length == 1
-                      ? '${_albums[sortedAlbumKeysList[index]]!.length} Song'
-                      : '${_albums[sortedAlbumKeysList[index]]!.length} Songs',
+                      ? '${_albums[sortedAlbumKeysList[index]]!.length} ${AppLocalizations.of(context)!.song}'
+                      : '${_albums[sortedAlbumKeysList[index]]!.length} ${AppLocalizations.of(context)!.songs}',
                 ),
                 onTap: () {
                   Navigator.of(context).push(
@@ -676,8 +692,15 @@ class _LikedSongsState extends State<LikedSongs>
 
   Widget artistsTab() {
     return (sortedArtistKeysList.isEmpty)
-        ? EmptyScreen().emptyScreen(context, 3, 'Nothing to ', 15.0,
-            'Show Here', 50, 'Go and Add Something', 23.0)
+        ? EmptyScreen().emptyScreen(
+            context,
+            3,
+            AppLocalizations.of(context)!.nothingTo,
+            15.0,
+            AppLocalizations.of(context)!.showHere,
+            50,
+            AppLocalizations.of(context)!.addSomething,
+            23.0)
         : ListView.builder(
             physics: const BouncingScrollPhysics(),
             padding: const EdgeInsets.only(top: 20, bottom: 10),
@@ -697,8 +720,8 @@ class _LikedSongsState extends State<LikedSongs>
                     overflow: TextOverflow.ellipsis),
                 subtitle: Text(
                   _artists[sortedArtistKeysList[index]]!.length == 1
-                      ? '${_artists[sortedArtistKeysList[index]]!.length} Song'
-                      : '${_artists[sortedArtistKeysList[index]]!.length} Songs',
+                      ? '${_artists[sortedArtistKeysList[index]]!.length} ${AppLocalizations.of(context)!.song}'
+                      : '${_artists[sortedArtistKeysList[index]]!.length} ${AppLocalizations.of(context)!.songs}',
                 ),
                 onTap: () {
                   Navigator.of(context).push(
@@ -717,8 +740,15 @@ class _LikedSongsState extends State<LikedSongs>
 
   Widget genresTab() {
     return (sortedGenreKeysList.isEmpty)
-        ? EmptyScreen().emptyScreen(context, 3, 'Nothing to ', 15.0,
-            'Show Here', 50, 'Go and Add Something', 23.0)
+        ? EmptyScreen().emptyScreen(
+            context,
+            3,
+            AppLocalizations.of(context)!.nothingTo,
+            15.0,
+            AppLocalizations.of(context)!.showHere,
+            50,
+            AppLocalizations.of(context)!.addSomething,
+            23.0)
         : ListView.builder(
             physics: const BouncingScrollPhysics(),
             padding: const EdgeInsets.only(top: 20, bottom: 10),
@@ -740,8 +770,8 @@ class _LikedSongsState extends State<LikedSongs>
                 ),
                 subtitle: Text(
                   _genres[sortedGenreKeysList[index]]!.length == 1
-                      ? '${_genres[sortedGenreKeysList[index]]!.length} Song'
-                      : '${_genres[sortedGenreKeysList[index]]!.length} Songs',
+                      ? '${_genres[sortedGenreKeysList[index]]!.length} ${AppLocalizations.of(context)!.song}'
+                      : '${_genres[sortedGenreKeysList[index]]!.length} ${AppLocalizations.of(context)!.songs}',
                 ),
                 onTap: () {
                   Navigator.of(context).push(

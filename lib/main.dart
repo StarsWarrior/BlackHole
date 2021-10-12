@@ -31,9 +31,12 @@ import 'package:blackhole/Screens/Login/pref.dart';
 import 'package:blackhole/Screens/Player/audioplayer.dart';
 import 'package:blackhole/Screens/Settings/setting.dart';
 import 'package:blackhole/Services/audio_service.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_displaymode/flutter_displaymode.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
@@ -49,7 +52,9 @@ Future<void> main() async {
   await openHiveBox('settings');
   await openHiveBox('downloads');
   await openHiveBox('cache', limit: true);
-  setOptimalDisplayMode();
+  if (Platform.isAndroid) {
+    setOptimalDisplayMode();
+  }
   await startService();
   runApp(MyApp());
 }
@@ -139,7 +144,15 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(
-      const SystemUiOverlayStyle(statusBarColor: Colors.transparent),
+      const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        systemNavigationBarColor: Colors.black38,
+        // systemNavigationBarContrastEnforced: false,
+        // systemNavigationBarIconBrightness:
+        //     Theme.of(context).brightness == Brightness.dark
+        //         ? Brightness.light
+        //         : Brightness.dark,
+      ),
     );
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
@@ -150,6 +163,7 @@ class _MyAppState extends State<MyApp> {
 
     return MaterialApp(
       title: 'BlackHole',
+      restorationScopeId: 'blackhole',
       debugShowCheckedModeBanner: false,
       themeMode: currentTheme.currentTheme(),
       theme: ThemeData(
@@ -223,6 +237,15 @@ class _MyAppState extends State<MyApp> {
               brightness: Brightness.dark,
             ),
       ),
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('en', ''), // English, no country code
+      ],
       routes: {
         '/': (context) => initialFuntion(),
         '/pref': (context) => const PrefScreen(),

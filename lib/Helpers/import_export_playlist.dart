@@ -5,6 +5,7 @@ import 'package:blackhole/CustomWidgets/snackbar.dart';
 import 'package:blackhole/Helpers/picker.dart';
 import 'package:blackhole/Helpers/songs_count.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -12,12 +13,12 @@ import 'package:share_plus/share_plus.dart';
 class ExportPlaylist {
   Future<void> exportPlaylist(
       BuildContext context, String playlistName, String showName) async {
-    final String dirPath =
-        await Picker().selectFolder(context, 'Select Export Location');
+    final String dirPath = await Picker().selectFolder(
+        context, AppLocalizations.of(context)!.selectExportLocation);
     if (dirPath == '') {
       ShowSnackBar().showSnackBar(
         context,
-        'Failed to Export "$showName"',
+        '${AppLocalizations.of(context)!.failedExport} "$showName"',
       );
       return;
     }
@@ -30,7 +31,7 @@ class ExportPlaylist {
     await file.writeAsString(_songs);
     ShowSnackBar().showSnackBar(
       context,
-      'Exported "$showName"',
+      '${AppLocalizations.of(context)!.exported} "$showName"',
     );
   }
 
@@ -47,7 +48,8 @@ class ExportPlaylist {
         await File('$temp/$showName.json').create(recursive: true);
     await file.writeAsString(_songs.toString());
 
-    await Share.shareFiles([file.path], text: 'Have a look at my playlist!');
+    await Share.shareFiles([file.path],
+        text: AppLocalizations.of(context)!.playlistShareText);
     await Future.delayed(const Duration(seconds: 10), () {});
     if (await file.exists()) {
       await file.delete();
@@ -58,12 +60,12 @@ class ExportPlaylist {
 class ImportPlaylist {
   Future<List> importPlaylist(BuildContext context, List playlistNames) async {
     try {
-      final String temp = await Picker()
-          .selectFile(context, ['json'], 'Select json file to import');
+      final String temp = await Picker().selectFile(
+          context, ['json'], AppLocalizations.of(context)!.selectJsonImport);
       if (temp == '') {
         ShowSnackBar().showSnackBar(
           context,
-          'Failed to import playlist',
+          AppLocalizations.of(context)!.failedImport,
         );
         return playlistNames;
       }
@@ -97,13 +99,13 @@ class ImportPlaylist {
       );
       ShowSnackBar().showSnackBar(
         context,
-        'Successfully Imported "$playlistName"',
+        '${AppLocalizations.of(context)!.importSuccess} "$playlistName"',
       );
       return playlistNames;
     } catch (e) {
       ShowSnackBar().showSnackBar(
         context,
-        'Failed to import playlist',
+        AppLocalizations.of(context)!.failedImport,
       );
     }
     return playlistNames;

@@ -10,6 +10,7 @@ import 'package:blackhole/Screens/Common/song_list.dart';
 import 'package:blackhole/Screens/Player/audioplayer.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ArtistSearchPage extends StatefulWidget {
   final String? artistName;
@@ -58,8 +59,15 @@ class _ArtistSearchPageState extends State<ArtistSearchPage> {
                     ),
                   )
                 : data.isEmpty
-                    ? EmptyScreen().emptyScreen(context, 0, ':( ', 100, 'SORRY',
-                        60, 'Results Not Found', 20)
+                    ? EmptyScreen().emptyScreen(
+                        context,
+                        0,
+                        ':( ',
+                        100,
+                        AppLocalizations.of(context)!.sorry,
+                        60,
+                        AppLocalizations.of(context)!.resultsNotFound,
+                        20)
                     : CustomScrollView(
                         physics: const BouncingScrollPhysics(),
                         slivers: [
@@ -72,7 +80,8 @@ class _ArtistSearchPageState extends State<ArtistSearchPage> {
                                 MediaQuery.of(context).size.height * 0.4,
                             flexibleSpace: FlexibleSpaceBar(
                               title: Text(
-                                widget.artistName ?? 'Songs',
+                                widget.artistName ??
+                                    AppLocalizations.of(context)!.songs,
                                 textAlign: TextAlign.center,
                               ),
                               centerTitle: true,

@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:blackhole/Screens/Player/audioplayer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class DataSearch extends SearchDelegate {
   final List data;
@@ -16,7 +17,7 @@ class DataSearch extends SearchDelegate {
       if (query.isEmpty)
         IconButton(
           icon: const Icon(CupertinoIcons.search),
-          tooltip: 'Search',
+          tooltip: AppLocalizations.of(context)!.search,
           onPressed: () {},
         )
       else
@@ -24,7 +25,7 @@ class DataSearch extends SearchDelegate {
           onPressed: () {
             query = '';
           },
-          tooltip: 'Clear',
+          tooltip: AppLocalizations.of(context)!.clear,
           icon: const Icon(
             Icons.clear_rounded,
           ),
@@ -36,7 +37,7 @@ class DataSearch extends SearchDelegate {
   Widget buildLeading(BuildContext context) {
     return IconButton(
       icon: const Icon(Icons.arrow_back_rounded),
-      tooltip: 'Back',
+      tooltip: AppLocalizations.of(context)!.back,
       onPressed: () {
         close(context, null);
       },
@@ -96,7 +97,7 @@ class DataSearch extends SearchDelegate {
         ),
         subtitle: Text(
           suggestionList[index]['artist'].toString() == '<unknown>'
-              ? 'Unknown'
+              ? AppLocalizations.of(context)!.unknown
               : suggestionList[index]['artist'].toString(),
           overflow: TextOverflow.ellipsis,
         ),
@@ -155,7 +156,7 @@ class DownloadsSearch extends SearchDelegate {
       if (query.isEmpty)
         IconButton(
           icon: const Icon(CupertinoIcons.search),
-          tooltip: 'Search',
+          tooltip: AppLocalizations.of(context)!.search,
           onPressed: () {},
         )
       else
@@ -163,7 +164,7 @@ class DownloadsSearch extends SearchDelegate {
           onPressed: () {
             query = '';
           },
-          tooltip: 'Clear',
+          tooltip: AppLocalizations.of(context)!.clear,
           icon: const Icon(
             Icons.clear_rounded,
           ),
@@ -175,7 +176,7 @@ class DownloadsSearch extends SearchDelegate {
   Widget buildLeading(BuildContext context) {
     return IconButton(
       icon: const Icon(Icons.arrow_back_rounded),
-      tooltip: 'Back',
+      tooltip: AppLocalizations.of(context)!.back,
       onPressed: () {
         close(context, null);
       },

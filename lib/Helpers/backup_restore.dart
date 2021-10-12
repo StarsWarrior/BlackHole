@@ -4,14 +4,15 @@ import 'package:blackhole/CustomWidgets/snackbar.dart';
 import 'package:blackhole/Helpers/picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_archive/flutter_archive.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
 
 class BackupNRestore {
   Future<void> createBackup(
       BuildContext context, List items, Map<String, List> boxNameData) async {
-    final String savePath =
-        await Picker().selectFolder(context, 'Select Backup Location');
+    final String savePath = await Picker().selectFolder(
+        context, AppLocalizations.of(context)!.selectBackLocation);
     if (savePath.trim() != '') {
       final saveDir = Directory(savePath);
       final List<File> files = [];
@@ -37,15 +38,11 @@ class BackupNRestore {
       try {
         await ZipFile.createFromFiles(
             sourceDir: saveDir, files: files, zipFile: zipFile);
-        ShowSnackBar().showSnackBar(
-          context,
-          'Backup Successful',
-        );
+        ShowSnackBar()
+            .showSnackBar(context, AppLocalizations.of(context)!.backupSuccess);
       } catch (e) {
         ShowSnackBar().showSnackBar(
-          context,
-          'Failed to create Backup',
-        );
+            context, AppLocalizations.of(context)!.failedCreateBackup);
       }
 
       for (int i = 0; i < files.length; i++) {
@@ -54,7 +51,7 @@ class BackupNRestore {
     } else {
       ShowSnackBar().showSnackBar(
         context,
-        'No folder selected',
+        AppLocalizations.of(context)!.noFolderSelected,
       );
     }
   }
@@ -62,8 +59,8 @@ class BackupNRestore {
   Future<void> restore(
     BuildContext context,
   ) async {
-    final String savePath =
-        await Picker().selectFile(context, ['zip'], 'Select backup file');
+    final String savePath = await Picker().selectFile(
+        context, ['zip'], AppLocalizations.of(context)!.selectBackFile);
     final File zipFile = File(savePath);
     final Directory destinationDir = Directory(savePath.replaceAll('.zip', ''));
 

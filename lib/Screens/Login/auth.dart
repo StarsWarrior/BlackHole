@@ -1,6 +1,7 @@
 import 'package:blackhole/CustomWidgets/gradient_containers.dart';
 import 'package:blackhole/Helpers/supabase.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:hive/hive.dart';
 import 'package:uuid/uuid.dart';
 
@@ -83,13 +84,13 @@ class _AuthScreenState extends State<AuthScreen> {
                     children: [
                       TextButton(
                         onPressed: () {
-                          _addUserData('Guest');
+                          _addUserData(AppLocalizations.of(context)!.guest);
                           Hive.box('settings').put('auth', 'done');
                           Navigator.popAndPushNamed(context, '/pref');
                         },
-                        child: const Text(
-                          'Skip',
-                          style: TextStyle(
+                        child: Text(
+                          AppLocalizations.of(context)!.skip,
+                          style: const TextStyle(
                             decoration: TextDecoration.underline,
                           ),
                         ),
@@ -181,14 +182,17 @@ class _AuthScreenState extends State<AuthScreen> {
                                               .secondary,
                                         ),
                                         border: InputBorder.none,
-                                        hintText: 'Enter Your Name',
+                                        hintText: AppLocalizations.of(context)!
+                                            .enterName,
                                         hintStyle: const TextStyle(
                                           color: Colors.white60,
                                         ),
                                       ),
                                       onSubmitted: (String value) {
                                         if (value.trim() == '') {
-                                          _addUserData('Guest');
+                                          _addUserData(
+                                              AppLocalizations.of(context)!
+                                                  .guest);
                                         } else {
                                           _addUserData(value.trim());
                                         }
@@ -225,10 +229,10 @@ class _AuthScreenState extends State<AuthScreen> {
                                         )
                                       ],
                                     ),
-                                    child: const Center(
+                                    child: Center(
                                         child: Text(
-                                      'Get Started',
-                                      style: TextStyle(
+                                      AppLocalizations.of(context)!.getStarted,
+                                      style: const TextStyle(
                                         color: Colors.black,
                                         fontWeight: FontWeight.bold,
                                         fontSize: 20.0,
@@ -242,14 +246,16 @@ class _AuthScreenState extends State<AuthScreen> {
                                   child: Column(
                                     children: [
                                       Row(
-                                        children: const [
+                                        children: [
                                           Text(
-                                            'Disclaimer:',
+                                            AppLocalizations.of(context)!
+                                                .disclaimer,
                                           ),
                                         ],
                                       ),
                                       Text(
-                                        'We respect your privacy more than anything else. Only your name, which you will enter here, will be recorded.',
+                                        AppLocalizations.of(context)!
+                                            .disclaimerText,
                                         style: TextStyle(
                                           color: Colors.grey.withOpacity(0.7),
                                         ),

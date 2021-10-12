@@ -4,6 +4,7 @@ import 'package:blackhole/Helpers/mediaitem_converter.dart';
 import 'package:blackhole/Helpers/playlist.dart';
 import 'package:blackhole/main.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class AddListToQueueButton extends StatefulWidget {
   final List data;
@@ -35,7 +36,7 @@ class _AddListToQueueButtonState extends State<AddListToQueueButton> {
                         color: Theme.of(context).iconTheme.color,
                       ),
                       const SizedBox(width: 10.0),
-                      const Text('Add to Queue'),
+                      Text(AppLocalizations.of(context)!.addToQueue),
                     ],
                   )),
               PopupMenuItem(
@@ -47,7 +48,7 @@ class _AddListToQueueButtonState extends State<AddListToQueueButton> {
                         color: Theme.of(context).iconTheme.color,
                       ),
                       const SizedBox(width: 10.0),
-                      const Text('Save Playlist'),
+                      Text(AppLocalizations.of(context)!.savePlaylist),
                     ],
                   )),
             ],
@@ -56,7 +57,7 @@ class _AddListToQueueButtonState extends State<AddListToQueueButton> {
             addPlaylist(widget.title, widget.data).then(
               (value) => ShowSnackBar().showSnackBar(
                 context,
-                'Added"${widget.title}" to Playlists',
+                '"${widget.title}" ${AppLocalizations.of(context)!.addedToPlaylists}',
               ),
             );
           }
@@ -77,14 +78,14 @@ class _AddListToQueueButtonState extends State<AddListToQueueButton> {
 
               ShowSnackBar().showSnackBar(
                 context,
-                'Added "${widget.title}" to Queue',
+                '"${widget.title}" ${AppLocalizations.of(context)!.addedToQueue}',
               );
             } else {
               ShowSnackBar().showSnackBar(
                 context,
                 currentMediaItem == null
-                    ? 'Nothing is Playing'
-                    : "Can't add Online Song to Offline Queue",
+                    ? AppLocalizations.of(context)!.nothingPlaying
+                    : AppLocalizations.of(context)!.cantAddToQueue,
               );
             }
           }
