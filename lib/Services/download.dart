@@ -4,7 +4,7 @@ import 'package:audiotagger/audiotagger.dart';
 import 'package:audiotagger/models/tag.dart';
 import 'package:blackhole/CustomWidgets/snackbar.dart';
 import 'package:blackhole/Helpers/lyrics.dart';
-import 'package:ext_storage/ext_storage.dart';
+import 'package:blackhole/Services/ext_storage_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -75,8 +75,8 @@ class Download with ChangeNotifier {
         final Directory? temp = await getDownloadsDirectory();
         dlPath = temp!.path;
       } else {
-        final String? temp = await ExtStorage.getExternalStoragePublicDirectory(
-            ExtStorage.DIRECTORY_MUSIC);
+        final String? temp =
+            await ExtStorageProvider.getExtStorage(dirName: 'Music');
         dlPath = temp!;
       }
     }

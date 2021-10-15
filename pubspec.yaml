@@ -54,9 +54,6 @@ dependencies:
   supabase: ^0.2.7
   
   # Storage related
-  ext_storage:
-    git:
-      url: git://github.com/GitJournal/ext_storage.git
   file_picker: ^4.1.3
   path_provider: ^2.0.5
   permission_handler: ^8.1.6

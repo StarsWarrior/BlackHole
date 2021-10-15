@@ -10,7 +10,7 @@ import 'package:blackhole/Helpers/picker.dart';
 import 'package:blackhole/Helpers/supabase.dart';
 import 'package:blackhole/Screens/Home/saavn.dart' as home_screen;
 import 'package:blackhole/Screens/Top Charts/top.dart' as top_screen;
-import 'package:ext_storage/ext_storage.dart';
+import 'package:blackhole/Services/ext_storage_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -1236,10 +1236,10 @@ class _SettingPageState extends State<SettingPage> {
                                   : Colors.grey[700],
                             ),
                             onPressed: () async {
-                              downloadPath = await ExtStorage
-                                      .getExternalStoragePublicDirectory(
-                                          ExtStorage.DIRECTORY_MUSIC) ??
-                                  '/storage/emulated/0/Music';
+                              downloadPath =
+                                  await ExtStorageProvider.getExtStorage(
+                                          dirName: 'Music') ??
+                                      '/storage/emulated/0/Music';
                               Hive.box('settings')
                                   .put('downloadPath', downloadPath);
                               setState(() {});
