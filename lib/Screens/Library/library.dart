@@ -1,4 +1,3 @@
-import 'package:blackhole/Screens/Library/downloaded.dart';
 import 'package:blackhole/Screens/Library/liked.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -79,10 +78,7 @@ class _LibraryPageState extends State<LibraryPage> {
           title: AppLocalizations.of(context)!.myMusic,
           icon: MdiIcons.folderMusic,
           onTap: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => const DownloadedSongs()));
+            Navigator.pushNamed(context, '/mymusic');
           },
         ),
         LibraryTile(

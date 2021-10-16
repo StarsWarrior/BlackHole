@@ -19,8 +19,8 @@ dependencies:
   # Audio related
   audiotagger: ^2.2.1
   audio_service: ^0.18.0
-  just_audio: ^0.9.12
-  on_audio_query: ^2.2.0
+  just_audio: ^0.9.13
+  on_audio_query: ^2.5.0
   
 
   # Productivity
@@ -34,9 +34,9 @@ dependencies:
   html_unescape: ^2.0.0
   # logging: ^1.0.1
   package_info: ^2.0.2
-  share_plus: ^2.1.4
+  share_plus: ^3.0.2
   url_launcher: ^6.0.12
-  uuid: ^3.0.4
+  uuid: ^3.0.5
   youtube_explode_dart: ^1.10.6
 
   
@@ -54,9 +54,9 @@ dependencies:
   supabase: ^0.2.7
   
   # Storage related
-  file_picker: ^4.1.3
+  file_picker: ^4.1.4
   path_provider: ^2.0.5
-  permission_handler: ^8.1.6
+  permission_handler: ^8.2.2
   
 
 dev_dependencies:

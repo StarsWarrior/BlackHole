@@ -24,6 +24,7 @@ Future<void> addMapToPlaylist(String name, Map info) async {
   if (name != 'Favorite Songs') await Hive.openBox(name);
   final Box playlistBox = Hive.box(name);
   final List _songs = playlistBox.values.toList();
+  info.addEntries([MapEntry('dateAdded', DateTime.now().toString())]);
   AddSongsCount().addSong(
     name,
     playlistBox.values.length + 1,
@@ -38,6 +39,7 @@ Future<void> addItemToPlaylist(String name, MediaItem mediaItem) async {
   if (name != 'Favorite Songs') await Hive.openBox(name);
   final Box playlistBox = Hive.box(name);
   final Map info = MediaItemConverter().mediaItemtoMap(mediaItem);
+  info.addEntries([MapEntry('dateAdded', DateTime.now().toString())]);
   final List _songs = playlistBox.values.toList();
   AddSongsCount().addSong(
     name,

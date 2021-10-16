@@ -23,7 +23,17 @@ class SaavnAPI {
     'artistRadio': '__call=webradio.createArtistStation',
     'entityRadio': '__call=webradio.createEntityStation',
     'radioSongs': '__call=webradio.getSong',
+    'songDetails': '__call=song.getDetails',
+    'playlistDetails': '__call=playlist.getDetails',
+    'albumDetails': '__call=content.getAlbumDetails',
+    'getResults': '__call=search.getResults',
+    'albumResults': '__call=search.getAlbumResults',
+    'artistResults': '__call=search.getArtistResults',
+    'playlistResults': '__call=search.getPlaylistResults',
     'getReco': '__call=reco.getreco',
+    'getAlbumReco': '__call=reco.getAlbumReco', // still not used
+    'artistOtherTopSongs':
+        '__call=search.artistOtherTopSongs', // still not used
   };
 
   Future<Response> getResponse(String params,
@@ -171,6 +181,8 @@ class SaavnAPI {
     List searchedPlaylistList = [];
     List searchedArtistList = [];
     List searchedTopQueryList = [];
+    List searchedShowList = [];
+    // List searchedEpisodeList = [];
 
     final String params =
         '__call=autocomplete.get&cc=in&includeMetaTags=1&query=$searchQuery';
@@ -180,15 +192,26 @@ class SaavnAPI {
       final getMain = json.decode(res.body);
       final List albumResponseList = getMain['albums']['data'] as List;
       position[getMain['albums']['position'] as int] = 'Albums';
+
       final List playlistResponseList = getMain['playlists']['data'] as List;
       position[getMain['playlists']['position'] as int] = 'Playlists';
+
       final List artistResponseList = getMain['artists']['data'] as List;
       position[getMain['artists']['position'] as int] = 'Artists';
+
+      final List showResponseList = getMain['shows']['data'] as List;
+      position[getMain['shows']['position'] as int] = 'Shows';
+
+      // final List episodeResponseList = getMain['episodes']['data'] as List;
+      // position[getMain['episodes']['position'] as int] = 'Episodes';
+
       final List topQuery = getMain['topquery']['data'] as List;
 
       searchedAlbumList = await FormatResponse()
           .formatAlbumResponse(albumResponseList, 'album');
-      if (searchedAlbumList.isNotEmpty) result['Albums'] = searchedAlbumList;
+      if (searchedAlbumList.isNotEmpty) {
+        result['Albums'] = searchedAlbumList;
+      }
 
       searchedPlaylistList = await FormatResponse()
           .formatAlbumResponse(playlistResponseList, 'playlist');
@@ -196,12 +219,26 @@ class SaavnAPI {
         result['Playlists'] = searchedPlaylistList;
       }
 
+      searchedShowList =
+          await FormatResponse().formatAlbumResponse(showResponseList, 'show');
+      if (searchedShowList.isNotEmpty) {
+        result['Shows'] = searchedShowList;
+      }
+
+      // searchedEpisodeList = await FormatResponse()
+      //     .formatAlbumResponse(episodeResponseList, 'episode');
+      // if (searchedEpisodeList.isNotEmpty) {
+      //   result['Episodes'] = searchedEpisodeList;
+      // }
+
       searchedArtistList = await FormatResponse()
           .formatAlbumResponse(artistResponseList, 'artist');
-      if (searchedArtistList.isNotEmpty) result['Artists'] = searchedArtistList;
+      if (searchedArtistList.isNotEmpty) {
+        result['Artists'] = searchedArtistList;
+      }
 
       if (topQuery.isNotEmpty &&
-          (topQuery[0]['type'] == 'playlist' ||
+          (topQuery[0]['type'] != 'playlist' ||
               topQuery[0]['type'] == 'artist' ||
               topQuery[0]['type'] == 'album')) {
         position[getMain['topquery']['position'] as int] = 'Top Result';
@@ -240,13 +277,13 @@ class SaavnAPI {
   Future<List<Map>> fetchAlbums(String searchQuery, String type) async {
     String? params;
     if (type == 'playlist') {
-      params = 'p=1&q=$searchQuery&n=20&__call=search.getPlaylistResults';
+      params = 'p=1&q=$searchQuery&n=20&${endpoints["playlistResults"]}';
     }
     if (type == 'album') {
-      params = 'p=1&q=$searchQuery&n=20&__call=search.getAlbumResults';
+      params = 'p=1&q=$searchQuery&n=20&${endpoints["albumResults"]}';
     }
     if (type == 'artist') {
-      params = 'p=1&q=$searchQuery&n=20&__call=search.getArtistResults';
+      params = 'p=1&q=$searchQuery&n=20&${endpoints["artistResults"]}';
     }
 
     final res = await getResponse(params!);
@@ -259,8 +296,7 @@ class SaavnAPI {
   }
 
   Future<List> fetchAlbumSongs(String albumId) async {
-    final String params =
-        '__call=content.getAlbumDetails&cc=in&albumid=$albumId';
+    final String params = '${endpoints['albumDetails']}&cc=in&albumid=$albumId';
     final res = await getResponse(params);
     if (res.statusCode == 200) {
       final getMain = json.decode(res.body);
@@ -273,7 +309,7 @@ class SaavnAPI {
   Future<Map<String, List>> fetchArtistSongs(String artistToken) async {
     final Map<String, List> data = {};
     final String params =
-        '__call=webapi.get&type=artist&p=&n_song=50&n_album=50&sub_type=&category=&sort_order=&includeMetaTags=0&token=$artistToken';
+        '${endpoints["fromToken"]}&type=artist&p=&n_song=50&n_album=50&sub_type=&category=&sort_order=&includeMetaTags=0&token=$artistToken';
     final res = await getResponse(params);
     if (res.statusCode == 200) {
       final getMain = json.decode(res.body);
@@ -329,7 +365,8 @@ class SaavnAPI {
   }
 
   Future<List> fetchPlaylistSongs(String playlistId) async {
-    final String params = '__call=playlist.getDetails&cc=in&listid=$playlistId';
+    final String params =
+        '${endpoints["playlistDetails"]}&cc=in&listid=$playlistId';
     final res = await getResponse(params);
     if (res.statusCode == 200) {
       final getMain = json.decode(res.body);
@@ -340,7 +377,7 @@ class SaavnAPI {
   }
 
   Future<List> fetchTopSearchResult(String searchQuery) async {
-    final String params = 'p=1&q=$searchQuery&n=10&__call=search.getResults';
+    final String params = 'p=1&q=$searchQuery&n=10&${endpoints["getResults"]}';
     final res = await getResponse(params, useProxy: true);
     if (res.statusCode == 200) {
       final getMain = json.decode(res.body);
@@ -353,7 +390,7 @@ class SaavnAPI {
   }
 
   Future<Map> fetchSongDetails(String songId) async {
-    final String params = 'pids=$songId&__call=song.getDetails';
+    final String params = 'pids=$songId&${endpoints["songDetails"]}';
     try {
       final res = await getResponse(params);
       if (res.statusCode == 200) {

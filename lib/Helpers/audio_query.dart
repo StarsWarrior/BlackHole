@@ -10,11 +10,49 @@ class OfflineAudioQuery {
   }
 
   Future<List<SongModel>> getSongs(
-      {SongSortType? sortType, OrderType? orderType}) async {
+      {SongSortType? sortType, OrderType? orderType, String? path}) async {
     return audioQuery.querySongs(
-      sortType: sortType ?? SongSortType.DATA_ADDED,
+      sortType: sortType ?? SongSortType.DATE_ADDED,
       orderType: orderType ?? OrderType.DESC_OR_GREATER,
       uriType: UriType.EXTERNAL,
+      path: path,
+    );
+  }
+
+  Future<List<PlaylistModel>> getPlaylists() async {
+    return audioQuery.queryPlaylists();
+  }
+
+  Future<bool> createPlaylist({required String name}) async {
+    return audioQuery.createPlaylist(name);
+  }
+
+  Future<bool> removePlaylist({required int playlistId}) async {
+    return audioQuery.removePlaylist(playlistId);
+  }
+
+  Future<bool> addToPlaylist(
+      {required int playlistId, required int audioId}) async {
+    return audioQuery.addToPlaylist(playlistId, audioId);
+  }
+
+  Future<bool> removeFromPlaylist(
+      {required int playlistId, required int audioId}) async {
+    return audioQuery.removeFromPlaylist(playlistId, audioId);
+  }
+
+  Future<bool> renamePlaylist(
+      {required int playlistId, required String newName}) async {
+    return audioQuery.renamePlaylist(playlistId, newName);
+  }
+
+  Future<List<SongModel>> getPlaylistSongs(int playlistId,
+      {SongSortType? sortType, OrderType? orderType, String? path}) async {
+    return audioQuery.queryAudiosFrom(
+      AudiosFromType.PLAYLIST,
+      playlistId,
+      sortType: sortType ?? SongSortType.DATE_ADDED,
+      orderType: orderType ?? OrderType.DESC_OR_GREATER,
     );
   }
 
@@ -45,15 +83,14 @@ class OfflineAudioQuery {
     );
   }
 
-  Future<List> getArtwork(List<SongModel> songs) async {
+  Future<List> getArtwork(List<SongModel> songs,
+      {List? songsMap, ArtworkType artworkType = ArtworkType.AUDIO}) async {
     final List<Map> songsMap = [];
     for (final SongModel song in songs) {
       final songMap = song.getMap;
       songMap.addEntries([
-        MapEntry(
-            'image',
-            await audioQuery.queryArtwork(song.id, ArtworkType.AUDIO,
-                size: 350))
+        MapEntry('image',
+            await audioQuery.queryArtwork(song.id, artworkType, size: 350))
       ]);
       songsMap.add(songMap);
     }

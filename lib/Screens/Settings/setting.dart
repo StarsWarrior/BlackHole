@@ -11,6 +11,7 @@ import 'package:blackhole/Helpers/supabase.dart';
 import 'package:blackhole/Screens/Home/saavn.dart' as home_screen;
 import 'package:blackhole/Screens/Top Charts/top.dart' as top_screen;
 import 'package:blackhole/Services/ext_storage_provider.dart';
+import 'package:blackhole/main.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -40,6 +41,8 @@ class _SettingPageState extends State<SettingPage> {
       .get('streamingQuality', defaultValue: '96 kbps') as String;
   String downloadQuality = Hive.box('settings')
       .get('downloadQuality', defaultValue: '320 kbps') as String;
+  String lang =
+      Hive.box('settings').get('lang', defaultValue: 'English') as String;
   String canvasColor =
       Hive.box('settings').get('canvasColor', defaultValue: 'Grey') as String;
   String cardColor =
@@ -948,6 +951,18 @@ class _SettingPageState extends State<SettingPage> {
                                                             .cancel),
                                                   ),
                                                   TextButton(
+                                                    style: TextButton.styleFrom(
+                                                      primary: Theme.of(context)
+                                                                  .colorScheme
+                                                                  .secondary ==
+                                                              Colors.white
+                                                          ? Colors.black
+                                                          : null,
+                                                      backgroundColor:
+                                                          Theme.of(context)
+                                                              .colorScheme
+                                                              .secondary,
+                                                    ),
                                                     onPressed: () {
                                                       currentTheme
                                                           .deleteTheme(value);
@@ -979,22 +994,15 @@ class _SettingPageState extends State<SettingPage> {
                                                       AppLocalizations.of(
                                                               context)!
                                                           .delete,
-                                                      style: TextStyle(
-                                                        color: Theme.of(context)
-                                                            .colorScheme
-                                                            .error,
-                                                      ),
                                                     ),
                                                   ),
+                                                  const SizedBox(width: 5.0),
                                                 ],
                                               ),
                                             );
                                           },
-                                          icon: Icon(
-                                            Icons.delete,
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .error,
+                                          icon: const Icon(
+                                            Icons.delete_rounded,
                                           ),
                                         ),
                                       )
@@ -1538,8 +1546,48 @@ class _SettingPageState extends State<SettingPage> {
                           ),
                         ),
                         ListTile(
-                            title: Text(
-                                '\n${AppLocalizations.of(context)!.minAudioLen}'),
+                          title: Text(AppLocalizations.of(context)!.lang),
+                          subtitle: Text(AppLocalizations.of(context)!.langSub),
+                          onTap: () {},
+                          trailing: DropdownButton(
+                            value: lang,
+                            style: TextStyle(
+                              fontSize: 12,
+                              color:
+                                  Theme.of(context).textTheme.bodyText1!.color,
+                            ),
+                            underline: const SizedBox(),
+                            onChanged: (String? newValue) {
+                              final Map<String, String> codes = {
+                                'English': 'en',
+                                'Russian': 'ru'
+                              };
+                              if (newValue != null) {
+                                setState(() {
+                                  lang = newValue;
+                                  MyApp.of(context).setLocale(
+                                      Locale.fromSubtags(
+                                          languageCode: codes[newValue]!));
+                                  Hive.box('settings').put('lang', newValue);
+                                });
+                              }
+                            },
+                            items: <String>['English', 'Russian']
+                                .map<DropdownMenuItem<String>>((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(
+                                  value,
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                          dense: true,
+                        ),
+
+                        ListTile(
+                            title:
+                                Text(AppLocalizations.of(context)!.minAudioLen),
                             subtitle: Text(
                                 AppLocalizations.of(context)!.minAudioLenSub),
                             dense: true,

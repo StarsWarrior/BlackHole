@@ -1,13 +1,14 @@
 import 'dart:io';
-import 'dart:typed_data';
 
+import 'package:blackhole/Helpers/audio_query.dart';
 import 'package:blackhole/Screens/Player/audioplayer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:on_audio_query/on_audio_query.dart';
 
 class DataSearch extends SearchDelegate {
-  final List data;
+  final List<SongModel> data;
 
   DataSearch(this.data);
 
@@ -51,14 +52,11 @@ class DataSearch extends SearchDelegate {
         : [
             ...{
               ...data
-                  .where((element) => element['title']
-                      .toString()
-                      .toLowerCase()
-                      .contains(query.toLowerCase()))
+                  .where((element) =>
+                      element.title.toLowerCase().contains(query.toLowerCase()))
                   .toList(),
               ...data
-                  .where((element) => element['artist']
-                      .toString()
+                  .where((element) => element.artist!
                       .toLowerCase()
                       .contains(query.toLowerCase()))
                   .toList(),
@@ -77,40 +75,42 @@ class DataSearch extends SearchDelegate {
             borderRadius: BorderRadius.circular(7.0),
           ),
           clipBehavior: Clip.antiAlias,
-          child: SizedBox(
-            height: 50.0,
-            width: 50.0,
-            child: suggestionList[index]['image'] != null
-                ? Image(
-                    fit: BoxFit.cover,
-                    image: MemoryImage(
-                        suggestionList[index]['image'] as Uint8List),
-                  )
-                : Image.asset('assets/cover.jpg'),
+          child: QueryArtworkWidget(
+            id: suggestionList[index].id,
+            type: ArtworkType.AUDIO,
+            artworkBorder: BorderRadius.circular(7.0),
+            keepOldArtwork: true,
+            nullArtworkWidget: ClipRRect(
+              borderRadius: BorderRadius.circular(7.0),
+              child: const Image(
+                fit: BoxFit.cover,
+                height: 50.0,
+                width: 50.0,
+                image: AssetImage('assets/cover.jpg'),
+              ),
+            ),
           ),
         ),
         title: Text(
-          suggestionList[index]['title'].toString().trim() != ''
-              ? suggestionList[index]['title'].toString()
-              : suggestionList[index]['_display_name_wo_ext'].toString(),
+          suggestionList[index].title.trim() != ''
+              ? suggestionList[index].title
+              : suggestionList[index].displayNameWOExt,
           overflow: TextOverflow.ellipsis,
         ),
         subtitle: Text(
-          suggestionList[index]['artist'].toString() == '<unknown>'
+          suggestionList[index].artist! == '<unknown>'
               ? AppLocalizations.of(context)!.unknown
-              : suggestionList[index]['artist'].toString(),
+              : suggestionList[index].artist!,
           overflow: TextOverflow.ellipsis,
         ),
-        onTap: () {
+        onTap: () async {
+          final singleSongMap =
+              await OfflineAudioQuery().getArtwork([suggestionList[index]]);
           Navigator.of(context).push(
             PageRouteBuilder(
               opaque: false,
               pageBuilder: (_, __, ___) => PlayScreen(
-                data: {
-                  'response': suggestionList,
-                  'index': index,
-                  'offline': true
-                },
+                data: {'response': singleSongMap, 'index': 0, 'offline': true},
                 fromMiniplayer: false,
               ),
             ),

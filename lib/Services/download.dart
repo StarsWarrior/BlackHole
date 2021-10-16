@@ -71,14 +71,9 @@ class Download with ChangeNotifier {
 
     filename = '${filename.replaceAll(avoid, "").replaceAll("  ", " ")}.m4a';
     if (dlPath == '') {
-      if (Platform.isWindows) {
-        final Directory? temp = await getDownloadsDirectory();
-        dlPath = temp!.path;
-      } else {
-        final String? temp =
-            await ExtStorageProvider.getExtStorage(dirName: 'Music');
-        dlPath = temp!;
-      }
+      final String? temp =
+          await ExtStorageProvider.getExtStorage(dirName: 'Music');
+      dlPath = temp!;
     }
     if (data['url'].toString().contains('google') && createYoutubeFolder) {
       dlPath = '$dlPath/YouTube';

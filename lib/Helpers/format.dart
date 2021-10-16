@@ -202,6 +202,9 @@ class FormatResponse {
         case 'playlist':
           response = await formatSinglePlaylistResponse(responseList[i] as Map);
           break;
+        case 'show':
+          response = await formatSingleAlbumResponse(responseList[i] as Map);
+          break;
       }
       if (response!.containsKey('Error')) {
         log('Error at index $i inside FormatAlbumResponse: ${response["Error"]}');
@@ -218,13 +221,11 @@ class FormatResponse {
         'id': response['id'],
         'type': response['type'],
         'album': formatString(response['title'].toString()),
-        // .split('(')
-        // .first
-        'year': response['more_info']['year'] ?? response['year'],
-        'language': capitalize(response['more_info']['language'] == null
+        'year': response['more_info']?['year'] ?? response['year'],
+        'language': capitalize(response['more_info']?['language'] == null
             ? response['language'].toString()
             : response['more_info']['language'].toString()),
-        'genre': capitalize(response['more_info']['language'] == null
+        'genre': capitalize(response['more_info']?['language'] == null
             ? response['language'].toString()
             : response['more_info']['language'].toString()),
         'album_id': response['id'],
@@ -232,8 +233,6 @@ class FormatResponse {
             ? formatString(response['subtitle'].toString())
             : formatString(response['description'].toString()),
         'title': formatString(response['title'].toString()),
-        // .split('(')
-        // .first
         'artist': response['music'] == null
             ? response['more_info']['music'] == null
                 ? response['more_info']['artistMap']['primary_artists'] == null
@@ -251,12 +250,13 @@ class FormatResponse {
             .replaceAll('150x150', '500x500')
             .replaceAll('50x50', '500x500')
             .replaceAll('http:', 'https:'),
-        'count': response['more_info']['song_pids'] == null
+        'count': response['more_info']?['song_pids'] == null
             ? 0
             : response['more_info']['song_pids'].toString().split(', ').length,
         'songs_pids': response['more_info']['song_pids'].toString().split(', '),
       };
     } catch (e) {
+      log('Error inside formatSingleAlbumResponse: $e');
       return {'Error': e};
     }
   }
@@ -278,8 +278,6 @@ class FormatResponse {
             ? formatString(response['subtitle'].toString())
             : formatString(response['description'].toString()),
         'title': formatString(response['title'].toString()),
-        // .split('(')
-        // .first
         'artist': formatString(response['extra'].toString()),
         'album_artist': response['more_info'] == null
             ? response['music']
@@ -291,6 +289,7 @@ class FormatResponse {
             .replaceAll('http:', 'https:'),
       };
     } catch (e) {
+      log('Error inside formatSinglePlaylistResponse: $e');
       return {'Error': e};
     }
   }
@@ -329,6 +328,7 @@ class FormatResponse {
             .replaceAll('http:', 'https:'),
       };
     } catch (e) {
+      log('Error inside formatSingleArtistResponse: $e');
       return {'Error': e};
     }
   }
@@ -350,12 +350,12 @@ class FormatResponse {
   Future<Map> formatSingleArtistTopAlbumSongResponse(Map response) async {
     try {
       final List artistNames = [];
-      if (response['more_info']['artistMap']['primary_artists'] == null ||
+      if (response['more_info']?['artistMap']?['primary_artists'] == null ||
           response['more_info']['artistMap']['primary_artists'].length == 0) {
-        if (response['more_info']['artistMap']['featured_artists'] == null ||
+        if (response['more_info']?['artistMap']?['featured_artists'] == null ||
             response['more_info']['artistMap']['featured_artists'].length ==
                 0) {
-          if (response['more_info']['artistMap']['artists'] == null ||
+          if (response['more_info']?['artistMap']?['artists'] == null ||
               response['more_info']['artistMap']['artists'].length == 0) {
             artistNames.add('Unknown');
           } else {
@@ -426,6 +426,27 @@ class FormatResponse {
   //   return result;
   // }
 
+  Future<Map> formatSingleShowResponse(Map response) async {
+    try {
+      return {
+        'id': response['id'],
+        'type': response['type'],
+        'album': formatString(response['title'].toString()),
+        'subtitle': response['description'] == null
+            ? formatString(response['subtitle'].toString())
+            : formatString(response['description'].toString()),
+        'title': formatString(response['title'].toString()),
+        'image': response['image']
+            .toString()
+            .replaceAll('150x150', '500x500')
+            .replaceAll('50x50', '500x500')
+            .replaceAll('http:', 'https:'),
+      };
+    } catch (e) {
+      return {'Error': e};
+    }
+  }
+
   Future<Map> formatHomePageData(Map data) async {
     try {
       data['new_trending'] = await formatSongsInList(
@@ -433,8 +454,10 @@ class FormatResponse {
           fetchDetails: false);
       data['new_albums'] = await formatSongsInList(data['new_albums'] as List,
           fetchDetails: false);
-      data['city_mod'] =
-          await formatSongsInList(data['city_mod'] as List, fetchDetails: true);
+      if (data['city_mod'] != null) {
+        data['city_mod'] = await formatSongsInList(data['city_mod'] as List,
+            fetchDetails: true);
+      }
       final List promoList = [];
       final List promoListTemp = [];
       data['modules'].forEach((k, v) {

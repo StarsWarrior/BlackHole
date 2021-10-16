@@ -3,10 +3,118 @@ import 'package:blackhole/CustomWidgets/collage.dart';
 import 'package:blackhole/CustomWidgets/gradient_containers.dart';
 import 'package:blackhole/CustomWidgets/snackbar.dart';
 import 'package:blackhole/CustomWidgets/textinput_dialog.dart';
+import 'package:blackhole/Helpers/audio_query.dart';
 import 'package:blackhole/Helpers/playlist.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:hive/hive.dart';
+import 'package:on_audio_query/on_audio_query.dart';
+
+class AddToOffPlaylist {
+  OfflineAudioQuery offlineAudioQuery = OfflineAudioQuery();
+
+  Future<void> addToOffPlaylist(BuildContext context, int audioId) async {
+    List<PlaylistModel> playlistDetails =
+        await offlineAudioQuery.getPlaylists();
+    showModalBottomSheet(
+      isDismissible: true,
+      backgroundColor: Colors.transparent,
+      context: context,
+      builder: (BuildContext context) {
+        return BottomGradientContainer(
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ListTile(
+                  title: Text(AppLocalizations.of(context)!.createPlaylist),
+                  leading: Card(
+                    elevation: 0,
+                    color: Colors.transparent,
+                    child: SizedBox(
+                      width: 50,
+                      height: 50,
+                      child: Center(
+                        child: Icon(
+                          Icons.add_rounded,
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? null
+                              : Colors.grey[700],
+                        ),
+                      ),
+                    ),
+                  ),
+                  onTap: () {
+                    TextInputDialog().showTextInputDialog(
+                        context: context,
+                        keyboardType: TextInputType.text,
+                        title: AppLocalizations.of(context)!.createNewPlaylist,
+                        onSubmitted: (String value) async {
+                          await offlineAudioQuery.createPlaylist(name: value);
+                          playlistDetails =
+                              await offlineAudioQuery.getPlaylists();
+                          Navigator.pop(context);
+                        });
+                  },
+                ),
+                if (playlistDetails.isEmpty)
+                  const SizedBox()
+                else
+                  ListView.builder(
+                    physics: const NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    itemCount: playlistDetails.length,
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        leading: Card(
+                          elevation: 5,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(7.0),
+                          ),
+                          clipBehavior: Clip.antiAlias,
+                          child: QueryArtworkWidget(
+                            id: playlistDetails[index].id,
+                            type: ArtworkType.PLAYLIST,
+                            keepOldArtwork: true,
+                            artworkBorder: BorderRadius.circular(7.0),
+                            nullArtworkWidget: ClipRRect(
+                              borderRadius: BorderRadius.circular(7.0),
+                              child: const Image(
+                                fit: BoxFit.cover,
+                                height: 50.0,
+                                width: 50.0,
+                                image: AssetImage('assets/cover.jpg'),
+                              ),
+                            ),
+                          ),
+                        ),
+                        title: Text(
+                          playlistDetails[index].playlist,
+                        ),
+                        subtitle: Text(
+                          '${playlistDetails[index].numOfSongs} Songs',
+                        ),
+                        onTap: () {
+                          Navigator.pop(context);
+                          offlineAudioQuery.addToPlaylist(
+                              playlistId: playlistDetails[index].id,
+                              audioId: audioId);
+                          ShowSnackBar().showSnackBar(
+                            context,
+                            '${AppLocalizations.of(context)!.addedTo} ${playlistDetails[index].playlist}',
+                          );
+                        },
+                      );
+                    },
+                  ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
 
 class AddToPlaylist {
   Box settingsBox = Hive.box('settings');

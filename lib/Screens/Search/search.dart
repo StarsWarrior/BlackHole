@@ -126,17 +126,19 @@ class _SearchPageState extends State<SearchPage> {
                   onSubmitted: (_query) {
                     _controller.close();
 
-                    setState(() {
-                      fetched = false;
-                      query = _query;
-                      status = false;
-                      fromHome = false;
-                      searchedData = {};
-                      if (search.contains(_query)) search.remove(_query);
-                      search.insert(0, _query);
-                      if (search.length > 5) search = search.sublist(0, 5);
-                      Hive.box('settings').put('search', search);
-                    });
+                    if (_query.trim() != '') {
+                      setState(() {
+                        fetched = false;
+                        query = _query;
+                        status = false;
+                        fromHome = false;
+                        searchedData = {};
+                        if (search.contains(_query)) search.remove(_query);
+                        search.insert(0, _query);
+                        if (search.length > 5) search = search.sublist(0, 5);
+                        Hive.box('settings').put('search', search);
+                      });
+                    }
                   },
                   transition:
                       // CircularFloatingSearchBarTransition(),
@@ -145,7 +147,25 @@ class _SearchPageState extends State<SearchPage> {
                     FloatingSearchBarAction(
                       child: CircularButton(
                         icon: const Icon(CupertinoIcons.search),
-                        onPressed: () {},
+                        onPressed: () {
+                          if (_controller.query.trim() != '') {
+                            setState(() {
+                              fetched = false;
+                              query = _controller.query;
+                              status = false;
+                              fromHome = false;
+                              searchedData = {};
+                              if (search.contains(_controller.query)) {
+                                search.remove(_controller.query);
+                              }
+                              search.insert(0, _controller.query);
+                              if (search.length > 5) {
+                                search = search.sublist(0, 5);
+                              }
+                              Hive.box('settings').put('search', search);
+                            });
+                          }
+                        },
                       ),
                     ),
                     FloatingSearchBarAction(

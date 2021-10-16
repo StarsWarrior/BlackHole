@@ -152,9 +152,6 @@ class _DownloadsState extends State<Downloads>
           .toUpperCase()
           .compareTo(b['dateAdded'].toString().toUpperCase()));
     }
-    if (sortValue == 3) {
-      _songs.shuffle();
-    }
   }
 
   void sortAlbums() {
@@ -189,11 +186,6 @@ class _DownloadsState extends State<Downloads>
           .sort((a, b) => _artists[a]!.length.compareTo(_artists[b]!.length));
       sortedGenreKeysList
           .sort((a, b) => _genres[a]!.length.compareTo(_genres[b]!.length));
-    }
-    if (albumSortValue == 4) {
-      sortedAlbumKeysList.shuffle();
-      sortedArtistKeysList.shuffle();
-      sortedGenreKeysList.shuffle();
     }
   }
 
@@ -267,28 +259,6 @@ class _DownloadsState extends State<Downloads>
                     ),
                   ]),
                   actions: [
-                    if (_songs.isNotEmpty)
-                      IconButton(
-                          icon: const Icon(Icons.shuffle_rounded),
-                          tooltip: 'Shuffle & Play',
-                          onPressed: () {
-                            final List tempList = List.from(_songs);
-                            tempList.shuffle();
-                            Navigator.of(context).push(
-                              PageRouteBuilder(
-                                opaque: false, // set to false
-                                pageBuilder: (_, __, ___) => PlayScreen(
-                                  data: {
-                                    'index': 0,
-                                    'response': tempList,
-                                    'offline': true,
-                                    'downloaded': true,
-                                  },
-                                  fromMiniplayer: false,
-                                ),
-                              ),
-                            );
-                          }),
                     IconButton(
                       icon: const Icon(CupertinoIcons.search),
                       tooltip: AppLocalizations.of(context)!.search,

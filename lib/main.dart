@@ -26,12 +26,13 @@ import 'package:blackhole/Screens/Library/downloads.dart';
 import 'package:blackhole/Screens/Library/nowplaying.dart';
 import 'package:blackhole/Screens/Library/playlists.dart';
 import 'package:blackhole/Screens/Library/recent.dart';
+import 'package:blackhole/Screens/LocalMusic/localplaylists.dart';
+import 'package:blackhole/Screens/LocalMusic/my_music.dart';
 import 'package:blackhole/Screens/Login/auth.dart';
 import 'package:blackhole/Screens/Login/pref.dart';
 import 'package:blackhole/Screens/Player/audioplayer.dart';
 import 'package:blackhole/Screens/Settings/setting.dart';
 import 'package:blackhole/Services/audio_service.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_displaymode/flutter_displaymode.dart';
@@ -126,14 +127,29 @@ Future<void> openHiveBox(String boxName, {bool limit = false}) async {
 class MyApp extends StatefulWidget {
   @override
   _MyAppState createState() => _MyAppState();
+
+  static _MyAppState of(BuildContext context) =>
+      context.findAncestorStateOfType<_MyAppState>()!;
 }
 
 class _MyAppState extends State<MyApp> {
+  Locale _locale = const Locale('en', '');
+
   @override
   void initState() {
     super.initState();
+    final String lang =
+        Hive.box('settings').get('lang', defaultValue: 'English') as String;
+    final Map<String, String> codes = {'English': 'en', 'Russian': 'ru'};
+    _locale = Locale(codes[lang]!);
     currentTheme.addListener(() {
       setState(() {});
+    });
+  }
+
+  void setLocale(Locale value) {
+    setState(() {
+      _locale = value;
     });
   }
 
@@ -237,6 +253,7 @@ class _MyAppState extends State<MyApp> {
               brightness: Brightness.dark,
             ),
       ),
+      locale: _locale,
       localizationsDelegates: const [
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
@@ -245,6 +262,7 @@ class _MyAppState extends State<MyApp> {
       ],
       supportedLocales: const [
         Locale('en', ''), // English, no country code
+        Locale('ru', ''), // Russian
       ],
       routes: {
         '/': (context) => initialFuntion(),
@@ -252,6 +270,8 @@ class _MyAppState extends State<MyApp> {
         '/setting': (context) => const SettingPage(),
         '/about': (context) => AboutScreen(),
         '/playlists': (context) => PlaylistScreen(),
+        '/localplaylists': (context) => LocalPlaylistScreen(),
+        '/mymusic': (context) => MyMusicPage(),
         '/nowplaying': (context) => NowPlaying(),
         '/recent': (context) => RecentlyPlayed(),
         '/downloads': (context) => const Downloads(),

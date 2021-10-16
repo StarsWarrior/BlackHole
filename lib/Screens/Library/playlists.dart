@@ -82,11 +82,12 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                                 AppLocalizations.of(context)!.createNewPlaylist,
                             initialText: '',
                             keyboardType: TextInputType.name,
-                            onSubmitted: (String value) {
+                            onSubmitted: (String value) async {
                               if (value.trim() == '') {
                                 value = 'Playlist ${playlistNames.length}';
                               }
-                              while (playlistNames.contains(value)) {
+                              while (playlistNames.contains(value) ||
+                                  await Hive.boxExists(value)) {
                                 // ignore: use_string_buffers
                                 value = '$value (1)';
                               }
@@ -563,7 +564,8 @@ Future<void> fetchPlaylists(String code, BuildContext context,
 
                                 String playName =
                                     AppLocalizations.of(context)!.spotifyPublic;
-                                while (playlistNames.contains(playName)) {
+                                while (playlistNames.contains(playName) ||
+                                    await Hive.boxExists(value)) {
                                   // ignore: use_string_buffers
                                   playName = '$playName (1)';
                                 }
@@ -652,12 +654,14 @@ Future<void> fetchPlaylists(String code, BuildContext context,
 
           tracks.addAll(data['tracks'] as List);
         }
-        while (playlistNames.contains(playName)) {
-          // ignore: use_string_buffers
-          playName = '$playName (1)';
+        if (!playlistNames.contains(playName)) {
+          while (await Hive.boxExists(playName)) {
+            // ignore: use_string_buffers
+            playName = '$playName (1)';
+          }
+          playlistNames.add(playName);
+          settingsBox.put('playlistNames', playlistNames);
         }
-        playlistNames.add(playName);
-        settingsBox.put('playlistNames', playlistNames);
 
         for (final track in tracks) {
           String? trackArtist;
