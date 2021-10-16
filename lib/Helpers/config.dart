@@ -10,7 +10,8 @@ class MyTheme with ChangeNotifier {
   bool _useSystemTheme =
       Hive.box('settings').get('useSystemTheme', defaultValue: false) as bool;
 
-  String? accentColor = Hive.box('settings').get('themeColor') as String?;
+  String accentColor =
+      Hive.box('settings').get('themeColor', defaultValue: 'Teal') as String;
   String canvasColor =
       Hive.box('settings').get('canvasColor', defaultValue: 'Grey') as String;
   String cardColor =
@@ -280,6 +281,45 @@ class MyTheme with ChangeNotifier {
       default:
         return _isDark ? Colors.tealAccent[400]! : Colors.lightBlueAccent[400]!;
     }
+  }
+
+  void saveTheme(String themeName) {
+    final userThemes =
+        Hive.box('settings').get('userThemes', defaultValue: {}) as Map;
+    Hive.box('settings').put('userThemes', {
+      ...userThemes,
+      themeName: {
+        'isDark': _isDark,
+        'useSystemTheme': _useSystemTheme,
+        'accentColor': accentColor,
+        'canvasColor': canvasColor,
+        'cardColor': cardColor,
+        'backGrad': backGrad,
+        'cardGrad': cardGrad,
+        'bottomGrad': bottomGrad,
+        'colorHue': colorHue,
+      }
+    });
+  }
+
+  void deleteTheme(String themeName) {
+    final userThemes =
+        Hive.box('settings').get('userThemes', defaultValue: {}) as Map;
+    userThemes.remove(themeName);
+
+    Hive.box('settings').put('userThemes', {...userThemes});
+  }
+
+  Map getThemes() {
+    return Hive.box('settings').get('userThemes', defaultValue: {}) as Map;
+  }
+
+  void setInitialTheme(String themeName) {
+    Hive.box('settings').put('theme', themeName);
+  }
+
+  String getInitialTheme() {
+    return Hive.box('settings').get('theme') as String;
   }
 }
 

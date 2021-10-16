@@ -44,6 +44,10 @@ class _SettingPageState extends State<SettingPage> {
       Hive.box('settings').get('canvasColor', defaultValue: 'Grey') as String;
   String cardColor =
       Hive.box('settings').get('cardColor', defaultValue: 'Grey850') as String;
+  String theme =
+      Hive.box('settings').get('theme', defaultValue: 'Default') as String;
+  Map userThemes =
+      Hive.box('settings').get('userThemes', defaultValue: {}) as Map;
   String region =
       Hive.box('settings').get('region', defaultValue: 'India') as String;
   bool useProxy =
@@ -105,6 +109,12 @@ class _SettingPageState extends State<SettingPage> {
 
   @override
   Widget build(BuildContext context) {
+    final List<String> userThemesList = <String>[
+      'Default',
+      ...userThemes.keys.map((theme) => theme as String),
+      'Custom',
+    ];
+
     return Scaffold(
       // backgroundColor: Colors.transparent,
       body: CustomScrollView(physics: const BouncingScrollPhysics(), slivers: [
@@ -169,6 +179,7 @@ class _SettingPageState extends State<SettingPage> {
                               box.put('useSystemTheme', false);
                               currentTheme.switchTheme(
                                   isDark: val, useSystemTheme: false);
+                              switchToCustomTheme();
                             }),
                         BoxSwitchTile(
                             title: Text(
@@ -177,6 +188,7 @@ class _SettingPageState extends State<SettingPage> {
                             defaultValue: true,
                             onChanged: (bool val, Box box) {
                               currentTheme.switchTheme(useSystemTheme: val);
+                              switchToCustomTheme();
                             }),
                         ListTile(
                           title: Text(AppLocalizations.of(context)!.accent),
@@ -255,6 +267,7 @@ class _SettingPageState extends State<SettingPage> {
                                                           colors[index],
                                                           colorHue);
                                                       setState(() {});
+                                                      switchToCustomTheme();
                                                       Navigator.pop(context);
                                                     },
                                                     child: Container(
@@ -377,6 +390,7 @@ class _SettingPageState extends State<SettingPage> {
                                                       currentTheme.backGrad =
                                                           index;
                                                       widget.callback!();
+                                                      switchToCustomTheme();
                                                       Navigator.pop(context);
                                                       setState(() {});
                                                     },
@@ -497,6 +511,7 @@ class _SettingPageState extends State<SettingPage> {
                                                       currentTheme.cardGrad =
                                                           index;
                                                       widget.callback!();
+                                                      switchToCustomTheme();
                                                       Navigator.pop(context);
                                                       setState(() {});
                                                     },
@@ -616,6 +631,7 @@ class _SettingPageState extends State<SettingPage> {
                                                           'bottomGrad', index);
                                                       currentTheme.bottomGrad =
                                                           index;
+                                                      switchToCustomTheme();
                                                       Navigator.pop(context);
                                                       setState(() {});
                                                     },
@@ -688,6 +704,7 @@ class _SettingPageState extends State<SettingPage> {
                                   underline: const SizedBox(),
                                   onChanged: (String? newValue) {
                                     if (newValue != null) {
+                                      switchToCustomTheme();
                                       setState(() {
                                         currentTheme
                                             .switchCanvasColor(newValue);
@@ -724,6 +741,7 @@ class _SettingPageState extends State<SettingPage> {
                                   underline: const SizedBox(),
                                   onChanged: (String? newValue) {
                                     if (newValue != null) {
+                                      switchToCustomTheme();
                                       setState(() {
                                         currentTheme.switchCardColor(newValue);
                                         cardColor = newValue;
@@ -784,34 +802,243 @@ class _SettingPageState extends State<SettingPage> {
                               currentTheme.switchColor('White', colorHue);
                             }),
                         ListTile(
-                            title: Text(
-                                AppLocalizations.of(context)!.changeDefault),
-                            dense: true,
+                          title:
+                              Text(AppLocalizations.of(context)!.currentTheme),
+                          trailing: DropdownButton(
+                            value: theme,
+                            style: TextStyle(
+                              fontSize: 12,
+                              color:
+                                  Theme.of(context).textTheme.bodyText1!.color,
+                            ),
+                            underline: const SizedBox(),
+                            onChanged: (String? themeChoice) {
+                              if (themeChoice != null) {
+                                const deflt = 'Default';
+
+                                currentTheme.setInitialTheme(themeChoice);
+
+                                setState(() {
+                                  theme = themeChoice;
+                                  if (themeChoice == 'Custom') return;
+                                  final selectedTheme = userThemes[themeChoice];
+
+                                  settingsBox.put(
+                                    'backGrad',
+                                    themeChoice == deflt
+                                        ? 1
+                                        : selectedTheme['backGrad'],
+                                  );
+                                  currentTheme.backGrad = themeChoice == deflt
+                                      ? 1
+                                      : selectedTheme['backGrad'] as int;
+
+                                  settingsBox.put(
+                                    'cardGrad',
+                                    themeChoice == deflt
+                                        ? 3
+                                        : selectedTheme['cardGrad'],
+                                  );
+                                  currentTheme.cardGrad = themeChoice == deflt
+                                      ? 3
+                                      : selectedTheme['cardGrad'] as int;
+
+                                  settingsBox.put(
+                                    'bottomGrad',
+                                    themeChoice == deflt
+                                        ? 2
+                                        : selectedTheme['bottomGrad'],
+                                  );
+                                  currentTheme.bottomGrad = themeChoice == deflt
+                                      ? 2
+                                      : selectedTheme['bottomGrad'] as int;
+
+                                  currentTheme.switchCanvasColor(
+                                      themeChoice == deflt
+                                          ? 'Grey'
+                                          : selectedTheme['canvasColor']
+                                              as String,
+                                      notify: false);
+                                  canvasColor = themeChoice == deflt
+                                      ? 'Grey'
+                                      : selectedTheme['canvasColor'] as String;
+
+                                  currentTheme.switchCardColor(
+                                      themeChoice == deflt
+                                          ? 'Grey850'
+                                          : selectedTheme['cardColor']
+                                              as String,
+                                      notify: false);
+                                  cardColor = themeChoice == deflt
+                                      ? 'Grey850'
+                                      : selectedTheme['cardColor'] as String;
+
+                                  themeColor = themeChoice == deflt
+                                      ? 'Teal'
+                                      : selectedTheme['accentColor'] as String;
+                                  colorHue = themeChoice == deflt
+                                      ? 400
+                                      : selectedTheme['colorHue'] as int;
+
+                                  currentTheme.switchColor(
+                                    themeColor,
+                                    colorHue,
+                                    notify: false,
+                                  );
+
+                                  currentTheme.switchTheme(
+                                    useSystemTheme: !(themeChoice == deflt) &&
+                                        selectedTheme['useSystemTheme'] as bool,
+                                    isDark: themeChoice == deflt ||
+                                        selectedTheme['isDark'] as bool,
+                                  );
+                                });
+                              }
+                            },
+                            selectedItemBuilder: (BuildContext context) {
+                              return userThemesList.map<Widget>((String item) {
+                                return Text(item);
+                              }).toList();
+                            },
+                            items: userThemesList.map((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Flexible(
+                                      flex: 2,
+                                      child: Text(
+                                        value,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                    if (value != 'Default' && value != 'Custom')
+                                      Flexible(
+                                        child: IconButton(
+                                          //padding: EdgeInsets.zero,
+                                          iconSize: 18,
+                                          splashRadius: 18,
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                            showDialog(
+                                              context: context,
+                                              builder: (BuildContext context) =>
+                                                  AlertDialog(
+                                                title: Text(
+                                                  AppLocalizations.of(context)!
+                                                      .deleteTheme,
+                                                  style: TextStyle(
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .secondary,
+                                                  ),
+                                                ),
+                                                content: Text(
+                                                    '${AppLocalizations.of(context)!.deleteThemeSubtitle} $value?'),
+                                                actions: [
+                                                  TextButton(
+                                                    onPressed:
+                                                        Navigator.of(context)
+                                                            .pop,
+                                                    child: Text(
+                                                        AppLocalizations.of(
+                                                                context)!
+                                                            .cancel),
+                                                  ),
+                                                  TextButton(
+                                                    onPressed: () {
+                                                      currentTheme
+                                                          .deleteTheme(value);
+                                                      if (currentTheme
+                                                              .getInitialTheme() ==
+                                                          value) {
+                                                        currentTheme
+                                                            .setInitialTheme(
+                                                                'Custom');
+                                                        theme = 'Custom';
+                                                      }
+                                                      setState(() {
+                                                        userThemes =
+                                                            currentTheme
+                                                                .getThemes();
+                                                      });
+                                                      ShowSnackBar()
+                                                          .showSnackBar(
+                                                        context,
+                                                        AppLocalizations.of(
+                                                                context)!
+                                                            .themeDeleted,
+                                                      );
+                                                      return Navigator.of(
+                                                              context)
+                                                          .pop();
+                                                    },
+                                                    child: Text(
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .delete,
+                                                      style: TextStyle(
+                                                        color: Theme.of(context)
+                                                            .colorScheme
+                                                            .error,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            );
+                                          },
+                                          icon: Icon(
+                                            Icons.delete,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .error,
+                                          ),
+                                        ),
+                                      )
+                                  ],
+                                ),
+                              );
+                            }).toList(),
+                            isDense: true,
+                          ),
+                          dense: true,
+                        ),
+                        Visibility(
+                          visible: theme == 'Custom',
+                          child: ListTile(
+                            title:
+                                Text(AppLocalizations.of(context)!.saveTheme),
                             onTap: () {
-                              settingsBox.put('backGrad', 1);
-                              currentTheme.backGrad = 1;
-                              settingsBox.put('cardGrad', 3);
-                              currentTheme.cardGrad = 3;
-                              settingsBox.put('bottomGrad', 2);
-                              currentTheme.bottomGrad = 2;
-
-                              currentTheme.switchCanvasColor('Grey',
-                                  notify: false);
-                              canvasColor = 'Grey';
-
-                              currentTheme.switchCardColor('Grey850',
-                                  notify: false);
-                              cardColor = 'Grey850';
-
-                              themeColor = 'Teal';
-                              colorHue = 400;
-
-                              currentTheme.switchColor(themeColor, colorHue,
-                                  notify: false);
-
-                              currentTheme.switchTheme(
-                                  useSystemTheme: false, isDark: true);
-                            }),
+                              final initialThemeName =
+                                  '${AppLocalizations.of(context)!.theme} ${userThemes.length + 1}';
+                              TextInputDialog().showTextInputDialog(
+                                context: context,
+                                title: AppLocalizations.of(context)!
+                                    .enterThemeName,
+                                onSubmitted: (value) {
+                                  if (value == '') return;
+                                  currentTheme.saveTheme(value);
+                                  currentTheme.setInitialTheme(value);
+                                  setState(() {
+                                    userThemes = currentTheme.getThemes();
+                                    theme = value;
+                                  });
+                                  ShowSnackBar().showSnackBar(
+                                    context,
+                                    AppLocalizations.of(context)!.themeSaved,
+                                  );
+                                  Navigator.of(context).pop();
+                                },
+                                keyboardType: TextInputType.text,
+                                initialText: initialThemeName,
+                              );
+                            },
+                            dense: true,
+                          ),
+                        )
                       ],
                     ),
                   ),
@@ -2018,6 +2245,16 @@ class _SettingPageState extends State<SettingPage> {
         ),
       ]),
     );
+  }
+
+  void switchToCustomTheme() {
+    const custom = 'Custom';
+    if (theme != custom) {
+      currentTheme.setInitialTheme(custom);
+      setState(() {
+        theme = custom;
+      });
+    }
   }
 }
 
