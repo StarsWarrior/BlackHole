@@ -98,9 +98,10 @@ class _AuthScreenState extends State<AuthScreen> {
                     ],
                   ),
                   Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 30.0, right: 30.0),
-                      child: Center(
+                    child: Center(
+                      child: SingleChildScrollView(
+                        padding: const EdgeInsets.only(left: 30.0, right: 30.0),
+                        physics: const BouncingScrollPhysics(),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
