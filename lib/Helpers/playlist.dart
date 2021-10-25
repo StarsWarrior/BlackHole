@@ -6,12 +6,10 @@ import 'package:hive/hive.dart';
 bool checkPlaylist(String name, String key) {
   if (name != 'Favorite Songs') {
     Hive.openBox(name).then((value) {
-      final playlistBox = Hive.box(name);
-      return playlistBox.containsKey(key);
+      return Hive.box(name).containsKey(key);
     });
   }
-  final playlistBox = Hive.box(name);
-  return playlistBox.containsKey(key);
+  return Hive.box(name).containsKey(key);
 }
 
 Future<void> removeLiked(String key) async {

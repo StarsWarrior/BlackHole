@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:blackhole/Helpers/audio_query.dart';
 import 'package:blackhole/Screens/Player/audioplayer.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -146,9 +147,10 @@ class DataSearch extends SearchDelegate {
 }
 
 class DownloadsSearch extends SearchDelegate {
+  final bool isDowns;
   final List data;
 
-  DownloadsSearch(this.data);
+  DownloadsSearch({required this.data, this.isDowns = false});
 
   @override
   List<Widget> buildActions(BuildContext context) {
@@ -219,11 +221,26 @@ class DownloadsSearch extends SearchDelegate {
           child: SizedBox(
             height: 50.0,
             width: 50.0,
-            child: Image(
-              fit: BoxFit.cover,
-              image: FileImage(File(suggestionList[index]['image'].toString())),
-              errorBuilder: (_, __, ___) => Image.asset('assets/cover.jpg'),
-            ),
+            child: isDowns
+                ? Image(
+                    fit: BoxFit.cover,
+                    image: FileImage(
+                        File(suggestionList[index]['image'].toString())),
+                    errorBuilder: (_, __, ___) =>
+                        Image.asset('assets/cover.jpg'),
+                  )
+                : CachedNetworkImage(
+                    fit: BoxFit.cover,
+                    errorWidget: (context, _, __) => const Image(
+                      image: AssetImage('assets/cover.jpg'),
+                    ),
+                    imageUrl: suggestionList[index]['image']
+                        .toString()
+                        .replaceAll('http:', 'https:'),
+                    placeholder: (context, url) => const Image(
+                      image: AssetImage('assets/cover.jpg'),
+                    ),
+                  ),
           ),
         ),
         title: Text(
@@ -242,7 +259,7 @@ class DownloadsSearch extends SearchDelegate {
                 data: {
                   'response': suggestionList,
                   'index': index,
-                  'offline': true
+                  'offline': isDowns,
                 },
                 fromMiniplayer: false,
               ),

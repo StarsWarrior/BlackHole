@@ -6,6 +6,7 @@ import 'package:blackhole/CustomWidgets/add_queue.dart';
 import 'package:blackhole/CustomWidgets/download_button.dart';
 import 'package:blackhole/CustomWidgets/empty_screen.dart';
 import 'package:blackhole/CustomWidgets/gradient_containers.dart';
+import 'package:blackhole/CustomWidgets/like_button.dart';
 import 'package:blackhole/CustomWidgets/miniplayer.dart';
 import 'package:blackhole/Screens/Player/audioplayer.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -362,6 +363,8 @@ class _SongsListPageState extends State<SongsListPage> {
                                               data: entry as Map,
                                               icon: 'download',
                                             ),
+                                            LikeButton(
+                                                mediaItem: null, data: entry),
                                             AddToQueueButton(data: entry),
                                           ],
                                         ),

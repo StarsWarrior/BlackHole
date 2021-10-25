@@ -52,6 +52,7 @@ Future<void> main() async {
   await Hive.initFlutter();
   await openHiveBox('settings');
   await openHiveBox('downloads');
+  await openHiveBox('Favorite Songs');
   await openHiveBox('cache', limit: true);
   if (Platform.isAndroid) {
     setOptimalDisplayMode();

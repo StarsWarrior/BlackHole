@@ -232,7 +232,17 @@ class _YouTubeSearchPageState extends State<YouTubeSearchPage> {
                                               final Map? response =
                                                   await YouTubeServices()
                                                       .formatVideo(
-                                                          searchedList[index]);
+                                                video: searchedList[index],
+                                                quality: Hive.box('settings')
+                                                    .get('ytQuality',
+                                                        defaultValue: 'High')
+                                                    .toString(),
+                                                // preferM4a: Hive.box(
+                                                //         'settings')
+                                                //     .get('preferM4a',
+                                                //         defaultValue:
+                                                //             true) as bool
+                                              );
                                               setState(() {
                                                 done = true;
                                               });

@@ -207,7 +207,11 @@ class YouTubeServices {
     }
   }
 
-  Future<Map?> formatVideo(Video video) async {
+  Future<Map?> formatVideo({
+    required Video video,
+    String quality = 'High',
+    // bool preferM4a = true,
+  }) async {
     if (video.duration?.inSeconds == null) return null;
     return {
       'id': video.id.value,
@@ -219,7 +223,7 @@ class YouTubeServices {
       'secondImage': video.thumbnails.highResUrl.toString(),
       'language': 'YouTube',
       'genre': 'YouTube',
-      'url': await getUri(video),
+      'url': await getUri(video, quality),
       'year': video.uploadDate?.year.toString(),
       '320kbps': 'false',
       'has_lyrics': 'false',
@@ -279,11 +283,35 @@ class YouTubeServices {
     return searchResults;
   }
 
-  Future<String> getUri(Video video) async {
+  Future<String> getUri(
+    Video video,
+    String quality,
+    // {bool preferM4a = true}
+  ) async {
     final StreamManifest manifest =
         await yt.videos.streamsClient.getManifest(video.id);
-    final AudioOnlyStreamInfo streamInfo =
-        manifest.audioOnly.withHighestBitrate();
+    final List<AudioOnlyStreamInfo> sortedStreamInfo =
+        manifest.audioOnly.sortByBitrate();
+    // if (preferM4a) {
+    //   final List<AudioOnlyStreamInfo> temp = sortedStreamInfo
+    //       .where((element) => element.audioCodec == 'mp4')
+    //       .toList();
+
+    //   if (temp.isNotEmpty) {
+    //     if (quality == 'High') {
+    //       final AudioOnlyStreamInfo streamInfo = temp.last;
+    //       return streamInfo.url.toString();
+    //     } else {
+    //       final AudioOnlyStreamInfo streamInfo = temp.first;
+    //       return streamInfo.url.toString();
+    //     }
+    //   }
+    // }
+    if (quality == 'High') {
+      final AudioOnlyStreamInfo streamInfo = sortedStreamInfo.last;
+      return streamInfo.url.toString();
+    }
+    final AudioOnlyStreamInfo streamInfo = sortedStreamInfo.first;
     return streamInfo.url.toString();
   }
 }

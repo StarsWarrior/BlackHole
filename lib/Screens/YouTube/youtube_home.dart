@@ -290,6 +290,7 @@ class _YouTubeState extends State<YouTube>
                 ),
               if (searchedList.isEmpty)
                 SizedBox(
+                  height: boxSize,
                   child: Center(
                     child: SizedBox(
                         height: boxSize / 7,

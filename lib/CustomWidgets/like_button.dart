@@ -5,9 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class LikeButton extends StatefulWidget {
-  final MediaItem mediaItem;
+  final MediaItem? mediaItem;
   final double? size;
-  const LikeButton({Key? key, required this.mediaItem, this.size})
+  final Map? data;
+  const LikeButton({Key? key, required this.mediaItem, this.size, this.data})
       : super(key: key);
 
   @override
@@ -20,7 +21,11 @@ class _LikeButtonState extends State<LikeButton> {
   @override
   Widget build(BuildContext context) {
     try {
-      liked = checkPlaylist('Favorite Songs', widget.mediaItem.id);
+      if (widget.mediaItem != null) {
+        liked = checkPlaylist('Favorite Songs', widget.mediaItem!.id);
+      } else {
+        liked = checkPlaylist('Favorite Songs', widget.data!['id'].toString());
+      }
     } catch (e) {
       // print('Error: $e');
     }
@@ -35,8 +40,12 @@ class _LikeButtonState extends State<LikeButton> {
             : AppLocalizations.of(context)!.like,
         onPressed: () {
           liked
-              ? removeLiked(widget.mediaItem.id)
-              : addItemToPlaylist('Favorite Songs', widget.mediaItem);
+              ? removeLiked(widget.mediaItem == null
+                  ? widget.data!['id'].toString()
+                  : widget.mediaItem!.id)
+              : widget.mediaItem == null
+                  ? addMapToPlaylist('Favorite Songs', widget.data!)
+                  : addItemToPlaylist('Favorite Songs', widget.mediaItem!);
 
           setState(() {
             liked = !liked;
@@ -51,8 +60,14 @@ class _LikeButtonState extends State<LikeButton> {
                 label: AppLocalizations.of(context)!.undo,
                 onPressed: () {
                   liked
-                      ? removeLiked(widget.mediaItem.id)
-                      : addItemToPlaylist('Favorite Songs', widget.mediaItem);
+                      ? removeLiked(widget.mediaItem == null
+                          ? widget.data!['id'].toString()
+                          : widget.mediaItem!.id)
+                      : widget.mediaItem == null
+                          ? addMapToPlaylist('Favorite Songs', widget.data!)
+                          : addItemToPlaylist(
+                              'Favorite Songs', widget.mediaItem!);
+
                   liked = !liked;
                   setState(() {});
                 }),

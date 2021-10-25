@@ -8,7 +8,8 @@ import 'package:hive/hive.dart';
 class DownloadButton extends StatefulWidget {
   final Map data;
   final String? icon;
-  const DownloadButton({Key? key, required this.data, this.icon})
+  final double? size;
+  const DownloadButton({Key? key, required this.data, this.icon, this.size})
       : super(key: key);
 
   @override
@@ -39,23 +40,22 @@ class _DownloadButtonState extends State<DownloadButton> {
                   icon: const Icon(Icons.download_done_rounded),
                   tooltip: 'Download Done',
                   color: Theme.of(context).colorScheme.secondary,
-                  iconSize: 25.0,
+                  iconSize: widget.size ?? 24.0,
                   onPressed: () {
                     down.prepareDownload(context, widget.data);
                   },
                 )
               : down.progress == 0
-                  ? Center(
-                      child: IconButton(
-                          icon: Icon(widget.icon == 'download'
-                              ? Icons.download_rounded
-                              : Icons.save_alt),
-                          iconSize: 25.0,
-                          color: Theme.of(context).iconTheme.color,
-                          tooltip: 'Download',
-                          onPressed: () {
-                            down.prepareDownload(context, widget.data);
-                          }))
+                  ? IconButton(
+                      icon: Icon(widget.icon == 'download'
+                          ? Icons.download_rounded
+                          : Icons.save_alt),
+                      iconSize: widget.size ?? 24.0,
+                      color: Theme.of(context).iconTheme.color,
+                      tooltip: 'Download',
+                      onPressed: () {
+                        down.prepareDownload(context, widget.data);
+                      })
                   : GestureDetector(
                       child: Stack(
                         children: [

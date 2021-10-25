@@ -186,8 +186,17 @@ class _YouTubePlaylistState extends State<YouTubePlaylist> {
                                         });
 
                                         final Map? response =
-                                            await YouTubeServices()
-                                                .formatVideo(entry);
+                                            await YouTubeServices().formatVideo(
+                                          video: entry,
+                                          quality: Hive.box('settings')
+                                              .get('ytQuality',
+                                                  defaultValue: 'High')
+                                              .toString(),
+                                          // preferM4a: Hive.box('settings')
+                                          //         .get('preferM4a',
+                                          //             defaultValue: true)
+                                          // as bool
+                                        );
                                         setState(() {
                                           done = true;
                                         });

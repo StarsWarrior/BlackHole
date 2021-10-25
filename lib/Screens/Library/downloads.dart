@@ -265,7 +265,10 @@ class _DownloadsState extends State<Downloads>
                       onPressed: () {
                         showSearch(
                             context: context,
-                            delegate: DownloadsSearch(_songs));
+                            delegate: DownloadsSearch(
+                              data: _songs,
+                              isDowns: true,
+                            ));
                       },
                     ),
                     if (_songs.isNotEmpty)

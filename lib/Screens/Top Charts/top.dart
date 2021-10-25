@@ -19,7 +19,10 @@ bool emptyGlobal = false;
 
 class TopCharts extends StatefulWidget {
   final String region;
-  const TopCharts({Key? key, required this.region}) : super(key: key);
+  final PageController pageController;
+  const TopCharts(
+      {Key? key, required this.region, required this.pageController})
+      : super(key: key);
 
   @override
   _TopChartsState createState() => _TopChartsState();
@@ -83,16 +86,29 @@ class _TopChartsState extends State<TopCharts>
               },
             ),
           ),
-          body: TabBarView(
-            physics: const CustomPhysics(),
-            children: [
-              TopPage(
-                region: widget.region,
-              ),
-              const TopPage(
-                region: 'global',
-              ),
-            ],
+          body: NotificationListener(
+            onNotification: (overscroll) {
+              if (overscroll is OverscrollNotification &&
+                  overscroll.overscroll != 0 &&
+                  overscroll.dragDetails != null) {
+                widget.pageController.animateToPage(
+                    overscroll.overscroll < 0 ? 0 : 2,
+                    curve: Curves.ease,
+                    duration: const Duration(milliseconds: 150));
+              }
+              return true;
+            },
+            child: TabBarView(
+              physics: const CustomPhysics(),
+              children: [
+                TopPage(
+                  region: widget.region,
+                ),
+                const TopPage(
+                  region: 'global',
+                ),
+              ],
+            ),
           ),
         ));
   }

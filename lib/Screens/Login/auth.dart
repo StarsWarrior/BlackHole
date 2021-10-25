@@ -59,6 +59,7 @@ class _AuthScreenState extends State<AuthScreen> {
     return GradientContainer(
       child: SafeArea(
         child: Scaffold(
+          extendBodyBehindAppBar: true,
           body: Stack(
             children: [
               Positioned(
@@ -105,9 +106,6 @@ class _AuthScreenState extends State<AuthScreen> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
-                            const SizedBox(
-                              height: 1.0,
-                            ),
                             Row(
                               children: [
                                 RichText(
@@ -144,6 +142,9 @@ class _AuthScreenState extends State<AuthScreen> {
                                   ),
                                 ),
                               ],
+                            ),
+                            SizedBox(
+                              height: MediaQuery.of(context).size.height * 0.1,
                             ),
                             Column(
                               children: [

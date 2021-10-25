@@ -267,6 +267,33 @@ class _HomePageState extends State<HomePage> {
                             },
                           ),
                           ListTile(
+                            title: Text(AppLocalizations.of(context)!.downs),
+                            contentPadding:
+                                const EdgeInsets.symmetric(horizontal: 20.0),
+                            leading: Icon(
+                              Icons.download_done_rounded,
+                              color: Theme.of(context).iconTheme.color,
+                            ),
+                            onTap: () {
+                              Navigator.pop(context);
+                              Navigator.pushNamed(context, '/downloads');
+                            },
+                          ),
+                          ListTile(
+                            title:
+                                Text(AppLocalizations.of(context)!.playlists),
+                            contentPadding:
+                                const EdgeInsets.symmetric(horizontal: 20.0),
+                            leading: Icon(
+                              Icons.playlist_play_rounded,
+                              color: Theme.of(context).iconTheme.color,
+                            ),
+                            onTap: () {
+                              Navigator.pop(context);
+                              Navigator.pushNamed(context, '/playlists');
+                            },
+                          ),
+                          ListTile(
                             title: Text(AppLocalizations.of(context)!.settings),
                             contentPadding:
                                 const EdgeInsets.symmetric(horizontal: 20.0),
@@ -561,6 +588,7 @@ class _HomePageState extends State<HomePage> {
                         ],
                       ),
                       TopCharts(
+                        pageController: pageController,
                         region: CountryCodes()
                             .countryCodes[Hive.box('settings')
                                 .get('region', defaultValue: 'India')]

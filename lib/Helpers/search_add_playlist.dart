@@ -72,35 +72,40 @@ class SearchAddPlaylist {
                     final String name =
                         (data ?? const {})['name'] as String? ?? '';
                     if (_done == _total) Navigator.pop(ctxt);
-                    return Stack(
+                    return Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         Center(
-                          child: Text('$_done / $_total'),
+                            child: Text(
+                          AppLocalizations.of(context)!.convertingSongs,
+                          style: const TextStyle(fontWeight: FontWeight.w600),
+                        )),
+                        SizedBox(
+                          height: 80,
+                          width: 80,
+                          child: Stack(
+                            children: [
+                              Center(
+                                child: Text('$_done / $_total'),
+                              ),
+                              Center(
+                                child: SizedBox(
+                                  height: 77,
+                                  width: 77,
+                                  child: CircularProgressIndicator(
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                          Theme.of(ctxt).colorScheme.secondary),
+                                      value: _done / _total),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            Center(
-                                child: Text(
-                              AppLocalizations.of(context)!.convertingSongs,
-                              style:
-                                  const TextStyle(fontWeight: FontWeight.w600),
-                            )),
-                            SizedBox(
-                              height: 75,
-                              width: 75,
-                              child: CircularProgressIndicator(
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                      Theme.of(ctxt).colorScheme.secondary),
-                                  value: _done / _total),
-                            ),
-                            Center(
-                                child: Text(
-                              name,
-                              textAlign: TextAlign.center,
-                            )),
-                          ],
-                        ),
+                        Center(
+                            child: Text(
+                          name,
+                          textAlign: TextAlign.center,
+                        )),
                       ],
                     );
                   }),

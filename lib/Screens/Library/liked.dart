@@ -1,6 +1,7 @@
 import 'package:blackhole/CustomWidgets/add_playlist.dart';
 import 'package:blackhole/CustomWidgets/collage.dart';
 import 'package:blackhole/CustomWidgets/custom_physics.dart';
+import 'package:blackhole/CustomWidgets/data_search.dart';
 import 'package:blackhole/CustomWidgets/download_button.dart';
 import 'package:blackhole/CustomWidgets/empty_screen.dart';
 import 'package:blackhole/CustomWidgets/gradient_containers.dart';
@@ -11,6 +12,7 @@ import 'package:blackhole/Helpers/songs_count.dart';
 import 'package:blackhole/Screens/Library/show_songs.dart';
 import 'package:blackhole/Screens/Player/audioplayer.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:hive/hive.dart';
@@ -213,11 +215,15 @@ class _LikedSongsState extends State<LikedSongs>
               child: Scaffold(
                 backgroundColor: Colors.transparent,
                 appBar: AppBar(
-                  title: Text(widget.showName == null
-                      ? widget.playlistName[0].toUpperCase() +
-                          widget.playlistName.substring(1)
-                      : widget.showName![0].toUpperCase() +
-                          widget.showName!.substring(1)),
+                  title: Text(
+                    widget.showName == null
+                        ? widget.playlistName[0].toUpperCase() +
+                            widget.playlistName.substring(1)
+                        : widget.showName![0].toUpperCase() +
+                            widget.showName!.substring(1),
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                   centerTitle: true,
                   backgroundColor:
                       Theme.of(context).brightness == Brightness.dark
@@ -248,6 +254,15 @@ class _LikedSongsState extends State<LikedSongs>
                             : widget.showName![0].toUpperCase() +
                                 widget.showName!.substring(1),
                       ),
+                    IconButton(
+                      icon: const Icon(CupertinoIcons.search),
+                      tooltip: AppLocalizations.of(context)!.search,
+                      onPressed: () {
+                        showSearch(
+                            context: context,
+                            delegate: DownloadsSearch(data: _songs));
+                      },
+                    ),
                     PopupMenuButton(
                         icon: const Icon(Icons.sort_rounded),
                         shape: const RoundedRectangleBorder(

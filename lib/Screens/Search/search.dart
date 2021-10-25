@@ -5,6 +5,7 @@ import 'package:blackhole/CustomWidgets/add_queue.dart';
 import 'package:blackhole/CustomWidgets/download_button.dart';
 import 'package:blackhole/CustomWidgets/empty_screen.dart';
 import 'package:blackhole/CustomWidgets/gradient_containers.dart';
+import 'package:blackhole/CustomWidgets/like_button.dart';
 import 'package:blackhole/CustomWidgets/miniplayer.dart';
 import 'package:blackhole/Screens/Common/song_list.dart';
 import 'package:blackhole/Screens/Player/audioplayer.dart';
@@ -458,6 +459,12 @@ class _SearchPageState extends State<SearchPage> {
                                                                   icon:
                                                                       'download',
                                                                 ),
+                                                                LikeButton(
+                                                                    mediaItem:
+                                                                        null,
+                                                                    data: value[
+                                                                            index]
+                                                                        as Map),
                                                                 AddToQueueButton(
                                                                     data: value[
                                                                             index]

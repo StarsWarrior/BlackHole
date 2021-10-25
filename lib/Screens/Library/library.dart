@@ -1,7 +1,6 @@
 import 'package:blackhole/Screens/Library/liked.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:hive/hive.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class LibraryPage extends StatefulWidget {
@@ -10,14 +9,6 @@ class LibraryPage extends StatefulWidget {
 }
 
 class _LibraryPageState extends State<LibraryPage> {
-  Box? likedBox;
-
-  @override
-  void initState() {
-    super.initState();
-    Hive.openBox('Favorite Songs');
-  }
-
   @override
   Widget build(BuildContext context) {
     return ListView(
@@ -65,8 +56,7 @@ class _LibraryPageState extends State<LibraryPage> {
         LibraryTile(
           title: AppLocalizations.of(context)!.favorites,
           icon: Icons.favorite_rounded,
-          onTap: () async {
-            await Hive.openBox('Favorite Songs');
+          onTap: () {
             Navigator.push(
                 context,
                 MaterialPageRoute(

@@ -9,7 +9,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 // import 'package:flutter_downloader/flutter_downloader.dart';
-// import 'package:flutter_ffmpeg/flutter_ffmpeg.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart';
@@ -235,13 +234,12 @@ class Download with ChangeNotifier {
       BuildContext context, String? dlPath, String fileName, Map data) async {
     progress = null;
     notifyListeners();
-    String filename = fileName;
     String? filepath;
     late String filepath2;
     String appPath;
     final List<int> _bytes = [];
     String lyrics;
-    final artname = filename.replaceAll('.m4a', '.jpg');
+    final artname = fileName.replaceAll('.m4a', '.jpg');
     if (!Platform.isWindows) {
       final Directory appDir = await getTemporaryDirectory();
       appPath = appDir.path;
@@ -249,11 +247,11 @@ class Download with ChangeNotifier {
       final Directory? temp = await getDownloadsDirectory();
       appPath = temp!.path;
     }
-    if (data['url'].toString().contains('google')) {
-      filename = filename.replaceAll('.m4a', '.opus');
-    }
+    // if (data['url'].toString().contains('google')) {
+    // filename = filename.replaceAll('.m4a', '.opus');
+    // }
     try {
-      await File('$dlPath/$filename')
+      await File('$dlPath/$fileName')
           .create(recursive: true)
           .then((value) => filepath = value.path);
       // print('created audio file');
@@ -265,7 +263,7 @@ class Download with ChangeNotifier {
       await [
         Permission.manageExternalStorage,
       ].request();
-      await File('$dlPath/$filename')
+      await File('$dlPath/$fileName')
           .create(recursive: true)
           .then((value) => filepath = value.path);
       // print('created audio file');
@@ -315,40 +313,40 @@ class Download with ChangeNotifier {
           lyrics = '';
         }
 
-        if (filepath!.endsWith('.opus')) {
-          // List<String>? _argsList;
-          // ShowSnackBar().showSnackBar(
-          //   context,
-          //   'Converting "opus" to "$downloadFormat"',
-          // );
+        // if (filepath!.endsWith('.opus')) {
+        // List<String>? _argsList;
+        // ShowSnackBar().showSnackBar(
+        //   context,
+        //   'Converting "opus" to "$downloadFormat"',
+        // );
 
-          // if (downloadFormat == 'mp3')
-          //   _argsList = [
-          //     "-y",
-          //     "-i",
-          //     "$filepath",
-          //     "-c:a",
-          //     "libmp3lame",
-          //     "-b:a",
-          //     "256k",
-          //     "${filepath.replaceAll('.opus', '.mp3')}"
-          //   ];
-          // if (downloadFormat == 'm4a') {
-          //   _argsList = [
-          //     '-y',
-          //     '-i',
-          //     filepath!,
-          //     '-c:a',
-          //     'aac',
-          //     '-b:a',
-          //     '256k',
-          //     filepath!.replaceAll('.opus', '.m4a')
-          //   ];
-          // }
-          // await FlutterFFmpeg().executeWithArguments(_argsList);
-          // await File(filepath!).delete();
-          // filepath = filepath!.replaceAll('.opus', '.$downloadFormat');
-        }
+        // if (downloadFormat == 'mp3')
+        //   _argsList = [
+        //     "-y",
+        //     "-i",
+        //     "$filepath",
+        //     "-c:a",
+        //     "libmp3lame",
+        //     "-b:a",
+        //     "256k",
+        //     "${filepath.replaceAll('.opus', '.mp3')}"
+        //   ];
+        // if (downloadFormat == 'm4a') {
+        //   _argsList = [
+        //     '-y',
+        //     '-i',
+        //     filepath!,
+        //     '-c:a',
+        //     'aac',
+        //     '-b:a',
+        //     '256k',
+        //     filepath!.replaceAll('.opus', '.m4a')
+        //   ];
+        // }
+        // await FlutterFFmpeg().executeWithArguments(_argsList);
+        // await File(filepath!).delete();
+        // filepath = filepath!.replaceAll('.opus', '.$downloadFormat');
+        // }
 
         debugPrint('Started tag editing');
         final Tag tag = Tag(
