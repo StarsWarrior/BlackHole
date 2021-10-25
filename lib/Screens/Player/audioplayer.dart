@@ -15,6 +15,7 @@ import 'package:blackhole/CustomWidgets/textinput_dialog.dart';
 import 'package:blackhole/Helpers/config.dart';
 import 'package:blackhole/Helpers/lyrics.dart';
 import 'package:blackhole/Helpers/mediaitem_converter.dart';
+import 'package:blackhole/Screens/Common/song_list.dart';
 import 'package:blackhole/main.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flip_card/flip_card.dart';
@@ -340,6 +341,22 @@ class _PlayScreenState extends State<PlayScreen> {
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(15.0))),
                               onSelected: (int? value) {
+                                if (value == 5) {
+                                  Navigator.push(
+                                      context,
+                                      PageRouteBuilder(
+                                        opaque: false,
+                                        pageBuilder: (_, __, ___) =>
+                                            SongsListPage(
+                                          listItem: {
+                                            'type': 'album',
+                                            'id': mediaItem.extras?['album_id'],
+                                            'title': mediaItem.album,
+                                            'image': mediaItem.artUri,
+                                          },
+                                        ),
+                                      ));
+                                }
                                 if (value == 4) {
                                   showDialog(
                                       context: context,
@@ -408,6 +425,20 @@ class _PlayScreenState extends State<PlayScreen> {
                               },
                               itemBuilder: (context) => offline
                                   ? [
+                                      if (mediaItem.extras?['album_id'] != null)
+                                        PopupMenuItem(
+                                            value: 5,
+                                            child: Row(
+                                              children: [
+                                                const Icon(
+                                                  Icons.music_note_rounded,
+                                                ),
+                                                const SizedBox(width: 10.0),
+                                                Text(AppLocalizations.of(
+                                                        context)!
+                                                    .viewAlbum),
+                                              ],
+                                            )),
                                       PopupMenuItem(
                                           value: 1,
                                           child: Row(
@@ -437,6 +468,20 @@ class _PlayScreenState extends State<PlayScreen> {
                                             )),
                                     ]
                                   : [
+                                      if (mediaItem.extras?['album_id'] != null)
+                                        PopupMenuItem(
+                                            value: 5,
+                                            child: Row(
+                                              children: [
+                                                const Icon(
+                                                  Icons.music_note_rounded,
+                                                ),
+                                                const SizedBox(width: 10.0),
+                                                Text(AppLocalizations.of(
+                                                        context)!
+                                                    .viewAlbum),
+                                              ],
+                                            )),
                                       PopupMenuItem(
                                           value: 0,
                                           child: Row(
@@ -1203,18 +1248,28 @@ class _ArtWorkWidgetState extends State<ArtWorkWidget> {
                     ),
                     Align(
                       alignment: Alignment.bottomRight,
-                      child: IconButton(
-                        onPressed: () {
-                          Clipboard.setData(
-                              ClipboardData(text: lyrics['lyrics'].toString()));
-                          ShowSnackBar().showSnackBar(
-                            context,
-                            AppLocalizations.of(context)!.copied,
-                          );
-                        },
-                        icon: const Icon(Icons.copy_rounded),
-                        color:
-                            Theme.of(context).iconTheme.color!.withOpacity(0.6),
+                      child: Card(
+                        elevation: 10.0,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0)),
+                        color: Theme.of(context).cardColor.withOpacity(0.6),
+                        clipBehavior: Clip.antiAlias,
+                        child: IconButton(
+                          tooltip: AppLocalizations.of(context)!.copy,
+                          onPressed: () {
+                            Clipboard.setData(ClipboardData(
+                                text: lyrics['lyrics'].toString()));
+                            ShowSnackBar().showSnackBar(
+                              context,
+                              AppLocalizations.of(context)!.copied,
+                            );
+                          },
+                          icon: const Icon(Icons.copy_rounded),
+                          color: Theme.of(context)
+                              .iconTheme
+                              .color!
+                              .withOpacity(0.6),
+                        ),
                       ),
                     ),
                   ],
@@ -1447,40 +1502,70 @@ class NameNControls extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
         /// Title and subtitle
-        Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(35, 5, 35, 0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  /// Title container
-                  Text(
-                    mediaItem.title.split(' (')[0].split('|')[0].trim(),
-                    textAlign: TextAlign.center,
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
-                    style: const TextStyle(
-                      fontSize: 30,
-                      fontWeight: FontWeight.bold,
-                      // color: Theme.of(context).accentColor,
+        PopupMenuButton<int>(
+          shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(15.0))),
+          offset: const Offset(1.0, 0.0),
+          onSelected: (int value) {
+            if (value == 0) {
+              Navigator.push(
+                  context,
+                  PageRouteBuilder(
+                    opaque: false,
+                    pageBuilder: (_, __, ___) => SongsListPage(
+                      listItem: {
+                        'type': 'album',
+                        'id': mediaItem.extras?['album_id'],
+                        'title': mediaItem.album,
+                        'image': mediaItem.artUri,
+                      },
                     ),
-                  ),
-
-                  const SizedBox(height: 3.0),
-
-                  /// Subtitle container
-                  Text(
-                    mediaItem.artist ?? 'Unknown',
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                        fontSize: 15, fontWeight: FontWeight.w400),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
+                  ));
+            }
+          },
+          itemBuilder: (BuildContext context) => <PopupMenuEntry<int>>[
+            if (mediaItem.extras?['album_id'] != null)
+              PopupMenuItem<int>(
+                value: 0,
+                child: Center(
+                    child: Text(AppLocalizations.of(context)!.viewAlbum)),
               ),
-            ),
           ],
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(35, 5, 35, 0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    /// Title container
+                    Text(
+                      mediaItem.title.split(' (')[0].split('|')[0].trim(),
+                      textAlign: TextAlign.center,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                      style: const TextStyle(
+                        fontSize: 30,
+                        fontWeight: FontWeight.bold,
+                        // color: Theme.of(context).accentColor,
+                      ),
+                    ),
+
+                    const SizedBox(height: 3.0),
+
+                    /// Subtitle container
+                    Text(
+                      '${mediaItem.artist ?? "Unknown"} • ${mediaItem.album ?? "Unknown"}',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                          fontSize: 15, fontWeight: FontWeight.w400),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
 
         /// Seekbar starts from here

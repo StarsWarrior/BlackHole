@@ -18,6 +18,7 @@ class MediaItemConverter {
       'url': mediaItem.extras!['url'].toString(),
       'year': mediaItem.extras?['year'].toString(),
       '320kbps': mediaItem.extras?['320kbps'],
+      'quality': mediaItem.extras?['quality'],
       'perma_url': mediaItem.extras?['perma_url'],
     };
   }
@@ -44,6 +45,7 @@ class MediaItemConverter {
           'year': song['year'],
           'language': song['language'],
           '320kbps': song['320kbps'],
+          'quality': song['quality'],
           'has_lyrics': song['has_lyrics'],
           'release_date': song['release_date'],
           'album_id': song['album_id'],
@@ -74,6 +76,7 @@ class MediaItemConverter {
           'release_date': song['release_date'],
           'album_id': song['album_id'],
           'subtitle': song['subtitle'],
+          'quality': song['quality'],
         });
   }
 }

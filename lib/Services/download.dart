@@ -47,12 +47,12 @@ class Download with ChangeNotifier {
     if (!Platform.isWindows) {
       PermissionStatus status = await Permission.storage.status;
       if (status.isPermanentlyDenied || status.isDenied) {
-        final Map<Permission, PermissionStatus> statuses = await [
+        await [
           Permission.storage,
           Permission.accessMediaLocation,
           Permission.mediaLibrary,
         ].request();
-        debugPrint(statuses[Permission.storage].toString());
+        // debugPrint(statuses[Permission.storage].toString());
       }
       status = await Permission.storage.status;
     }
@@ -271,8 +271,8 @@ class Download with ChangeNotifier {
           .create(recursive: true)
           .then((value) => filepath2 = value.path);
     }
-    debugPrint('Audio path $filepath');
-    debugPrint('Image path $filepath2');
+    // debugPrint('Audio path $filepath');
+    // debugPrint('Image path $filepath2');
 
     final String kUrl = data['url'].toString().replaceAll(
         '_96.', "_${preferredDownloadQuality.replaceAll(' kbps', '')}.");
@@ -348,7 +348,7 @@ class Download with ChangeNotifier {
         // filepath = filepath!.replaceAll('.opus', '.$downloadFormat');
         // }
 
-        debugPrint('Started tag editing');
+        // debugPrint('Started tag editing');
         final Tag tag = Tag(
           title: data['title'].toString(),
           artist: data['artist'].toString(),
@@ -376,7 +376,7 @@ class Download with ChangeNotifier {
           // print('Failed to edit tags');
         }
         client.close();
-        debugPrint('Done');
+        // debugPrint('Done');
         lastDownloadId = data['id'].toString();
         progress = 0.0;
         notifyListeners();
