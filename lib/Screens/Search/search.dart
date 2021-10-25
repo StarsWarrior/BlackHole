@@ -96,6 +96,8 @@ class _SearchPageState extends State<SearchPage> {
                   automaticallyImplyBackButton: false,
                   automaticallyImplyDrawerHamburger: false,
                   elevation: 8.0,
+                  transitionDuration: const Duration(milliseconds: 250),
+                  implicitDuration: const Duration(milliseconds: 250),
                   insets: EdgeInsets.zero,
                   leadingActions: [
                     FloatingSearchBarAction.icon(
@@ -121,9 +123,19 @@ class _SearchPageState extends State<SearchPage> {
                   openAxisAlignment: 0.0,
                   clearQueryOnClose: false,
                   debounceDelay: const Duration(milliseconds: 500),
-                  // onQueryChanged: (_query) {
-                  // print(_query);
-                  // },
+                  onQueryChanged: (_query) {
+                    if (Hive.box('settings')
+                            .get('liveSearch', defaultValue: false) as bool &&
+                        _query.trim() != '') {
+                      setState(() {
+                        fetched = false;
+                        query = _query;
+                        status = false;
+                        fromHome = false;
+                        searchedData = {};
+                      });
+                    }
+                  },
                   onSubmitted: (_query) {
                     _controller.close();
 

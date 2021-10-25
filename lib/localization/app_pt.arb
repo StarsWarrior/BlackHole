@@ -143,6 +143,8 @@
   "like":"Like",
   "likedWork":"Gostou do meu trabalho?",
   "live":"AO VIVO AGORA",
+  "liveSearch":"Pesquisa em tempo real",
+  "liveSearchSub":"Pesquise músicas assim que o usuário parar de digitar",
   "loadLast":"Carregar última sessão quando o Aplicativo iniciar",
   "loadLastSub":"Automaticamente carregar última sessão quando o aplicativo iniciar",
   "local":"Local",

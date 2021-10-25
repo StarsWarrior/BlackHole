@@ -1632,6 +1632,14 @@ class _SettingPageState extends State<SettingPage> {
                                   });
                             }),
                         BoxSwitchTile(
+                          title: Text(AppLocalizations.of(context)!.liveSearch),
+                          subtitle:
+                              Text(AppLocalizations.of(context)!.liveSearchSub),
+                          keyName: 'liveSearch',
+                          isThreeLine: false,
+                          defaultValue: false,
+                        ),
+                        BoxSwitchTile(
                           title: Text(AppLocalizations.of(context)!.supportEq),
                           subtitle:
                               Text(AppLocalizations.of(context)!.supportEqSub),

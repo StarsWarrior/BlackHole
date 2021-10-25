@@ -130,7 +130,10 @@ class _LikedSongsState extends State<LikedSongs>
           .compareTo(b['title'].toString().toUpperCase()));
     }
     if (sortValue == 2) {
-      _songs = likedBox?.values.toList() ?? [];
+      _songs.sort((b, a) => a['dateAdded']
+          .toString()
+          .toUpperCase()
+          .compareTo(b['dateAdded'].toString().toUpperCase()));
     }
     if (sortValue == 3) {
       _songs.shuffle();

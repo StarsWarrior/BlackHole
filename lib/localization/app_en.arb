@@ -143,6 +143,8 @@
   "like":"Like",
   "likedWork":"Liked my work?",
   "live":"LIVE NOW",
+  "liveSearch":"Live Search",
+  "liveSearchSub":"Search songs as soon as user stops typing",
   "loadLast":"Load Last Session on App Start",
   "loadLastSub":"Automatically load last session when app starts",
   "local":"Local",

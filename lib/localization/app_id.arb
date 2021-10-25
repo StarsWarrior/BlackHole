@@ -143,6 +143,8 @@
   "like": "Suka",
   "likedWork": "Menyukai pekerjaan saya?",
   "live": "TINGGAL SEKARANG",
+  "liveSearch":"Pencarian Langsung",
+  "liveSearchSub":"Cari lagu segera setelah pengguna berhenti mengetik",
   "loadLast": "Muat Sesi Terakhir di Mulai Aplikasi",
   "loadLastSub": "Secara otomatis memuat sesi terakhir saat aplikasi dimulai",
   "local": "Lokal",

@@ -69,6 +69,8 @@ class _YouTubeSearchPageState extends State<YouTubeSearchPage> {
                   controller: _controller,
                   automaticallyImplyBackButton: false,
                   automaticallyImplyDrawerHamburger: false,
+                  transitionDuration: const Duration(milliseconds: 250),
+                  implicitDuration: const Duration(milliseconds: 250),
                   elevation: 8.0,
                   insets: EdgeInsets.zero,
                   leadingActions: [
