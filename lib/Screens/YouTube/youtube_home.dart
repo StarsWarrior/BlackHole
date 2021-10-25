@@ -129,7 +129,6 @@ class _YouTubeState extends State<YouTube>
         // print(_query);
         // },
         onSubmitted: (_query) {
-          _controller.close();
           Navigator.push(
             context,
             PageRouteBuilder(
@@ -139,6 +138,7 @@ class _YouTubeState extends State<YouTube>
               ),
             ),
           );
+          _controller.close();
           setState(() {
             if (ytSearch.contains(_query)) ytSearch.remove(_query);
             ytSearch.insert(0, _query);

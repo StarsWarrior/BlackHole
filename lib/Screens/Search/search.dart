@@ -95,9 +95,9 @@ class _SearchPageState extends State<SearchPage> {
                   controller: _controller,
                   automaticallyImplyBackButton: false,
                   automaticallyImplyDrawerHamburger: false,
-                  elevation: 8.0,
                   transitionDuration: const Duration(milliseconds: 250),
                   implicitDuration: const Duration(milliseconds: 250),
+                  elevation: 8.0,
                   insets: EdgeInsets.zero,
                   leadingActions: [
                     FloatingSearchBarAction.icon(
@@ -121,8 +121,8 @@ class _SearchPageState extends State<SearchPage> {
                   transitionCurve: Curves.easeInOut,
                   physics: const BouncingScrollPhysics(),
                   openAxisAlignment: 0.0,
-                  clearQueryOnClose: false,
                   debounceDelay: const Duration(milliseconds: 500),
+                  clearQueryOnClose: false,
                   onQueryChanged: (_query) {
                     if (Hive.box('settings')
                             .get('liveSearch', defaultValue: false) as bool &&
