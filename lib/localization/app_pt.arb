@@ -266,6 +266,8 @@
   "useDenseMiniSub":"A altura do miniplayer será reduzida",
   "useDominant":"Use a cor dominante para Play Screen",
   "useDominantSub":"A cor dominante da imagem será usada para o fundo da tela de reprodução. Se desligado, o gradiente de fundo padrão será usado",
+  "useDown":"Transmitir músicas baixada, se disponível",
+  "useDownSub":"Se a música já foi baixada, a música baixada será reproduzida em vez de streaming online",
   "useHome":"Use a seção principal para obter melhor qualidade e suporte para download",
   "useProxy":"Usar Proxy",
   "useProxySub":"Ative esta opção se você não for da Índia e estiver tendo problemas com a pesquisa, como obter apenas músicas indianas ou não obter nenhum resultado, etc. Você pode até usar VPN com o servidor indiano\n",

@@ -18,6 +18,7 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
   Timer? _sleepTimer;
   bool recommend = true;
   bool loadStart = true;
+  bool useDown = true;
   AndroidEqualizerParameters? _equalizerParams;
 
   late AudioPlayer? _player;
@@ -26,6 +27,7 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
   final converter = MediaItemConverter();
 
   int? index;
+  Box downloadsBox = Hive.box('downloads');
 
   final BehaviorSubject<List<MediaItem>> _recentSubject =
       BehaviorSubject.seeded(<MediaItem>[]);
@@ -179,8 +181,11 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
     final audioSource = AudioSource.uri(
         mediaItem.artUri.toString().startsWith('file:')
             ? Uri.file(mediaItem.extras!['url'].toString())
-            : Uri.parse(mediaItem.extras!['url'].toString().replaceAll(
-                '_96.', "_${preferredQuality.replaceAll(' kbps', '')}.")));
+            : (downloadsBox.containsKey(mediaItem.id) && useDown)
+                ? Uri.file(
+                    (downloadsBox.get(mediaItem.id) as Map)['path'].toString())
+                : Uri.parse(mediaItem.extras!['url'].toString().replaceAll(
+                    '_96.', "_${preferredQuality.replaceAll(' kbps', '')}.")));
 
     _mediaItemExpando[audioSource] = mediaItem;
     return audioSource;
@@ -190,6 +195,7 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
     preferredQuality = Hive.box('settings')
         .get('streamingQuality', defaultValue: '96 kbps')
         .toString();
+    useDown = Hive.box('settings').get('useDown', defaultValue: true) as bool;
     return mediaItems.map(_itemToSource).toList();
   }
 

@@ -266,6 +266,8 @@
   "useDenseMiniSub":"Miniplayer height will be reduced",
   "useDominant":"Use Dominant Color for Play Screen",
   "useDominantSub":"Dominant Color from Image will be used for Play Screen Background. If turned off, default background Gradient will be used",
+  "useDown":"Stream Downloaded Songs, If available",
+  "useDownSub":"If song is already downloaded, downloaded song will be played instead of streaming online",
   "useHome":"Use Main Section for Better Quality and Download Support",
   "useProxy":"Use Proxy",
   "useProxySub":"Turn this on if you are not from India and having issues with search, like getting only Indian Songs or not getting any results, etc. You can even use VPN with Indian Server\n",

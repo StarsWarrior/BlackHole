@@ -1640,6 +1640,14 @@ class _SettingPageState extends State<SettingPage> {
                           defaultValue: false,
                         ),
                         BoxSwitchTile(
+                          title: Text(AppLocalizations.of(context)!.useDown),
+                          subtitle:
+                              Text(AppLocalizations.of(context)!.useDownSub),
+                          keyName: 'useDown',
+                          isThreeLine: true,
+                          defaultValue: true,
+                        ),
+                        BoxSwitchTile(
                           title: Text(AppLocalizations.of(context)!.supportEq),
                           subtitle:
                               Text(AppLocalizations.of(context)!.supportEqSub),

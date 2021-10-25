@@ -266,6 +266,8 @@
   "useDenseMiniSub":"Tinggi miniplayer akan berkurang",
   "useDominant": "Gunakan Warna Dominan untuk Layar Putar",
   "useDominantSub": "Warna Dominan dari Gambar akan digunakan untuk Play Screen Background. Jika dimatikan, Gradien latar belakang default akan digunakan",
+  "useDown":"Streaming Lagu yang Diunduh, jika tersedia",
+  "useDownSub":"Jika lagu sudah diunduh, lagu yang diunduh akan diputar alih-alih streaming online",
   "useHome": "Gunakan Bagian Utama untuk Kualitas Lebih Baik dan Dukungan Unduh",
   "useProxy": "Gunakan proxy",
   "useProxySub": "Aktifkan ini jika Anda bukan dari India dan mengalami masalah dengan pencarian, seperti hanya mendapatkan Lagu India atau tidak mendapatkan hasil apa pun, dll. Anda bahkan dapat menggunakan VPN dengan Server India\n",
