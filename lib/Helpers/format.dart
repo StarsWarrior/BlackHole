@@ -203,7 +203,7 @@ class FormatResponse {
           response = await formatSinglePlaylistResponse(responseList[i] as Map);
           break;
         case 'show':
-          response = await formatSingleAlbumResponse(responseList[i] as Map);
+          response = await formatSingleShowResponse(responseList[i] as Map);
           break;
       }
       if (response!.containsKey('Error')) {

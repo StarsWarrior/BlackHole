@@ -111,7 +111,9 @@ class _DownloadedSongsState extends State<DownloadedSongs>
           sortType: songSortTypes[sortValue],
           orderType: songOrderTypes[orderValue]);
       _cachedSongs = temp
-          .where((i) => (i.duration ?? 60000) > 1000 * minDuration)
+          .where((i) =>
+              (i.duration ?? 60000) > 1000 * minDuration &&
+              (i.isMusic! || i.isPodcast! || i.isAudioBook!))
           .toList();
     } else {
       _cachedSongs = widget.cachedSongs!;

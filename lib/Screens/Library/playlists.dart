@@ -313,6 +313,10 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                                             TextEditingController(
                                                 text: showName);
                                         return AlertDialog(
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(15.0),
+                                          ),
                                           content: Column(
                                             mainAxisSize: MainAxisSize.min,
                                             children: [
@@ -622,16 +626,20 @@ Future<void> fetchPlaylists(String code, BuildContext context,
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(7.0)),
                             clipBehavior: Clip.antiAlias,
-                            child: CachedNetworkImage(
-                              errorWidget: (context, _, __) => const Image(
-                                image: AssetImage('assets/cover.jpg'),
-                              ),
-                              imageUrl:
-                                  '${spotifyPlaylists[idx - 1]["images"][0]['url'].replaceAll('http:', 'https:')}',
-                              placeholder: (context, url) => const Image(
-                                image: AssetImage('assets/cover.jpg'),
-                              ),
-                            ),
+                            child: (spotifyPlaylists[idx - 1]['images'] as List)
+                                    .isEmpty
+                                ? Image.asset('assets/cover.jpg')
+                                : CachedNetworkImage(
+                                    errorWidget: (context, _, __) =>
+                                        const Image(
+                                      image: AssetImage('assets/cover.jpg'),
+                                    ),
+                                    imageUrl:
+                                        '${spotifyPlaylists[idx - 1]["images"][0]['url'].replaceAll('http:', 'https:')}',
+                                    placeholder: (context, url) => const Image(
+                                      image: AssetImage('assets/cover.jpg'),
+                                    ),
+                                  ),
                           ),
                           onTap: () async {
                             Navigator.pop(context, idx - 1);

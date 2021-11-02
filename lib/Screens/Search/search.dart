@@ -7,6 +7,7 @@ import 'package:blackhole/CustomWidgets/empty_screen.dart';
 import 'package:blackhole/CustomWidgets/gradient_containers.dart';
 import 'package:blackhole/CustomWidgets/like_button.dart';
 import 'package:blackhole/CustomWidgets/miniplayer.dart';
+import 'package:blackhole/CustomWidgets/snackbar.dart';
 import 'package:blackhole/Screens/Common/song_list.dart';
 import 'package:blackhole/Screens/Player/audioplayer.dart';
 import 'package:blackhole/Screens/Search/albums.dart';
@@ -41,6 +42,8 @@ class _SearchPageState extends State<SearchPage> {
   List search = Hive.box('settings').get('search', defaultValue: []) as List;
   bool showHistory =
       Hive.box('settings').get('showHistory', defaultValue: true) as bool;
+  bool liveSearch =
+      Hive.box('settings').get('liveSearch', defaultValue: false) as bool;
   final FloatingSearchBarController _controller = FloatingSearchBarController();
 
   @override
@@ -57,8 +60,9 @@ class _SearchPageState extends State<SearchPage> {
 
   Future<void> fetchResults() async {
     // this fetches top 5 songs results
-    searchedData['Songs'] = await SaavnAPI()
+    final List songResults = await SaavnAPI()
         .fetchSongSearchResults(query == '' ? widget.query : query, '5');
+    if (songResults.isNotEmpty) searchedData['Songs'] = songResults;
     fetched = true;
     // this fetches albums, playlists, artists, etc
     final List<Map> value =
@@ -73,6 +77,26 @@ class _SearchPageState extends State<SearchPage> {
 
   Future<void> getTrendingSearch() async {
     topSearch.value = await SaavnAPI().getTopSearches();
+    Future.delayed(const Duration(milliseconds: 500), () {
+      _controller.open();
+    });
+  }
+
+  Widget nothingFound(BuildContext context) {
+    ShowSnackBar().showSnackBar(
+      context,
+      AppLocalizations.of(context)!.useVpn,
+      duration: const Duration(seconds: 5),
+    );
+    return EmptyScreen().emptyScreen(
+        context,
+        0,
+        ':( ',
+        100,
+        AppLocalizations.of(context)!.sorry,
+        60,
+        AppLocalizations.of(context)!.resultsNotFound,
+        20);
   }
 
   @override
@@ -95,8 +119,8 @@ class _SearchPageState extends State<SearchPage> {
                   controller: _controller,
                   automaticallyImplyBackButton: false,
                   automaticallyImplyDrawerHamburger: false,
-                  transitionDuration: const Duration(milliseconds: 250),
-                  implicitDuration: const Duration(milliseconds: 250),
+                  transitionDuration: const Duration(milliseconds: 100),
+                  implicitDuration: const Duration(milliseconds: 100),
                   elevation: 8.0,
                   insets: EdgeInsets.zero,
                   leadingActions: [
@@ -124,9 +148,7 @@ class _SearchPageState extends State<SearchPage> {
                   debounceDelay: const Duration(milliseconds: 500),
                   clearQueryOnClose: false,
                   onQueryChanged: (_query) {
-                    if (Hive.box('settings')
-                            .get('liveSearch', defaultValue: false) as bool &&
-                        _query.trim() != '') {
+                    if (liveSearch && _query.trim() != '') {
                       setState(() {
                         fetched = false;
                         query = _query;
@@ -321,15 +343,7 @@ class _SearchPageState extends State<SearchPage> {
                               ),
                             )
                           : (searchedData.isEmpty)
-                              ? EmptyScreen().emptyScreen(
-                                  context,
-                                  0,
-                                  ':( ',
-                                  100,
-                                  AppLocalizations.of(context)!.sorry,
-                                  60,
-                                  AppLocalizations.of(context)!.resultsNotFound,
-                                  20)
+                              ? nothingFound(context)
                               : SingleChildScrollView(
                                   padding: const EdgeInsets.only(top: 80),
                                   physics: const BouncingScrollPhysics(),

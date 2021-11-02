@@ -8,7 +8,13 @@ class LikeButton extends StatefulWidget {
   final MediaItem? mediaItem;
   final double? size;
   final Map? data;
-  const LikeButton({Key? key, required this.mediaItem, this.size, this.data})
+  final bool showSnack;
+  const LikeButton(
+      {Key? key,
+      required this.mediaItem,
+      this.size,
+      this.data,
+      this.showSnack = true})
       : super(key: key);
 
   @override
@@ -50,28 +56,30 @@ class _LikeButtonState extends State<LikeButton> {
           setState(() {
             liked = !liked;
           });
-          ShowSnackBar().showSnackBar(
-            context,
-            liked
-                ? AppLocalizations.of(context)!.addedToFav
-                : AppLocalizations.of(context)!.removedFromFav,
-            action: SnackBarAction(
-                textColor: Theme.of(context).colorScheme.secondary,
-                label: AppLocalizations.of(context)!.undo,
-                onPressed: () {
-                  liked
-                      ? removeLiked(widget.mediaItem == null
-                          ? widget.data!['id'].toString()
-                          : widget.mediaItem!.id)
-                      : widget.mediaItem == null
-                          ? addMapToPlaylist('Favorite Songs', widget.data!)
-                          : addItemToPlaylist(
-                              'Favorite Songs', widget.mediaItem!);
+          if (widget.showSnack) {
+            ShowSnackBar().showSnackBar(
+              context,
+              liked
+                  ? AppLocalizations.of(context)!.addedToFav
+                  : AppLocalizations.of(context)!.removedFromFav,
+              action: SnackBarAction(
+                  textColor: Theme.of(context).colorScheme.secondary,
+                  label: AppLocalizations.of(context)!.undo,
+                  onPressed: () {
+                    liked
+                        ? removeLiked(widget.mediaItem == null
+                            ? widget.data!['id'].toString()
+                            : widget.mediaItem!.id)
+                        : widget.mediaItem == null
+                            ? addMapToPlaylist('Favorite Songs', widget.data!)
+                            : addItemToPlaylist(
+                                'Favorite Songs', widget.mediaItem!);
 
-                  liked = !liked;
-                  setState(() {});
-                }),
-          );
+                    liked = !liked;
+                    setState(() {});
+                  }),
+            );
+          }
         });
   }
 }

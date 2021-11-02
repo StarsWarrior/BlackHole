@@ -110,7 +110,6 @@ Future<void> openHiveBox(String boxName, {bool limit = false}) async {
     if (box.length > 500) {
       box.clear();
     }
-    await Hive.openBox(boxName);
   } else {
     await Hive.openBox(boxName).onError((error, stackTrace) async {
       final Directory dir = await getApplicationDocumentsDirectory();

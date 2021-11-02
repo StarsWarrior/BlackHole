@@ -9,12 +9,14 @@ class SeekBar extends StatefulWidget {
   final Duration duration;
   final Duration position;
   final Duration bufferedPosition;
+  final bool offline;
   final ValueChanged<Duration>? onChanged;
   final ValueChanged<Duration>? onChangeEnd;
 
   const SeekBar({
     required this.duration,
     required this.position,
+    required this.offline,
     this.bufferedPosition = Duration.zero,
     this.onChanged,
     this.onChangeEnd,
@@ -101,6 +103,16 @@ class _SeekBarState extends State<SeekBar> {
               },
             ),
           ),
+          // if (widget.offline)
+          //   Positioned(
+          //     left: 22.0,
+          //     bottom: 45.0,
+          //     child: Icon(
+          //       Icons.wifi_off_rounded,
+          //       color: Theme.of(context).disabledColor,
+          //       size: 15.0,
+          //     ),
+          //   ),
           Positioned(
             right: 13.0,
             bottom: 25.0,
@@ -194,6 +206,9 @@ void showSliderDialog({
   showDialog<void>(
     context: context,
     builder: (context) => AlertDialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15.0),
+      ),
       title: Text(title, textAlign: TextAlign.center),
       content: StreamBuilder<double>(
           stream: audioHandler.speed,

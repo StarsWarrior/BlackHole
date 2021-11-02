@@ -10,54 +10,40 @@ environment:
   sdk: '>=2.13.0 <3.0.0'
 
 dependencies:
+  app_links: ^2.2.0
+  audio_service: ^0.18.1
+  audiotagger: ^2.2.1
+  cached_network_image: ^3.1.0
+  cupertino_icons: ^1.0.3
+  dart_des: ^1.0.0
+  file_picker: ^4.2.0
+  flip_card: ^0.6.0
   flutter:
     sdk: flutter
-  flutter_localizations:
-    sdk: flutter
-
-
-  # Audio related
-  audiotagger: ^2.2.1
-  audio_service: ^0.18.1
-  just_audio: ^0.9.14
-  on_audio_query: ^2.5.0
-  
-
-  # Productivity
-  app_links: ^2.2.0
-  cached_network_image: ^3.1.0
-  dart_des: ^1.0.0
-  flutter_archive: ^4.0.1
+  flutter_archive: ^4.1.0
   flutter_displaymode: ^0.3.2
   # flutter_downloader: ^1.6.1
   # flutter_ffmpeg: ^0.4.2
+  flutter_localizations:
+    sdk: flutter
+  hive: ^2.0.4
+  hive_flutter: ^1.1.0
   html_unescape: ^2.0.0
+  just_audio: ^0.9.15
   # logging: ^1.0.1
+  material_design_icons_flutter: ^5.0.5955-rc.1
+  material_floating_search_bar: ^0.3.6
+  on_audio_query: ^2.5.2
   package_info: ^2.0.2
+  palette_generator: ^0.3.2
+  path_provider: ^2.0.6
+  permission_handler: ^8.2.5
+  salomon_bottom_bar: ^3.1.0
   share_plus: ^3.0.4
+  supabase: ^0.2.8
   url_launcher: ^6.0.12
   uuid: ^3.0.5
   youtube_explode_dart: ^1.10.6
-
-  
-  # UI related
-  cupertino_icons: ^1.0.3
-  flip_card: ^0.6.0
-  material_design_icons_flutter: ^5.0.5955-rc.1
-  material_floating_search_bar: ^0.3.6
-  palette_generator: ^0.3.2
-  salomon_bottom_bar: ^3.1.0
-
-  # Database related
-  hive: ^2.0.4
-  hive_flutter: ^1.1.0
-  supabase: ^0.2.8
-  
-  # Storage related
-  file_picker: ^4.1.6
-  path_provider: ^2.0.5
-  permission_handler: ^8.2.5
-  
 
 dev_dependencies:
   flutter_test:

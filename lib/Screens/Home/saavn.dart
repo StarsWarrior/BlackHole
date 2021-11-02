@@ -127,6 +127,10 @@ class _SaavnHomePageState extends State<SaavnHomePage>
                                   context: context,
                                   builder: (context) {
                                     return AlertDialog(
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(15.0),
+                                      ),
                                       backgroundColor: Colors.transparent,
                                       contentPadding: EdgeInsets.zero,
                                       content: Card(
@@ -285,6 +289,9 @@ class _SaavnHomePageState extends State<SaavnHomePage>
                             context: context,
                             builder: (context) {
                               return AlertDialog(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15.0),
+                                ),
                                 backgroundColor: Colors.transparent,
                                 contentPadding: EdgeInsets.zero,
                                 content: Card(

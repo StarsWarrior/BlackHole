@@ -32,15 +32,6 @@ class Download with ChangeNotifier {
       Hive.box('settings').get('downloadLyrics', defaultValue: false) as bool;
   bool download = true;
 
-  Future<String> getLyrics(Map data) async {
-    if (data['has_lyrics'] == 'true') {
-      return Lyrics().getSaavnLyrics(data['id'].toString());
-    } else {
-      return Lyrics()
-          .getLyrics(data['title'].toString(), data['artist'].toString());
-    }
-  }
-
   Future<void> prepareDownload(BuildContext context, Map data,
       {bool createFolder = false, String? folderName}) async {
     download = true;
@@ -113,6 +104,9 @@ class Download with ChangeNotifier {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
                 title: Text(
                   AppLocalizations.of(context)!.alreadyExists,
                   style:
@@ -307,7 +301,14 @@ class Download with ChangeNotifier {
 
         await file2.writeAsBytes(bytes2);
         try {
-          lyrics = downloadLyrics ? await getLyrics(data) : '';
+          lyrics = downloadLyrics
+              ? await Lyrics().getLyrics(
+                  id: data['id'].toString(),
+                  title: data['title'].toString(),
+                  artist: data['artist'].toString(),
+                  saavnHas: data['has_lyrics'] == 'true',
+                )
+              : '';
         } catch (e) {
           // print('Error fetching lyrics: $e');
           lyrics = '';

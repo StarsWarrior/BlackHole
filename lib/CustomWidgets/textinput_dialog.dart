@@ -14,6 +14,9 @@ class TextInputDialog {
       builder: (BuildContext ctxt) {
         final _controller = TextEditingController(text: initialText);
         return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10.0),
+          ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [

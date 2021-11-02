@@ -20,10 +20,10 @@ class _EqualizerState extends State<Equalizer> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      // Scaffold(
-      content:
-          // body:
-          SafeArea(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15.0),
+      ),
+      content: SafeArea(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,

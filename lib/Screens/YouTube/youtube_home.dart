@@ -92,8 +92,8 @@ class _YouTubeState extends State<YouTube>
         controller: _controller,
         automaticallyImplyBackButton: false,
         automaticallyImplyDrawerHamburger: false,
-        transitionDuration: const Duration(milliseconds: 250),
-        implicitDuration: const Duration(milliseconds: 250),
+        transitionDuration: const Duration(milliseconds: 100),
+        implicitDuration: const Duration(milliseconds: 100),
         elevation: 8.0,
         insets: EdgeInsets.zero,
         leadingActions: [
@@ -230,6 +230,7 @@ class _YouTubeState extends State<YouTube>
                   width: double.infinity,
                   child: PageView.builder(
                     controller: _pageController,
+                    physics: const BouncingScrollPhysics(),
                     itemCount: headList.length,
                     onPageChanged: (int value) {
                       _currentPage = value;

@@ -44,6 +44,13 @@ class _MiniPlayerState extends State<MiniPlayer> {
                       builder: (BuildContext context, Box box, Widget? widget) {
                         final bool useDense = box.get('useDenseMini',
                             defaultValue: false) as bool;
+                        final List preferredMiniButtons = Hive.box('settings')
+                            .get('preferredMiniButtons', defaultValue: [
+                          'Previous',
+                          'Play/Pause',
+                          'Next'
+                        ])?.toList() as List;
+
                         return SizedBox(
                           height: useDense ? 68.0 : 76.0,
                           child: GradientCard(
@@ -127,6 +134,7 @@ class _MiniPlayerState extends State<MiniPlayer> {
                                     trailing: ControlButtons(
                                       audioHandler,
                                       miniplayer: true,
+                                      buttons: preferredMiniButtons,
                                     ),
                                   ),
                                   StreamBuilder<Duration>(

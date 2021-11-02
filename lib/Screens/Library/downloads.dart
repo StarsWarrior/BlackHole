@@ -789,6 +789,9 @@ Future<Map> editTags(Map song, BuildContext context) async {
             TextEditingController(text: song['path'].toString());
 
         return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15.0),
+          ),
           content: SizedBox(
             height: 400,
             width: 300,

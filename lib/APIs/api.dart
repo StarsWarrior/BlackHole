@@ -62,7 +62,9 @@ class SaavnAPI {
       final IOClient myClient = IOClient(httpClient);
       return myClient.get(url, headers: headers);
     }
-    return get(url, headers: headers);
+    return get(url, headers: headers).onError((error, stackTrace) {
+      return Response('', 404);
+    });
   }
 
   Future<Map> fetchHomePageData() async {
@@ -181,7 +183,7 @@ class SaavnAPI {
     List searchedPlaylistList = [];
     List searchedArtistList = [];
     List searchedTopQueryList = [];
-    List searchedShowList = [];
+    // List searchedShowList = [];
     // List searchedEpisodeList = [];
 
     final String params =
@@ -199,8 +201,8 @@ class SaavnAPI {
       final List artistResponseList = getMain['artists']['data'] as List;
       position[getMain['artists']['position'] as int] = 'Artists';
 
-      final List showResponseList = getMain['shows']['data'] as List;
-      position[getMain['shows']['position'] as int] = 'Shows';
+      // final List showResponseList = getMain['shows']['data'] as List;
+      // position[getMain['shows']['position'] as int] = 'Podcasts';
 
       // final List episodeResponseList = getMain['episodes']['data'] as List;
       // position[getMain['episodes']['position'] as int] = 'Episodes';
@@ -219,11 +221,11 @@ class SaavnAPI {
         result['Playlists'] = searchedPlaylistList;
       }
 
-      searchedShowList =
-          await FormatResponse().formatAlbumResponse(showResponseList, 'show');
-      if (searchedShowList.isNotEmpty) {
-        result['Shows'] = searchedShowList;
-      }
+      // searchedShowList =
+      //     await FormatResponse().formatAlbumResponse(showResponseList, 'show');
+      // if (searchedShowList.isNotEmpty) {
+      //   result['Podcasts'] = searchedShowList;
+      // }
 
       // searchedEpisodeList = await FormatResponse()
       //     .formatAlbumResponse(episodeResponseList, 'episode');

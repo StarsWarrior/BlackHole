@@ -9,6 +9,7 @@ import 'package:blackhole/CustomWidgets/empty_screen.dart';
 import 'package:blackhole/CustomWidgets/equalizer.dart';
 import 'package:blackhole/CustomWidgets/gradient_containers.dart';
 import 'package:blackhole/CustomWidgets/like_button.dart';
+import 'package:blackhole/CustomWidgets/popup.dart';
 import 'package:blackhole/CustomWidgets/seek_bar.dart';
 import 'package:blackhole/CustomWidgets/snackbar.dart';
 import 'package:blackhole/CustomWidgets/textinput_dialog.dart';
@@ -249,6 +250,11 @@ class _PlayScreenState extends State<PlayScreen> {
       }
     }
 
+    String format(String msg) {
+      return '${msg[0].toUpperCase()}${msg.substring(1)}: '
+          .replaceAll('_', ' ');
+    }
+
     Future<void> getColors(ImageProvider imageProvider) async {
       final PaletteGenerator paletteGenerator =
           await PaletteGenerator.fromImageProvider(imageProvider);
@@ -341,6 +347,43 @@ class _PlayScreenState extends State<PlayScreen> {
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(15.0))),
                               onSelected: (int? value) {
+                                if (value == 10) {
+                                  final Map details = MediaItemConverter()
+                                      .mediaItemtoMap(mediaItem);
+                                  PopupDialog().showPopup(
+                                    context: context,
+                                    child: SingleChildScrollView(
+                                        physics: const BouncingScrollPhysics(),
+                                        padding: const EdgeInsets.all(25.0),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: details.keys.map((e) {
+                                            return RichText(
+                                              text: TextSpan(
+                                                text: format(e.toString()),
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.w600,
+                                                  color: Theme.of(context)
+                                                      .textTheme
+                                                      .bodyText1!
+                                                      .color,
+                                                ),
+                                                children: <TextSpan>[
+                                                  TextSpan(
+                                                    text: details[e].toString(),
+                                                    style: const TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.normal,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            );
+                                          }).toList(),
+                                        )),
+                                  );
+                                }
                                 if (value == 5) {
                                   Navigator.push(
                                       context,
@@ -431,7 +474,7 @@ class _PlayScreenState extends State<PlayScreen> {
                                             child: Row(
                                               children: [
                                                 const Icon(
-                                                  Icons.music_note_rounded,
+                                                  Icons.album_rounded,
                                                 ),
                                                 const SizedBox(width: 10.0),
                                                 Text(AppLocalizations.of(
@@ -466,6 +509,23 @@ class _PlayScreenState extends State<PlayScreen> {
                                                     .equalizer),
                                               ],
                                             )),
+                                      PopupMenuItem(
+                                          value: 10,
+                                          child: Row(
+                                            children: [
+                                              Icon(
+                                                Icons.info_rounded,
+                                                color: Theme.of(context)
+                                                    .iconTheme
+                                                    .color,
+                                              ),
+                                              const SizedBox(width: 10.0),
+                                              Text(
+                                                AppLocalizations.of(context)!
+                                                    .songInfo,
+                                              ),
+                                            ],
+                                          )),
                                     ]
                                   : [
                                       if (mediaItem.extras?['album_id'] != null)
@@ -474,7 +534,7 @@ class _PlayScreenState extends State<PlayScreen> {
                                             child: Row(
                                               children: [
                                                 const Icon(
-                                                  Icons.music_note_rounded,
+                                                  Icons.album_rounded,
                                                 ),
                                                 const SizedBox(width: 10.0),
                                                 Text(AppLocalizations.of(
@@ -548,6 +608,23 @@ class _PlayScreenState extends State<PlayScreen> {
                                                   : AppLocalizations.of(
                                                           context)!
                                                       .searchVideo),
+                                            ],
+                                          )),
+                                      PopupMenuItem(
+                                          value: 10,
+                                          child: Row(
+                                            children: [
+                                              Icon(
+                                                Icons.info_rounded,
+                                                color: Theme.of(context)
+                                                    .iconTheme
+                                                    .color,
+                                              ),
+                                              const SizedBox(width: 10.0),
+                                              Text(
+                                                AppLocalizations.of(context)!
+                                                    .songInfo,
+                                              ),
                                             ],
                                           )),
                                     ],
@@ -752,124 +829,160 @@ class ControlButtons extends StatelessWidget {
   final AudioPlayerHandler audioHandler;
   final bool shuffle;
   final bool miniplayer;
+  final List buttons;
 
   const ControlButtons(this.audioHandler,
-      {this.shuffle = false, this.miniplayer = false});
+      {this.shuffle = false,
+      this.miniplayer = false,
+      this.buttons = const ['Previous', 'Play/Pause', 'Next']});
 
   @override
   Widget build(BuildContext context) {
+    final MediaItem mediaItem = audioHandler.mediaItem.value!;
+    final bool online = mediaItem.extras!['url'].toString().startsWith('http');
     return Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         mainAxisSize: MainAxisSize.min,
         children: [
-          StreamBuilder<QueueState>(
-            stream: audioHandler.queueState,
-            builder: (context, snapshot) {
-              final queueState = snapshot.data ?? QueueState.empty;
-              return IconButton(
-                icon: const Icon(Icons.skip_previous_rounded),
-                iconSize: miniplayer ? 24.0 : 45.0,
-                tooltip: AppLocalizations.of(context)!.skipPrevious,
-                color: Theme.of(context).iconTheme.color,
-                onPressed:
-                    queueState.hasPrevious ? audioHandler.skipToPrevious : null,
-              );
-            },
-          ),
-          SizedBox(
-            height: miniplayer ? 40.0 : 65.0,
-            width: miniplayer ? 40.0 : 65.0,
-            child: StreamBuilder<PlaybackState>(
-                stream: audioHandler.playbackState,
-                builder: (context, snapshot) {
-                  final playbackState = snapshot.data;
-                  final processingState = playbackState?.processingState;
-                  final playing = playbackState?.playing ?? false;
-                  return Stack(
-                    children: [
-                      if (processingState == AudioProcessingState.loading ||
-                          processingState == AudioProcessingState.buffering)
-                        Center(
-                          child: SizedBox(
-                            height: miniplayer ? 40.0 : 65.0,
-                            width: miniplayer ? 40.0 : 65.0,
-                            child: CircularProgressIndicator(
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                Theme.of(context).iconTheme.color!,
+          if (buttons.contains('Like') && online)
+            LikeButton(
+              mediaItem: mediaItem,
+              size: 22.0,
+              showSnack: false,
+            ),
+          if (buttons.contains('Previous') || !online)
+            StreamBuilder<QueueState>(
+              stream: audioHandler.queueState,
+              builder: (context, snapshot) {
+                final queueState = snapshot.data ?? QueueState.empty;
+                return IconButton(
+                  icon: const Icon(Icons.skip_previous_rounded),
+                  iconSize: miniplayer ? 24.0 : 45.0,
+                  tooltip: AppLocalizations.of(context)!.skipPrevious,
+                  color: Theme.of(context).iconTheme.color,
+                  onPressed: queueState.hasPrevious
+                      ? audioHandler.skipToPrevious
+                      : null,
+                );
+              },
+            ),
+          if (buttons.contains('Play/Pause') || !online)
+            SizedBox(
+              height: miniplayer ? 40.0 : 65.0,
+              width: miniplayer ? 40.0 : 65.0,
+              child: StreamBuilder<PlaybackState>(
+                  stream: audioHandler.playbackState,
+                  builder: (context, snapshot) {
+                    final playbackState = snapshot.data;
+                    final processingState = playbackState?.processingState;
+                    final playing = playbackState?.playing ?? false;
+                    return Stack(
+                      children: [
+                        if (processingState == AudioProcessingState.loading ||
+                            processingState == AudioProcessingState.buffering)
+                          Center(
+                            child: SizedBox(
+                              height: miniplayer ? 40.0 : 65.0,
+                              width: miniplayer ? 40.0 : 65.0,
+                              child: CircularProgressIndicator(
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  Theme.of(context).iconTheme.color!,
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      if (miniplayer)
-                        Center(
-                            child: playing
-                                ? IconButton(
-                                    tooltip:
-                                        AppLocalizations.of(context)!.pause,
-                                    onPressed: audioHandler.pause,
-                                    icon: const Icon(
-                                      Icons.pause_rounded,
-                                    ),
-                                    color: Theme.of(context).iconTheme.color,
-                                  )
-                                : IconButton(
-                                    tooltip: AppLocalizations.of(context)!.play,
-                                    onPressed: audioHandler.play,
-                                    icon: const Icon(
-                                      Icons.play_arrow_rounded,
-                                    ),
-                                    color: Theme.of(context).iconTheme.color,
-                                  ))
-                      else
-                        Center(
-                          child: SizedBox(
-                              height: 59,
-                              width: 59,
-                              child: Center(
-                                child: playing
-                                    ? FloatingActionButton(
-                                        elevation: 10,
-                                        tooltip:
-                                            AppLocalizations.of(context)!.pause,
-                                        backgroundColor: Colors.white,
-                                        onPressed: audioHandler.pause,
-                                        child: const Icon(
-                                          Icons.pause_rounded,
-                                          size: 40.0,
-                                          color: Colors.black,
-                                        ),
-                                      )
-                                    : FloatingActionButton(
-                                        elevation: 10,
-                                        tooltip:
-                                            AppLocalizations.of(context)!.play,
-                                        backgroundColor: Colors.white,
-                                        onPressed: audioHandler.play,
-                                        child: const Icon(
-                                          Icons.play_arrow_rounded,
-                                          size: 40.0,
-                                          color: Colors.black,
-                                        ),
+                        if (miniplayer)
+                          Center(
+                              child: playing
+                                  ? IconButton(
+                                      tooltip:
+                                          AppLocalizations.of(context)!.pause,
+                                      onPressed: audioHandler.pause,
+                                      icon: const Icon(
+                                        Icons.pause_rounded,
                                       ),
-                              )),
-                        ),
-                    ],
-                  );
-                }),
-          ),
-          StreamBuilder<QueueState>(
-            stream: audioHandler.queueState,
-            builder: (context, snapshot) {
-              final queueState = snapshot.data ?? QueueState.empty;
-              return IconButton(
-                icon: const Icon(Icons.skip_next_rounded),
-                iconSize: miniplayer ? 24.0 : 45.0,
-                tooltip: AppLocalizations.of(context)!.skipNext,
-                color: Theme.of(context).iconTheme.color,
-                onPressed: queueState.hasNext ? audioHandler.skipToNext : null,
-              );
-            },
-          ),
+                                      color: Theme.of(context).iconTheme.color,
+                                    )
+                                  : IconButton(
+                                      tooltip:
+                                          AppLocalizations.of(context)!.play,
+                                      onPressed: audioHandler.play,
+                                      icon: const Icon(
+                                        Icons.play_arrow_rounded,
+                                      ),
+                                      color: Theme.of(context).iconTheme.color,
+                                    ))
+                        else
+                          Center(
+                            child: SizedBox(
+                                height: 59,
+                                width: 59,
+                                child: Center(
+                                  child: playing
+                                      ? FloatingActionButton(
+                                          elevation: 10,
+                                          tooltip: AppLocalizations.of(context)!
+                                              .pause,
+                                          backgroundColor: Colors.white,
+                                          onPressed: audioHandler.pause,
+                                          child: const Icon(
+                                            Icons.pause_rounded,
+                                            size: 40.0,
+                                            color: Colors.black,
+                                          ),
+                                        )
+                                      : FloatingActionButton(
+                                          elevation: 10,
+                                          tooltip: AppLocalizations.of(context)!
+                                              .play,
+                                          backgroundColor: Colors.white,
+                                          onPressed: audioHandler.play,
+                                          child: const Icon(
+                                            Icons.play_arrow_rounded,
+                                            size: 40.0,
+                                            color: Colors.black,
+                                          ),
+                                        ),
+                                )),
+                          ),
+                      ],
+                    );
+                  }),
+            ),
+          if (buttons.contains('Next') || !online)
+            StreamBuilder<QueueState>(
+              stream: audioHandler.queueState,
+              builder: (context, snapshot) {
+                final queueState = snapshot.data ?? QueueState.empty;
+                return IconButton(
+                  icon: const Icon(Icons.skip_next_rounded),
+                  iconSize: miniplayer ? 24.0 : 45.0,
+                  tooltip: AppLocalizations.of(context)!.skipNext,
+                  color: Theme.of(context).iconTheme.color,
+                  onPressed:
+                      queueState.hasNext ? audioHandler.skipToNext : null,
+                );
+              },
+            ),
+          if (buttons.contains('Download') && online)
+            DownloadButton(size: 20.0, icon: 'download', data: {
+              'id': mediaItem.id.toString(),
+              'artist': mediaItem.artist.toString(),
+              'album': mediaItem.album.toString(),
+              'image': mediaItem.artUri.toString(),
+              'duration': mediaItem.duration?.inSeconds.toString(),
+              'title': mediaItem.title.toString(),
+              'url': mediaItem.extras!['url'].toString(),
+              'year': mediaItem.extras!['year'].toString(),
+              'language': mediaItem.extras!['language'].toString(),
+              'genre': mediaItem.genre?.toString(),
+              '320kbps': mediaItem.extras?['320kbps'],
+              'has_lyrics': mediaItem.extras?['has_lyrics'],
+              'release_date': mediaItem.extras!['release_date'],
+              'album_id': mediaItem.extras!['album_id'],
+              'subtitle': mediaItem.extras!['subtitle'],
+              'perma_url': mediaItem.extras!['perma_url'],
+            }),
         ]);
   }
 }
@@ -1171,24 +1284,19 @@ class _ArtWorkWidgetState extends State<ArtWorkWidget> {
                       done.value = true;
                     });
                   } else {
-                    if (widget.mediaItem.extras?['has_lyrics'] == 'true') {
-                      Lyrics()
-                          .getSaavnLyrics(widget.mediaItem.id.toString())
-                          .then((value) {
-                        lyrics['lyrics'] = value;
-                        lyrics['id'] = widget.mediaItem.id;
-                        done.value = true;
-                      });
-                    } else {
-                      Lyrics()
-                          .getLyrics(widget.mediaItem.title.toString(),
-                              widget.mediaItem.artist.toString())
-                          .then((value) {
-                        lyrics['lyrics'] = value;
-                        lyrics['id'] = widget.mediaItem.id;
-                        done.value = true;
-                      });
-                    }
+                    Lyrics()
+                        .getLyrics(
+                      id: widget.mediaItem.id.toString(),
+                      saavnHas:
+                          widget.mediaItem.extras?['has_lyrics'] == 'true',
+                      title: widget.mediaItem.title.toString(),
+                      artist: widget.mediaItem.artist.toString(),
+                    )
+                        .then((value) {
+                      lyrics['lyrics'] = value;
+                      lyrics['id'] = widget.mediaItem.id;
+                      done.value = true;
+                    });
                   }
                 }
               },
@@ -1526,10 +1634,16 @@ class NameNControls extends StatelessWidget {
           itemBuilder: (BuildContext context) => <PopupMenuEntry<int>>[
             if (mediaItem.extras?['album_id'] != null)
               PopupMenuItem<int>(
-                value: 0,
-                child: Center(
-                    child: Text(AppLocalizations.of(context)!.viewAlbum)),
-              ),
+                  value: 0,
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.album_rounded,
+                      ),
+                      const SizedBox(width: 10.0),
+                      Text(AppLocalizations.of(context)!.viewAlbum),
+                    ],
+                  )),
           ],
           child: Column(
             children: [
@@ -1580,6 +1694,7 @@ class NameNControls extends StatelessWidget {
               duration: positionData.duration,
               position: positionData.position,
               bufferedPosition: positionData.bufferedPosition,
+              offline: offline,
               onChangeEnd: (newPosition) {
                 audioHandler.seek(newPosition);
               },
