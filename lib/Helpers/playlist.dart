@@ -50,7 +50,9 @@ Future<void> addItemToPlaylist(String name, MediaItem mediaItem) async {
 }
 
 Future<void> addPlaylist(String inputName, List data) async {
-  String name = inputName;
+  final RegExp avoid = RegExp(r'[\.\\\*\:\"\?#/;\|]');
+  String name = inputName.replaceAll(avoid, '').replaceAll('  ', ' ');
+
   await Hive.openBox(name);
   final Box playlistBox = Hive.box(name);
 

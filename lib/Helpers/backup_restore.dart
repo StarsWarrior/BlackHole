@@ -35,19 +35,14 @@ class BackupNRestore {
       final String time =
           '${now.hour}${now.minute}_${now.day}${now.month}${now.year}';
       final zipFile = File('$savePath/BlackHole_Backup_$time.zip');
-      try {
-        await ZipFile.createFromFiles(
-            sourceDir: saveDir, files: files, zipFile: zipFile);
-        ShowSnackBar()
-            .showSnackBar(context, AppLocalizations.of(context)!.backupSuccess);
-      } catch (e) {
-        ShowSnackBar().showSnackBar(
-            context, AppLocalizations.of(context)!.failedCreateBackup);
-      }
 
+      await ZipFile.createFromFiles(
+          sourceDir: saveDir, files: files, zipFile: zipFile);
       for (int i = 0; i < files.length; i++) {
         files[i].delete();
       }
+      ShowSnackBar()
+          .showSnackBar(context, AppLocalizations.of(context)!.backupSuccess);
     } else {
       ShowSnackBar().showSnackBar(
         context,
@@ -62,31 +57,34 @@ class BackupNRestore {
     final String savePath = await Picker().selectFile(
         context, ['zip'], AppLocalizations.of(context)!.selectBackFile);
     final File zipFile = File(savePath);
-    final Directory destinationDir = Directory(savePath.replaceAll('.zip', ''));
+    final Directory tempDir = await getTemporaryDirectory();
+    final Directory destinationDir = Directory('${tempDir.path}/restore');
 
     try {
       ZipFile.extractToDirectory(
           zipFile: zipFile, destinationDir: destinationDir);
-
       final List<FileSystemEntity> files = await destinationDir.list().toList();
-      final Directory appDir = await getApplicationDocumentsDirectory();
 
       for (int i = 0; i < files.length; i++) {
         final String backupPath = files[i].path;
-        final List<String> temp = backupPath.split('/');
-        final String boxName = temp.last.replaceAll('.hive', '');
+        final String boxName =
+            backupPath.split('/').last.replaceAll('.hive', '');
+        final Box box = await Hive.openBox(boxName);
+        final String boxPath = box.path!;
+        await box.close();
 
         try {
-          if (await Hive.boxExists(boxName)) {
-            Hive.box(boxName).close();
-          }
-          await File(backupPath).copy('${appDir.path}/$boxName.hive');
+          File(backupPath).copy(boxPath);
         } finally {
           await Hive.openBox(boxName);
         }
       }
+      destinationDir.delete(recursive: true);
+      ShowSnackBar()
+          .showSnackBar(context, AppLocalizations.of(context)!.importSuccess);
     } catch (e) {
-      // print(e);
+      ShowSnackBar()
+          .showSnackBar(context, AppLocalizations.of(context)!.failedImport);
     }
   }
 }

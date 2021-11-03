@@ -2,6 +2,7 @@ import 'package:on_audio_query/on_audio_query.dart';
 
 class OfflineAudioQuery {
   OnAudioQuery audioQuery = OnAudioQuery();
+  final RegExp avoid = RegExp(r'[\.\\\*\:\"\?#/;\|]');
 
   Future<void> requestPermission() async {
     while (!await audioQuery.permissionsStatus()) {
@@ -24,6 +25,7 @@ class OfflineAudioQuery {
   }
 
   Future<bool> createPlaylist({required String name}) async {
+    name.replaceAll(avoid, '').replaceAll('  ', ' ');
     return audioQuery.createPlaylist(name);
   }
 

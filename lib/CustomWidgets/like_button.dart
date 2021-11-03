@@ -14,15 +14,39 @@ class LikeButton extends StatefulWidget {
       required this.mediaItem,
       this.size,
       this.data,
-      this.showSnack = true})
+      this.showSnack = false})
       : super(key: key);
 
   @override
   _LikeButtonState createState() => _LikeButtonState();
 }
 
-class _LikeButtonState extends State<LikeButton> {
+class _LikeButtonState extends State<LikeButton>
+    with SingleTickerProviderStateMixin {
   bool liked = false;
+  late AnimationController controller;
+  late Animation<double> scale;
+
+  @override
+  void initState() {
+    super.initState();
+
+    controller = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 150));
+
+    scale = Tween<double>(begin: 1.0, end: 1.2).animate(controller);
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  Future<void> animateLike() async {
+    await controller.forward();
+    await controller.reverse();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,51 +59,57 @@ class _LikeButtonState extends State<LikeButton> {
     } catch (e) {
       // print('Error: $e');
     }
-    return IconButton(
-        icon: Icon(
-          liked ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-          color: liked ? Colors.redAccent : Theme.of(context).iconTheme.color,
-        ),
-        iconSize: widget.size ?? 24.0,
-        tooltip: liked
-            ? AppLocalizations.of(context)!.unlike
-            : AppLocalizations.of(context)!.like,
-        onPressed: () {
-          liked
-              ? removeLiked(widget.mediaItem == null
-                  ? widget.data!['id'].toString()
-                  : widget.mediaItem!.id)
-              : widget.mediaItem == null
-                  ? addMapToPlaylist('Favorite Songs', widget.data!)
-                  : addItemToPlaylist('Favorite Songs', widget.mediaItem!);
+    return ScaleTransition(
+      scale: scale,
+      child: IconButton(
+          icon: Icon(
+            liked ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+            color: liked ? Colors.redAccent : Theme.of(context).iconTheme.color,
+          ),
+          iconSize: widget.size ?? 24.0,
+          tooltip: liked
+              ? AppLocalizations.of(context)!.unlike
+              : AppLocalizations.of(context)!.like,
+          onPressed: () async {
+            liked
+                ? removeLiked(widget.mediaItem == null
+                    ? widget.data!['id'].toString()
+                    : widget.mediaItem!.id)
+                : widget.mediaItem == null
+                    ? addMapToPlaylist('Favorite Songs', widget.data!)
+                    : addItemToPlaylist('Favorite Songs', widget.mediaItem!);
 
-          setState(() {
-            liked = !liked;
-          });
-          if (widget.showSnack) {
-            ShowSnackBar().showSnackBar(
-              context,
-              liked
-                  ? AppLocalizations.of(context)!.addedToFav
-                  : AppLocalizations.of(context)!.removedFromFav,
-              action: SnackBarAction(
-                  textColor: Theme.of(context).colorScheme.secondary,
-                  label: AppLocalizations.of(context)!.undo,
-                  onPressed: () {
-                    liked
-                        ? removeLiked(widget.mediaItem == null
-                            ? widget.data!['id'].toString()
-                            : widget.mediaItem!.id)
-                        : widget.mediaItem == null
-                            ? addMapToPlaylist('Favorite Songs', widget.data!)
-                            : addItemToPlaylist(
-                                'Favorite Songs', widget.mediaItem!);
+            if (!liked) {
+              animateLike();
+            }
+            setState(() {
+              liked = !liked;
+            });
+            if (widget.showSnack) {
+              ShowSnackBar().showSnackBar(
+                context,
+                liked
+                    ? AppLocalizations.of(context)!.addedToFav
+                    : AppLocalizations.of(context)!.removedFromFav,
+                action: SnackBarAction(
+                    textColor: Theme.of(context).colorScheme.secondary,
+                    label: AppLocalizations.of(context)!.undo,
+                    onPressed: () {
+                      liked
+                          ? removeLiked(widget.mediaItem == null
+                              ? widget.data!['id'].toString()
+                              : widget.mediaItem!.id)
+                          : widget.mediaItem == null
+                              ? addMapToPlaylist('Favorite Songs', widget.data!)
+                              : addItemToPlaylist(
+                                  'Favorite Songs', widget.mediaItem!);
 
-                    liked = !liked;
-                    setState(() {});
-                  }),
-            );
-          }
-        });
+                      liked = !liked;
+                      setState(() {});
+                    }),
+              );
+            }
+          }),
+    );
   }
 }

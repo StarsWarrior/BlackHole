@@ -54,7 +54,9 @@ class TextInputDialog {
             ),
             TextButton(
               style: TextButton.styleFrom(
-                primary: Colors.white,
+                primary: Theme.of(context).colorScheme.secondary == Colors.white
+                    ? Colors.black
+                    : Colors.white,
                 backgroundColor: Theme.of(context).colorScheme.secondary,
               ),
               onPressed: () {
@@ -62,11 +64,6 @@ class TextInputDialog {
               },
               child: Text(
                 AppLocalizations.of(context)!.ok,
-                style: TextStyle(
-                    color:
-                        Theme.of(context).colorScheme.secondary == Colors.white
-                            ? Colors.black
-                            : null),
               ),
             ),
             const SizedBox(

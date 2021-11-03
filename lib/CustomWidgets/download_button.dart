@@ -168,7 +168,7 @@ class _MultiDownloadButtonState extends State<MultiDownloadButton> {
                   ? Center(
                       child: IconButton(
                           icon: const Icon(
-                            Icons.save_alt_rounded,
+                            Icons.download_rounded,
                           ),
                           iconSize: 25.0,
                           color: Theme.of(context).iconTheme.color,

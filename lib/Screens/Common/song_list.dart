@@ -113,6 +113,11 @@ class _SongsListPageState extends State<SongsListPage> {
                                   expandedHeight:
                                       MediaQuery.of(context).size.height * 0.4,
                                   actions: [
+                                    MultiDownloadButton(
+                                        data: songList,
+                                        playlistName: widget.listItem['title']
+                                                ?.toString() ??
+                                            'Songs'),
                                     IconButton(
                                         icon: const Icon(Icons.share_rounded),
                                         tooltip:

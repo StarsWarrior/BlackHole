@@ -70,7 +70,14 @@ class ImportPlaylist {
         return playlistNames;
       }
 
-      String playlistName = temp.split('/').last.split('.json').first;
+      final RegExp avoid = RegExp(r'[\.\\\*\:\"\?#/;\|]');
+      String playlistName = temp
+          .split('/')
+          .last
+          .replaceAll('.json', '')
+          .replaceAll(avoid, '')
+          .replaceAll('  ', ' ');
+
       final File file = File(temp);
       final String finString = await file.readAsString();
       final Map _songsMap = json.decode(finString) as Map;

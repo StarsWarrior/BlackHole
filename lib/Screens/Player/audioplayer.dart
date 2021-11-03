@@ -848,7 +848,6 @@ class ControlButtons extends StatelessWidget {
             LikeButton(
               mediaItem: mediaItem,
               size: 22.0,
-              showSnack: false,
             ),
           if (buttons.contains('Previous') || !online)
             StreamBuilder<QueueState>(

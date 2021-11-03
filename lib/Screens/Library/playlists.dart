@@ -83,6 +83,9 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                             initialText: '',
                             keyboardType: TextInputType.name,
                             onSubmitted: (String value) async {
+                              final RegExp avoid =
+                                  RegExp(r'[\.\\\*\:\"\?#/;\|]');
+                              value.replaceAll(avoid, '').replaceAll('  ', ' ');
                               if (value.trim() == '') {
                                 value = 'Playlist ${playlistNames.length}';
                               }
@@ -298,11 +301,11 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                                     playlistDetails.remove(name);
                                     await settingsBox.put(
                                         'playlistDetails', playlistDetails);
-                                    await Hive.openBox(name);
-                                    await Hive.box(name).deleteFromDisk();
                                     await playlistNames.removeAt(index);
                                     await settingsBox.put(
                                         'playlistNames', playlistNames);
+                                    await Hive.openBox(name);
+                                    await Hive.box(name).deleteFromDisk();
                                     setState(() {});
                                   }
                                   if (value == 3) {

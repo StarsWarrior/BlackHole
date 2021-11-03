@@ -5,7 +5,6 @@ import 'package:blackhole/CustomWidgets/gradient_containers.dart';
 import 'package:blackhole/CustomWidgets/miniplayer.dart';
 import 'package:blackhole/CustomWidgets/snackbar.dart';
 import 'package:blackhole/CustomWidgets/textinput_dialog.dart';
-import 'package:blackhole/Helpers/countrycodes.dart';
 import 'package:blackhole/Helpers/supabase.dart';
 import 'package:blackhole/Screens/Home/saavn.dart';
 import 'package:blackhole/Screens/Library/library.dart';
@@ -589,10 +588,6 @@ class _HomePageState extends State<HomePage> {
                       ),
                       TopCharts(
                         pageController: pageController,
-                        region: CountryCodes()
-                            .countryCodes[Hive.box('settings')
-                                .get('region', defaultValue: 'India')]
-                            .toString(),
                       ),
                       const YouTube(),
                       LibraryPage(),

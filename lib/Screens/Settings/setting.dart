@@ -1295,56 +1295,10 @@ class _SettingPageState extends State<SettingPage> {
                             ),
                           ),
                           dense: true,
-                          onTap: () {
-                            showModalBottomSheet(
-                                isDismissible: true,
-                                backgroundColor: Colors.transparent,
-                                context: context,
-                                builder: (BuildContext context) {
-                                  final Map<String, String> codes =
-                                      CountryCodes().countryCodes;
-                                  final List<String> countries =
-                                      codes.keys.toList();
-                                  return BottomGradientContainer(
-                                    borderRadius: BorderRadius.circular(20.0),
-                                    child: ListView.builder(
-                                        physics: const BouncingScrollPhysics(),
-                                        shrinkWrap: true,
-                                        padding: const EdgeInsets.fromLTRB(
-                                            0, 10, 0, 10),
-                                        itemCount: countries.length,
-                                        itemBuilder: (context, idx) {
-                                          return ListTileTheme(
-                                            selectedColor: Theme.of(context)
-                                                .colorScheme
-                                                .secondary,
-                                            child: ListTile(
-                                              contentPadding:
-                                                  const EdgeInsets.only(
-                                                      left: 25.0, right: 25.0),
-                                              title: Text(countries[idx]),
-                                              trailing: region == countries[idx]
-                                                  ? const Icon(
-                                                      Icons.check_rounded)
-                                                  : const SizedBox(),
-                                              selected:
-                                                  region == countries[idx],
-                                              onTap: () {
-                                                top_screen.items = [];
-                                                region = countries[idx];
-                                                top_screen.fetched = false;
-                                                Hive.box('settings')
-                                                    .put('region', region);
-
-                                                Navigator.pop(context);
-                                                widget.callback!();
-                                                setState(() {});
-                                              },
-                                            ),
-                                          );
-                                        }),
-                                  );
-                                });
+                          onTap: () async {
+                            region = await SpotifyCountry()
+                                .changeCountry(context: context);
+                            setState(() {});
                           }),
                       ListTile(
                         title:
@@ -1710,7 +1664,7 @@ class _SettingPageState extends State<SettingPage> {
                               Text(AppLocalizations.of(context)!.liveSearchSub),
                           keyName: 'liveSearch',
                           isThreeLine: false,
-                          defaultValue: false,
+                          defaultValue: true,
                         ),
                         BoxSwitchTile(
                           title: Text(AppLocalizations.of(context)!.useDown),
@@ -2066,13 +2020,7 @@ class _SettingPageState extends State<SettingPage> {
                                                 child: Text(
                                                   AppLocalizations.of(context)!
                                                       .ok,
-                                                  style: TextStyle(
-                                                      color: Theme.of(context)
-                                                                  .colorScheme
-                                                                  .secondary ==
-                                                              Colors.white
-                                                          ? Colors.black
-                                                          : null,
+                                                  style: const TextStyle(
                                                       fontWeight:
                                                           FontWeight.w600),
                                                 ),
@@ -2438,5 +2386,50 @@ class BoxSwitchTile extends StatelessWidget {
                 }
               });
         });
+  }
+}
+
+class SpotifyCountry {
+  Future<String> changeCountry({required BuildContext context}) async {
+    String region =
+        Hive.box('settings').get('region', defaultValue: 'India') as String;
+    await showModalBottomSheet(
+        isDismissible: true,
+        backgroundColor: Colors.transparent,
+        context: context,
+        builder: (BuildContext context) {
+          final Map<String, String> codes = CountryCodes().countryCodes;
+          final List<String> countries = codes.keys.toList();
+          return BottomGradientContainer(
+            borderRadius: BorderRadius.circular(20.0),
+            child: ListView.builder(
+                physics: const BouncingScrollPhysics(),
+                shrinkWrap: true,
+                padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+                itemCount: countries.length,
+                itemBuilder: (context, idx) {
+                  return ListTileTheme(
+                    selectedColor: Theme.of(context).colorScheme.secondary,
+                    child: ListTile(
+                      contentPadding:
+                          const EdgeInsets.only(left: 25.0, right: 25.0),
+                      title: Text(countries[idx]),
+                      trailing: region == countries[idx]
+                          ? const Icon(Icons.check_rounded)
+                          : const SizedBox(),
+                      selected: region == countries[idx],
+                      onTap: () {
+                        top_screen.items = [];
+                        region = countries[idx];
+                        top_screen.fetched = false;
+                        Hive.box('settings').put('region', region);
+                        Navigator.pop(context);
+                      },
+                    ),
+                  );
+                }),
+          );
+        });
+    return region;
   }
 }

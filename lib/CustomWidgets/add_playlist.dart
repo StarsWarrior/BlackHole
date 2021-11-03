@@ -155,13 +155,16 @@ class AddToPlaylist {
                   onTap: () {
                     TextInputDialog().showTextInputDialog(
                         context: context,
-                        keyboardType: TextInputType.text,
+                        keyboardType: TextInputType.name,
                         title: AppLocalizations.of(context)!.createNewPlaylist,
-                        onSubmitted: (String value) {
+                        onSubmitted: (String value) async {
+                          final RegExp avoid = RegExp(r'[\.\\\*\:\"\?#/;\|]');
+                          value.replaceAll(avoid, '').replaceAll('  ', ' ');
                           if (value.trim() == '') {
                             value = 'Playlist ${playlistNames.length}';
                           }
-                          if (playlistNames.contains(value)) {
+                          if (playlistNames.contains(value) ||
+                              await Hive.boxExists(value)) {
                             value = '$value (1)';
                           }
                           playlistNames.add(value);

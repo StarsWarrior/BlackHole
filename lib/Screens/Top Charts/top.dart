@@ -1,11 +1,14 @@
 import 'package:blackhole/CustomWidgets/custom_physics.dart';
 import 'package:blackhole/CustomWidgets/empty_screen.dart';
+import 'package:blackhole/Helpers/countrycodes.dart';
 import 'package:blackhole/Screens/Search/search.dart';
+import 'package:blackhole/Screens/Settings/setting.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:html_unescape/html_unescape_small.dart';
 import 'package:http/http.dart';
 
@@ -18,11 +21,8 @@ bool emptyRegional = false;
 bool emptyGlobal = false;
 
 class TopCharts extends StatefulWidget {
-  final String region;
   final PageController pageController;
-  const TopCharts(
-      {Key? key, required this.region, required this.pageController})
-      : super(key: key);
+  const TopCharts({Key? key, required this.pageController}) : super(key: key);
 
   @override
   _TopChartsState createState() => _TopChartsState();
@@ -40,6 +40,17 @@ class _TopChartsState extends State<TopCharts>
         child: Scaffold(
           backgroundColor: Colors.transparent,
           appBar: AppBar(
+            actions: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: IconButton(
+                  icon: const Icon(Icons.my_location_rounded),
+                  onPressed: () async {
+                    await SpotifyCountry().changeCountry(context: context);
+                  },
+                ),
+              ),
+            ],
             bottom: TabBar(
               tabs: [
                 Tab(
@@ -101,9 +112,16 @@ class _TopChartsState extends State<TopCharts>
             child: TabBarView(
               physics: const CustomPhysics(),
               children: [
-                TopPage(
-                  region: widget.region,
-                ),
+                ValueListenableBuilder(
+                    valueListenable: Hive.box('settings').listenable(),
+                    builder: (BuildContext context, Box box, Widget? widget) {
+                      return TopPage(
+                        region: CountryCodes()
+                            .countryCodes[
+                                box.get('region', defaultValue: 'India')]
+                            .toString(),
+                      );
+                    }),
                 const TopPage(
                   region: 'global',
                 ),
