@@ -47,7 +47,6 @@ class Download with ChangeNotifier {
           Permission.accessMediaLocation,
           Permission.mediaLibrary,
         ].request();
-        // debugPrint(statuses[Permission.storage].toString());
       }
       status = await Permission.storage.status;
     }

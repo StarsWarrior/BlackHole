@@ -186,6 +186,7 @@ class _SaavnHomePageState extends State<SaavnHomePage>
                                     ),
                                     clipBehavior: Clip.antiAlias,
                                     child: CachedNetworkImage(
+                                      fit: BoxFit.cover,
                                       errorWidget: (context, _, __) =>
                                           const Image(
                                         image: AssetImage('assets/cover.jpg'),
@@ -267,13 +268,15 @@ class _SaavnHomePageState extends State<SaavnHomePage>
                                   likedRadio.length
                               : (data[lists[idx]] as List).length,
                       itemBuilder: (context, index) {
-                        Map item = data[lists[idx]][index] as Map;
+                        Map item;
                         if (data['modules'][lists[idx]]?['title']?.toString() ==
                             'Radio Stations') {
                           index < likedRadio.length
                               ? item = likedRadio[index] as Map
                               : item = data[lists[idx]]
                                   [index - likedRadio.length] as Map;
+                        } else {
+                          item = data[lists[idx]][index] as Map;
                         }
                         final currentSongList = data[lists[idx]]
                             .where((e) => e['type'] == 'song')
@@ -414,6 +417,7 @@ class _SaavnHomePageState extends State<SaavnHomePage>
                                       ),
                                       clipBehavior: Clip.antiAlias,
                                       child: CachedNetworkImage(
+                                        fit: BoxFit.cover,
                                         errorWidget: (context, _, __) =>
                                             const Image(
                                           image: AssetImage('assets/cover.jpg'),

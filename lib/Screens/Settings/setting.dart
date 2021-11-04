@@ -1429,22 +1429,22 @@ class _SettingPageState extends State<SettingPage> {
                             widget.callback!();
                           },
                         ),
-                        BoxSwitchTile(
-                          title: Text(
-                            AppLocalizations.of(
-                              context,
-                            )!
-                                .showHistory,
-                          ),
-                          subtitle: Text(
-                            AppLocalizations.of(
-                              context,
-                            )!
-                                .showHistorySub,
-                          ),
-                          keyName: 'showHistory',
-                          defaultValue: true,
-                        ),
+                        // BoxSwitchTile(
+                        //   title: Text(
+                        //     AppLocalizations.of(
+                        //       context,
+                        //     )!
+                        //         .showHistory,
+                        //   ),
+                        //   subtitle: Text(
+                        //     AppLocalizations.of(
+                        //       context,
+                        //     )!
+                        //         .showHistorySub,
+                        //   ),
+                        //   keyName: 'showHistory',
+                        //   defaultValue: true,
+                        // ),
                         BoxSwitchTile(
                           title: Text(
                             AppLocalizations.of(
@@ -2761,13 +2761,22 @@ class _SettingPageState extends State<SettingPage> {
                             BackupNRestore().restore(context);
                           },
                         ),
-                        // BoxSwitchTile(
-                        //   title: Text(AppLocalizations.of(context,)!.autoBack,),
-                        //   subtitle:
-                        //       Text(AppLocalizations.of(context,)!.autoBackSub,),
-                        //   keyName: 'autoBackup',
-                        //   defaultValue: false,
-                        // ),
+                        BoxSwitchTile(
+                          title: Text(
+                            AppLocalizations.of(
+                              context,
+                            )!
+                                .autoBack,
+                          ),
+                          subtitle: Text(
+                            AppLocalizations.of(
+                              context,
+                            )!
+                                .autoBackSub,
+                          ),
+                          keyName: 'autoBackup',
+                          defaultValue: false,
+                        ),
                       ],
                     ),
                   ),

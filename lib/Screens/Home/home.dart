@@ -5,6 +5,7 @@ import 'package:blackhole/CustomWidgets/gradient_containers.dart';
 import 'package:blackhole/CustomWidgets/miniplayer.dart';
 import 'package:blackhole/CustomWidgets/snackbar.dart';
 import 'package:blackhole/CustomWidgets/textinput_dialog.dart';
+import 'package:blackhole/Helpers/backup_restore.dart';
 import 'package:blackhole/Helpers/supabase.dart';
 import 'package:blackhole/Screens/Home/saavn.dart';
 import 'package:blackhole/Screens/Library/library.dart';
@@ -12,6 +13,7 @@ import 'package:blackhole/Screens/Search/search.dart';
 import 'package:blackhole/Screens/Settings/setting.dart';
 import 'package:blackhole/Screens/Top Charts/top.dart';
 import 'package:blackhole/Screens/YouTube/youtube_home.dart';
+import 'package:blackhole/Services/ext_storage_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
@@ -36,6 +38,8 @@ class _HomePageState extends State<HomePage> {
       Hive.box('settings').get('name', defaultValue: 'Guest') as String;
   bool checkUpdate =
       Hive.box('settings').get('checkUpdate', defaultValue: false) as bool;
+  bool autoBackup =
+      Hive.box('settings').get('autoBackup', defaultValue: false) as bool;
   DateTime? backButtonPressTime;
 
   String capitalize(String msg) {
@@ -138,6 +142,53 @@ class _HomePageState extends State<HomePage> {
                 ),
               );
             }
+          });
+        }
+        if (autoBackup) {
+          final List<String> checked = [
+            AppLocalizations.of(
+              context,
+            )!
+                .settings,
+            AppLocalizations.of(
+              context,
+            )!
+                .downs,
+            AppLocalizations.of(
+              context,
+            )!
+                .playlists,
+          ];
+          final List playlistNames = Hive.box('settings').get(
+            'playlistNames',
+            defaultValue: ['Favorite Songs'],
+          ) as List;
+          final Map<String, List> boxNames = {
+            AppLocalizations.of(
+              context,
+            )!
+                .settings: ['settings'],
+            AppLocalizations.of(
+              context,
+            )!
+                .cache: ['cache'],
+            AppLocalizations.of(
+              context,
+            )!
+                .downs: ['downloads'],
+            AppLocalizations.of(
+              context,
+            )!
+                .playlists: playlistNames,
+          };
+          ExtStorageProvider.getExtStorage(dirName: 'BlackHole').then((value) {
+            BackupNRestore().createBackup(
+              context,
+              checked,
+              boxNames,
+              path: value,
+              fileName: 'BlackHole_AutoBackup',
+            );
           });
         }
       });

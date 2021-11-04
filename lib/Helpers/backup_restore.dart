@@ -7,17 +7,32 @@ import 'package:flutter_archive/flutter_archive.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class BackupNRestore {
   Future<void> createBackup(
     BuildContext context,
     List items,
-    Map<String, List> boxNameData,
-  ) async {
-    final String savePath = await Picker().selectFolder(
-      context,
-      AppLocalizations.of(context)!.selectBackLocation,
-    );
+    Map<String, List> boxNameData, {
+    String? path,
+    String? fileName,
+  }) async {
+    if (!Platform.isWindows) {
+      PermissionStatus status = await Permission.storage.status;
+      if (status.isPermanentlyDenied || status.isDenied) {
+        await [
+          Permission.storage,
+          Permission.accessMediaLocation,
+          Permission.mediaLibrary,
+        ].request();
+      }
+      status = await Permission.storage.status;
+    }
+    final String savePath = path ??
+        await Picker().selectFolder(
+          context,
+          AppLocalizations.of(context)!.selectBackLocation,
+        );
     if (savePath.trim() != '') {
       final saveDir = Directory(savePath);
       final List<File> files = [];
@@ -39,7 +54,8 @@ class BackupNRestore {
       final now = DateTime.now();
       final String time =
           '${now.hour}${now.minute}_${now.day}${now.month}${now.year}';
-      final zipFile = File('$savePath/BlackHole_Backup_$time.zip');
+      final zipFile =
+          File('$savePath/${fileName ?? "BlackHole_Backup_$time"}.zip');
 
       await ZipFile.createFromFiles(
         sourceDir: saveDir,
