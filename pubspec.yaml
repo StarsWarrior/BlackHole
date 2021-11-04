@@ -22,17 +22,15 @@ dependencies:
     sdk: flutter
   flutter_archive: ^4.1.0
   flutter_displaymode: ^0.3.2
-  # flutter_downloader: ^1.6.1
-  # flutter_ffmpeg: ^0.4.2
+  # flutter_downloader: ^1.7.1
   flutter_localizations:
     sdk: flutter
   hive: ^2.0.4
   hive_flutter: ^1.1.0
   html_unescape: ^2.0.0
-  just_audio: ^0.9.15
+  just_audio: ^0.9.16
   # logging: ^1.0.1
-  material_design_icons_flutter: ^5.0.5955-rc.1
-  material_floating_search_bar: ^0.3.6
+  material_design_icons_flutter: 5.0.5955-rc.1
   on_audio_query: ^2.5.2
   package_info: ^2.0.2
   palette_generator: ^0.3.2
@@ -43,12 +41,12 @@ dependencies:
   supabase: ^0.2.8
   url_launcher: ^6.0.12
   uuid: ^3.0.5
-  youtube_explode_dart: ^1.10.6
+  youtube_explode_dart: 1.10.6
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  lint: ^1.6.0
+  lint: ^1.7.2
 
 flutter:
   uses-material-design: true

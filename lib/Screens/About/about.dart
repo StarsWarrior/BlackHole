@@ -77,15 +77,18 @@ class _AboutScreenState extends State<AboutScreen> {
                       ),
                       clipBehavior: Clip.antiAlias,
                       child: const SizedBox(
-                          width: 150,
-                          child: Image(
-                              image: AssetImage('assets/ic_launcher.png'))),
+                        width: 150,
+                        child:
+                            Image(image: AssetImage('assets/ic_launcher.png')),
+                      ),
                     ),
                     const SizedBox(height: 20),
                     Text(
                       AppLocalizations.of(context)!.appTitle,
                       style: const TextStyle(
-                          fontSize: 35, fontWeight: FontWeight.bold),
+                        fontSize: 35,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     Text('v$appVersion'),
                   ],
@@ -100,19 +103,21 @@ class _AboutScreenState extends State<AboutScreen> {
                         style: const TextStyle(fontSize: 16),
                       ),
                       TextButton(
-                          onPressed: () {
-                            launch('https://github.com/Sangwan5688/BlackHole');
-                          },
-                          child: SizedBox(
-                            width: MediaQuery.of(context).size.width / 4,
-                            child: Image(
-                              image: Theme.of(context).brightness ==
-                                      Brightness.dark
-                                  ? const AssetImage(
-                                      'assets/GitHub_Logo_White.png')
-                                  : const AssetImage('assets/GitHub_Logo.png'),
-                            ),
-                          )),
+                        onPressed: () {
+                          launch('https://github.com/Sangwan5688/BlackHole');
+                        },
+                        child: SizedBox(
+                          width: MediaQuery.of(context).size.width / 4,
+                          child: Image(
+                            image: Theme.of(context).brightness ==
+                                    Brightness.dark
+                                ? const AssetImage(
+                                    'assets/GitHub_Logo_White.png',
+                                  )
+                                : const AssetImage('assets/GitHub_Logo.png'),
+                          ),
+                        ),
+                      ),
                       Text(
                         AppLocalizations.of(context)!.aboutLine2,
                         textAlign: TextAlign.center,
@@ -158,9 +163,10 @@ class _AboutScreenState extends State<AboutScreen> {
                         width: MediaQuery.of(context).size.width / 2,
                         child: Image(
                           image: AssetImage(
-                              Theme.of(context).brightness == Brightness.dark
-                                  ? 'assets/gpay-white.png'
-                                  : 'assets/gpay-white.png'),
+                            Theme.of(context).brightness == Brightness.dark
+                                ? 'assets/gpay-white.png'
+                                : 'assets/gpay-white.png',
+                          ),
                         ),
                       ),
                     ),

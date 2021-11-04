@@ -46,15 +46,16 @@ class AddToOffPlaylist {
                   ),
                   onTap: () {
                     TextInputDialog().showTextInputDialog(
-                        context: context,
-                        keyboardType: TextInputType.text,
-                        title: AppLocalizations.of(context)!.createNewPlaylist,
-                        onSubmitted: (String value) async {
-                          await offlineAudioQuery.createPlaylist(name: value);
-                          playlistDetails =
-                              await offlineAudioQuery.getPlaylists();
-                          Navigator.pop(context);
-                        });
+                      context: context,
+                      keyboardType: TextInputType.text,
+                      title: AppLocalizations.of(context)!.createNewPlaylist,
+                      onSubmitted: (String value) async {
+                        await offlineAudioQuery.createPlaylist(name: value);
+                        playlistDetails =
+                            await offlineAudioQuery.getPlaylists();
+                        Navigator.pop(context);
+                      },
+                    );
                   },
                 ),
                 if (playlistDetails.isEmpty)
@@ -97,8 +98,9 @@ class AddToOffPlaylist {
                         onTap: () {
                           Navigator.pop(context);
                           offlineAudioQuery.addToPlaylist(
-                              playlistId: playlistDetails[index].id,
-                              audioId: audioId);
+                            playlistId: playlistDetails[index].id,
+                            audioId: audioId,
+                          );
                           ShowSnackBar().showSnackBar(
                             context,
                             '${AppLocalizations.of(context)!.addedTo} ${playlistDetails[index].playlist}',
@@ -154,23 +156,24 @@ class AddToPlaylist {
                   ),
                   onTap: () {
                     TextInputDialog().showTextInputDialog(
-                        context: context,
-                        keyboardType: TextInputType.name,
-                        title: AppLocalizations.of(context)!.createNewPlaylist,
-                        onSubmitted: (String value) async {
-                          final RegExp avoid = RegExp(r'[\.\\\*\:\"\?#/;\|]');
-                          value.replaceAll(avoid, '').replaceAll('  ', ' ');
-                          if (value.trim() == '') {
-                            value = 'Playlist ${playlistNames.length}';
-                          }
-                          if (playlistNames.contains(value) ||
-                              await Hive.boxExists(value)) {
-                            value = '$value (1)';
-                          }
-                          playlistNames.add(value);
-                          settingsBox.put('playlistNames', playlistNames);
-                          Navigator.pop(context);
-                        });
+                      context: context,
+                      keyboardType: TextInputType.name,
+                      title: AppLocalizations.of(context)!.createNewPlaylist,
+                      onSubmitted: (String value) async {
+                        final RegExp avoid = RegExp(r'[\.\\\*\:\"\?#/;\|]');
+                        value.replaceAll(avoid, '').replaceAll('  ', ' ');
+                        if (value.trim() == '') {
+                          value = 'Playlist ${playlistNames.length}';
+                        }
+                        if (playlistNames.contains(value) ||
+                            await Hive.boxExists(value)) {
+                          value = '$value (1)';
+                        }
+                        playlistNames.add(value);
+                        settingsBox.put('playlistNames', playlistNames);
+                        Navigator.pop(context);
+                      },
+                    );
                   },
                 ),
                 if (playlistNames.isEmpty)
@@ -197,13 +200,17 @@ class AddToPlaylist {
                                   height: 50,
                                   width: 50,
                                   child: Image(
-                                      image: AssetImage('assets/album.png')),
+                                    image: AssetImage(
+                                      'assets/album.png',
+                                    ),
+                                  ),
                                 ),
                               )
                             : Collage(
                                 imageList: playlistDetails[playlistNames[index]]
                                     ['imagesList'] as List,
-                                placeholderImage: 'assets/cover.jpg'),
+                                placeholderImage: 'assets/cover.jpg',
+                              ),
                         title: Text(
                           '${playlistDetails.containsKey(playlistNames[index]) ? playlistDetails[playlistNames[index]]["name"] ?? playlistNames[index] : playlistNames[index]}',
                         ),
@@ -211,7 +218,9 @@ class AddToPlaylist {
                           Navigator.pop(context);
                           if (mediaItem != null) {
                             addItemToPlaylist(
-                                playlistNames[index].toString(), mediaItem);
+                              playlistNames[index].toString(),
+                              mediaItem,
+                            );
                             ShowSnackBar().showSnackBar(
                               context,
                               '${AppLocalizations.of(context)!.addedTo} ${playlistDetails.containsKey(playlistNames[index]) ? playlistDetails[playlistNames[index]]["name"] ?? playlistNames[index] : playlistNames[index]}',

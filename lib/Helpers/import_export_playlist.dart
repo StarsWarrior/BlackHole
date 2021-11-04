@@ -12,9 +12,14 @@ import 'package:share_plus/share_plus.dart';
 
 class ExportPlaylist {
   Future<void> exportPlaylist(
-      BuildContext context, String playlistName, String showName) async {
+    BuildContext context,
+    String playlistName,
+    String showName,
+  ) async {
     final String dirPath = await Picker().selectFolder(
-        context, AppLocalizations.of(context)!.selectExportLocation);
+      context,
+      AppLocalizations.of(context)!.selectExportLocation,
+    );
     if (dirPath == '') {
       ShowSnackBar().showSnackBar(
         context,
@@ -36,7 +41,10 @@ class ExportPlaylist {
   }
 
   Future<void> sharePlaylist(
-      BuildContext context, String playlistName, String showName) async {
+    BuildContext context,
+    String playlistName,
+    String showName,
+  ) async {
     final Directory appDir = await getApplicationDocumentsDirectory();
     final String temp = appDir.path;
 
@@ -46,10 +54,12 @@ class ExportPlaylist {
     final String _songs = json.encode(_songsMap);
     final File file =
         await File('$temp/$showName.json').create(recursive: true);
-    await file.writeAsString(_songs.toString());
+    await file.writeAsString(_songs);
 
-    await Share.shareFiles([file.path],
-        text: AppLocalizations.of(context)!.playlistShareText);
+    await Share.shareFiles(
+      [file.path],
+      text: AppLocalizations.of(context)!.playlistShareText,
+    );
     await Future.delayed(const Duration(seconds: 10), () {});
     if (await file.exists()) {
       await file.delete();
@@ -61,7 +71,10 @@ class ImportPlaylist {
   Future<List> importPlaylist(BuildContext context, List playlistNames) async {
     try {
       final String temp = await Picker().selectFile(
-          context, ['json'], AppLocalizations.of(context)!.selectJsonImport);
+        context,
+        ['json'],
+        AppLocalizations.of(context)!.selectJsonImport,
+      );
       if (temp == '') {
         ShowSnackBar().showSnackBar(
           context,

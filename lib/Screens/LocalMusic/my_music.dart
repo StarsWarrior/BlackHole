@@ -27,9 +27,11 @@ class _MyMusicPageState extends State<MyMusicPage> {
             icon: Icons.music_note_rounded,
             onTap: () {
               Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const DownloadedSongs()));
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const DownloadedSongs(),
+                ),
+              );
             },
           ),
           LibraryTile(

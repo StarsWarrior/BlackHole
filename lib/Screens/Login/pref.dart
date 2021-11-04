@@ -156,7 +156,11 @@ class _PrefScreenState extends State<PrefScreen> {
                                   ),
                                   trailing: Container(
                                     padding: const EdgeInsets.only(
-                                        top: 5, bottom: 5, left: 10, right: 10),
+                                      top: 5,
+                                      bottom: 5,
+                                      left: 10,
+                                      right: 10,
+                                    ),
                                     height: 57.0,
                                     width: 150,
                                     decoration: BoxDecoration(
@@ -184,15 +188,17 @@ class _PrefScreenState extends State<PrefScreen> {
                                   dense: true,
                                   onTap: () {
                                     showModalBottomSheet(
-                                        isDismissible: true,
-                                        backgroundColor: Colors.transparent,
-                                        context: context,
-                                        builder: (BuildContext context) {
-                                          final List checked =
-                                              List.from(preferredLanguage);
-                                          return StatefulBuilder(builder:
-                                              (BuildContext context,
-                                                  StateSetter setStt) {
+                                      isDismissible: true,
+                                      backgroundColor: Colors.transparent,
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        final List checked =
+                                            List.from(preferredLanguage);
+                                        return StatefulBuilder(
+                                          builder: (
+                                            BuildContext context,
+                                            StateSetter setStt,
+                                          ) {
                                             return BottomGradientContainer(
                                               borderRadius:
                                                   BorderRadius.circular(20.0),
@@ -200,42 +206,50 @@ class _PrefScreenState extends State<PrefScreen> {
                                                 children: [
                                                   Expanded(
                                                     child: ListView.builder(
-                                                        physics:
-                                                            const BouncingScrollPhysics(),
-                                                        shrinkWrap: true,
-                                                        padding:
-                                                            const EdgeInsets
-                                                                    .fromLTRB(
-                                                                0, 10, 0, 10),
-                                                        itemCount:
-                                                            languages.length,
-                                                        itemBuilder:
-                                                            (context, idx) {
-                                                          return CheckboxListTile(
-                                                            activeColor:
-                                                                Theme.of(
-                                                                        context)
-                                                                    .colorScheme
-                                                                    .secondary,
-                                                            value: checked
-                                                                .contains(
+                                                      physics:
+                                                          const BouncingScrollPhysics(),
+                                                      shrinkWrap: true,
+                                                      padding: const EdgeInsets
+                                                          .fromLTRB(
+                                                        0,
+                                                        10,
+                                                        0,
+                                                        10,
+                                                      ),
+                                                      itemCount:
+                                                          languages.length,
+                                                      itemBuilder:
+                                                          (context, idx) {
+                                                        return CheckboxListTile(
+                                                          activeColor: Theme.of(
+                                                            context,
+                                                          )
+                                                              .colorScheme
+                                                              .secondary,
+                                                          value:
+                                                              checked.contains(
+                                                            languages[idx],
+                                                          ),
+                                                          title: Text(
+                                                            languages[idx],
+                                                          ),
+                                                          onChanged:
+                                                              (bool? value) {
+                                                            value!
+                                                                ? checked.add(
                                                                     languages[
-                                                                        idx]),
-                                                            title: Text(
-                                                                languages[idx]),
-                                                            onChanged:
-                                                                (bool? value) {
-                                                              value!
-                                                                  ? checked.add(
-                                                                      languages[
-                                                                          idx])
-                                                                  : checked.remove(
-                                                                      languages[
-                                                                          idx]);
-                                                              setStt(() {});
-                                                            },
-                                                          );
-                                                        }),
+                                                                        idx],
+                                                                  )
+                                                                : checked
+                                                                    .remove(
+                                                                    languages[
+                                                                        idx],
+                                                                  );
+                                                            setStt(() {});
+                                                          },
+                                                        );
+                                                      },
+                                                    ),
                                                   ),
                                                   Row(
                                                     mainAxisAlignment:
@@ -251,12 +265,15 @@ class _PrefScreenState extends State<PrefScreen> {
                                                         ),
                                                         onPressed: () {
                                                           Navigator.pop(
-                                                              context);
+                                                            context,
+                                                          );
                                                         },
                                                         child: Text(
-                                                            AppLocalizations.of(
-                                                                    context)!
-                                                                .cancel),
+                                                          AppLocalizations.of(
+                                                            context,
+                                                          )!
+                                                              .cancel,
+                                                        ),
                                                       ),
                                                       TextButton(
                                                         style: TextButton
@@ -271,31 +288,37 @@ class _PrefScreenState extends State<PrefScreen> {
                                                             preferredLanguage =
                                                                 checked;
                                                             Navigator.pop(
-                                                                context);
+                                                              context,
+                                                            );
                                                             Hive.box('settings')
                                                                 .put(
-                                                                    'preferredLanguage',
-                                                                    checked);
+                                                              'preferredLanguage',
+                                                              checked,
+                                                            );
                                                           });
                                                           if (preferredLanguage
                                                               .isEmpty) {
                                                             ShowSnackBar()
                                                                 .showSnackBar(
                                                               context,
-                                                              AppLocalizations.of(
-                                                                      context)!
+                                                              AppLocalizations
+                                                                      .of(
+                                                                context,
+                                                              )!
                                                                   .noLangSelected,
                                                             );
                                                           }
                                                         },
                                                         child: Text(
                                                           AppLocalizations.of(
-                                                                  context)!
+                                                            context,
+                                                          )!
                                                               .ok,
-                                                          style: const TextStyle(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w600),
+                                                          style:
+                                                              const TextStyle(
+                                                            fontWeight:
+                                                                FontWeight.w600,
+                                                          ),
                                                         ),
                                                       ),
                                                     ],
@@ -303,106 +326,116 @@ class _PrefScreenState extends State<PrefScreen> {
                                                 ],
                                               ),
                                             );
-                                          });
-                                        });
+                                          },
+                                        );
+                                      },
+                                    );
                                   },
                                 ),
                                 const SizedBox(
                                   height: 30.0,
                                 ),
                                 ListTile(
-                                    title: Text(
-                                      AppLocalizations.of(context)!.countryQue,
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
+                                  title: Text(
+                                    AppLocalizations.of(context)!.countryQue,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  trailing: Container(
+                                    padding: const EdgeInsets.only(
+                                      top: 5,
+                                      bottom: 5,
+                                      left: 10,
+                                      right: 10,
+                                    ),
+                                    height: 57.0,
+                                    width: 150,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                      color: Colors.grey[900],
+                                      boxShadow: const [
+                                        BoxShadow(
+                                          color: Colors.black26,
+                                          blurRadius: 5.0,
+                                          offset: Offset(0.0, 3.0),
+                                        )
+                                      ],
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        region,
+                                        textAlign: TextAlign.end,
                                       ),
                                     ),
-                                    trailing: Container(
-                                      padding: const EdgeInsets.only(
-                                          top: 5,
-                                          bottom: 5,
-                                          left: 10,
-                                          right: 10),
-                                      height: 57.0,
-                                      width: 150,
-                                      decoration: BoxDecoration(
-                                        borderRadius:
-                                            BorderRadius.circular(10.0),
-                                        color: Colors.grey[900],
-                                        boxShadow: const [
-                                          BoxShadow(
-                                            color: Colors.black26,
-                                            blurRadius: 5.0,
-                                            offset: Offset(0.0, 3.0),
-                                          )
-                                        ],
-                                      ),
-                                      child: Center(
-                                        child: Text(
-                                          region,
-                                          textAlign: TextAlign.end,
-                                        ),
-                                      ),
-                                    ),
-                                    dense: true,
-                                    onTap: () {
-                                      showModalBottomSheet(
-                                          isDismissible: true,
-                                          backgroundColor: Colors.transparent,
-                                          context: context,
-                                          builder: (BuildContext context) {
-                                            final Map<String, String> codes =
-                                                CountryCodes().countryCodes;
-                                            final List<String> countries =
-                                                codes.keys.toList();
-                                            return BottomGradientContainer(
-                                              borderRadius:
-                                                  BorderRadius.circular(20.0),
-                                              child: ListView.builder(
-                                                  physics:
-                                                      const BouncingScrollPhysics(),
-                                                  shrinkWrap: true,
-                                                  padding:
-                                                      const EdgeInsets.fromLTRB(
-                                                          0, 10, 0, 10),
-                                                  itemCount: countries.length,
-                                                  itemBuilder: (context, idx) {
-                                                    return ListTileTheme(
-                                                      selectedColor:
-                                                          Theme.of(context)
-                                                              .colorScheme
-                                                              .secondary,
-                                                      child: ListTile(
-                                                        contentPadding:
-                                                            const EdgeInsets
-                                                                    .only(
-                                                                left: 25.0,
-                                                                right: 25.0),
-                                                        title: Text(
-                                                            countries[idx]),
-                                                        trailing: region ==
-                                                                countries[idx]
-                                                            ? const Icon(Icons
-                                                                .check_rounded)
-                                                            : const SizedBox(),
-                                                        selected: region ==
-                                                            countries[idx],
-                                                        onTap: () {
-                                                          region =
-                                                              countries[idx];
-                                                          Hive.box('settings')
-                                                              .put('region',
-                                                                  region);
-                                                          Navigator.pop(
-                                                              context);
-                                                          setState(() {});
-                                                        },
-                                                      ),
+                                  ),
+                                  dense: true,
+                                  onTap: () {
+                                    showModalBottomSheet(
+                                      isDismissible: true,
+                                      backgroundColor: Colors.transparent,
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        final Map<String, String> codes =
+                                            CountryCodes().countryCodes;
+                                        final List<String> countries =
+                                            codes.keys.toList();
+                                        return BottomGradientContainer(
+                                          borderRadius:
+                                              BorderRadius.circular(20.0),
+                                          child: ListView.builder(
+                                            physics:
+                                                const BouncingScrollPhysics(),
+                                            shrinkWrap: true,
+                                            padding: const EdgeInsets.fromLTRB(
+                                              0,
+                                              10,
+                                              0,
+                                              10,
+                                            ),
+                                            itemCount: countries.length,
+                                            itemBuilder: (context, idx) {
+                                              return ListTileTheme(
+                                                selectedColor: Theme.of(context)
+                                                    .colorScheme
+                                                    .secondary,
+                                                child: ListTile(
+                                                  contentPadding:
+                                                      const EdgeInsets.only(
+                                                    left: 25.0,
+                                                    right: 25.0,
+                                                  ),
+                                                  title: Text(
+                                                    countries[idx],
+                                                  ),
+                                                  trailing: region ==
+                                                          countries[idx]
+                                                      ? const Icon(
+                                                          Icons.check_rounded,
+                                                        )
+                                                      : const SizedBox(),
+                                                  selected:
+                                                      region == countries[idx],
+                                                  onTap: () {
+                                                    region = countries[idx];
+                                                    Hive.box('settings').put(
+                                                      'region',
+                                                      region,
                                                     );
-                                                  }),
-                                            );
-                                          });
-                                    }),
+                                                    Navigator.pop(
+                                                      context,
+                                                    );
+                                                    setState(() {});
+                                                  },
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                        );
+                                      },
+                                    );
+                                  },
+                                ),
                                 const SizedBox(
                                   height: 30.0,
                                 ),
@@ -412,7 +445,8 @@ class _PrefScreenState extends State<PrefScreen> {
                                   },
                                   child: Container(
                                     margin: const EdgeInsets.symmetric(
-                                        vertical: 10.0),
+                                      vertical: 10.0,
+                                    ),
                                     height: 55.0,
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(10.0),
@@ -427,14 +461,15 @@ class _PrefScreenState extends State<PrefScreen> {
                                       ],
                                     ),
                                     child: Center(
-                                        child: Text(
-                                      AppLocalizations.of(context)!.finish,
-                                      style: const TextStyle(
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 20.0,
+                                      child: Text(
+                                        AppLocalizations.of(context)!.finish,
+                                        style: const TextStyle(
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 20.0,
+                                        ),
                                       ),
-                                    )),
+                                    ),
                                   ),
                                 ),
                               ],

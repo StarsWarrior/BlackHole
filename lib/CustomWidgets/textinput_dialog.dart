@@ -25,7 +25,8 @@ class TextInputDialog {
                   Text(
                     title,
                     style: TextStyle(
-                        color: Theme.of(context).colorScheme.secondary),
+                      color: Theme.of(context).colorScheme.secondary,
+                    ),
                   ),
                 ],
               ),

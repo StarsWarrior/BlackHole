@@ -68,8 +68,10 @@ class _SeekBarState extends State<SeekBar> {
             child: ExcludeSemantics(
               child: Slider(
                 max: widget.duration.inMilliseconds.toDouble(),
-                value: min(widget.bufferedPosition.inMilliseconds.toDouble(),
-                    widget.duration.inMilliseconds.toDouble()),
+                value: min(
+                  widget.bufferedPosition.inMilliseconds.toDouble(),
+                  widget.duration.inMilliseconds.toDouble(),
+                ),
                 onChanged: (value) {},
               ),
             ),
@@ -91,14 +93,10 @@ class _SeekBarState extends State<SeekBar> {
                 setState(() {
                   _dragValue = value;
                 });
-                if (widget.onChanged != null) {
-                  widget.onChanged!(Duration(milliseconds: value.round()));
-                }
+                widget.onChanged?.call(Duration(milliseconds: value.round()));
               },
               onChangeEnd: (value) {
-                if (widget.onChangeEnd != null) {
-                  widget.onChangeEnd!(Duration(milliseconds: value.round()));
-                }
+                widget.onChangeEnd?.call(Duration(milliseconds: value.round()));
                 _dragging = false;
               },
             ),
@@ -117,31 +115,32 @@ class _SeekBarState extends State<SeekBar> {
             right: 13.0,
             bottom: 25.0,
             child: StreamBuilder<double>(
-                stream: audioHandler.speed,
-                builder: (context, snapshot) {
-                  final String speedValue =
-                      '${snapshot.data?.toStringAsFixed(1) ?? 1.0}x';
-                  return IconButton(
-                    icon: Text(
-                      speedValue,
-                      style: TextStyle(
-                        fontWeight: FontWeight.w500,
-                        color: speedValue == '1.0x'
-                            ? Theme.of(context).disabledColor
-                            : null,
-                      ),
+              stream: audioHandler.speed,
+              builder: (context, snapshot) {
+                final String speedValue =
+                    '${snapshot.data?.toStringAsFixed(1) ?? 1.0}x';
+                return IconButton(
+                  icon: Text(
+                    speedValue,
+                    style: TextStyle(
+                      fontWeight: FontWeight.w500,
+                      color: speedValue == '1.0x'
+                          ? Theme.of(context).disabledColor
+                          : null,
                     ),
-                    onPressed: () {
-                      showSliderDialog(
-                        context: context,
-                        title: AppLocalizations.of(context)!.adjustSpeed,
-                        divisions: 25,
-                        min: 0.5,
-                        max: 3.0,
-                      );
-                    },
-                  );
-                }),
+                  ),
+                  onPressed: () {
+                    showSliderDialog(
+                      context: context,
+                      title: AppLocalizations.of(context)!.adjustSpeed,
+                      divisions: 25,
+                      min: 0.5,
+                      max: 3.0,
+                    );
+                  },
+                );
+              },
+            ),
           ),
           Positioned(
             left: 25.0,
@@ -211,61 +210,65 @@ void showSliderDialog({
       ),
       title: Text(title, textAlign: TextAlign.center),
       content: StreamBuilder<double>(
-          stream: audioHandler.speed,
-          builder: (context, snapshot) {
-            double value = snapshot.data ?? audioHandler.speed.value;
-            if (value > max) {
-              value = max;
-            }
-            if (value < min) {
-              value = min;
-            }
-            return SizedBox(
-              height: 100.0,
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      IconButton(
-                        icon: const Icon(CupertinoIcons.minus),
-                        onPressed: audioHandler.speed.value > min
-                            ? () {
-                                audioHandler
-                                    .setSpeed(audioHandler.speed.value - 0.1);
-                              }
-                            : null,
+        stream: audioHandler.speed,
+        builder: (context, snapshot) {
+          double value = snapshot.data ?? audioHandler.speed.value;
+          if (value > max) {
+            value = max;
+          }
+          if (value < min) {
+            value = min;
+          }
+          return SizedBox(
+            height: 100.0,
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    IconButton(
+                      icon: const Icon(CupertinoIcons.minus),
+                      onPressed: audioHandler.speed.value > min
+                          ? () {
+                              audioHandler
+                                  .setSpeed(audioHandler.speed.value - 0.1);
+                            }
+                          : null,
+                    ),
+                    Text(
+                      '${snapshot.data?.toStringAsFixed(1)}$valueSuffix',
+                      style: const TextStyle(
+                        fontFamily: 'Fixed',
+                        fontWeight: FontWeight.bold,
+                        fontSize: 24.0,
                       ),
-                      Text('${snapshot.data?.toStringAsFixed(1)}$valueSuffix',
-                          style: const TextStyle(
-                              fontFamily: 'Fixed',
-                              fontWeight: FontWeight.bold,
-                              fontSize: 24.0)),
-                      IconButton(
-                        icon: const Icon(CupertinoIcons.plus),
-                        onPressed: audioHandler.speed.value < max
-                            ? () {
-                                audioHandler
-                                    .setSpeed(audioHandler.speed.value + 0.1);
-                              }
-                            : null,
-                      ),
-                    ],
-                  ),
-                  Slider(
-                    inactiveColor:
-                        Theme.of(context).iconTheme.color!.withOpacity(0.4),
-                    activeColor: Theme.of(context).iconTheme.color,
-                    divisions: divisions,
-                    min: min,
-                    max: max,
-                    value: value,
-                    onChanged: audioHandler.setSpeed,
-                  ),
-                ],
-              ),
-            );
-          }),
+                    ),
+                    IconButton(
+                      icon: const Icon(CupertinoIcons.plus),
+                      onPressed: audioHandler.speed.value < max
+                          ? () {
+                              audioHandler
+                                  .setSpeed(audioHandler.speed.value + 0.1);
+                            }
+                          : null,
+                    ),
+                  ],
+                ),
+                Slider(
+                  inactiveColor:
+                      Theme.of(context).iconTheme.color!.withOpacity(0.4),
+                  activeColor: Theme.of(context).iconTheme.color,
+                  divisions: divisions,
+                  min: min,
+                  max: max,
+                  value: value,
+                  onChanged: audioHandler.setSpeed,
+                ),
+              ],
+            ),
+          );
+        },
+      ),
     ),
   );
 }

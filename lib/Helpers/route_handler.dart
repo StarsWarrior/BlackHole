@@ -64,10 +64,11 @@ class SongUrlHandler extends StatelessWidget {
         Navigator.push(
           context,
           PageRouteBuilder(
-              opaque: false,
-              pageBuilder: (_, __, ___) => SongsListPage(
-                    listItem: value,
-                  )),
+            opaque: false,
+            pageBuilder: (_, __, ___) => SongsListPage(
+              listItem: value,
+            ),
+          ),
         );
       }
     });

@@ -19,124 +19,138 @@ class _AddToQueueButtonState extends State<AddToQueueButton> {
   @override
   Widget build(BuildContext context) {
     return PopupMenuButton(
-        icon: Icon(
-          Icons.more_vert_rounded,
-          color: Theme.of(context).iconTheme.color,
+      icon: Icon(
+        Icons.more_vert_rounded,
+        color: Theme.of(context).iconTheme.color,
+      ),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(
+          Radius.circular(15.0),
         ),
-        shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(15.0))),
-        itemBuilder: (context) => [
-              PopupMenuItem(
-                  value: 2,
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.queue_music_rounded,
-                        color: Theme.of(context).iconTheme.color,
-                      ),
-                      const SizedBox(width: 10.0),
-                      Text(AppLocalizations.of(context)!.playNext),
-                    ],
-                  )),
-              PopupMenuItem(
-                  value: 1,
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.playlist_add_rounded,
-                        color: Theme.of(context).iconTheme.color,
-                      ),
-                      const SizedBox(width: 10.0),
-                      Text(AppLocalizations.of(context)!.addToQueue),
-                    ],
-                  )),
-              PopupMenuItem(
-                  value: 0,
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.playlist_add_rounded,
-                        color: Theme.of(context).iconTheme.color,
-                      ),
-                      const SizedBox(width: 10.0),
-                      Text(AppLocalizations.of(context)!.addToPlaylist),
-                    ],
-                  )),
-              PopupMenuItem(
-                  value: 3,
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.share_rounded,
-                        color: Theme.of(context).iconTheme.color,
-                      ),
-                      const SizedBox(width: 10.0),
-                      Text(AppLocalizations.of(context)!.share),
-                    ],
-                  )),
+      ),
+      itemBuilder: (context) => [
+        PopupMenuItem(
+          value: 2,
+          child: Row(
+            children: [
+              Icon(
+                Icons.queue_music_rounded,
+                color: Theme.of(context).iconTheme.color,
+              ),
+              const SizedBox(width: 10.0),
+              Text(AppLocalizations.of(context)!.playNext),
             ],
-        onSelected: (int? value) {
-          final MediaItem mediaItem =
-              MediaItemConverter().mapToMediaItem(widget.data);
-          if (value == 3) {
-            Share.share(widget.data['perma_url'].toString());
-          }
-          if (value == 0) {
-            AddToPlaylist().addToPlaylist(context, mediaItem);
-          }
-          if (value == 1) {
-            final MediaItem? currentMediaItem = audioHandler.mediaItem.value;
-            if (currentMediaItem != null &&
-                currentMediaItem.extras!['url'].toString().startsWith('http')) {
-              if (audioHandler.queue.value.contains(mediaItem)) {
-                ShowSnackBar().showSnackBar(
-                  context,
-                  AppLocalizations.of(context)!.alreadyInQueue,
-                );
-              } else {
-                audioHandler.addQueueItem(mediaItem);
-
-                ShowSnackBar().showSnackBar(
-                  context,
-                  AppLocalizations.of(context)!.addedToQueue,
-                );
-              }
-            } else {
+          ),
+        ),
+        PopupMenuItem(
+          value: 1,
+          child: Row(
+            children: [
+              Icon(
+                Icons.playlist_add_rounded,
+                color: Theme.of(context).iconTheme.color,
+              ),
+              const SizedBox(width: 10.0),
+              Text(AppLocalizations.of(context)!.addToQueue),
+            ],
+          ),
+        ),
+        PopupMenuItem(
+          value: 0,
+          child: Row(
+            children: [
+              Icon(
+                Icons.playlist_add_rounded,
+                color: Theme.of(context).iconTheme.color,
+              ),
+              const SizedBox(width: 10.0),
+              Text(AppLocalizations.of(context)!.addToPlaylist),
+            ],
+          ),
+        ),
+        PopupMenuItem(
+          value: 3,
+          child: Row(
+            children: [
+              Icon(
+                Icons.share_rounded,
+                color: Theme.of(context).iconTheme.color,
+              ),
+              const SizedBox(width: 10.0),
+              Text(AppLocalizations.of(context)!.share),
+            ],
+          ),
+        ),
+      ],
+      onSelected: (int? value) {
+        final MediaItem mediaItem =
+            MediaItemConverter().mapToMediaItem(widget.data);
+        if (value == 3) {
+          Share.share(widget.data['perma_url'].toString());
+        }
+        if (value == 0) {
+          AddToPlaylist().addToPlaylist(context, mediaItem);
+        }
+        if (value == 1) {
+          final MediaItem? currentMediaItem = audioHandler.mediaItem.value;
+          if (currentMediaItem != null &&
+              currentMediaItem.extras!['url'].toString().startsWith('http')) {
+            if (audioHandler.queue.value.contains(mediaItem)) {
               ShowSnackBar().showSnackBar(
                 context,
-                currentMediaItem == null
-                    ? AppLocalizations.of(context)!.nothingPlaying
-                    : AppLocalizations.of(context)!.cantAddToQueue,
+                AppLocalizations.of(context)!.alreadyInQueue,
               );
-            }
-          }
-
-          if (value == 2) {
-            final MediaItem? currentMediaItem = audioHandler.mediaItem.value;
-            if (currentMediaItem != null &&
-                currentMediaItem.extras!['url'].toString().startsWith('http')) {
-              final queue = audioHandler.queue.value;
-              if (queue.contains(mediaItem)) {
-                audioHandler.moveQueueItem(queue.indexOf(mediaItem),
-                    queue.indexOf(currentMediaItem) + 1);
-              } else {
-                audioHandler.addQueueItem(mediaItem).then((value) =>
-                    audioHandler.moveQueueItem(
-                        queue.length, queue.indexOf(currentMediaItem) + 1));
-              }
+            } else {
+              audioHandler.addQueueItem(mediaItem);
 
               ShowSnackBar().showSnackBar(
                 context,
-                '"${mediaItem.title}" ${AppLocalizations.of(context)!.willPlayNext}',
+                AppLocalizations.of(context)!.addedToQueue,
+              );
+            }
+          } else {
+            ShowSnackBar().showSnackBar(
+              context,
+              currentMediaItem == null
+                  ? AppLocalizations.of(context)!.nothingPlaying
+                  : AppLocalizations.of(context)!.cantAddToQueue,
+            );
+          }
+        }
+
+        if (value == 2) {
+          final MediaItem? currentMediaItem = audioHandler.mediaItem.value;
+          if (currentMediaItem != null &&
+              currentMediaItem.extras!['url'].toString().startsWith('http')) {
+            final queue = audioHandler.queue.value;
+            if (queue.contains(mediaItem)) {
+              audioHandler.moveQueueItem(
+                queue.indexOf(mediaItem),
+                queue.indexOf(currentMediaItem) + 1,
               );
             } else {
-              ShowSnackBar().showSnackBar(
-                  context,
-                  currentMediaItem == null
-                      ? AppLocalizations.of(context)!.nothingPlaying
-                      : AppLocalizations.of(context)!.cantAddToQueue);
+              audioHandler.addQueueItem(mediaItem).then(
+                    (value) => audioHandler.moveQueueItem(
+                      queue.length,
+                      queue.indexOf(currentMediaItem) + 1,
+                    ),
+                  );
             }
+
+            ShowSnackBar().showSnackBar(
+              context,
+              '"${mediaItem.title}" ${AppLocalizations.of(context)!.willPlayNext}',
+            );
+          } else {
+            ShowSnackBar().showSnackBar(
+              context,
+              currentMediaItem == null
+                  ? AppLocalizations.of(context)!.nothingPlaying
+                  : AppLocalizations.of(context)!.cantAddToQueue,
+            );
           }
-        });
+        }
+      },
+    );
   }
 }

@@ -36,99 +36,103 @@ class _TopChartsState extends State<TopCharts>
   Widget build(BuildContext cntxt) {
     super.build(context);
     return DefaultTabController(
-        length: 2,
-        child: Scaffold(
-          backgroundColor: Colors.transparent,
-          appBar: AppBar(
-            actions: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: IconButton(
-                  icon: const Icon(Icons.my_location_rounded),
-                  onPressed: () async {
-                    await SpotifyCountry().changeCountry(context: context);
-                  },
+      length: 2,
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          actions: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: IconButton(
+                icon: const Icon(Icons.my_location_rounded),
+                onPressed: () async {
+                  await SpotifyCountry().changeCountry(context: context);
+                },
+              ),
+            ),
+          ],
+          bottom: TabBar(
+            tabs: [
+              Tab(
+                child: Text(
+                  AppLocalizations.of(context)!.local,
+                  style: TextStyle(
+                    color: Theme.of(context).textTheme.bodyText1!.color,
+                  ),
+                ),
+              ),
+              Tab(
+                child: Text(
+                  AppLocalizations.of(context)!.global,
+                  style: TextStyle(
+                    color: Theme.of(context).textTheme.bodyText1!.color,
+                  ),
                 ),
               ),
             ],
-            bottom: TabBar(
-              tabs: [
-                Tab(
-                  child: Text(
-                    AppLocalizations.of(context)!.local,
-                    style: TextStyle(
-                        color: Theme.of(context).textTheme.bodyText1!.color),
-                  ),
-                ),
-                Tab(
-                  child: Text(
-                    AppLocalizations.of(context)!.global,
-                    style: TextStyle(
-                        color: Theme.of(context).textTheme.bodyText1!.color),
-                  ),
-                ),
-              ],
-            ),
-            title: Text(
-              AppLocalizations.of(context)!.spotifyTopCharts,
-              style: TextStyle(
-                fontSize: 18,
-                color: Theme.of(context).textTheme.bodyText1!.color,
-              ),
-            ),
-            centerTitle: true,
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            leading: Builder(
-              builder: (BuildContext context) {
-                return Transform.rotate(
-                  angle: 22 / 7 * 2,
-                  child: IconButton(
-                    color: Theme.of(context).iconTheme.color,
-                    icon: const Icon(Icons
-                        .horizontal_split_rounded), // line_weight_rounded),
-                    onPressed: () {
-                      Scaffold.of(cntxt).openDrawer();
-                    },
-                    tooltip:
-                        MaterialLocalizations.of(cntxt).openAppDrawerTooltip,
-                  ),
-                );
-              },
+          ),
+          title: Text(
+            AppLocalizations.of(context)!.spotifyTopCharts,
+            style: TextStyle(
+              fontSize: 18,
+              color: Theme.of(context).textTheme.bodyText1!.color,
             ),
           ),
-          body: NotificationListener(
-            onNotification: (overscroll) {
-              if (overscroll is OverscrollNotification &&
-                  overscroll.overscroll != 0 &&
-                  overscroll.dragDetails != null) {
-                widget.pageController.animateToPage(
-                    overscroll.overscroll < 0 ? 0 : 2,
-                    curve: Curves.ease,
-                    duration: const Duration(milliseconds: 150));
-              }
-              return true;
+          centerTitle: true,
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          leading: Builder(
+            builder: (BuildContext context) {
+              return Transform.rotate(
+                angle: 22 / 7 * 2,
+                child: IconButton(
+                  color: Theme.of(context).iconTheme.color,
+                  icon: const Icon(
+                    Icons.horizontal_split_rounded,
+                  ),
+                  onPressed: () {
+                    Scaffold.of(cntxt).openDrawer();
+                  },
+                  tooltip: MaterialLocalizations.of(cntxt).openAppDrawerTooltip,
+                ),
+              );
             },
-            child: TabBarView(
-              physics: const CustomPhysics(),
-              children: [
-                ValueListenableBuilder(
-                    valueListenable: Hive.box('settings').listenable(),
-                    builder: (BuildContext context, Box box, Widget? widget) {
-                      return TopPage(
-                        region: CountryCodes()
-                            .countryCodes[
-                                box.get('region', defaultValue: 'India')]
-                            .toString(),
-                      );
-                    }),
-                const TopPage(
-                  region: 'global',
-                ),
-              ],
-            ),
           ),
-        ));
+        ),
+        body: NotificationListener(
+          onNotification: (overscroll) {
+            if (overscroll is OverscrollNotification &&
+                overscroll.overscroll != 0 &&
+                overscroll.dragDetails != null) {
+              widget.pageController.animateToPage(
+                overscroll.overscroll < 0 ? 0 : 2,
+                curve: Curves.ease,
+                duration: const Duration(milliseconds: 150),
+              );
+            }
+            return true;
+          },
+          child: TabBarView(
+            physics: const CustomPhysics(),
+            children: [
+              ValueListenableBuilder(
+                valueListenable: Hive.box('settings').listenable(),
+                builder: (BuildContext context, Box box, Widget? widget) {
+                  return TopPage(
+                    region: CountryCodes()
+                        .countryCodes[box.get('region', defaultValue: 'India')]
+                        .toString(),
+                  );
+                },
+              ),
+              const TopPage(
+                region: 'global',
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
 
@@ -141,9 +145,8 @@ Future<List> scrapData(String region) async {
 
   if (res.statusCode != 200) return List.empty();
   final List result = RegExp(
-          r'\<td class=\"chart-table-image\"\>\n[ ]*?\<a href=\"https:\/\/open\.spotify\.com\/track\/(.*?)\" target=\"_blank\"\>\n[ ]*?\<img src=\"(https:\/\/i\.scdn\.co\/image\/.*?)\"\>\n[ ]*?\<\/a\>\n[ ]*?<\/td\>\n[ ]*?<td class=\"chart-table-position\">([0-9]*?)<\/td>\n[ ]*?<td class=\"chart-table-trend\">[.|\n| ]*<.*\n[ ]*<.*\n[ ]*<.*\n[ ]*<.*\n[ ]*<td class=\"chart-table-track\">\n[ ]*?<strong>(.*?)<\/strong>\n[ ]*?<span>by (.*?)<\/span>\n[ ]*?<\/td>\n[ ]*?<td class="chart-table-streams">(.*?)<\/td>')
-      .allMatches(res.body)
-      .map((m) {
+    r'\<td class=\"chart-table-image\"\>\n[ ]*?\<a href=\"https:\/\/open\.spotify\.com\/track\/(.*?)\" target=\"_blank\"\>\n[ ]*?\<img src=\"(https:\/\/i\.scdn\.co\/image\/.*?)\"\>\n[ ]*?\<\/a\>\n[ ]*?<\/td\>\n[ ]*?<td class=\"chart-table-position\">([0-9]*?)<\/td>\n[ ]*?<td class=\"chart-table-trend\">[.|\n| ]*<.*\n[ ]*<.*\n[ ]*<.*\n[ ]*<.*\n[ ]*<td class=\"chart-table-track\">\n[ ]*?<strong>(.*?)<\/strong>\n[ ]*?<span>by (.*?)<\/span>\n[ ]*?<\/td>\n[ ]*?<td class="chart-table-streams">(.*?)<\/td>',
+  ).allMatches(res.body).map((m) {
     return {
       'id': m[1],
       'image': m[2],
@@ -235,70 +238,83 @@ class _TopPageState extends State<TopPage>
         if (showList.length <= 50)
           Expanded(
             child: isListEmpty
-                ? EmptyScreen().emptyScreen(context, 0, ':( ', 100, 'ERROR', 60,
-                    'Service Unavailable', 20)
+                ? EmptyScreen().emptyScreen(
+                    context,
+                    0,
+                    ':( ',
+                    100,
+                    'ERROR',
+                    60,
+                    'Service Unavailable',
+                    20,
+                  )
                 : Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       SizedBox(
-                          height: MediaQuery.of(context).size.width / 7,
-                          width: MediaQuery.of(context).size.width / 7,
-                          child: const CircularProgressIndicator()),
+                        height: MediaQuery.of(context).size.width / 7,
+                        width: MediaQuery.of(context).size.width / 7,
+                        child: const CircularProgressIndicator(),
+                      ),
                     ],
                   ),
           )
         else
           Expanded(
-              child: ListView.builder(
-            physics: const BouncingScrollPhysics(),
-            itemCount: showList.length,
-            itemExtent: 70.0,
-            itemBuilder: (context, index) {
-              return ListTile(
-                leading: Card(
-                  elevation: 5,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(7.0),
-                  ),
-                  clipBehavior: Clip.antiAlias,
-                  child: Stack(
-                    children: [
-                      const Image(
-                        image: AssetImage('assets/cover.jpg'),
-                      ),
-                      if (showList[index]['image'] != '')
-                        CachedNetworkImage(
-                          imageUrl: showList[index]['image'].toString(),
-                          errorWidget: (context, _, __) => const Image(
-                            image: AssetImage('assets/cover.jpg'),
-                          ),
-                          placeholder: (context, url) => const Image(
-                            image: AssetImage('assets/cover.jpg'),
-                          ),
+            child: ListView.builder(
+              physics: const BouncingScrollPhysics(),
+              itemCount: showList.length,
+              itemExtent: 70.0,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  leading: Card(
+                    elevation: 5,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(7.0),
+                    ),
+                    clipBehavior: Clip.antiAlias,
+                    child: Stack(
+                      children: [
+                        const Image(
+                          image: AssetImage('assets/cover.jpg'),
                         ),
-                    ],
+                        if (showList[index]['image'] != '')
+                          CachedNetworkImage(
+                            imageUrl: showList[index]['image'].toString(),
+                            errorWidget: (context, _, __) => const Image(
+                              image: AssetImage('assets/cover.jpg'),
+                            ),
+                            placeholder: (context, url) => const Image(
+                              image: AssetImage('assets/cover.jpg'),
+                            ),
+                          ),
+                      ],
+                    ),
                   ),
-                ),
-                title: Text(
-                  showList[index]['position'] == null
-                      ? '${showList[index]["title"]}'
-                      : '${showList[index]['position']}. ${showList[index]["title"]}',
-                  overflow: TextOverflow.ellipsis,
-                ),
-                subtitle: Text(
-                  '${showList[index]['artist']}',
-                  overflow: TextOverflow.ellipsis,
-                ),
-                onTap: () {
-                  Navigator.push(
+                  title: Text(
+                    showList[index]['position'] == null
+                        ? '${showList[index]["title"]}'
+                        : '${showList[index]['position']}. ${showList[index]["title"]}',
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  subtitle: Text(
+                    '${showList[index]['artist']}',
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  onTap: () {
+                    Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => SearchPage(
-                              query: showList[index]['title'].toString())));
-                },
-              );
-            },
-          )),
+                        builder: (context) => SearchPage(
+                          query: showList[index]['title'].toString(),
+                        ),
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
+          ),
       ],
     );
   }

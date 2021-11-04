@@ -46,7 +46,7 @@ Future<void> addItemToPlaylist(String name, MediaItem mediaItem) async {
         ? _songs.sublist(0, 4)
         : _songs.sublist(0, _songs.length),
   );
-  playlistBox.put(mediaItem.id.toString(), info);
+  playlistBox.put(mediaItem.id, info);
 }
 
 Future<void> addPlaylist(String inputName, List data) async {

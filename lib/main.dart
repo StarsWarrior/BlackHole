@@ -66,11 +66,13 @@ Future<void> setOptimalDisplayMode() async {
   final DisplayMode active = await FlutterDisplayMode.active;
 
   final List<DisplayMode> sameResolution = supported
-      .where((DisplayMode m) =>
-          m.width == active.width && m.height == active.height)
+      .where(
+        (DisplayMode m) => m.width == active.width && m.height == active.height,
+      )
       .toList()
-    ..sort((DisplayMode a, DisplayMode b) =>
-        b.refreshRate.compareTo(a.refreshRate));
+    ..sort(
+      (DisplayMode a, DisplayMode b) => b.refreshRate.compareTo(a.refreshRate),
+    );
 
   final DisplayMode mostOptimalMode =
       sameResolution.isNotEmpty ? sameResolution.first : active;
@@ -182,8 +184,9 @@ class _MyAppState extends State<MyApp> {
         ),
         inputDecorationTheme: InputDecorationTheme(
           focusedBorder: UnderlineInputBorder(
-              borderSide:
-                  BorderSide(width: 1.5, color: currentTheme.currentColor())),
+            borderSide:
+                BorderSide(width: 1.5, color: currentTheme.currentColor()),
+          ),
         ),
         visualDensity: VisualDensity.adaptivePlatformDensity,
         appBarTheme: AppBarTheme(
@@ -200,9 +203,10 @@ class _MyAppState extends State<MyApp> {
           size: 24.0,
         ),
         colorScheme: Theme.of(context).colorScheme.copyWith(
-            primary: Colors.grey[800],
-            brightness: Brightness.light,
-            secondary: currentTheme.currentColor()),
+              primary: Colors.grey[800],
+              brightness: Brightness.light,
+              secondary: currentTheme.currentColor(),
+            ),
       ),
       darkTheme: ThemeData(
         textButtonTheme: TextButtonThemeData(
@@ -219,8 +223,9 @@ class _MyAppState extends State<MyApp> {
         ),
         inputDecorationTheme: InputDecorationTheme(
           focusedBorder: UnderlineInputBorder(
-              borderSide:
-                  BorderSide(width: 1.5, color: currentTheme.currentColor())),
+            borderSide:
+                BorderSide(width: 1.5, color: currentTheme.currentColor()),
+          ),
         ),
         visualDensity: VisualDensity.adaptivePlatformDensity,
         brightness: Brightness.dark,

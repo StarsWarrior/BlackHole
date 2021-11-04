@@ -37,8 +37,12 @@ class BottomGradientContainer extends StatefulWidget {
   final EdgeInsetsGeometry? margin;
   final EdgeInsetsGeometry? padding;
   final BorderRadiusGeometry? borderRadius;
-  const BottomGradientContainer(
-      {required this.child, this.margin, this.padding, this.borderRadius});
+  const BottomGradientContainer({
+    required this.child,
+    this.margin,
+    this.padding,
+    this.borderRadius,
+  });
   @override
   _BottomGradientContainerState createState() =>
       _BottomGradientContainerState();
@@ -74,8 +78,12 @@ class GradientCard extends StatefulWidget {
   final bool? miniplayer;
   final double? radius;
   final double? elevation;
-  const GradientCard(
-      {required this.child, this.miniplayer, this.radius, this.elevation});
+  const GradientCard({
+    required this.child,
+    this.miniplayer,
+    this.radius,
+    this.elevation,
+  });
   @override
   _GradientCardState createState() => _GradientCardState();
 }
@@ -97,7 +105,8 @@ class _GradientCardState extends State<GradientCard> {
             end: Alignment.bottomRight,
             colors: Theme.of(context).brightness == Brightness.dark
                 ? currentTheme.getCardGradient(
-                    miniplayer: widget.miniplayer ?? false)
+                    miniplayer: widget.miniplayer ?? false,
+                  )
                 : [
                     Colors.white,
                     Theme.of(context).canvasColor,

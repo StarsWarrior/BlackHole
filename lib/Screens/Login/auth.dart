@@ -150,7 +150,11 @@ class _AuthScreenState extends State<AuthScreen> {
                               children: [
                                 Container(
                                   padding: const EdgeInsets.only(
-                                      top: 5, bottom: 5, left: 10, right: 10),
+                                    top: 5,
+                                    bottom: 5,
+                                    left: 10,
+                                    right: 10,
+                                  ),
                                   height: 57.0,
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(10.0),
@@ -164,45 +168,46 @@ class _AuthScreenState extends State<AuthScreen> {
                                     ],
                                   ),
                                   child: TextField(
-                                      controller: controller,
-                                      textAlignVertical:
-                                          TextAlignVertical.center,
-                                      textCapitalization:
-                                          TextCapitalization.sentences,
-                                      keyboardType: TextInputType.name,
-                                      decoration: InputDecoration(
-                                        focusedBorder:
-                                            const UnderlineInputBorder(
-                                          borderSide: BorderSide(
-                                              width: 1.5,
-                                              color: Colors.transparent),
-                                        ),
-                                        prefixIcon: Icon(
-                                          Icons.person,
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .secondary,
-                                        ),
-                                        border: InputBorder.none,
-                                        hintText: AppLocalizations.of(context)!
-                                            .enterName,
-                                        hintStyle: const TextStyle(
-                                          color: Colors.white60,
+                                    controller: controller,
+                                    textAlignVertical: TextAlignVertical.center,
+                                    textCapitalization:
+                                        TextCapitalization.sentences,
+                                    keyboardType: TextInputType.name,
+                                    decoration: InputDecoration(
+                                      focusedBorder: const UnderlineInputBorder(
+                                        borderSide: BorderSide(
+                                          width: 1.5,
+                                          color: Colors.transparent,
                                         ),
                                       ),
-                                      onSubmitted: (String value) {
-                                        if (value.trim() == '') {
-                                          _addUserData(
-                                              AppLocalizations.of(context)!
-                                                  .guest);
-                                        } else {
-                                          _addUserData(value.trim());
-                                        }
-                                        Hive.box('settings')
-                                            .put('auth', 'done');
-                                        Navigator.popAndPushNamed(
-                                            context, '/pref');
-                                      }),
+                                      prefixIcon: Icon(
+                                        Icons.person,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .secondary,
+                                      ),
+                                      border: InputBorder.none,
+                                      hintText: AppLocalizations.of(context)!
+                                          .enterName,
+                                      hintStyle: const TextStyle(
+                                        color: Colors.white60,
+                                      ),
+                                    ),
+                                    onSubmitted: (String value) {
+                                      if (value.trim() == '') {
+                                        _addUserData(
+                                          AppLocalizations.of(context)!.guest,
+                                        );
+                                      } else {
+                                        _addUserData(value.trim());
+                                      }
+                                      Hive.box('settings').put('auth', 'done');
+                                      Navigator.popAndPushNamed(
+                                        context,
+                                        '/pref',
+                                      );
+                                    },
+                                  ),
                                 ),
                                 GestureDetector(
                                   onTap: () {
@@ -216,7 +221,8 @@ class _AuthScreenState extends State<AuthScreen> {
                                   },
                                   child: Container(
                                     margin: const EdgeInsets.symmetric(
-                                        vertical: 10.0),
+                                      vertical: 10.0,
+                                    ),
                                     height: 55.0,
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(10.0),
@@ -232,19 +238,22 @@ class _AuthScreenState extends State<AuthScreen> {
                                       ],
                                     ),
                                     child: Center(
-                                        child: Text(
-                                      AppLocalizations.of(context)!.getStarted,
-                                      style: const TextStyle(
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 20.0,
+                                      child: Text(
+                                        AppLocalizations.of(context)!
+                                            .getStarted,
+                                        style: const TextStyle(
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 20.0,
+                                        ),
                                       ),
-                                    )),
+                                    ),
                                   ),
                                 ),
                                 Padding(
                                   padding: const EdgeInsets.symmetric(
-                                      vertical: 20.0),
+                                    vertical: 20.0,
+                                  ),
                                   child: Column(
                                     children: [
                                       Row(

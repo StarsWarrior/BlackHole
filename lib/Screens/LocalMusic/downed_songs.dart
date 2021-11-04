@@ -29,9 +29,12 @@ class DownloadedSongs extends StatefulWidget {
   final List<SongModel>? cachedSongs;
   final String? title;
   final int? playlistId;
-  const DownloadedSongs(
-      {Key? key, this.cachedSongs, this.title, this.playlistId})
-      : super(key: key);
+  const DownloadedSongs({
+    Key? key,
+    this.cachedSongs,
+    this.title,
+    this.playlistId,
+  }) : super(key: key);
   @override
   _DownloadedSongsState createState() => _DownloadedSongsState();
 }
@@ -108,12 +111,15 @@ class _DownloadedSongsState extends State<DownloadedSongs>
     await offlineAudioQuery.requestPermission();
     if (widget.cachedSongs == null) {
       final List<SongModel> temp = await offlineAudioQuery.getSongs(
-          sortType: songSortTypes[sortValue],
-          orderType: songOrderTypes[orderValue]);
+        sortType: songSortTypes[sortValue],
+        orderType: songOrderTypes[orderValue],
+      );
       _cachedSongs = temp
-          .where((i) =>
-              (i.duration ?? 60000) > 1000 * minDuration &&
-              (i.isMusic! || i.isPodcast! || i.isAudioBook!))
+          .where(
+            (i) =>
+                (i.duration ?? 60000) > 1000 * minDuration &&
+                (i.isMusic! || i.isPodcast! || i.isAudioBook!),
+          )
           .toList();
     } else {
       _cachedSongs = widget.cachedSongs!;
@@ -124,44 +130,56 @@ class _DownloadedSongsState extends State<DownloadedSongs>
     added = true;
     setState(() {});
     if (widget.cachedSongs == null) {
-      _cachedSongsMap = await offlineAudioQuery.getArtwork(_cachedSongs,
-          songsMap: _cachedSongsMap);
+      _cachedSongsMap = await offlineAudioQuery.getArtwork(
+        _cachedSongs,
+        songsMap: _cachedSongsMap,
+      );
       Hive.box('cache').put('offlineSongsData', _cachedSongsMap);
     } else {
-      _cachedSongsMap = await offlineAudioQuery.getArtwork(_cachedSongs,
-          songsMap: _cachedSongsMap, artworkType: ArtworkType.PLAYLIST);
+      _cachedSongsMap = await offlineAudioQuery.getArtwork(
+        _cachedSongs,
+        songsMap: _cachedSongsMap,
+        artworkType: ArtworkType.PLAYLIST,
+      );
     }
   }
 
   Future<void> sortSongs(int sortVal, int order) async {
     switch (sortVal) {
       case 0:
-        _cachedSongs.sort((a, b) =>
-            a.displayName.toString().compareTo(b.displayName.toString()));
+        _cachedSongs.sort(
+          (a, b) => a.displayName.compareTo(b.displayName),
+        );
         break;
       case 1:
         _cachedSongs.sort(
-            (a, b) => a.dateAdded.toString().compareTo(b.dateAdded.toString()));
+          (a, b) => a.dateAdded.toString().compareTo(b.dateAdded.toString()),
+        );
         break;
       case 2:
-        _cachedSongs
-            .sort((a, b) => a.album.toString().compareTo(b.album.toString()));
+        _cachedSongs.sort(
+          (a, b) => a.album.toString().compareTo(b.album.toString()),
+        );
         break;
       case 3:
-        _cachedSongs
-            .sort((a, b) => a.artist.toString().compareTo(b.artist.toString()));
+        _cachedSongs.sort(
+          (a, b) => a.artist.toString().compareTo(b.artist.toString()),
+        );
         break;
       case 4:
         _cachedSongs.sort(
-            (a, b) => a.duration.toString().compareTo(b.duration.toString()));
+          (a, b) => a.duration.toString().compareTo(b.duration.toString()),
+        );
         break;
       case 5:
-        _cachedSongs
-            .sort((a, b) => a.size.toString().compareTo(b.size.toString()));
+        _cachedSongs.sort(
+          (a, b) => a.size.toString().compareTo(b.size.toString()),
+        );
         break;
       default:
         _cachedSongs.sort(
-            (a, b) => a.dateAdded.toString().compareTo(b.dateAdded.toString()));
+          (a, b) => a.dateAdded.toString().compareTo(b.dateAdded.toString()),
+        );
         break;
     }
 
@@ -406,13 +424,16 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                     tooltip: AppLocalizations.of(context)!.search,
                     onPressed: () {
                       showSearch(
-                          context: context, delegate: DataSearch(_cachedSongs));
+                        context: context,
+                        delegate: DataSearch(_cachedSongs),
+                      );
                     },
                   ),
                   PopupMenuButton(
                     icon: const Icon(Icons.sort_rounded),
                     shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(15.0))),
+                      borderRadius: BorderRadius.all(Radius.circular(15.0)),
+                    ),
                     onSelected: (int value) async {
                       if (value < 6) {
                         sortValue = value;
@@ -511,9 +532,10 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                   ? SizedBox(
                       child: Center(
                         child: SizedBox(
-                            height: MediaQuery.of(context).size.width / 7,
-                            width: MediaQuery.of(context).size.width / 7,
-                            child: const CircularProgressIndicator()),
+                          height: MediaQuery.of(context).size.width / 7,
+                          width: MediaQuery.of(context).size.width / 7,
+                          child: const CircularProgressIndicator(),
+                        ),
                       ),
                     )
                   :
@@ -833,13 +855,13 @@ class SongsTab extends StatelessWidget {
   final List cachedSongsMap;
   final int? playlistId;
   final String? playlistName;
-  const SongsTab(
-      {Key? key,
-      required this.cachedSongs,
-      required this.cachedSongsMap,
-      this.playlistId,
-      this.playlistName})
-      : super(key: key);
+  const SongsTab({
+    Key? key,
+    required this.cachedSongs,
+    required this.cachedSongsMap,
+    this.playlistId,
+    this.playlistName,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -852,7 +874,8 @@ class SongsTab extends StatelessWidget {
             AppLocalizations.of(context)!.showHere,
             45,
             AppLocalizations.of(context)!.downloadSomething,
-            23.0)
+            23.0,
+          )
         : ListView.builder(
             physics: const BouncingScrollPhysics(),
             padding: const EdgeInsets.only(top: 20, bottom: 10),
@@ -933,7 +956,8 @@ class SongsTab extends StatelessWidget {
                 trailing: PopupMenuButton(
                   icon: const Icon(Icons.more_vert_rounded),
                   shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(15.0))),
+                    borderRadius: BorderRadius.all(Radius.circular(15.0)),
+                  ),
                   onSelected: (int? value) async {
                     if (value == 0) {
                       AddToOffPlaylist()
@@ -941,10 +965,13 @@ class SongsTab extends StatelessWidget {
                     }
                     if (value == 1) {
                       await OfflineAudioQuery().removeFromPlaylist(
-                          playlistId: playlistId!,
-                          audioId: cachedSongs[index].id);
-                      ShowSnackBar().showSnackBar(context,
-                          '${AppLocalizations.of(context)!.removedFrom} $playlistName');
+                        playlistId: playlistId!,
+                        audioId: cachedSongs[index].id,
+                      );
+                      ShowSnackBar().showSnackBar(
+                        context,
+                        '${AppLocalizations.of(context)!.removedFrom} $playlistName',
+                      );
                     }
                     // if (value == 0) {
                     // showDialog(
@@ -1452,7 +1479,8 @@ class SongsTab extends StatelessWidget {
                 ),
                 onTap: () async {
                   final int playIndex = cachedSongsMap.indexWhere(
-                      (element) => element['_id'] == cachedSongs[index].id);
+                    (element) => element['_id'] == cachedSongs[index].id,
+                  );
                   if (playIndex == -1) {
                     final singleSongMap = await OfflineAudioQuery()
                         .getArtwork([cachedSongs[index]]);
@@ -1486,7 +1514,8 @@ class SongsTab extends StatelessWidget {
                   }
                 },
               );
-            });
+            },
+          );
   }
 }
 

@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:blackhole/CustomWidgets/empty_screen.dart';
 import 'package:blackhole/CustomWidgets/gradient_containers.dart';
 import 'package:blackhole/CustomWidgets/miniplayer.dart';
+import 'package:blackhole/CustomWidgets/search_bar.dart';
 import 'package:blackhole/CustomWidgets/snackbar.dart';
 import 'package:blackhole/Screens/Player/audioplayer.dart';
 import 'package:blackhole/Services/youtube_services.dart';
@@ -11,7 +12,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:hive/hive.dart';
-import 'package:material_floating_search_bar/material_floating_search_bar.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
 class YouTubeSearchPage extends StatefulWidget {
@@ -27,15 +27,17 @@ class _YouTubeSearchPageState extends State<YouTubeSearchPage> {
   List<Video> searchedList = [];
   bool fetched = false;
   bool done = true;
-  List ytSearch =
-      Hive.box('settings').get('ytSearch', defaultValue: []) as List;
-  bool showHistory =
-      Hive.box('settings').get('showHistory', defaultValue: true) as bool;
-  final FloatingSearchBarController _controller = FloatingSearchBarController();
+  bool liveSearch =
+      Hive.box('settings').get('liveSearch', defaultValue: true) as bool;
+  // List ytSearch =
+  // Hive.box('settings').get('ytSearch', defaultValue: []) as List;
+  // bool showHistory =
+  // Hive.box('settings').get('showHistory', defaultValue: true) as bool;
+  final TextEditingController _controller = TextEditingController();
 
   @override
   void initState() {
-    _controller.query = widget.query;
+    _controller.text = widget.query;
     super.initState();
   }
 
@@ -66,135 +68,30 @@ class _YouTubeSearchPageState extends State<YouTubeSearchPage> {
               child: Scaffold(
                 resizeToAvoidBottomInset: false,
                 backgroundColor: Colors.transparent,
-                body: FloatingSearchBar(
-                  borderRadius: BorderRadius.circular(10.0),
+                body: SearchBar(
                   controller: _controller,
-                  automaticallyImplyBackButton: false,
-                  automaticallyImplyDrawerHamburger: false,
-                  transitionDuration: const Duration(milliseconds: 250),
-                  implicitDuration: const Duration(milliseconds: 250),
-                  elevation: 8.0,
-                  insets: EdgeInsets.zero,
-                  leadingActions: [
-                    FloatingSearchBarAction.icon(
-                      showIfOpened: true,
-                      size: 20.0,
-                      icon: const Icon(
-                        Icons.arrow_back_rounded,
-                      ),
-                      onTap: () {
-                        _controller.isOpen
-                            ? _controller.close()
-                            : Navigator.of(context).pop();
-                      },
-                    ),
-                  ],
-                  hint: AppLocalizations.of(context)!.searchYt,
-                  height: 52.0,
-                  margins: const EdgeInsets.fromLTRB(18.0, 8.0, 18.0, 15.0),
-                  scrollPadding: const EdgeInsets.only(bottom: 50),
-                  backdropColor: Colors.black45,
-                  transitionCurve: Curves.easeInOut,
-                  physics: const BouncingScrollPhysics(),
-                  openAxisAlignment: 0.0,
-                  debounceDelay: const Duration(milliseconds: 500),
-                  clearQueryOnClose: false,
-                  // onQueryChanged: (_query) {
-                  // print(_query);
-                  // },
+                  liveSearch: liveSearch,
+                  leading: IconButton(
+                    icon: const Icon(Icons.arrow_back_rounded),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                  hintText: AppLocalizations.of(context)!.searchYt,
                   onSubmitted: (_query) async {
-                    _controller.close();
                     setState(() {
                       fetched = false;
                       query = _query;
-                      _controller.query = _query;
                       status = false;
                       searchedList = [];
-                      if (ytSearch.contains(_query)) ytSearch.remove(_query);
-                      ytSearch.insert(0, _query);
-                      if (ytSearch.length > 10) {
-                        ytSearch = ytSearch.sublist(0, 10);
-                      }
-                      Hive.box('settings').put('ytSearch', ytSearch);
                     });
-                  },
-                  transition: CircularFloatingSearchBarTransition(),
-                  actions: [
-                    FloatingSearchBarAction(
-                      child: CircularButton(
-                        icon: const Icon(CupertinoIcons.search),
-                        onPressed: () {},
-                      ),
-                    ),
-                    FloatingSearchBarAction(
-                      showIfOpened: true,
-                      showIfClosed: false,
-                      child: CircularButton(
-                        icon: const Icon(
-                          CupertinoIcons.clear,
-                          size: 20.0,
-                        ),
-                        onPressed: () {
-                          _controller.clear();
-                        },
-                      ),
-                    ),
-                  ],
-                  builder: (context, transition) {
-                    return !showHistory
-                        ? const SizedBox()
-                        : ClipRRect(
-                            borderRadius: BorderRadius.circular(10.0),
-                            child: GradientCard(
-                              child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: ytSearch
-                                      .map((e) => ListTile(
-                                          // dense: true,
-                                          horizontalTitleGap: 0.0,
-                                          title: Text(e.toString()),
-                                          leading:
-                                              const Icon(CupertinoIcons.search),
-                                          trailing: IconButton(
-                                              icon: const Icon(
-                                                CupertinoIcons.clear,
-                                                size: 15.0,
-                                              ),
-                                              tooltip:
-                                                  AppLocalizations.of(context)!
-                                                      .remove,
-                                              onPressed: () {
-                                                setState(() {
-                                                  ytSearch.remove(e);
-                                                  Hive.box('settings').put(
-                                                      'ytSearch', ytSearch);
-                                                });
-                                              }),
-                                          onTap: () {
-                                            _controller.close();
-                                            setState(() {
-                                              fetched = false;
-                                              query = e.toString();
-                                              _controller.query = e.toString();
-                                              status = false;
-                                              searchedList = [];
-                                              ytSearch.remove(e);
-                                              ytSearch.insert(0, e);
-                                              Hive.box('settings')
-                                                  .put('ytSearch', ytSearch);
-                                            });
-                                          }))
-                                      .toList()),
-                            ),
-                          );
                   },
                   body: (!fetched)
                       ? SizedBox(
                           child: Center(
                             child: SizedBox(
-                                height: MediaQuery.of(context).size.width / 7,
-                                width: MediaQuery.of(context).size.width / 7,
-                                child: const CircularProgressIndicator()),
+                              height: MediaQuery.of(context).size.width / 7,
+                              width: MediaQuery.of(context).size.width / 7,
+                              child: const CircularProgressIndicator(),
+                            ),
                           ),
                         )
                       : searchedList.isEmpty
@@ -203,27 +100,41 @@ class _YouTubeSearchPageState extends State<YouTubeSearchPage> {
                               0,
                               ':( ',
                               100,
-                              AppLocalizations.of(context)!.sorry,
+                              AppLocalizations.of(
+                                context,
+                              )!
+                                  .sorry,
                               60,
-                              AppLocalizations.of(context)!.resultsNotFound,
-                              20)
+                              AppLocalizations.of(
+                                context,
+                              )!
+                                  .resultsNotFound,
+                              20,
+                            )
                           : Stack(
                               children: [
                                 ListView.builder(
                                   itemCount: searchedList.length,
                                   physics: const BouncingScrollPhysics(),
                                   shrinkWrap: true,
-                                  padding:
-                                      const EdgeInsets.fromLTRB(15, 80, 15, 0),
+                                  padding: const EdgeInsets.fromLTRB(
+                                    15,
+                                    80,
+                                    15,
+                                    0,
+                                  ),
                                   itemBuilder: (context, index) {
                                     return Padding(
-                                      padding:
-                                          const EdgeInsets.only(bottom: 10.0),
+                                      padding: const EdgeInsets.only(
+                                        bottom: 10.0,
+                                      ),
                                       child: Card(
                                         elevation: 8,
                                         shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(10.0)),
+                                          borderRadius: BorderRadius.circular(
+                                            10.0,
+                                          ),
+                                        ),
                                         clipBehavior: Clip.antiAlias,
                                         child: GradientContainer(
                                           child: GestureDetector(
@@ -236,8 +147,10 @@ class _YouTubeSearchPageState extends State<YouTubeSearchPage> {
                                                       .formatVideo(
                                                 video: searchedList[index],
                                                 quality: Hive.box('settings')
-                                                    .get('ytQuality',
-                                                        defaultValue: 'High')
+                                                    .get(
+                                                      'ytQuality',
+                                                      defaultValue: 'High',
+                                                    )
                                                     .toString(),
                                                 // preferM4a: Hive.box(
                                                 //         'settings')
@@ -252,7 +165,8 @@ class _YouTubeSearchPageState extends State<YouTubeSearchPage> {
                                                   ? ShowSnackBar().showSnackBar(
                                                       context,
                                                       AppLocalizations.of(
-                                                              context)!
+                                                        context,
+                                                      )!
                                                           .ytLiveAlert,
                                                     )
                                                   : Navigator.push(
@@ -281,9 +195,10 @@ class _YouTubeSearchPageState extends State<YouTubeSearchPage> {
                                                   errorWidget:
                                                       (context, _, __) => Image(
                                                     image: NetworkImage(
-                                                        searchedList[index]
-                                                            .thumbnails
-                                                            .standardResUrl),
+                                                      searchedList[index]
+                                                          .thumbnails
+                                                          .standardResUrl,
+                                                    ),
                                                   ),
                                                   imageUrl: searchedList[index]
                                                       .thumbnails
@@ -291,21 +206,24 @@ class _YouTubeSearchPageState extends State<YouTubeSearchPage> {
                                                   placeholder: (context, url) =>
                                                       const Image(
                                                     image: AssetImage(
-                                                        'assets/ytCover.png'),
+                                                      'assets/ytCover.png',
+                                                    ),
                                                   ),
                                                 ),
                                                 ListTile(
                                                   dense: true,
                                                   contentPadding:
                                                       const EdgeInsets.only(
-                                                          left: 15.0),
+                                                    left: 15.0,
+                                                  ),
                                                   title: Text(
                                                     searchedList[index].title,
                                                     overflow:
                                                         TextOverflow.ellipsis,
                                                     style: const TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.w500),
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                    ),
                                                   ),
                                                   // isThreeLine: true,
                                                   subtitle: Row(
@@ -338,8 +256,9 @@ class _YouTubeSearchPageState extends State<YouTubeSearchPage> {
                                                       Padding(
                                                         padding:
                                                             const EdgeInsets
-                                                                    .only(
-                                                                right: 15.0),
+                                                                .only(
+                                                          right: 15.0,
+                                                        ),
                                                         child: Text(
                                                           searchedList[index]
                                                                       .duration
@@ -347,7 +266,8 @@ class _YouTubeSearchPageState extends State<YouTubeSearchPage> {
                                                                   'null'
                                                               ? AppLocalizations
                                                                       .of(
-                                                                          context)!
+                                                                  context,
+                                                                )!
                                                                   .live
                                                               : searchedList[
                                                                       index]
@@ -355,8 +275,9 @@ class _YouTubeSearchPageState extends State<YouTubeSearchPage> {
                                                                   .toString()
                                                                   .split('.')[0]
                                                                   .replaceFirst(
-                                                                      '0:0',
-                                                                      ''),
+                                                                    '0:0',
+                                                                    '',
+                                                                  ),
                                                         ),
                                                       ),
                                                     ],
@@ -392,8 +313,9 @@ class _YouTubeSearchPageState extends State<YouTubeSearchPage> {
                                       child: Card(
                                         elevation: 10,
                                         shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(15)),
+                                          borderRadius:
+                                              BorderRadius.circular(15),
+                                        ),
                                         clipBehavior: Clip.antiAlias,
                                         child: GradientContainer(
                                           child: Center(
@@ -402,29 +324,32 @@ class _YouTubeSearchPageState extends State<YouTubeSearchPage> {
                                                   MainAxisAlignment.spaceEvenly,
                                               children: [
                                                 SizedBox(
-                                                    height:
-                                                        MediaQuery.of(context)
-                                                                .size
-                                                                .width /
-                                                            7,
-                                                    width:
-                                                        MediaQuery.of(context)
-                                                                .size
-                                                                .width /
-                                                            7,
-                                                    child:
-                                                        CircularProgressIndicator(
-                                                      valueColor:
-                                                          AlwaysStoppedAnimation<
-                                                                  Color>(
-                                                              Theme.of(context)
-                                                                  .colorScheme
-                                                                  .secondary),
-                                                      strokeWidth: 5,
-                                                    )),
-                                                Text(AppLocalizations.of(
-                                                        context)!
-                                                    .fetchingStream),
+                                                  height: MediaQuery.of(context)
+                                                          .size
+                                                          .width /
+                                                      7,
+                                                  width: MediaQuery.of(context)
+                                                          .size
+                                                          .width /
+                                                      7,
+                                                  child:
+                                                      CircularProgressIndicator(
+                                                    valueColor:
+                                                        AlwaysStoppedAnimation<
+                                                            Color>(
+                                                      Theme.of(context)
+                                                          .colorScheme
+                                                          .secondary,
+                                                    ),
+                                                    strokeWidth: 5,
+                                                  ),
+                                                ),
+                                                Text(
+                                                  AppLocalizations.of(
+                                                    context,
+                                                  )!
+                                                      .fetchingStream,
+                                                ),
                                               ],
                                             ),
                                           ),

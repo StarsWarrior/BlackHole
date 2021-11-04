@@ -10,9 +10,14 @@ import 'package:path_provider/path_provider.dart';
 
 class BackupNRestore {
   Future<void> createBackup(
-      BuildContext context, List items, Map<String, List> boxNameData) async {
+    BuildContext context,
+    List items,
+    Map<String, List> boxNameData,
+  ) async {
     final String savePath = await Picker().selectFolder(
-        context, AppLocalizations.of(context)!.selectBackLocation);
+      context,
+      AppLocalizations.of(context)!.selectBackLocation,
+    );
     if (savePath.trim() != '') {
       final saveDir = Directory(savePath);
       final List<File> files = [];
@@ -37,7 +42,10 @@ class BackupNRestore {
       final zipFile = File('$savePath/BlackHole_Backup_$time.zip');
 
       await ZipFile.createFromFiles(
-          sourceDir: saveDir, files: files, zipFile: zipFile);
+        sourceDir: saveDir,
+        files: files,
+        zipFile: zipFile,
+      );
       for (int i = 0; i < files.length; i++) {
         files[i].delete();
       }
@@ -55,14 +63,19 @@ class BackupNRestore {
     BuildContext context,
   ) async {
     final String savePath = await Picker().selectFile(
-        context, ['zip'], AppLocalizations.of(context)!.selectBackFile);
+      context,
+      ['zip'],
+      AppLocalizations.of(context)!.selectBackFile,
+    );
     final File zipFile = File(savePath);
     final Directory tempDir = await getTemporaryDirectory();
     final Directory destinationDir = Directory('${tempDir.path}/restore');
 
     try {
       ZipFile.extractToDirectory(
-          zipFile: zipFile, destinationDir: destinationDir);
+        zipFile: zipFile,
+        destinationDir: destinationDir,
+      );
       final List<FileSystemEntity> files = await destinationDir.list().toList();
 
       for (int i = 0; i < files.length; i++) {

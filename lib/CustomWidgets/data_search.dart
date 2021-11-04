@@ -53,13 +53,18 @@ class DataSearch extends SearchDelegate {
         : [
             ...{
               ...data
-                  .where((element) =>
-                      element.title.toLowerCase().contains(query.toLowerCase()))
+                  .where(
+                    (element) => element.title
+                        .toLowerCase()
+                        .contains(query.toLowerCase()),
+                  )
                   .toList(),
               ...data
-                  .where((element) => element.artist!
-                      .toLowerCase()
-                      .contains(query.toLowerCase()))
+                  .where(
+                    (element) => element.artist!
+                        .toLowerCase()
+                        .contains(query.toLowerCase()),
+                  )
                   .toList(),
             }
           ];
@@ -192,16 +197,20 @@ class DownloadsSearch extends SearchDelegate {
         : [
             ...{
               ...data
-                  .where((element) => element['title']
-                      .toString()
-                      .toLowerCase()
-                      .contains(query.toLowerCase()))
+                  .where(
+                    (element) => element['title']
+                        .toString()
+                        .toLowerCase()
+                        .contains(query.toLowerCase()),
+                  )
                   .toList(),
               ...data
-                  .where((element) => element['artist']
-                      .toString()
-                      .toLowerCase()
-                      .contains(query.toLowerCase()))
+                  .where(
+                    (element) => element['artist']
+                        .toString()
+                        .toLowerCase()
+                        .contains(query.toLowerCase()),
+                  )
                   .toList(),
             }
           ];
@@ -225,7 +234,8 @@ class DownloadsSearch extends SearchDelegate {
                 ? Image(
                     fit: BoxFit.cover,
                     image: FileImage(
-                        File(suggestionList[index]['image'].toString())),
+                      File(suggestionList[index]['image'].toString()),
+                    ),
                     errorBuilder: (_, __, ___) =>
                         Image.asset('assets/cover.jpg'),
                   )

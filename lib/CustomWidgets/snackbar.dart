@@ -4,10 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ShowSnackBar {
-  void showSnackBar(BuildContext context, String title,
-      {SnackBarAction? action,
-      Duration duration = const Duration(seconds: 1),
-      bool noAction = false}) {
+  void showSnackBar(
+    BuildContext context,
+    String title, {
+    SnackBarAction? action,
+    Duration duration = const Duration(seconds: 1),
+    bool noAction = false,
+  }) {
     try {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

@@ -63,7 +63,8 @@ class _RecentlyPlayedState extends State<RecentlyPlayed> {
                       AppLocalizations.of(context)!.showHere,
                       50.0,
                       AppLocalizations.of(context)!.playSomething,
-                      23.0)
+                      23.0,
+                    )
                   : ListView.builder(
                       physics: const BouncingScrollPhysics(),
                       padding: const EdgeInsets.only(top: 10, bottom: 10),
@@ -77,18 +78,19 @@ class _RecentlyPlayedState extends State<RecentlyPlayed> {
                                 key: Key(_songs[index]['id'].toString()),
                                 direction: DismissDirection.endToStart,
                                 background: Container(
-                                    color: Colors.redAccent,
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 15.0),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.end,
-                                        children: const [
-                                          Icon(Icons.delete_outline_rounded),
-                                        ],
-                                      ),
-                                    )),
+                                  color: Colors.redAccent,
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 15.0,
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: const [
+                                        Icon(Icons.delete_outline_rounded),
+                                      ],
+                                    ),
+                                  ),
+                                ),
                                 onDismissed: (direction) {
                                   _songs.removeAt(index);
                                   setState(() {});
@@ -125,22 +127,24 @@ class _RecentlyPlayedState extends State<RecentlyPlayed> {
                                   ),
                                   onTap: () {
                                     Navigator.push(
-                                        context,
-                                        PageRouteBuilder(
-                                            opaque: false,
-                                            pageBuilder: (_, __, ___) =>
-                                                PlayScreen(
-                                                  data: {
-                                                    'response': _songs,
-                                                    'index': index,
-                                                    'offline': false,
-                                                  },
-                                                  fromMiniplayer: false,
-                                                )));
+                                      context,
+                                      PageRouteBuilder(
+                                        opaque: false,
+                                        pageBuilder: (_, __, ___) => PlayScreen(
+                                          data: {
+                                            'response': _songs,
+                                            'index': index,
+                                            'offline': false,
+                                          },
+                                          fromMiniplayer: false,
+                                        ),
+                                      ),
+                                    );
                                   },
                                 ),
                               );
-                      }),
+                      },
+                    ),
             ),
           ),
           MiniPlayer(),

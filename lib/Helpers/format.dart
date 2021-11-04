@@ -24,7 +24,6 @@ class FormatResponse {
 
   String formatString(String text) {
     return text
-        .toString()
         .replaceAll('&amp;', '&')
         .replaceAll('&#039;', "'")
         .replaceAll('&quot;', '"')
@@ -167,7 +166,8 @@ class FormatResponse {
         'release_date': response['release_date'],
         'album_id': response['album_id'],
         'subtitle': formatString(
-            '${response["primary_artists"].toString().trim()} - ${response["album"].toString().trim()}'),
+          '${response["primary_artists"].toString().trim()} - ${response["album"].toString().trim()}',
+        ),
         'title': formatString(response['song'].toString()),
         // .split('(')
         // .first
@@ -222,12 +222,16 @@ class FormatResponse {
         'type': response['type'],
         'album': formatString(response['title'].toString()),
         'year': response['more_info']?['year'] ?? response['year'],
-        'language': capitalize(response['more_info']?['language'] == null
-            ? response['language'].toString()
-            : response['more_info']['language'].toString()),
-        'genre': capitalize(response['more_info']?['language'] == null
-            ? response['language'].toString()
-            : response['more_info']['language'].toString()),
+        'language': capitalize(
+          response['more_info']?['language'] == null
+              ? response['language'].toString()
+              : response['more_info']['language'].toString(),
+        ),
+        'genre': capitalize(
+          response['more_info']?['language'] == null
+              ? response['language'].toString()
+              : response['more_info']['language'].toString(),
+        ),
         'album_id': response['id'],
         'subtitle': response['description'] == null
             ? formatString(response['subtitle'].toString())
@@ -237,9 +241,11 @@ class FormatResponse {
             ? response['more_info']['music'] == null
                 ? response['more_info']['artistMap']['primary_artists'] == null
                     ? ''
-                    : formatString(response['more_info']['artistMap']
-                            ['primary_artists'][0]['name']
-                        .toString())
+                    : formatString(
+                        response['more_info']['artistMap']['primary_artists'][0]
+                                ['name']
+                            .toString(),
+                      )
                 : formatString(response['more_info']['music'].toString())
             : formatString(response['music'].toString()),
         'album_artist': response['more_info'] == null
@@ -267,12 +273,16 @@ class FormatResponse {
         'id': response['id'],
         'type': response['type'],
         'album': formatString(response['title'].toString()),
-        'language': capitalize(response['language'] == null
-            ? response['more_info']['language'].toString()
-            : response['language'].toString()),
-        'genre': capitalize(response['language'] == null
-            ? response['more_info']['language'].toString()
-            : response['language'].toString()),
+        'language': capitalize(
+          response['language'] == null
+              ? response['more_info']['language'].toString()
+              : response['language'].toString(),
+        ),
+        'genre': capitalize(
+          response['language'] == null
+              ? response['more_info']['language'].toString()
+              : response['language'].toString(),
+        ),
         'playlistId': response['id'],
         'subtitle': response['description'] == null
             ? formatString(response['subtitle'].toString())
@@ -450,13 +460,18 @@ class FormatResponse {
   Future<Map> formatHomePageData(Map data) async {
     try {
       data['new_trending'] = await formatSongsInList(
-          data['new_trending'] as List,
-          fetchDetails: false);
-      data['new_albums'] = await formatSongsInList(data['new_albums'] as List,
-          fetchDetails: false);
+        data['new_trending'] as List,
+        fetchDetails: false,
+      );
+      data['new_albums'] = await formatSongsInList(
+        data['new_albums'] as List,
+        fetchDetails: false,
+      );
       if (data['city_mod'] != null) {
-        data['city_mod'] = await formatSongsInList(data['city_mod'] as List,
-            fetchDetails: true);
+        data['city_mod'] = await formatSongsInList(
+          data['city_mod'] as List,
+          fetchDetails: true,
+        );
       }
       final List promoList = [];
       final List promoListTemp = [];
@@ -471,8 +486,10 @@ class FormatResponse {
         }
       });
       for (int i = 0; i < promoList.length; i++) {
-        data[promoList[i]] = await formatSongsInList(data[promoList[i]] as List,
-            fetchDetails: false);
+        data[promoList[i]] = await formatSongsInList(
+          data[promoList[i]] as List,
+          fetchDetails: false,
+        );
       }
       data['collections'] = [
         'new_trending',
@@ -495,8 +512,10 @@ class FormatResponse {
     try {
       final List promoList = data['collections_temp'] as List;
       for (int i = 0; i < promoList.length; i++) {
-        data[promoList[i]] = await formatSongsInList(data[promoList[i]] as List,
-            fetchDetails: true);
+        data[promoList[i]] = await formatSongsInList(
+          data[promoList[i]] as List,
+          fetchDetails: true,
+        );
       }
       data['collections'].addAll(promoList);
       data['collections_temp'] = [];
@@ -506,8 +525,10 @@ class FormatResponse {
     return data;
   }
 
-  Future<List> formatSongsInList(List list,
-      {required bool fetchDetails}) async {
+  Future<List> formatSongsInList(
+    List list, {
+    required bool fetchDetails,
+  }) async {
     if (list.isNotEmpty) {
       for (int i = 0; i < list.length; i++) {
         final Map item = list[i] as Map;

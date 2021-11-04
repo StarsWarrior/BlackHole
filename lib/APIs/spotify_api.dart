@@ -93,10 +93,14 @@ class SpotifyApi {
   }
 
   Future<Map> getTracksOfPlaylist(
-      String accessToken, String playListId, int offset) async {
+    String accessToken,
+    String playListId,
+    int offset,
+  ) async {
     try {
       final Uri path = Uri.parse(
-          '$spotifyTrackBaseUrl/$playListId/tracks?limit=100&offset=$offset');
+        '$spotifyTrackBaseUrl/$playListId/tracks?limit=100&offset=$offset',
+      );
       final response = await get(
         path,
         headers: {

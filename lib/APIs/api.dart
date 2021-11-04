@@ -36,12 +36,17 @@ class SaavnAPI {
         '__call=search.artistOtherTopSongs', // still not used
   };
 
-  Future<Response> getResponse(String params,
-      {bool usev4 = true, bool useProxy = false}) async {
+  Future<Response> getResponse(
+    String params, {
+    bool usev4 = true,
+    bool useProxy = false,
+  }) async {
     Uri url;
     if (!usev4) {
       url = Uri.https(
-          baseUrl, '$apiStr&$params'.replaceAll('&api_version=4', ''));
+        baseUrl,
+        '$apiStr&$params'.replaceAll('&api_version=4', ''),
+      );
     } else {
       url = Uri.https(baseUrl, '$apiStr&$params');
     }
@@ -111,7 +116,10 @@ class SaavnAPI {
   }
 
   Future<String?> createRadio(
-      String name, String language, String stationType) async {
+    String name,
+    String language,
+    String stationType,
+  ) async {
     String? params;
     if (stationType == 'featured') {
       params = "name=$name&language=$language&${endpoints['featuredRadio']}";

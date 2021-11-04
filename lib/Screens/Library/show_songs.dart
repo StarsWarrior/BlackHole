@@ -12,9 +12,12 @@ class SongsList extends StatefulWidget {
   final List data;
   final bool offline;
   final String? title;
-  const SongsList(
-      {Key? key, required this.data, required this.offline, this.title})
-      : super(key: key);
+  const SongsList({
+    Key? key,
+    required this.data,
+    required this.offline,
+    this.title,
+  }) : super(key: key);
   @override
   _SongsListState createState() => _SongsListState();
 }
@@ -41,22 +44,28 @@ class _SongsListState extends State<SongsList> {
 
   void sortSongs() {
     if (sortValue == 0) {
-      _songs.sort((a, b) => a['title']
-          .toString()
-          .toUpperCase()
-          .compareTo(b['title'].toString().toUpperCase()));
+      _songs.sort(
+        (a, b) => a['title']
+            .toString()
+            .toUpperCase()
+            .compareTo(b['title'].toString().toUpperCase()),
+      );
     }
     if (sortValue == 1) {
-      _songs.sort((b, a) => a['title']
-          .toString()
-          .toUpperCase()
-          .compareTo(b['title'].toString().toUpperCase()));
+      _songs.sort(
+        (b, a) => a['title']
+            .toString()
+            .toUpperCase()
+            .compareTo(b['title'].toString().toUpperCase()),
+      );
     }
     if (sortValue == 2) {
       offline!
-          ? _songs.sort((b, a) => a['lastModified']
-              .toString()
-              .compareTo(b['lastModified'].toString()))
+          ? _songs.sort(
+              (b, a) => a['lastModified']
+                  .toString()
+                  .compareTo(b['lastModified'].toString()),
+            )
           : _songs = List.from(original);
     }
     if (sortValue == 3) {
@@ -80,104 +89,105 @@ class _SongsListState extends State<SongsList> {
                     Text(widget.title ?? AppLocalizations.of(context)!.songs),
                 actions: [
                   PopupMenuButton(
-                      icon: const Icon(Icons.sort_rounded),
-                      shape: const RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.all(Radius.circular(15.0))),
-                      onSelected: (int value) {
-                        sortValue = value;
-                        Hive.box('settings').put('sortValue', value);
-                        sortSongs();
-                        setState(() {});
-                      },
-                      itemBuilder: (context) => [
-                            PopupMenuItem(
-                              value: 0,
-                              child: Row(
-                                children: [
-                                  if (sortValue == 0)
-                                    Icon(
-                                      Icons.check_rounded,
-                                      color: Theme.of(context).brightness ==
-                                              Brightness.dark
-                                          ? Colors.white
-                                          : Colors.grey[700],
-                                    )
-                                  else
-                                    const SizedBox(),
-                                  const SizedBox(width: 10),
-                                  Text(
-                                    AppLocalizations.of(context)!.az,
-                                  ),
-                                ],
-                              ),
+                    icon: const Icon(Icons.sort_rounded),
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(15.0)),
+                    ),
+                    onSelected: (int value) {
+                      sortValue = value;
+                      Hive.box('settings').put('sortValue', value);
+                      sortSongs();
+                      setState(() {});
+                    },
+                    itemBuilder: (context) => [
+                      PopupMenuItem(
+                        value: 0,
+                        child: Row(
+                          children: [
+                            if (sortValue == 0)
+                              Icon(
+                                Icons.check_rounded,
+                                color: Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? Colors.white
+                                    : Colors.grey[700],
+                              )
+                            else
+                              const SizedBox(),
+                            const SizedBox(width: 10),
+                            Text(
+                              AppLocalizations.of(context)!.az,
                             ),
-                            PopupMenuItem(
-                              value: 1,
-                              child: Row(
-                                children: [
-                                  if (sortValue == 1)
-                                    Icon(
-                                      Icons.check_rounded,
-                                      color: Theme.of(context).brightness ==
-                                              Brightness.dark
-                                          ? Colors.white
-                                          : Colors.grey[700],
-                                    )
-                                  else
-                                    const SizedBox(),
-                                  const SizedBox(width: 10),
-                                  Text(
-                                    AppLocalizations.of(context)!.za,
-                                  ),
-                                ],
-                              ),
+                          ],
+                        ),
+                      ),
+                      PopupMenuItem(
+                        value: 1,
+                        child: Row(
+                          children: [
+                            if (sortValue == 1)
+                              Icon(
+                                Icons.check_rounded,
+                                color: Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? Colors.white
+                                    : Colors.grey[700],
+                              )
+                            else
+                              const SizedBox(),
+                            const SizedBox(width: 10),
+                            Text(
+                              AppLocalizations.of(context)!.za,
                             ),
-                            PopupMenuItem(
-                              value: 2,
-                              child: Row(
-                                children: [
-                                  if (sortValue == 2)
-                                    Icon(
-                                      Icons.check_rounded,
-                                      color: Theme.of(context).brightness ==
-                                              Brightness.dark
-                                          ? Colors.white
-                                          : Colors.grey[700],
-                                    )
-                                  else
-                                    const SizedBox(),
-                                  const SizedBox(width: 10),
-                                  Text(offline!
-                                      ? AppLocalizations.of(context)!
-                                          .lastModified
-                                      : AppLocalizations.of(context)!
-                                          .lastAdded),
-                                ],
-                              ),
+                          ],
+                        ),
+                      ),
+                      PopupMenuItem(
+                        value: 2,
+                        child: Row(
+                          children: [
+                            if (sortValue == 2)
+                              Icon(
+                                Icons.check_rounded,
+                                color: Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? Colors.white
+                                    : Colors.grey[700],
+                              )
+                            else
+                              const SizedBox(),
+                            const SizedBox(width: 10),
+                            Text(
+                              offline!
+                                  ? AppLocalizations.of(context)!.lastModified
+                                  : AppLocalizations.of(context)!.lastAdded,
                             ),
-                            PopupMenuItem(
-                              value: 3,
-                              child: Row(
-                                children: [
-                                  if (sortValue == 3)
-                                    Icon(
-                                      Icons.shuffle_rounded,
-                                      color: Theme.of(context).brightness ==
-                                              Brightness.dark
-                                          ? Colors.white
-                                          : Colors.grey[700],
-                                    )
-                                  else
-                                    const SizedBox(),
-                                  const SizedBox(width: 10),
-                                  Text(
-                                    AppLocalizations.of(context)!.shuffle,
-                                  ),
-                                ],
-                              ),
+                          ],
+                        ),
+                      ),
+                      PopupMenuItem(
+                        value: 3,
+                        child: Row(
+                          children: [
+                            if (sortValue == 3)
+                              Icon(
+                                Icons.shuffle_rounded,
+                                color: Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? Colors.white
+                                    : Colors.grey[700],
+                              )
+                            else
+                              const SizedBox(),
+                            const SizedBox(width: 10),
+                            Text(
+                              AppLocalizations.of(context)!.shuffle,
                             ),
-                          ])
+                          ],
+                        ),
+                      ),
+                    ],
+                  )
                 ],
                 centerTitle: true,
                 backgroundColor: Theme.of(context).brightness == Brightness.dark
@@ -189,9 +199,10 @@ class _SongsListState extends State<SongsList> {
                   ? SizedBox(
                       child: Center(
                         child: SizedBox(
-                            height: MediaQuery.of(context).size.width / 7,
-                            width: MediaQuery.of(context).size.width / 7,
-                            child: const CircularProgressIndicator()),
+                          height: MediaQuery.of(context).size.width / 7,
+                          width: MediaQuery.of(context).size.width / 7,
+                          child: const CircularProgressIndicator(),
+                        ),
                       ),
                     )
                   : ListView.builder(
@@ -215,7 +226,8 @@ class _SongsListState extends State<SongsList> {
                                           children: [
                                             const Image(
                                               image: AssetImage(
-                                                  'assets/cover.jpg'),
+                                                'assets/cover.jpg',
+                                              ),
                                             ),
                                             if (_songs[index]['image'] == null)
                                               const SizedBox()
@@ -276,7 +288,8 @@ class _SongsListState extends State<SongsList> {
                                   );
                                 },
                               );
-                      }),
+                      },
+                    ),
             ),
           ),
           MiniPlayer(),

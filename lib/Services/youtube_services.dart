@@ -55,12 +55,17 @@ class YouTubeServices {
           'title': element['title']['runs'][0]['text'],
           'playlists': element['title']['runs'][0]['text'].trim() == 'Charts'
               ? formatChartItems(
-                  element['content']['horizontalListRenderer']['items'] as List)
+                  element['content']['horizontalListRenderer']['items'] as List,
+                )
               : element['title']['runs'][0]['text'].trim() == 'New Music Videos'
-                  ? formatVideoItems(element['content']
-                      ['horizontalListRenderer']['items'] as List)
-                  : formatItems(element['content']['horizontalListRenderer']
-                      ['items'] as List),
+                  ? formatVideoItems(
+                      element['content']['horizontalListRenderer']['items']
+                          as List,
+                    )
+                  : formatItems(
+                      element['content']['horizontalListRenderer']['items']
+                          as List,
+                    ),
         };
       } else {
         return null;
@@ -219,8 +224,8 @@ class YouTubeServices {
       'duration': video.duration?.inSeconds.toString(),
       'title': video.title,
       'artist': video.author,
-      'image': video.thumbnails.maxResUrl.toString(),
-      'secondImage': video.thumbnails.highResUrl.toString(),
+      'image': video.thumbnails.maxResUrl,
+      'secondImage': video.thumbnails.highResUrl,
       'language': 'YouTube',
       'genre': 'YouTube',
       'url': await getUri(video, quality),

@@ -14,12 +14,12 @@ class YouTubePlaylist extends StatefulWidget {
   final String playlistId;
   final String playlistName;
   final String playlistImage;
-  const YouTubePlaylist(
-      {Key? key,
-      required this.playlistId,
-      required this.playlistName,
-      required this.playlistImage})
-      : super(key: key);
+  const YouTubePlaylist({
+    Key? key,
+    required this.playlistId,
+    required this.playlistName,
+    required this.playlistImage,
+  }) : super(key: key);
 
   @override
   _YouTubePlaylistState createState() => _YouTubePlaylistState();
@@ -66,9 +66,10 @@ class _YouTubePlaylistState extends State<YouTubePlaylist> {
                     SizedBox(
                       child: Center(
                         child: SizedBox(
-                            height: MediaQuery.of(context).size.width / 7,
-                            width: MediaQuery.of(context).size.width / 7,
-                            child: const CircularProgressIndicator()),
+                          height: MediaQuery.of(context).size.width / 7,
+                          width: MediaQuery.of(context).size.width / 7,
+                          child: const CircularProgressIndicator(),
+                        ),
                       ),
                     )
                   else
@@ -93,8 +94,14 @@ class _YouTubePlaylistState extends State<YouTubePlaylist> {
                                   begin: Alignment.topCenter,
                                   end: Alignment.bottomCenter,
                                   colors: [Colors.black, Colors.transparent],
-                                ).createShader(Rect.fromLTRB(
-                                    0, 0, rect.width, rect.height));
+                                ).createShader(
+                                  Rect.fromLTRB(
+                                    0,
+                                    0,
+                                    rect.width,
+                                    rect.height,
+                                  ),
+                                );
                               },
                               blendMode: BlendMode.dstIn,
                               child: CachedNetworkImage(
@@ -119,151 +126,162 @@ class _YouTubePlaylistState extends State<YouTubePlaylist> {
                                     left: 5.0,
                                   ),
                                   child: ListTile(
-                                      leading: Card(
-                                        elevation: 8,
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(5.0)),
-                                        clipBehavior: Clip.antiAlias,
-                                        child: SizedBox(
-                                          height: 50.0,
-                                          width: 50.0,
-                                          child: CachedNetworkImage(
+                                    leading: Card(
+                                      elevation: 8,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(
+                                          5.0,
+                                        ),
+                                      ),
+                                      clipBehavior: Clip.antiAlias,
+                                      child: SizedBox(
+                                        height: 50.0,
+                                        width: 50.0,
+                                        child: CachedNetworkImage(
+                                          fit: BoxFit.cover,
+                                          errorWidget: (context, _, __) =>
+                                              CachedNetworkImage(
                                             fit: BoxFit.cover,
+                                            imageUrl:
+                                                entry.thumbnails.standardResUrl,
                                             errorWidget: (context, _, __) =>
-                                                CachedNetworkImage(
-                                              fit: BoxFit.cover,
-                                              imageUrl: entry
-                                                  .thumbnails.standardResUrl
-                                                  .toString(),
-                                              errorWidget: (context, _, __) =>
-                                                  const Image(
-                                                image: AssetImage(
-                                                    'assets/cover.jpg'),
-                                              ),
-                                            ),
-                                            imageUrl: entry.thumbnails.maxResUrl
-                                                .toString(),
-                                            placeholder: (context, url) =>
                                                 const Image(
                                               image: AssetImage(
-                                                  'assets/cover.jpg'),
+                                                'assets/cover.jpg',
+                                              ),
+                                            ),
+                                          ),
+                                          imageUrl: entry.thumbnails.maxResUrl,
+                                          placeholder: (context, url) =>
+                                              const Image(
+                                            image: AssetImage(
+                                              'assets/cover.jpg',
                                             ),
                                           ),
                                         ),
                                       ),
-                                      title: Text(
-                                        entry.title.toString(),
-                                        overflow: TextOverflow.ellipsis,
-                                        style: const TextStyle(
-                                            fontWeight: FontWeight.w500),
+                                    ),
+                                    title: Text(
+                                      entry.title,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.w500,
                                       ),
-                                      subtitle: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
+                                    ),
+                                    subtitle: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              entry.author,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ],
+                                        ),
+                                        Text(
+                                          entry.duration
+                                              .toString()
+                                              .split('.')[0]
+                                              .replaceFirst('0:0', ''),
+                                        ),
+                                      ],
+                                    ),
+                                    onTap: () async {
+                                      setState(() {
+                                        done = false;
+                                      });
+
+                                      final Map? response =
+                                          await YouTubeServices().formatVideo(
+                                        video: entry,
+                                        quality: Hive.box('settings')
+                                            .get(
+                                              'ytQuality',
+                                              defaultValue: 'High',
+                                            )
+                                            .toString(),
+                                        // preferM4a: Hive.box('settings')
+                                        //         .get('preferM4a',
+                                        //             defaultValue: true)
+                                        // as bool
+                                      );
+                                      setState(() {
+                                        done = true;
+                                      });
+                                      Navigator.push(
+                                        context,
+                                        PageRouteBuilder(
+                                          opaque: false,
+                                          pageBuilder: (_, __, ___) =>
+                                              PlayScreen(
+                                            fromMiniplayer: false,
+                                            data: {
+                                              'response': [response],
+                                              'index': 0,
+                                              'offline': false,
+                                              'fromYT': true,
+                                            },
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                    trailing: PopupMenuButton(
+                                      icon: Icon(
+                                        Icons.more_vert_rounded,
+                                        color:
+                                            Theme.of(context).iconTheme.color,
+                                      ),
+                                      shape: const RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.all(
+                                          Radius.circular(
+                                            15.0,
+                                          ),
+                                        ),
+                                      ),
+                                      itemBuilder: (context) => [
+                                        PopupMenuItem(
+                                          value: 0,
+                                          child: Row(
                                             children: [
+                                              Icon(
+                                                CupertinoIcons.search,
+                                                color: Theme.of(context)
+                                                    .iconTheme
+                                                    .color,
+                                              ),
+                                              const SizedBox(
+                                                width: 10.0,
+                                              ),
                                               Text(
-                                                entry.author.toString(),
-                                                overflow: TextOverflow.ellipsis,
+                                                AppLocalizations.of(
+                                                  context,
+                                                )!
+                                                    .searchHome,
                                               ),
                                             ],
                                           ),
-                                          Text(
-                                            entry.duration
-                                                .toString()
-                                                .split('.')[0]
-                                                .replaceFirst('0:0', ''),
-                                          ),
-                                        ],
-                                      ),
-                                      onTap: () async {
-                                        setState(() {
-                                          done = false;
-                                        });
-
-                                        final Map? response =
-                                            await YouTubeServices().formatVideo(
-                                          video: entry,
-                                          quality: Hive.box('settings')
-                                              .get('ytQuality',
-                                                  defaultValue: 'High')
-                                              .toString(),
-                                          // preferM4a: Hive.box('settings')
-                                          //         .get('preferM4a',
-                                          //             defaultValue: true)
-                                          // as bool
-                                        );
-                                        setState(() {
-                                          done = true;
-                                        });
-                                        Navigator.push(
-                                          context,
-                                          PageRouteBuilder(
-                                            opaque: false,
-                                            pageBuilder: (_, __, ___) =>
-                                                PlayScreen(
-                                              fromMiniplayer: false,
-                                              data: {
-                                                'response': [response],
-                                                'index': 0,
-                                                'offline': false,
-                                                'fromYT': true,
-                                              },
+                                        ),
+                                      ],
+                                      onSelected: (int? value) {
+                                        if (value == 0) {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) => SearchPage(
+                                                query: entry.title
+                                                    .split('|')[0]
+                                                    .split('(')[0],
+                                              ),
                                             ),
-                                          ),
-                                        );
+                                          );
+                                        }
                                       },
-                                      trailing: PopupMenuButton(
-                                          icon: Icon(
-                                            Icons.more_vert_rounded,
-                                            color: Theme.of(context)
-                                                .iconTheme
-                                                .color,
-                                          ),
-                                          shape: const RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.all(
-                                                  Radius.circular(15.0))),
-                                          itemBuilder: (context) => [
-                                                PopupMenuItem(
-                                                    value: 0,
-                                                    child: Row(
-                                                      children: [
-                                                        Icon(
-                                                          CupertinoIcons.search,
-                                                          color:
-                                                              Theme.of(context)
-                                                                  .iconTheme
-                                                                  .color,
-                                                        ),
-                                                        const SizedBox(
-                                                            width: 10.0),
-                                                        Text(
-                                                            AppLocalizations.of(
-                                                                    context)!
-                                                                .searchHome),
-                                                      ],
-                                                    )),
-                                              ],
-                                          onSelected: (int? value) {
-                                            if (value == 0) {
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      SearchPage(
-                                                    query: entry.title
-                                                        .toString()
-                                                        .split('|')[0]
-                                                        .split('(')[0],
-                                                  ),
-                                                ),
-                                              );
-                                            }
-                                          })),
+                                    ),
+                                  ),
                                 );
                               },
                             ).toList(),
@@ -279,7 +297,8 @@ class _YouTubePlaylistState extends State<YouTubePlaylist> {
                         child: Card(
                           elevation: 10,
                           shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15)),
+                            borderRadius: BorderRadius.circular(15),
+                          ),
                           clipBehavior: Clip.antiAlias,
                           child: GradientContainer(
                             child: Center(
@@ -289,26 +308,29 @@ class _YouTubePlaylistState extends State<YouTubePlaylist> {
                                 children: [
                                   Padding(
                                     padding: const EdgeInsets.symmetric(
-                                        horizontal: 8.0),
+                                      horizontal: 8.0,
+                                    ),
                                     child: Text(
-                                        AppLocalizations.of(context)!.useHome,
-                                        textAlign: TextAlign.center),
+                                      AppLocalizations.of(context)!.useHome,
+                                      textAlign: TextAlign.center,
+                                    ),
                                   ),
                                   SizedBox(
-                                      height:
-                                          MediaQuery.of(context).size.width / 7,
-                                      width:
-                                          MediaQuery.of(context).size.width / 7,
-                                      child: CircularProgressIndicator(
-                                        valueColor:
-                                            AlwaysStoppedAnimation<Color>(
-                                                Theme.of(context)
-                                                    .colorScheme
-                                                    .secondary),
-                                        strokeWidth: 5,
-                                      )),
-                                  Text(AppLocalizations.of(context)!
-                                      .fetchingStream),
+                                    height:
+                                        MediaQuery.of(context).size.width / 7,
+                                    width:
+                                        MediaQuery.of(context).size.width / 7,
+                                    child: CircularProgressIndicator(
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                        Theme.of(context).colorScheme.secondary,
+                                      ),
+                                      strokeWidth: 5,
+                                    ),
+                                  ),
+                                  Text(
+                                    AppLocalizations.of(context)!
+                                        .fetchingStream,
+                                  ),
                                 ],
                               ),
                             ),

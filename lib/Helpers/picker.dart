@@ -10,7 +10,10 @@ class Picker {
   }
 
   Future<String> selectFile(
-      BuildContext context, List<String> ext, String message) async {
+    BuildContext context,
+    List<String> ext,
+    String message,
+  ) async {
     final FilePickerResult? result = await FilePicker.platform
         .pickFiles(type: FileType.custom, allowedExtensions: ext);
 
