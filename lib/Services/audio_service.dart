@@ -24,6 +24,7 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
 
   late AudioPlayer? _player;
   late String preferredQuality;
+  // late bool cacheSong;
   final _equalizer = AndroidEqualizer();
   final converter = MediaItemConverter();
 
@@ -106,6 +107,8 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
     preferredQuality = Hive.box('settings')
         .get('streamingQuality', defaultValue: '96 kbps')
         .toString();
+    // cacheSong =
+    //     Hive.box('settings').get('cacheSong', defaultValue: false) as bool;
     recommend =
         Hive.box('settings').get('autoplay', defaultValue: true) as bool;
     loadStart =
@@ -192,29 +195,50 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
   }
 
   AudioSource _itemToSource(MediaItem mediaItem) {
-    final audioSource = AudioSource.uri(
-      mediaItem.artUri.toString().startsWith('file:')
-          ? Uri.file(mediaItem.extras!['url'].toString())
-          : (downloadsBox.containsKey(mediaItem.id) && useDown)
-              ? Uri.file(
-                  (downloadsBox.get(mediaItem.id) as Map)['path'].toString(),
-                )
-              : Uri.parse(
-                  mediaItem.extras!['url'].toString().replaceAll(
-                        '_96.',
-                        "_${preferredQuality.replaceAll(' kbps', '')}.",
-                      ),
+    AudioSource _audioSource;
+    if (mediaItem.artUri.toString().startsWith('file:')) {
+      _audioSource =
+          AudioSource.uri(Uri.file(mediaItem.extras!['url'].toString()));
+    } else {
+      if (downloadsBox.containsKey(mediaItem.id) && useDown) {
+        _audioSource = AudioSource.uri(
+          Uri.file(
+            (downloadsBox.get(mediaItem.id) as Map)['path'].toString(),
+          ),
+        );
+      } else {
+        // if (cacheSong) {
+        //   _audioSource = LockCachingAudioSource(
+        //     Uri.parse(
+        //       mediaItem.extras!['url'].toString().replaceAll(
+        //             '_96.',
+        //             "_${preferredQuality.replaceAll(' kbps', '')}.",
+        //           ),
+        //     ),
+        //   );
+        // } else {
+        _audioSource = AudioSource.uri(
+          Uri.parse(
+            mediaItem.extras!['url'].toString().replaceAll(
+                  '_96.',
+                  "_${preferredQuality.replaceAll(' kbps', '')}.",
                 ),
-    );
+          ),
+        );
+        // }
+      }
+    }
 
-    _mediaItemExpando[audioSource] = mediaItem;
-    return audioSource;
+    _mediaItemExpando[_audioSource] = mediaItem;
+    return _audioSource;
   }
 
   List<AudioSource> _itemsToSources(List<MediaItem> mediaItems) {
     preferredQuality = Hive.box('settings')
         .get('streamingQuality', defaultValue: '96 kbps')
         .toString();
+    // cacheSong =
+    //     Hive.box('settings').get('cacheSong', defaultValue: false) as bool;
     useDown = Hive.box('settings').get('useDown', defaultValue: true) as bool;
     return mediaItems.map(_itemToSource).toList();
   }

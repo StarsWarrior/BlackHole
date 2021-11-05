@@ -1729,7 +1729,7 @@ class NameNControls extends StatelessWidget {
                       child: AnimatedText(
                         text:
                             mediaItem.title.split(' (')[0].split('|')[0].trim(),
-                        pauseAfterRound: const Duration(seconds: 4),
+                        pauseAfterRound: const Duration(seconds: 3),
                         showFadingOnlyWhenScrolling: false,
                         fadingEdgeEndFraction: 0.1,
                         fadingEdgeStartFraction: 0.1,
@@ -1750,7 +1750,7 @@ class NameNControls extends StatelessWidget {
                       child: AnimatedText(
                         text:
                             '${mediaItem.artist ?? "Unknown"} • ${mediaItem.album ?? "Unknown"}',
-                        pauseAfterRound: const Duration(seconds: 5),
+                        pauseAfterRound: const Duration(seconds: 3),
                         showFadingOnlyWhenScrolling: false,
                         fadingEdgeEndFraction: 0.1,
                         fadingEdgeStartFraction: 0.1,

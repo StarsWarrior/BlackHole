@@ -1780,6 +1780,22 @@ class _SettingPageState extends State<SettingPage> {
                           keyName: 'autoplay',
                           defaultValue: true,
                         ),
+                        // BoxSwitchTile(
+                        //   title: Text(
+                        //     AppLocalizations.of(
+                        //       context,
+                        //     )!
+                        //         .cacheSong,
+                        //   ),
+                        //   subtitle: Text(
+                        //     AppLocalizations.of(
+                        //       context,
+                        //     )!
+                        //         .cacheSongSub,
+                        //   ),
+                        //   keyName: 'cacheSong',
+                        //   defaultValue: false,
+                        // ),
                         //   ListTile(
                         //       title: const Text('BlackList Location'),
                         //       subtitle: const Text(

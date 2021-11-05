@@ -1,11 +1,11 @@
 import 'dart:ui';
 
 import 'package:blackhole/APIs/api.dart';
-import 'package:blackhole/CustomWidgets/add_queue.dart';
 import 'package:blackhole/CustomWidgets/download_button.dart';
 import 'package:blackhole/CustomWidgets/empty_screen.dart';
 import 'package:blackhole/CustomWidgets/gradient_containers.dart';
 import 'package:blackhole/CustomWidgets/miniplayer.dart';
+import 'package:blackhole/CustomWidgets/song_tile_trailing_menu.dart';
 import 'package:blackhole/Screens/Common/song_list.dart';
 import 'package:blackhole/Screens/Player/audioplayer.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -243,7 +243,7 @@ class _ArtistSearchPageState extends State<ArtistSearchPage> {
                                                                 index] as Map,
                                                             icon: 'download',
                                                           ),
-                                                          AddToQueueButton(
+                                                          SongTileTrailingMenu(
                                                             data: entry.value[
                                                                 index] as Map,
                                                           ),

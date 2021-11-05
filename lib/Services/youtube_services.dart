@@ -235,7 +235,7 @@ class YouTubeServices {
       'release_date': video.publishDate.toString(),
       'album_id': video.channelId.value,
       'subtitle': video.author,
-      'perma_url': 'https://youtube.com/watch?v=${video.id.value}',
+      'perma_url': video.url,
     };
   }
 

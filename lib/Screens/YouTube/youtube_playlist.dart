@@ -1,7 +1,7 @@
 import 'package:blackhole/CustomWidgets/gradient_containers.dart';
 import 'package:blackhole/CustomWidgets/miniplayer.dart';
+import 'package:blackhole/CustomWidgets/song_tile_trailing_menu.dart';
 import 'package:blackhole/Screens/Player/audioplayer.dart';
-import 'package:blackhole/Screens/Search/search.dart';
 import 'package:blackhole/Services/youtube_services.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
@@ -204,10 +204,6 @@ class _YouTubePlaylistState extends State<YouTubePlaylist> {
                                               defaultValue: 'High',
                                             )
                                             .toString(),
-                                        // preferM4a: Hive.box('settings')
-                                        //         .get('preferM4a',
-                                        //             defaultValue: true)
-                                        // as bool
                                       );
                                       setState(() {
                                         done = true;
@@ -229,58 +225,8 @@ class _YouTubePlaylistState extends State<YouTubePlaylist> {
                                         ),
                                       );
                                     },
-                                    trailing: PopupMenuButton(
-                                      icon: Icon(
-                                        Icons.more_vert_rounded,
-                                        color:
-                                            Theme.of(context).iconTheme.color,
-                                      ),
-                                      shape: const RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.all(
-                                          Radius.circular(
-                                            15.0,
-                                          ),
-                                        ),
-                                      ),
-                                      itemBuilder: (context) => [
-                                        PopupMenuItem(
-                                          value: 0,
-                                          child: Row(
-                                            children: [
-                                              Icon(
-                                                CupertinoIcons.search,
-                                                color: Theme.of(context)
-                                                    .iconTheme
-                                                    .color,
-                                              ),
-                                              const SizedBox(
-                                                width: 10.0,
-                                              ),
-                                              Text(
-                                                AppLocalizations.of(
-                                                  context,
-                                                )!
-                                                    .searchHome,
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                      onSelected: (int? value) {
-                                        if (value == 0) {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) => SearchPage(
-                                                query: entry.title
-                                                    .split('|')[0]
-                                                    .split('(')[0],
-                                              ),
-                                            ),
-                                          );
-                                        }
-                                      },
-                                    ),
+                                    trailing:
+                                        YtSongTileTrailingMenu(data: entry),
                                   ),
                                 );
                               },

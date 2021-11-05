@@ -6,20 +6,20 @@ import 'package:blackhole/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-class AddListToQueueButton extends StatefulWidget {
+class PlaylistPopupMenu extends StatefulWidget {
   final List data;
   final String title;
-  const AddListToQueueButton({
+  const PlaylistPopupMenu({
     Key? key,
     required this.data,
     required this.title,
   }) : super(key: key);
 
   @override
-  _AddListToQueueButtonState createState() => _AddListToQueueButtonState();
+  _PlaylistPopupMenuState createState() => _PlaylistPopupMenuState();
 }
 
-class _AddListToQueueButtonState extends State<AddListToQueueButton> {
+class _PlaylistPopupMenuState extends State<PlaylistPopupMenu> {
   @override
   Widget build(BuildContext context) {
     return PopupMenuButton(

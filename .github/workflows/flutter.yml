@@ -55,3 +55,10 @@ jobs:
         with:
           name: app-release.apk
           path: build/app/outputs/apk/release/app-release.apk
+      
+      - name: Commit on Telegram
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TELEGRAM_CHAT_ID }}
+          token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          message: A new commit has been pushed to BlackHole by ${{ github.event.head_commit.author.name }}. Commit message- ${{ github.event.head_commit.message }}

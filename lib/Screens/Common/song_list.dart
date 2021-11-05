@@ -1,13 +1,13 @@
 import 'dart:ui';
 
 import 'package:blackhole/APIs/api.dart';
-import 'package:blackhole/CustomWidgets/add_list_queue.dart';
-import 'package:blackhole/CustomWidgets/add_queue.dart';
 import 'package:blackhole/CustomWidgets/download_button.dart';
 import 'package:blackhole/CustomWidgets/empty_screen.dart';
 import 'package:blackhole/CustomWidgets/gradient_containers.dart';
 import 'package:blackhole/CustomWidgets/like_button.dart';
 import 'package:blackhole/CustomWidgets/miniplayer.dart';
+import 'package:blackhole/CustomWidgets/playlist_popupmenu.dart';
+import 'package:blackhole/CustomWidgets/song_tile_trailing_menu.dart';
 import 'package:blackhole/Screens/Player/audioplayer.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -130,7 +130,7 @@ class _SongsListPageState extends State<SongsListPage> {
                                     );
                                   },
                                 ),
-                                AddListToQueueButton(
+                                PlaylistPopupMenu(
                                   data: songList,
                                   title: widget.listItem['title']?.toString() ??
                                       'Songs',
@@ -393,7 +393,7 @@ class _SongsListPageState extends State<SongsListPage> {
                                           mediaItem: null,
                                           data: entry,
                                         ),
-                                        AddToQueueButton(data: entry),
+                                        SongTileTrailingMenu(data: entry),
                                       ],
                                     ),
                                     onTap: () {
