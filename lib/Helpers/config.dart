@@ -113,6 +113,26 @@ class MyTheme with ChangeNotifier {
     ]
   ];
 
+  void refresh() {
+    final Box settingsBox = Hive.box('settings');
+    _isDark = settingsBox.get('darkMode', defaultValue: true) as bool;
+
+    _useSystemTheme =
+        settingsBox.get('useSystemTheme', defaultValue: false) as bool;
+
+    accentColor = settingsBox.get('themeColor', defaultValue: 'Teal') as String;
+    canvasColor =
+        settingsBox.get('canvasColor', defaultValue: 'Grey') as String;
+    cardColor = settingsBox.get('cardColor', defaultValue: 'Grey850') as String;
+
+    backGrad = settingsBox.get('backGrad', defaultValue: 1) as int;
+    cardGrad = settingsBox.get('cardGrad', defaultValue: 3) as int;
+    bottomGrad = settingsBox.get('bottomGrad', defaultValue: 2) as int;
+
+    colorHue = settingsBox.get('colorHue', defaultValue: 400) as int;
+    notifyListeners();
+  }
+
   void switchTheme({bool? useSystemTheme, bool? isDark, bool notify = true}) {
     if (isDark != null) {
       _isDark = isDark;

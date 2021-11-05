@@ -24,30 +24,37 @@ class LikeButton extends StatefulWidget {
 class _LikeButtonState extends State<LikeButton>
     with SingleTickerProviderStateMixin {
   bool liked = false;
-  late AnimationController controller;
-  late Animation<double> scale;
+  late AnimationController _controller;
+  late Animation<double> _scale;
+  late Animation<double> _curve;
 
   @override
   void initState() {
     super.initState();
 
-    controller = AnimationController(
+    _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 150),
+      duration: const Duration(milliseconds: 200),
     );
 
-    scale = Tween<double>(begin: 1.0, end: 1.2).animate(controller);
+    _curve = CurvedAnimation(parent: _controller, curve: Curves.slowMiddle);
+
+    _scale = TweenSequence(<TweenSequenceItem<double>>[
+      TweenSequenceItem(
+        tween: Tween<double>(begin: 1.0, end: 1.2),
+        weight: 50,
+      ),
+      TweenSequenceItem(
+        tween: Tween<double>(begin: 1.2, end: 1.0),
+        weight: 50,
+      ),
+    ]).animate(_curve);
   }
 
   @override
   void dispose() {
-    controller.dispose();
+    _controller.dispose();
     super.dispose();
-  }
-
-  Future<void> animateLike() async {
-    await controller.forward();
-    await controller.reverse();
   }
 
   @override
@@ -62,7 +69,7 @@ class _LikeButtonState extends State<LikeButton>
       // print('Error: $e');
     }
     return ScaleTransition(
-      scale: scale,
+      scale: _scale,
       child: IconButton(
         icon: Icon(
           liked ? Icons.favorite_rounded : Icons.favorite_border_rounded,
@@ -84,7 +91,9 @@ class _LikeButtonState extends State<LikeButton>
                   : addItemToPlaylist('Favorite Songs', widget.mediaItem!);
 
           if (!liked) {
-            animateLike();
+            _controller.forward();
+          } else {
+            _controller.reverse();
           }
           setState(() {
             liked = !liked;

@@ -41,8 +41,50 @@ class _MiniPlayerState extends State<MiniPlayer> {
               },
               child: ValueListenableBuilder(
                 valueListenable: Hive.box('settings').listenable(),
-                builder: (BuildContext context, Box box, Widget? widget) {
-                  final bool useDense = box.get(
+                child: StreamBuilder<Duration>(
+                  stream: AudioService.position,
+                  builder: (context, snapshot) {
+                    final position = snapshot.data;
+                    return position == null
+                        ? const SizedBox()
+                        : (position.inSeconds.toDouble() < 0.0 ||
+                                (position.inSeconds.toDouble() >
+                                    mediaItem.duration!.inSeconds.toDouble()))
+                            ? const SizedBox()
+                            : SliderTheme(
+                                data: SliderTheme.of(context).copyWith(
+                                  activeTrackColor:
+                                      Theme.of(context).colorScheme.secondary,
+                                  inactiveTrackColor: Colors.transparent,
+                                  trackHeight: 0.5,
+                                  thumbColor:
+                                      Theme.of(context).colorScheme.secondary,
+                                  thumbShape: const RoundSliderThumbShape(
+                                    enabledThumbRadius: 1.0,
+                                  ),
+                                  overlayColor: Colors.transparent,
+                                  overlayShape: const RoundSliderOverlayShape(
+                                    overlayRadius: 2.0,
+                                  ),
+                                ),
+                                child: Slider(
+                                  inactiveColor: Colors.transparent,
+                                  // activeColor: Colors.white,
+                                  value: position.inSeconds.toDouble(),
+                                  max: mediaItem.duration!.inSeconds.toDouble(),
+                                  onChanged: (newPosition) {
+                                    audioHandler.seek(
+                                      Duration(
+                                        seconds: newPosition.round(),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              );
+                  },
+                ),
+                builder: (BuildContext context, Box box1, Widget? child) {
+                  final bool useDense = box1.get(
                     'useDenseMini',
                     defaultValue: false,
                   ) as bool;
@@ -143,57 +185,7 @@ class _MiniPlayerState extends State<MiniPlayer> {
                               buttons: preferredMiniButtons,
                             ),
                           ),
-                          StreamBuilder<Duration>(
-                            stream: AudioService.position,
-                            builder: (context, snapshot) {
-                              final position = snapshot.data;
-                              return position == null
-                                  ? const SizedBox()
-                                  : (position.inSeconds.toDouble() < 0.0 ||
-                                          (position.inSeconds.toDouble() >
-                                              mediaItem.duration!.inSeconds
-                                                  .toDouble()))
-                                      ? const SizedBox()
-                                      : SliderTheme(
-                                          data:
-                                              SliderTheme.of(context).copyWith(
-                                            activeTrackColor: Theme.of(context)
-                                                .colorScheme
-                                                .secondary,
-                                            inactiveTrackColor:
-                                                Colors.transparent,
-                                            trackHeight: 0.5,
-                                            thumbColor: Theme.of(context)
-                                                .colorScheme
-                                                .secondary,
-                                            thumbShape:
-                                                const RoundSliderThumbShape(
-                                              enabledThumbRadius: 1.0,
-                                            ),
-                                            overlayColor: Colors.transparent,
-                                            overlayShape:
-                                                const RoundSliderOverlayShape(
-                                              overlayRadius: 2.0,
-                                            ),
-                                          ),
-                                          child: Slider(
-                                            inactiveColor: Colors.transparent,
-                                            // activeColor: Colors.white,
-                                            value:
-                                                position.inSeconds.toDouble(),
-                                            max: mediaItem.duration!.inSeconds
-                                                .toDouble(),
-                                            onChanged: (newPosition) {
-                                              audioHandler.seek(
-                                                Duration(
-                                                  seconds: newPosition.round(),
-                                                ),
-                                              );
-                                            },
-                                          ),
-                                        );
-                            },
-                          ),
+                          child!,
                         ],
                       ),
                     ),

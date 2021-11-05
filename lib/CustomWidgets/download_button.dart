@@ -70,6 +70,22 @@ class _DownloadButtonState extends State<DownloadButton> {
                         Center(
                           child: ValueListenableBuilder(
                             valueListenable: showStopButton,
+                            child: Center(
+                              child: IconButton(
+                                icon: const Icon(
+                                  Icons.close_rounded,
+                                ),
+                                iconSize: 25.0,
+                                color: Theme.of(context).iconTheme.color,
+                                tooltip: AppLocalizations.of(
+                                  context,
+                                )!
+                                    .stopDown,
+                                onPressed: () {
+                                  down.download = false;
+                                },
+                              ),
+                            ),
                             builder: (
                               BuildContext context,
                               bool showValue,
@@ -92,23 +108,7 @@ class _DownloadButtonState extends State<DownloadButton> {
                                     ),
                                     Visibility(
                                       visible: showValue,
-                                      child: Center(
-                                        child: IconButton(
-                                          icon: const Icon(
-                                            Icons.close_rounded,
-                                          ),
-                                          iconSize: 25.0,
-                                          color:
-                                              Theme.of(context).iconTheme.color,
-                                          tooltip: AppLocalizations.of(
-                                            context,
-                                          )!
-                                              .stopDown,
-                                          onPressed: () {
-                                            down.download = false;
-                                          },
-                                        ),
-                                      ),
+                                      child: child!,
                                     ),
                                   ],
                                 ),

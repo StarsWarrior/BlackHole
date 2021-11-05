@@ -2757,8 +2757,9 @@ class _SettingPageState extends State<SettingPage> {
                                 .restoreSub,
                           ),
                           dense: true,
-                          onTap: () {
-                            BackupNRestore().restore(context);
+                          onTap: () async {
+                            await BackupNRestore().restore(context);
+                            currentTheme.refresh();
                           },
                         ),
                         BoxSwitchTile(

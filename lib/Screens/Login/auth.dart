@@ -1,4 +1,6 @@
 import 'package:blackhole/CustomWidgets/gradient_containers.dart';
+import 'package:blackhole/Helpers/backup_restore.dart';
+import 'package:blackhole/Helpers/config.dart';
 import 'package:blackhole/Helpers/supabase.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -84,9 +86,20 @@ class _AuthScreenState extends State<AuthScreen> {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       TextButton(
-                        onPressed: () {
-                          _addUserData(AppLocalizations.of(context)!.guest);
-                          Hive.box('settings').put('auth', 'done');
+                        onPressed: () async {
+                          await BackupNRestore().restore(context);
+                          currentTheme.refresh();
+                          Navigator.popAndPushNamed(context, '/');
+                        },
+                        child: Text(
+                          AppLocalizations.of(context)!.restore,
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () async {
+                          await _addUserData(
+                            AppLocalizations.of(context)!.guest,
+                          );
                           Navigator.popAndPushNamed(context, '/pref');
                         },
                         child: Text(
@@ -193,15 +206,14 @@ class _AuthScreenState extends State<AuthScreen> {
                                         color: Colors.white60,
                                       ),
                                     ),
-                                    onSubmitted: (String value) {
+                                    onSubmitted: (String value) async {
                                       if (value.trim() == '') {
-                                        _addUserData(
+                                        await _addUserData(
                                           AppLocalizations.of(context)!.guest,
                                         );
                                       } else {
-                                        _addUserData(value.trim());
+                                        await _addUserData(value.trim());
                                       }
-                                      Hive.box('settings').put('auth', 'done');
                                       Navigator.popAndPushNamed(
                                         context,
                                         '/pref',
@@ -210,13 +222,14 @@ class _AuthScreenState extends State<AuthScreen> {
                                   ),
                                 ),
                                 GestureDetector(
-                                  onTap: () {
+                                  onTap: () async {
                                     if (controller.text.trim() == '') {
-                                      _addUserData('Guest');
+                                      await _addUserData('Guest');
                                     } else {
-                                      _addUserData(controller.text.trim());
+                                      await _addUserData(
+                                        controller.text.trim(),
+                                      );
                                     }
-                                    Hive.box('settings').put('auth', 'done');
                                     Navigator.popAndPushNamed(context, '/pref');
                                   },
                                   child: Container(

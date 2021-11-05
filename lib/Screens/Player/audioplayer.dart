@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:blackhole/CustomWidgets/add_playlist.dart';
+import 'package:blackhole/CustomWidgets/animated_text.dart';
 import 'package:blackhole/CustomWidgets/download_button.dart';
 import 'package:blackhole/CustomWidgets/empty_screen.dart';
 import 'package:blackhole/CustomWidgets/equalizer.dart';
@@ -299,6 +300,396 @@ class _PlayScreenState extends State<PlayScreen> {
                 );
           return ValueListenableBuilder(
             valueListenable: gradientColor,
+            child: SafeArea(
+              child: Scaffold(
+                backgroundColor: Colors.transparent,
+                appBar: AppBar(
+                  elevation: 0,
+                  backgroundColor: Colors.transparent,
+                  centerTitle: true,
+                  leading: IconButton(
+                    icon: const Icon(Icons.expand_more_rounded),
+                    tooltip: AppLocalizations.of(context)!.back,
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                  actions: [
+                    IconButton(
+                      icon: Image.asset(
+                        'assets/lyrics.png',
+                      ),
+                      tooltip: AppLocalizations.of(context)!.lyrics,
+                      onPressed: () => cardKey.currentState!.toggleCard(),
+                    ),
+                    if (!offline)
+                      IconButton(
+                        icon: const Icon(Icons.share_rounded),
+                        tooltip: AppLocalizations.of(context)!.share,
+                        onPressed: () {
+                          Share.share(
+                            mediaItem.extras!['perma_url'].toString(),
+                          );
+                        },
+                      ),
+                    PopupMenuButton(
+                      icon: const Icon(
+                        Icons.more_vert_rounded,
+                      ),
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(15.0),
+                        ),
+                      ),
+                      onSelected: (int? value) {
+                        if (value == 10) {
+                          final Map details =
+                              MediaItemConverter().mediaItemtoMap(mediaItem);
+                          PopupDialog().showPopup(
+                            context: context,
+                            child: SingleChildScrollView(
+                              physics: const BouncingScrollPhysics(),
+                              padding: const EdgeInsets.all(25.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: details.keys.map((e) {
+                                  return RichText(
+                                    text: TextSpan(
+                                      text: format(
+                                        e.toString(),
+                                      ),
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        color: Theme.of(context)
+                                            .textTheme
+                                            .bodyText1!
+                                            .color,
+                                      ),
+                                      children: <TextSpan>[
+                                        TextSpan(
+                                          text: details[e].toString(),
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.normal,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                }).toList(),
+                              ),
+                            ),
+                          );
+                        }
+                        if (value == 5) {
+                          Navigator.push(
+                            context,
+                            PageRouteBuilder(
+                              opaque: false,
+                              pageBuilder: (_, __, ___) => SongsListPage(
+                                listItem: {
+                                  'type': 'album',
+                                  'id': mediaItem.extras?['album_id'],
+                                  'title': mediaItem.album,
+                                  'image': mediaItem.artUri,
+                                },
+                              ),
+                            ),
+                          );
+                        }
+                        if (value == 4) {
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return const Equalizer();
+                            },
+                          );
+                        }
+                        if (value == 3) {
+                          launch(
+                            fromYT
+                                ? 'https://youtube.com/watch?v=${mediaItem.id}'
+                                : 'https://www.youtube.com/results?search_query=${mediaItem.title} by ${mediaItem.artist}',
+                          );
+                        }
+                        if (value == 1) {
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return SimpleDialog(
+                                title: Text(
+                                  AppLocalizations.of(context)!.sleepTimer,
+                                  style: TextStyle(
+                                    color:
+                                        Theme.of(context).colorScheme.secondary,
+                                  ),
+                                ),
+                                contentPadding: const EdgeInsets.all(10.0),
+                                children: [
+                                  ListTile(
+                                    title: Text(
+                                      AppLocalizations.of(context)!.sleepDur,
+                                    ),
+                                    subtitle: Text(
+                                      AppLocalizations.of(context)!.sleepDurSub,
+                                    ),
+                                    dense: true,
+                                    onTap: () {
+                                      Navigator.pop(context);
+                                      setTimer(
+                                        context,
+                                        scaffoldContext,
+                                      );
+                                    },
+                                  ),
+                                  ListTile(
+                                    title: Text(
+                                      AppLocalizations.of(context)!.sleepAfter,
+                                    ),
+                                    subtitle: Text(
+                                      AppLocalizations.of(context)!
+                                          .sleepAfterSub,
+                                    ),
+                                    dense: true,
+                                    onTap: () {
+                                      Navigator.pop(context);
+                                      setCounter(scaffoldContext!);
+                                    },
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        }
+                        if (value == 0) {
+                          AddToPlaylist().addToPlaylist(context, mediaItem);
+                        }
+                      },
+                      itemBuilder: (context) => offline
+                          ? [
+                              if (mediaItem.extras?['album_id'] != null)
+                                PopupMenuItem(
+                                  value: 5,
+                                  child: Row(
+                                    children: [
+                                      const Icon(
+                                        Icons.album_rounded,
+                                      ),
+                                      const SizedBox(width: 10.0),
+                                      Text(
+                                        AppLocalizations.of(context)!.viewAlbum,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              PopupMenuItem(
+                                value: 1,
+                                child: Row(
+                                  children: [
+                                    const Icon(
+                                      CupertinoIcons.timer,
+                                    ),
+                                    const SizedBox(width: 10.0),
+                                    Text(
+                                      AppLocalizations.of(context)!.sleepTimer,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              if (Hive.box('settings').get(
+                                'supportEq',
+                                defaultValue: true,
+                              ) as bool)
+                                PopupMenuItem(
+                                  value: 4,
+                                  child: Row(
+                                    children: [
+                                      const Icon(
+                                        Icons.equalizer_rounded,
+                                      ),
+                                      const SizedBox(width: 10.0),
+                                      Text(
+                                        AppLocalizations.of(context)!.equalizer,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              PopupMenuItem(
+                                value: 10,
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.info_rounded,
+                                      color: Theme.of(context).iconTheme.color,
+                                    ),
+                                    const SizedBox(width: 10.0),
+                                    Text(
+                                      AppLocalizations.of(context)!.songInfo,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ]
+                          : [
+                              if (mediaItem.extras?['album_id'] != null)
+                                PopupMenuItem(
+                                  value: 5,
+                                  child: Row(
+                                    children: [
+                                      const Icon(
+                                        Icons.album_rounded,
+                                      ),
+                                      const SizedBox(width: 10.0),
+                                      Text(
+                                        AppLocalizations.of(context)!.viewAlbum,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              PopupMenuItem(
+                                value: 0,
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.playlist_add_rounded,
+                                      color: Theme.of(context).iconTheme.color,
+                                    ),
+                                    const SizedBox(width: 10.0),
+                                    Text(
+                                      AppLocalizations.of(context)!
+                                          .addToPlaylist,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              PopupMenuItem(
+                                value: 1,
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      CupertinoIcons.timer,
+                                      color: Theme.of(context).iconTheme.color,
+                                    ),
+                                    const SizedBox(width: 10.0),
+                                    Text(
+                                      AppLocalizations.of(context)!.sleepTimer,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              if (Hive.box('settings').get(
+                                'supportEq',
+                                defaultValue: true,
+                              ) as bool)
+                                PopupMenuItem(
+                                  value: 4,
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        Icons.equalizer_rounded,
+                                        color:
+                                            Theme.of(context).iconTheme.color,
+                                      ),
+                                      const SizedBox(width: 10.0),
+                                      Text(
+                                        AppLocalizations.of(context)!.equalizer,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              PopupMenuItem(
+                                value: 3,
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      MdiIcons.youtube,
+                                      color: Theme.of(context).iconTheme.color,
+                                    ),
+                                    const SizedBox(width: 10.0),
+                                    Text(
+                                      fromYT
+                                          ? AppLocalizations.of(
+                                              context,
+                                            )!
+                                              .watchVideo
+                                          : AppLocalizations.of(
+                                              context,
+                                            )!
+                                              .searchVideo,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              PopupMenuItem(
+                                value: 10,
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.info_rounded,
+                                      color: Theme.of(context).iconTheme.color,
+                                    ),
+                                    const SizedBox(width: 10.0),
+                                    Text(
+                                      AppLocalizations.of(context)!.songInfo,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                    )
+                  ],
+                ),
+                body: LayoutBuilder(
+                  builder: (
+                    BuildContext context,
+                    BoxConstraints constraints,
+                  ) {
+                    if (constraints.maxWidth > constraints.maxHeight) {
+                      return Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          // Artwork
+                          ArtWorkWidget(
+                            cardKey,
+                            mediaItem,
+                            constraints.maxHeight / 0.9,
+                            offline: offline,
+                          ),
+
+                          // title and controls
+                          SizedBox(
+                            width: constraints.maxWidth / 2,
+                            child: NameNControls(
+                              mediaItem,
+                              offline: offline,
+                            ),
+                          ),
+                        ],
+                      );
+                    }
+                    return Column(
+                      children: [
+                        // Artwork
+                        ArtWorkWidget(
+                          cardKey,
+                          mediaItem,
+                          constraints.maxWidth,
+                          offline: offline,
+                        ),
+
+                        // title and controls
+                        Expanded(
+                          child: NameNControls(
+                            mediaItem,
+                            offline: offline,
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+                // }
+              ),
+            ),
             builder: (BuildContext context, Color? value, Widget? child) {
               return AnimatedContainer(
                 duration: const Duration(milliseconds: 600),
@@ -328,422 +719,7 @@ class _PlayScreenState extends State<PlayScreen> {
                               ],
                   ),
                 ),
-                child: SafeArea(
-                  child: Scaffold(
-                    backgroundColor: Colors.transparent,
-                    appBar: AppBar(
-                      elevation: 0,
-                      backgroundColor: Colors.transparent,
-                      centerTitle: true,
-                      leading: IconButton(
-                        icon: const Icon(Icons.expand_more_rounded),
-                        tooltip: AppLocalizations.of(context)!.back,
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                      ),
-                      actions: [
-                        IconButton(
-                          icon: Image.asset(
-                            'assets/lyrics.png',
-                          ),
-                          tooltip: AppLocalizations.of(context)!.lyrics,
-                          onPressed: () => cardKey.currentState!.toggleCard(),
-                        ),
-                        if (!offline)
-                          IconButton(
-                            icon: const Icon(Icons.share_rounded),
-                            tooltip: AppLocalizations.of(context)!.share,
-                            onPressed: () {
-                              Share.share(
-                                mediaItem.extras!['perma_url'].toString(),
-                              );
-                            },
-                          ),
-                        PopupMenuButton(
-                          icon: const Icon(
-                            Icons.more_vert_rounded,
-                          ),
-                          shape: const RoundedRectangleBorder(
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(15.0),
-                            ),
-                          ),
-                          onSelected: (int? value) {
-                            if (value == 10) {
-                              final Map details = MediaItemConverter()
-                                  .mediaItemtoMap(mediaItem);
-                              PopupDialog().showPopup(
-                                context: context,
-                                child: SingleChildScrollView(
-                                  physics: const BouncingScrollPhysics(),
-                                  padding: const EdgeInsets.all(25.0),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: details.keys.map((e) {
-                                      return RichText(
-                                        text: TextSpan(
-                                          text: format(
-                                            e.toString(),
-                                          ),
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.w600,
-                                            color: Theme.of(context)
-                                                .textTheme
-                                                .bodyText1!
-                                                .color,
-                                          ),
-                                          children: <TextSpan>[
-                                            TextSpan(
-                                              text: details[e].toString(),
-                                              style: const TextStyle(
-                                                fontWeight: FontWeight.normal,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      );
-                                    }).toList(),
-                                  ),
-                                ),
-                              );
-                            }
-                            if (value == 5) {
-                              Navigator.push(
-                                context,
-                                PageRouteBuilder(
-                                  opaque: false,
-                                  pageBuilder: (_, __, ___) => SongsListPage(
-                                    listItem: {
-                                      'type': 'album',
-                                      'id': mediaItem.extras?['album_id'],
-                                      'title': mediaItem.album,
-                                      'image': mediaItem.artUri,
-                                    },
-                                  ),
-                                ),
-                              );
-                            }
-                            if (value == 4) {
-                              showDialog(
-                                context: context,
-                                builder: (context) {
-                                  return const Equalizer();
-                                },
-                              );
-                            }
-                            if (value == 3) {
-                              launch(
-                                fromYT
-                                    ? 'https://youtube.com/watch?v=${mediaItem.id}'
-                                    : 'https://www.youtube.com/results?search_query=${mediaItem.title} by ${mediaItem.artist}',
-                              );
-                            }
-                            if (value == 1) {
-                              showDialog(
-                                context: context,
-                                builder: (context) {
-                                  return SimpleDialog(
-                                    title: Text(
-                                      AppLocalizations.of(context)!.sleepTimer,
-                                      style: TextStyle(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .secondary,
-                                      ),
-                                    ),
-                                    contentPadding: const EdgeInsets.all(10.0),
-                                    children: [
-                                      ListTile(
-                                        title: Text(
-                                          AppLocalizations.of(context)!
-                                              .sleepDur,
-                                        ),
-                                        subtitle: Text(
-                                          AppLocalizations.of(context)!
-                                              .sleepDurSub,
-                                        ),
-                                        dense: true,
-                                        onTap: () {
-                                          Navigator.pop(context);
-                                          setTimer(
-                                            context,
-                                            scaffoldContext,
-                                          );
-                                        },
-                                      ),
-                                      ListTile(
-                                        title: Text(
-                                          AppLocalizations.of(context)!
-                                              .sleepAfter,
-                                        ),
-                                        subtitle: Text(
-                                          AppLocalizations.of(context)!
-                                              .sleepAfterSub,
-                                        ),
-                                        dense: true,
-                                        onTap: () {
-                                          Navigator.pop(context);
-                                          setCounter(scaffoldContext!);
-                                        },
-                                      ),
-                                    ],
-                                  );
-                                },
-                              );
-                            }
-                            if (value == 0) {
-                              AddToPlaylist().addToPlaylist(context, mediaItem);
-                            }
-                          },
-                          itemBuilder: (context) => offline
-                              ? [
-                                  if (mediaItem.extras?['album_id'] != null)
-                                    PopupMenuItem(
-                                      value: 5,
-                                      child: Row(
-                                        children: [
-                                          const Icon(
-                                            Icons.album_rounded,
-                                          ),
-                                          const SizedBox(width: 10.0),
-                                          Text(
-                                            AppLocalizations.of(context)!
-                                                .viewAlbum,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  PopupMenuItem(
-                                    value: 1,
-                                    child: Row(
-                                      children: [
-                                        const Icon(
-                                          CupertinoIcons.timer,
-                                        ),
-                                        const SizedBox(width: 10.0),
-                                        Text(
-                                          AppLocalizations.of(context)!
-                                              .sleepTimer,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  if (Hive.box('settings').get(
-                                    'supportEq',
-                                    defaultValue: true,
-                                  ) as bool)
-                                    PopupMenuItem(
-                                      value: 4,
-                                      child: Row(
-                                        children: [
-                                          const Icon(
-                                            Icons.equalizer_rounded,
-                                          ),
-                                          const SizedBox(width: 10.0),
-                                          Text(
-                                            AppLocalizations.of(context)!
-                                                .equalizer,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  PopupMenuItem(
-                                    value: 10,
-                                    child: Row(
-                                      children: [
-                                        Icon(
-                                          Icons.info_rounded,
-                                          color:
-                                              Theme.of(context).iconTheme.color,
-                                        ),
-                                        const SizedBox(width: 10.0),
-                                        Text(
-                                          AppLocalizations.of(context)!
-                                              .songInfo,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ]
-                              : [
-                                  if (mediaItem.extras?['album_id'] != null)
-                                    PopupMenuItem(
-                                      value: 5,
-                                      child: Row(
-                                        children: [
-                                          const Icon(
-                                            Icons.album_rounded,
-                                          ),
-                                          const SizedBox(width: 10.0),
-                                          Text(
-                                            AppLocalizations.of(context)!
-                                                .viewAlbum,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  PopupMenuItem(
-                                    value: 0,
-                                    child: Row(
-                                      children: [
-                                        Icon(
-                                          Icons.playlist_add_rounded,
-                                          color:
-                                              Theme.of(context).iconTheme.color,
-                                        ),
-                                        const SizedBox(width: 10.0),
-                                        Text(
-                                          AppLocalizations.of(context)!
-                                              .addToPlaylist,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  PopupMenuItem(
-                                    value: 1,
-                                    child: Row(
-                                      children: [
-                                        Icon(
-                                          CupertinoIcons.timer,
-                                          color:
-                                              Theme.of(context).iconTheme.color,
-                                        ),
-                                        const SizedBox(width: 10.0),
-                                        Text(
-                                          AppLocalizations.of(context)!
-                                              .sleepTimer,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  if (Hive.box('settings').get(
-                                    'supportEq',
-                                    defaultValue: true,
-                                  ) as bool)
-                                    PopupMenuItem(
-                                      value: 4,
-                                      child: Row(
-                                        children: [
-                                          Icon(
-                                            Icons.equalizer_rounded,
-                                            color: Theme.of(context)
-                                                .iconTheme
-                                                .color,
-                                          ),
-                                          const SizedBox(width: 10.0),
-                                          Text(
-                                            AppLocalizations.of(context)!
-                                                .equalizer,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  PopupMenuItem(
-                                    value: 3,
-                                    child: Row(
-                                      children: [
-                                        Icon(
-                                          MdiIcons.youtube,
-                                          color:
-                                              Theme.of(context).iconTheme.color,
-                                        ),
-                                        const SizedBox(width: 10.0),
-                                        Text(
-                                          fromYT
-                                              ? AppLocalizations.of(
-                                                  context,
-                                                )!
-                                                  .watchVideo
-                                              : AppLocalizations.of(
-                                                  context,
-                                                )!
-                                                  .searchVideo,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  PopupMenuItem(
-                                    value: 10,
-                                    child: Row(
-                                      children: [
-                                        Icon(
-                                          Icons.info_rounded,
-                                          color:
-                                              Theme.of(context).iconTheme.color,
-                                        ),
-                                        const SizedBox(width: 10.0),
-                                        Text(
-                                          AppLocalizations.of(context)!
-                                              .songInfo,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                        )
-                      ],
-                    ),
-                    body: Builder(
-                      builder: (BuildContext context) {
-                        scaffoldContext = context;
-                        return LayoutBuilder(
-                          builder: (
-                            BuildContext context,
-                            BoxConstraints constraints,
-                          ) {
-                            if (constraints.maxWidth > constraints.maxHeight) {
-                              return Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  // Artwork
-                                  ArtWorkWidget(
-                                    cardKey,
-                                    mediaItem,
-                                    constraints.maxHeight / 0.9,
-                                    offline: offline,
-                                  ),
-
-                                  // title and controls
-                                  SizedBox(
-                                    width: constraints.maxWidth / 2,
-                                    child: NameNControls(
-                                      mediaItem,
-                                      offline: offline,
-                                    ),
-                                  ),
-                                ],
-                              );
-                            }
-                            return Column(
-                              children: [
-                                // Artwork
-                                ArtWorkWidget(
-                                  cardKey,
-                                  mediaItem,
-                                  constraints.maxWidth,
-                                  offline: offline,
-                                ),
-
-                                // title and controls
-                                Expanded(
-                                  child: NameNControls(
-                                    mediaItem,
-                                    offline: offline,
-                                  ),
-                                ),
-                              ],
-                            );
-                          },
-                        );
-                      },
-                    ),
-
-                    // }
-                  ),
-                ),
+                child: child,
               );
             },
           );
@@ -1415,6 +1391,7 @@ class _ArtWorkWidgetState extends State<ArtWorkWidget> {
                           ),
                           child: ValueListenableBuilder(
                             valueListenable: done,
+                            child: const CircularProgressIndicator(),
                             builder: (
                               BuildContext context,
                               bool value,
@@ -1438,7 +1415,7 @@ class _ArtWorkWidgetState extends State<ArtWorkWidget> {
                                           lyrics['lyrics'].toString(),
                                           textAlign: TextAlign.center,
                                         )
-                                  : const CircularProgressIndicator();
+                                  : child!;
                             },
                           ),
                         ),
@@ -1579,6 +1556,78 @@ class _ArtWorkWidgetState extends State<ArtWorkWidget> {
                         ),
                         ValueListenableBuilder(
                           valueListenable: dragging,
+                          child: StreamBuilder<double>(
+                            stream: audioHandler.volume,
+                            builder: (context, snapshot) {
+                              final double volumeValue = snapshot.data ?? 1.0;
+                              return Center(
+                                child: SizedBox(
+                                  width: 60.0,
+                                  height:
+                                      MediaQuery.of(context).size.width * 0.7,
+                                  child: Card(
+                                    color: Colors.black87,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                    ),
+                                    clipBehavior: Clip.antiAlias,
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Expanded(
+                                          child: FittedBox(
+                                            fit: BoxFit.fitHeight,
+                                            child: RotatedBox(
+                                              quarterTurns: -1,
+                                              child: SliderTheme(
+                                                data: SliderTheme.of(context)
+                                                    .copyWith(
+                                                  thumbShape:
+                                                      HiddenThumbComponentShape(),
+                                                  activeTrackColor:
+                                                      Theme.of(context)
+                                                          .colorScheme
+                                                          .secondary,
+                                                  inactiveTrackColor:
+                                                      Theme.of(context)
+                                                          .colorScheme
+                                                          .secondary
+                                                          .withOpacity(0.4),
+                                                  trackShape:
+                                                      const RoundedRectSliderTrackShape(),
+                                                ),
+                                                child: ExcludeSemantics(
+                                                  child: Slider(
+                                                    value: audioHandler
+                                                        .volume.value,
+                                                    onChanged: (_) {},
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.only(
+                                            bottom: 20.0,
+                                          ),
+                                          child: Icon(
+                                            volumeValue == 0
+                                                ? Icons.volume_off_rounded
+                                                : volumeValue > 0.6
+                                                    ? Icons.volume_up_rounded
+                                                    : Icons.volume_down_rounded,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
                           builder: (
                             BuildContext context,
                             bool value,
@@ -1586,84 +1635,7 @@ class _ArtWorkWidgetState extends State<ArtWorkWidget> {
                           ) {
                             return Visibility(
                               visible: value,
-                              child: StreamBuilder<double>(
-                                stream: audioHandler.volume,
-                                builder: (context, snapshot) {
-                                  final double volumeValue =
-                                      snapshot.data ?? 1.0;
-                                  return Center(
-                                    child: SizedBox(
-                                      width: 60.0,
-                                      height:
-                                          MediaQuery.of(context).size.width *
-                                              0.7,
-                                      child: Card(
-                                        color: Colors.black87,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(10.0),
-                                        ),
-                                        clipBehavior: Clip.antiAlias,
-                                        child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Expanded(
-                                              child: FittedBox(
-                                                fit: BoxFit.fitHeight,
-                                                child: RotatedBox(
-                                                  quarterTurns: -1,
-                                                  child: SliderTheme(
-                                                    data:
-                                                        SliderTheme.of(context)
-                                                            .copyWith(
-                                                      thumbShape:
-                                                          HiddenThumbComponentShape(),
-                                                      activeTrackColor:
-                                                          Theme.of(context)
-                                                              .colorScheme
-                                                              .secondary,
-                                                      inactiveTrackColor:
-                                                          Theme.of(context)
-                                                              .colorScheme
-                                                              .secondary
-                                                              .withOpacity(0.4),
-                                                      trackShape:
-                                                          const RoundedRectSliderTrackShape(),
-                                                    ),
-                                                    child: ExcludeSemantics(
-                                                      child: Slider(
-                                                        value: audioHandler
-                                                            .volume.value,
-                                                        onChanged: (_) {},
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                bottom: 20.0,
-                                              ),
-                                              child: Icon(
-                                                volumeValue == 0
-                                                    ? Icons.volume_off_rounded
-                                                    : volumeValue > 0.6
-                                                        ? Icons
-                                                            .volume_up_rounded
-                                                        : Icons
-                                                            .volume_down_rounded,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                },
-                              ),
+                              child: child!,
                             );
                           },
                         ),
@@ -1752,29 +1724,42 @@ class NameNControls extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     /// Title container
-                    Text(
-                      mediaItem.title.split(' (')[0].split('|')[0].trim(),
-                      textAlign: TextAlign.center,
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
-                      style: const TextStyle(
-                        fontSize: 30,
-                        fontWeight: FontWeight.bold,
-                        // color: Theme.of(context).accentColor,
+                    SizedBox(
+                      height: (35.0) * MediaQuery.of(context).textScaleFactor,
+                      child: AnimatedText(
+                        text:
+                            mediaItem.title.split(' (')[0].split('|')[0].trim(),
+                        pauseAfterRound: const Duration(seconds: 4),
+                        showFadingOnlyWhenScrolling: false,
+                        fadingEdgeEndFraction: 0.1,
+                        fadingEdgeStartFraction: 0.1,
+                        startAfter: const Duration(seconds: 2),
+                        style: const TextStyle(
+                          fontSize: 30,
+                          fontWeight: FontWeight.bold,
+                          // color: Theme.of(context).accentColor,
+                        ),
                       ),
                     ),
 
                     const SizedBox(height: 3.0),
 
                     /// Subtitle container
-                    Text(
-                      '${mediaItem.artist ?? "Unknown"} • ${mediaItem.album ?? "Unknown"}',
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w400,
+                    SizedBox(
+                      height: (18.0) * MediaQuery.of(context).textScaleFactor,
+                      child: AnimatedText(
+                        text:
+                            '${mediaItem.artist ?? "Unknown"} • ${mediaItem.album ?? "Unknown"}',
+                        pauseAfterRound: const Duration(seconds: 5),
+                        showFadingOnlyWhenScrolling: false,
+                        fadingEdgeEndFraction: 0.1,
+                        fadingEdgeStartFraction: 0.1,
+                        startAfter: const Duration(seconds: 2),
+                        style: const TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w400,
+                        ),
                       ),
-                      overflow: TextOverflow.ellipsis,
                     ),
                   ],
                 ),

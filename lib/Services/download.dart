@@ -134,7 +134,7 @@ class Download with ChangeNotifier {
                       valueListenable: remember,
                       builder: (
                         BuildContext context,
-                        bool value,
+                        bool rememberValue,
                         Widget? child,
                       ) {
                         return Row(
@@ -142,7 +142,7 @@ class Download with ChangeNotifier {
                             Checkbox(
                               activeColor:
                                   Theme.of(context).colorScheme.secondary,
-                              value: remember.value,
+                              value: rememberValue,
                               onChanged: (bool? value) {
                                 remember.value = value ?? false;
                               },

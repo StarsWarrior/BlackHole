@@ -181,13 +181,15 @@ class _HomePageState extends State<HomePage> {
             )!
                 .playlists: playlistNames,
           };
-          ExtStorageProvider.getExtStorage(dirName: 'BlackHole').then((value) {
+          ExtStorageProvider.getExtStorage(dirName: 'BlackHole/Backups')
+              .then((value) {
             BackupNRestore().createBackup(
               context,
               checked,
               boxNames,
               path: value,
               fileName: 'BlackHole_AutoBackup',
+              showDialog: false,
             );
           });
         }
@@ -506,7 +508,7 @@ class _HomePageState extends State<HomePage> {
                                                       builder: (
                                                         BuildContext context,
                                                         Box box,
-                                                        widget,
+                                                        Widget? child,
                                                       ) {
                                                         return Text(
                                                           (box.get('name') ==

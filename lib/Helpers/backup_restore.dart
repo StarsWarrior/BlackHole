@@ -16,6 +16,7 @@ class BackupNRestore {
     Map<String, List> boxNameData, {
     String? path,
     String? fileName,
+    bool showDialog = true,
   }) async {
     if (!Platform.isWindows) {
       PermissionStatus status = await Permission.storage.status;
@@ -34,39 +35,57 @@ class BackupNRestore {
           AppLocalizations.of(context)!.selectBackLocation,
         );
     if (savePath.trim() != '') {
-      final saveDir = Directory(savePath);
-      final List<File> files = [];
-      final List boxNames = [];
+      try {
+        final saveDir = Directory(savePath);
+        final List<File> files = [];
+        final List boxNames = [];
 
-      for (int i = 0; i < items.length; i++) {
-        boxNames.addAll(boxNameData[items[i]]!);
+        for (int i = 0; i < items.length; i++) {
+          boxNames.addAll(boxNameData[items[i]]!);
+        }
+
+        for (int i = 0; i < boxNames.length; i++) {
+          await Hive.openBox(boxNames[i].toString());
+          try {
+            await File(Hive.box(boxNames[i].toString()).path!)
+                .copy('$savePath/${boxNames[i]}.hive');
+          } catch (e) {
+            await [
+              Permission.manageExternalStorage,
+            ].request();
+            await File(Hive.box(boxNames[i].toString()).path!)
+                .copy('$savePath/${boxNames[i]}.hive');
+          }
+
+          files.add(File('$savePath/${boxNames[i]}.hive'));
+        }
+
+        final now = DateTime.now();
+        final String time =
+            '${now.hour}${now.minute}_${now.day}${now.month}${now.year}';
+        final zipFile =
+            File('$savePath/${fileName ?? "BlackHole_Backup_$time"}.zip');
+
+        await ZipFile.createFromFiles(
+          sourceDir: saveDir,
+          files: files,
+          zipFile: zipFile,
+        );
+        for (int i = 0; i < files.length; i++) {
+          files[i].delete();
+        }
+        if (showDialog) {
+          ShowSnackBar().showSnackBar(
+            context,
+            AppLocalizations.of(context)!.backupSuccess,
+          );
+        }
+      } catch (e) {
+        ShowSnackBar().showSnackBar(
+          context,
+          AppLocalizations.of(context)!.failedCreateBackup,
+        );
       }
-
-      for (int i = 0; i < boxNames.length; i++) {
-        await Hive.openBox(boxNames[i].toString());
-
-        await File(Hive.box(boxNames[i].toString()).path!)
-            .copy('$savePath/${boxNames[i]}.hive');
-
-        files.add(File('$savePath/${boxNames[i]}.hive'));
-      }
-
-      final now = DateTime.now();
-      final String time =
-          '${now.hour}${now.minute}_${now.day}${now.month}${now.year}';
-      final zipFile =
-          File('$savePath/${fileName ?? "BlackHole_Backup_$time"}.zip');
-
-      await ZipFile.createFromFiles(
-        sourceDir: saveDir,
-        files: files,
-        zipFile: zipFile,
-      );
-      for (int i = 0; i < files.length; i++) {
-        files[i].delete();
-      }
-      ShowSnackBar()
-          .showSnackBar(context, AppLocalizations.of(context)!.backupSuccess);
     } else {
       ShowSnackBar().showSnackBar(
         context,
@@ -88,7 +107,7 @@ class BackupNRestore {
     final Directory destinationDir = Directory('${tempDir.path}/restore');
 
     try {
-      ZipFile.extractToDirectory(
+      await ZipFile.extractToDirectory(
         zipFile: zipFile,
         destinationDir: destinationDir,
       );
@@ -103,7 +122,7 @@ class BackupNRestore {
         await box.close();
 
         try {
-          File(backupPath).copy(boxPath);
+          await File(backupPath).copy(boxPath);
         } finally {
           await Hive.openBox(boxName);
         }
