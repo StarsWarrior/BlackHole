@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:blackhole/CustomWidgets/copy_clipboard.dart';
 import 'package:blackhole/CustomWidgets/gradient_containers.dart';
 import 'package:blackhole/CustomWidgets/popup.dart';
 import 'package:blackhole/CustomWidgets/snackbar.dart';
@@ -2001,7 +2002,7 @@ class _SettingPageState extends State<SettingPage> {
                             ),
                           ),
                           onTap: () async {
-                            final String temp = await Picker().selectFolder(
+                            final String temp = await Picker.selectFolder(
                               context,
                               AppLocalizations.of(
                                 context,
@@ -2731,7 +2732,7 @@ class _SettingPageState extends State<SettingPage> {
                                                       .secondary,
                                                 ),
                                                 onPressed: () {
-                                                  BackupNRestore().createBackup(
+                                                  createBackup(
                                                     context,
                                                     checked,
                                                     boxNames,
@@ -2774,7 +2775,7 @@ class _SettingPageState extends State<SettingPage> {
                           ),
                           dense: true,
                           onTap: () async {
-                            await BackupNRestore().restore(context);
+                            await restore(context);
                             currentTheme.refresh();
                           },
                         ),
@@ -2842,6 +2843,15 @@ class _SettingPageState extends State<SettingPage> {
                                 .versionSub,
                           ),
                           onTap: () {
+                            ShowSnackBar().showSnackBar(
+                              context,
+                              AppLocalizations.of(
+                                context,
+                              )!
+                                  .checkingUpdate,
+                              noAction: true,
+                            );
+
                             SupaBase().getUpdate().then(
                               (Map value) {
                                 if (compareVersion(
@@ -2948,14 +2958,10 @@ class _SettingPageState extends State<SettingPage> {
                             launch(upiUrl);
                           },
                           onLongPress: () {
-                            Clipboard.setData(
-                              const ClipboardData(
-                                text: 'ankit.sangwan.5688@oksbi',
-                              ),
-                            );
-                            ShowSnackBar().showSnackBar(
-                              context,
-                              AppLocalizations.of(
+                            copyToClipboard(
+                              context: context,
+                              text: 'ankit.sangwan.5688@oksbi',
+                              displayText: AppLocalizations.of(
                                 context,
                               )!
                                   .upiCopied,
@@ -3298,7 +3304,7 @@ class SpotifyCountry {
       backgroundColor: Colors.transparent,
       context: context,
       builder: (BuildContext context) {
-        final Map<String, String> codes = CountryCodes().countryCodes;
+        const Map<String, String> codes = CountryCodes.countryCodes;
         final List<String> countries = codes.keys.toList();
         return BottomGradientContainer(
           borderRadius: BorderRadius.circular(

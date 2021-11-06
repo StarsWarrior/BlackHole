@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:blackhole/APIs/api.dart';
+import 'package:blackhole/CustomWidgets/copy_clipboard.dart';
 import 'package:blackhole/CustomWidgets/download_button.dart';
 import 'package:blackhole/CustomWidgets/empty_screen.dart';
 import 'package:blackhole/CustomWidgets/gradient_containers.dart';
@@ -61,7 +62,7 @@ class _ArtistSearchPageState extends State<ArtistSearchPage> {
                       ),
                     )
                   : data.isEmpty
-                      ? EmptyScreen().emptyScreen(
+                      ? emptyScreen(
                           context,
                           0,
                           ':( ',
@@ -111,6 +112,7 @@ class _ArtistSearchPageState extends State<ArtistSearchPage> {
                                     fit: BoxFit.cover,
                                     errorWidget: (context, _, __) =>
                                         const Image(
+                                      fit: BoxFit.cover,
                                       image: AssetImage('assets/artist.png'),
                                     ),
                                     imageUrl: widget.artistImage!
@@ -118,6 +120,7 @@ class _ArtistSearchPageState extends State<ArtistSearchPage> {
                                         .replaceAll('50x50', '500x500')
                                         .replaceAll('150x150', '500x500'),
                                     placeholder: (context, url) => const Image(
+                                      fit: BoxFit.cover,
                                       image: AssetImage('assets/artist.png'),
                                     ),
                                   ),
@@ -185,6 +188,13 @@ class _ArtistSearchPageState extends State<ArtistSearchPage> {
                                                     fontWeight: FontWeight.w500,
                                                   ),
                                                 ),
+                                                onLongPress: () {
+                                                  copyToClipboard(
+                                                    context: context,
+                                                    text:
+                                                        '${entry.value[index]["title"]}',
+                                                  );
+                                                },
                                                 subtitle: Text(
                                                   '${entry.value[index]["subtitle"]}',
                                                   overflow:
@@ -200,9 +210,11 @@ class _ArtistSearchPageState extends State<ArtistSearchPage> {
                                                   ),
                                                   clipBehavior: Clip.antiAlias,
                                                   child: CachedNetworkImage(
+                                                    fit: BoxFit.cover,
                                                     errorWidget:
                                                         (context, _, __) =>
                                                             Image(
+                                                      fit: BoxFit.cover,
                                                       image: AssetImage(
                                                         (entry.key ==
                                                                     'Top Songs' ||
@@ -216,6 +228,7 @@ class _ArtistSearchPageState extends State<ArtistSearchPage> {
                                                         '${entry.value[index]["image"].replaceAll('http:', 'https:')}',
                                                     placeholder:
                                                         (context, url) => Image(
+                                                      fit: BoxFit.cover,
                                                       image: AssetImage(
                                                         (entry.key ==
                                                                     'Top Songs' ||
@@ -267,17 +280,18 @@ class _ArtistSearchPageState extends State<ArtistSearchPage> {
                                                                   entry.key ==
                                                                       'Singles')
                                                               ? PlayScreen(
-                                                                  data: {
-                                                                    'response':
-                                                                        entry
-                                                                            .value,
-                                                                    'index':
-                                                                        index,
-                                                                    'offline':
-                                                                        false,
-                                                                  },
+                                                                  songsList:
+                                                                      entry
+                                                                          .value,
+                                                                  index: index,
+                                                                  offline:
+                                                                      false,
                                                                   fromMiniplayer:
                                                                       false,
+                                                                  fromDownloads:
+                                                                      false,
+                                                                  recommend:
+                                                                      true,
                                                                 )
                                                               : SongsListPage(
                                                                   listItem: entry

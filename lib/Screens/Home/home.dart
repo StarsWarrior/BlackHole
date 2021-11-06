@@ -183,7 +183,7 @@ class _HomePageState extends State<HomePage> {
           };
           ExtStorageProvider.getExtStorage(dirName: 'BlackHole/Backups')
               .then((value) {
-            BackupNRestore().createBackup(
+            createBackup(
               context,
               checked,
               boxNames,

@@ -168,6 +168,7 @@ class _YouTubeState extends State<YouTube>
                                       fit: BoxFit.cover,
                                       errorWidget: (context, _, __) =>
                                           const Image(
+                                        fit: BoxFit.cover,
                                         image: AssetImage(
                                           'assets/ytCover.png',
                                         ),
@@ -176,6 +177,7 @@ class _YouTubeState extends State<YouTube>
                                           headList[index]['image'].toString(),
                                       placeholder: (context, url) =>
                                           const Image(
+                                        fit: BoxFit.cover,
                                         image: AssetImage('assets/ytCover.png'),
                                       ),
                                     ),
@@ -292,6 +294,7 @@ class _YouTubeState extends State<YouTube>
                                               fit: BoxFit.cover,
                                               errorWidget: (context, _, __) =>
                                                   Image(
+                                                fit: BoxFit.cover,
                                                 image:
                                                     item['type'] != 'playlist'
                                                         ? const AssetImage(
@@ -305,6 +308,7 @@ class _YouTubeState extends State<YouTube>
                                                   item['image'].toString(),
                                               placeholder: (context, url) =>
                                                   Image(
+                                                fit: BoxFit.cover,
                                                 image:
                                                     item['type'] != 'playlist'
                                                         ? const AssetImage(

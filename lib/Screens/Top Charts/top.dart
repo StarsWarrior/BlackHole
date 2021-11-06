@@ -119,7 +119,7 @@ class _TopChartsState extends State<TopCharts>
                 valueListenable: Hive.box('settings').listenable(),
                 builder: (BuildContext context, Box box, Widget? widget) {
                   return TopPage(
-                    region: CountryCodes()
+                    region: CountryCodes
                         .countryCodes[box.get('region', defaultValue: 'India')]
                         .toString(),
                   );
@@ -238,7 +238,7 @@ class _TopPageState extends State<TopPage>
         if (showList.length <= 50)
           Expanded(
             child: isListEmpty
-                ? EmptyScreen().emptyScreen(
+                ? emptyScreen(
                     context,
                     0,
                     ':( ',
@@ -280,11 +280,14 @@ class _TopPageState extends State<TopPage>
                         ),
                         if (showList[index]['image'] != '')
                           CachedNetworkImage(
+                            fit: BoxFit.cover,
                             imageUrl: showList[index]['image'].toString(),
                             errorWidget: (context, _, __) => const Image(
+                              fit: BoxFit.cover,
                               image: AssetImage('assets/cover.jpg'),
                             ),
                             placeholder: (context, url) => const Image(
+                              fit: BoxFit.cover,
                               image: AssetImage('assets/cover.jpg'),
                             ),
                           ),

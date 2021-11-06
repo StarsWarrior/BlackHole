@@ -376,8 +376,8 @@ class _PrefScreenState extends State<PrefScreen> {
                                       backgroundColor: Colors.transparent,
                                       context: context,
                                       builder: (BuildContext context) {
-                                        final Map<String, String> codes =
-                                            CountryCodes().countryCodes;
+                                        const Map<String, String> codes =
+                                            CountryCodes.countryCodes;
                                         final List<String> countries =
                                             codes.keys.toList();
                                         return BottomGradientContainer(

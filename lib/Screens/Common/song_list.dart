@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:blackhole/APIs/api.dart';
+import 'package:blackhole/CustomWidgets/copy_clipboard.dart';
 import 'package:blackhole/CustomWidgets/download_button.dart';
 import 'package:blackhole/CustomWidgets/empty_screen.dart';
 import 'package:blackhole/CustomWidgets/gradient_containers.dart';
@@ -89,7 +90,7 @@ class _SongsListPageState extends State<SongsListPage> {
                       ),
                     )
                   : songList.isEmpty
-                      ? EmptyScreen().emptyScreen(
+                      ? emptyScreen(
                           context,
                           0,
                           ':( ',
@@ -175,6 +176,7 @@ class _SongsListPageState extends State<SongsListPage> {
                                           fit: BoxFit.cover,
                                           errorWidget: (context, _, __) =>
                                               const Image(
+                                            fit: BoxFit.cover,
                                             image: AssetImage(
                                               'assets/album.png',
                                             ),
@@ -192,6 +194,7 @@ class _SongsListPageState extends State<SongsListPage> {
                                               ),
                                           placeholder: (context, url) =>
                                               const Image(
+                                            fit: BoxFit.cover,
                                             image: AssetImage(
                                               'assets/album.png',
                                             ),
@@ -214,12 +217,12 @@ class _SongsListPageState extends State<SongsListPage> {
                                             opaque: false,
                                             pageBuilder: (_, __, ___) =>
                                                 PlayScreen(
-                                              data: {
-                                                'response': songList,
-                                                'index': 0,
-                                                'offline': false,
-                                              },
+                                              songsList: songList,
+                                              index: 0,
+                                              offline: false,
+                                              fromDownloads: false,
                                               fromMiniplayer: false,
+                                              recommend: true,
                                             ),
                                           ),
                                         );
@@ -289,12 +292,12 @@ class _SongsListPageState extends State<SongsListPage> {
                                             opaque: false,
                                             pageBuilder: (_, __, ___) =>
                                                 PlayScreen(
-                                              data: {
-                                                'response': tempList,
-                                                'index': 0,
-                                                'offline': false,
-                                              },
+                                              songsList: tempList,
+                                              index: 0,
+                                              offline: false,
+                                              fromDownloads: false,
                                               fromMiniplayer: false,
+                                              recommend: true,
                                             ),
                                           ),
                                         );
@@ -354,6 +357,12 @@ class _SongsListPageState extends State<SongsListPage> {
                                         fontWeight: FontWeight.w500,
                                       ),
                                     ),
+                                    onLongPress: () {
+                                      copyToClipboard(
+                                        context: context,
+                                        text: '${entry["title"]}',
+                                      );
+                                    },
                                     subtitle: Text(
                                       '${entry["subtitle"]}',
                                       overflow: TextOverflow.ellipsis,
@@ -366,8 +375,10 @@ class _SongsListPageState extends State<SongsListPage> {
                                       ),
                                       clipBehavior: Clip.antiAlias,
                                       child: CachedNetworkImage(
+                                        fit: BoxFit.cover,
                                         errorWidget: (context, _, __) =>
                                             const Image(
+                                          fit: BoxFit.cover,
                                           image: AssetImage(
                                             'assets/cover.jpg',
                                           ),
@@ -376,6 +387,7 @@ class _SongsListPageState extends State<SongsListPage> {
                                             '${entry["image"].replaceAll('http:', 'https:')}',
                                         placeholder: (context, url) =>
                                             const Image(
+                                          fit: BoxFit.cover,
                                           image: AssetImage(
                                             'assets/cover.jpg',
                                           ),
@@ -403,14 +415,14 @@ class _SongsListPageState extends State<SongsListPage> {
                                           opaque: false,
                                           pageBuilder: (_, __, ___) =>
                                               PlayScreen(
-                                            data: {
-                                              'response': songList,
-                                              'index': songList.indexWhere(
-                                                (element) => element == entry,
-                                              ),
-                                              'offline': false,
-                                            },
+                                            songsList: songList,
+                                            index: songList.indexWhere(
+                                              (element) => element == entry,
+                                            ),
+                                            offline: false,
+                                            fromDownloads: false,
                                             fromMiniplayer: false,
+                                            recommend: true,
                                           ),
                                         ),
                                       );

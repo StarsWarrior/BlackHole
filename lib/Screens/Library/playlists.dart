@@ -118,8 +118,8 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                         ),
                       ),
                       onTap: () async {
-                        playlistNames = await ImportPlaylist()
-                            .importPlaylist(context, playlistNames);
+                        playlistNames =
+                            await importPlaylist(context, playlistNames);
                         settingsBox.put('playlistNames', playlistNames);
                         setState(() {});
                       },
@@ -147,7 +147,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                         );
 
                         AppLinks(
-                          onAppLink: (Uri _, String link) async {
+                          onAppLink: (Uri uri, String link) async {
                             closeWebView();
                             if (link.contains('code=')) {
                               code = link.split('code=')[1];
@@ -189,12 +189,10 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                           initialText: '',
                           keyboardType: TextInputType.url,
                           onSubmitted: (value) async {
-                            final SearchAddPlaylist searchAdd =
-                                SearchAddPlaylist();
                             final String link = value.trim();
                             Navigator.pop(context);
                             final Map data =
-                                await searchAdd.addYtPlaylist(link);
+                                await SearchAddPlaylist.addYtPlaylist(link);
                             if (data.isNotEmpty) {
                               playlistNames.add(data['title']);
                               settingsBox.put(
@@ -202,10 +200,10 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                                 playlistNames,
                               );
 
-                              await searchAdd.showProgress(
+                              await SearchAddPlaylist.showProgress(
                                 data['count'] as int,
                                 context,
-                                searchAdd.songsAdder(
+                                SearchAddPlaylist.songsAdder(
                                   data['title'].toString(),
                                   data['tracks'] as List,
                                 ),
@@ -292,7 +290,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                               ),
                               onSelected: (int? value) async {
                                 if (value == 1) {
-                                  ExportPlaylist().exportPlaylist(
+                                  exportPlaylist(
                                     context,
                                     name,
                                     playlistDetails.containsKey(name)
@@ -303,7 +301,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                                   );
                                 }
                                 if (value == 2) {
-                                  ExportPlaylist().sharePlaylist(
+                                  sharePlaylist(
                                     context,
                                     name,
                                     playlistDetails.containsKey(name)
@@ -642,8 +640,11 @@ Future<void> fetchPlaylists(
                           }
                         }
 
-                        await SearchAddPlaylist()
-                            .showProgress(_total, context, songsAdder());
+                        await SearchAddPlaylist.showProgress(
+                          _total,
+                          context,
+                          songsAdder(),
+                        );
                       },
                     );
                     Navigator.pop(context);
@@ -673,12 +674,15 @@ Future<void> fetchPlaylists(
                                 .isEmpty
                             ? Image.asset('assets/cover.jpg')
                             : CachedNetworkImage(
+                                fit: BoxFit.cover,
                                 errorWidget: (context, _, __) => const Image(
+                                  fit: BoxFit.cover,
                                   image: AssetImage('assets/cover.jpg'),
                                 ),
                                 imageUrl:
                                     '${spotifyPlaylists[idx - 1]["images"][0]['url'].replaceAll('http:', 'https:')}',
                                 placeholder: (context, url) => const Image(
+                                  fit: BoxFit.cover,
                                   image: AssetImage('assets/cover.jpg'),
                                 ),
                               ),
@@ -738,7 +742,7 @@ Future<void> fetchPlaylists(
         }
       }
 
-      await SearchAddPlaylist().showProgress(_total, context, songsAdder());
+      await SearchAddPlaylist.showProgress(_total, context, songsAdder());
     }
   } else {
     // print('Failed');

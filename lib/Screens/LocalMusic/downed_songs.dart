@@ -866,7 +866,7 @@ class SongsTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return cachedSongs.isEmpty
-        ? EmptyScreen().emptyScreen(
+        ? emptyScreen(
             context,
             3,
             AppLocalizations.of(context)!.nothingTo,
@@ -1488,12 +1488,12 @@ class SongsTab extends StatelessWidget {
                       PageRouteBuilder(
                         opaque: false,
                         pageBuilder: (_, __, ___) => PlayScreen(
-                          data: {
-                            'response': singleSongMap,
-                            'index': 0,
-                            'offline': true
-                          },
+                          songsList: singleSongMap,
                           fromMiniplayer: false,
+                          index: 0,
+                          offline: true,
+                          fromDownloads: false,
+                          recommend: false,
                         ),
                       ),
                     );
@@ -1502,12 +1502,12 @@ class SongsTab extends StatelessWidget {
                       PageRouteBuilder(
                         opaque: false,
                         pageBuilder: (_, __, ___) => PlayScreen(
-                          data: {
-                            'response': cachedSongsMap,
-                            'index': playIndex,
-                            'offline': true
-                          },
+                          songsList: cachedSongsMap,
+                          index: playIndex,
+                          offline: true,
+                          fromDownloads: false,
                           fromMiniplayer: false,
+                          recommend: false,
                         ),
                       ),
                     );

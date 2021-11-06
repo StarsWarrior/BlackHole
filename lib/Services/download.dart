@@ -316,7 +316,7 @@ class Download with ChangeNotifier {
         await file2.writeAsBytes(bytes2);
         try {
           lyrics = downloadLyrics
-              ? await Lyrics().getLyrics(
+              ? await Lyrics.getLyrics(
                   id: data['id'].toString(),
                   title: data['title'].toString(),
                   artist: data['artist'].toString(),
@@ -420,7 +420,7 @@ class Download with ChangeNotifier {
           'path': filepath,
           'image': filepath2,
           'image_url': data['image'].toString(),
-          'fromYt': data['url'].toString().contains('google'),
+          'from_yt': data['language'].toString() == 'YouTube',
           'dateAdded': DateTime.now().toString(),
         };
         Hive.box('downloads').put(songData['id'], songData);

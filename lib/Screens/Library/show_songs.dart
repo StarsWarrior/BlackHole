@@ -25,7 +25,7 @@ class SongsList extends StatefulWidget {
 class _SongsListState extends State<SongsList> {
   List _songs = [];
   List original = [];
-  bool? offline;
+  bool offline = false;
   bool added = false;
   bool processStatus = false;
   int sortValue = Hive.box('settings').get('sortValue', defaultValue: 2) as int;
@@ -34,7 +34,7 @@ class _SongsListState extends State<SongsList> {
     added = true;
     _songs = widget.data;
     offline = widget.offline;
-    if (!offline!) original = List.from(_songs);
+    if (!offline) original = List.from(_songs);
 
     sortSongs();
 
@@ -60,7 +60,7 @@ class _SongsListState extends State<SongsList> {
       );
     }
     if (sortValue == 2) {
-      offline!
+      offline
           ? _songs.sort(
               (b, a) => a['lastModified']
                   .toString()
@@ -158,7 +158,7 @@ class _SongsListState extends State<SongsList> {
                               const SizedBox(),
                             const SizedBox(width: 10),
                             Text(
-                              offline!
+                              offline
                                   ? AppLocalizations.of(context)!.lastModified
                                   : AppLocalizations.of(context)!.lastAdded,
                             ),
@@ -221,7 +221,7 @@ class _SongsListState extends State<SongsList> {
                                     borderRadius: BorderRadius.circular(7.0),
                                   ),
                                   clipBehavior: Clip.antiAlias,
-                                  child: offline!
+                                  child: offline
                                       ? Stack(
                                           children: [
                                             const Image(
@@ -248,8 +248,10 @@ class _SongsListState extends State<SongsList> {
                                           ],
                                         )
                                       : CachedNetworkImage(
+                                          fit: BoxFit.cover,
                                           errorWidget: (context, _, __) =>
                                               const Image(
+                                            fit: BoxFit.cover,
                                             image:
                                                 AssetImage('assets/cover.jpg'),
                                           ),
@@ -258,6 +260,7 @@ class _SongsListState extends State<SongsList> {
                                               .replaceAll('http:', 'https:'),
                                           placeholder: (context, url) =>
                                               const Image(
+                                            fit: BoxFit.cover,
                                             image:
                                                 AssetImage('assets/cover.jpg'),
                                           ),
@@ -276,13 +279,12 @@ class _SongsListState extends State<SongsList> {
                                     PageRouteBuilder(
                                       opaque: false, // set to false
                                       pageBuilder: (_, __, ___) => PlayScreen(
-                                        data: {
-                                          'response': _songs,
-                                          'index': index,
-                                          'offline': offline,
-                                          'downloaded': offline,
-                                        },
+                                        songsList: _songs,
+                                        index: index,
+                                        offline: offline,
+                                        fromDownloads: offline,
                                         fromMiniplayer: false,
+                                        recommend: false,
                                       ),
                                     ),
                                   );

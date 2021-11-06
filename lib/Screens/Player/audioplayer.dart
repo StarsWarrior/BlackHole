@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:audio_service/audio_service.dart';
 import 'package:blackhole/CustomWidgets/add_playlist.dart';
 import 'package:blackhole/CustomWidgets/animated_text.dart';
+import 'package:blackhole/CustomWidgets/copy_clipboard.dart';
 import 'package:blackhole/CustomWidgets/download_button.dart';
 import 'package:blackhole/CustomWidgets/empty_screen.dart';
 import 'package:blackhole/CustomWidgets/equalizer.dart';
@@ -24,8 +25,7 @@ import 'package:flip_card/flip_card.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart'
-    show Clipboard, ClipboardData, rootBundle;
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:hive/hive.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -36,14 +36,20 @@ import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class PlayScreen extends StatefulWidget {
-  final Map data;
+  final List songsList;
   final bool fromMiniplayer;
+  final bool? offline;
+  final int index;
   final bool recommend;
+  final bool fromDownloads;
   const PlayScreen({
     Key? key,
-    required this.data,
+    required this.index,
+    required this.songsList,
     required this.fromMiniplayer,
-    this.recommend = true,
+    required this.offline,
+    required this.recommend,
+    required this.fromDownloads,
   }) : super(key: key);
   @override
   _PlayScreenState createState() => _PlayScreenState();
@@ -66,10 +72,8 @@ class _PlayScreenState extends State<PlayScreen> {
   int globalIndex = 0;
   bool same = false;
   List response = [];
-  bool fetched = false;
   bool offline = false;
-  bool downloaded = false;
-  bool fromYT = false;
+  bool fromDownloads = false;
   String defaultCover = '';
   final ValueNotifier<Color?> gradientColor =
       ValueNotifier<Color?>(currentTheme.playGradientColor);
@@ -94,6 +98,43 @@ class _PlayScreenState extends State<PlayScreen> {
   void initState() {
     super.initState();
     main();
+    if (response == widget.songsList && globalIndex == widget.index) {
+      same = true;
+    }
+    response = widget.songsList;
+    globalIndex = widget.index;
+    if (globalIndex == -1) {
+      globalIndex = 0;
+    }
+    fromDownloads = widget.fromDownloads;
+    if (widget.offline == null) {
+      if (audioHandler.mediaItem.value?.extras!['url'].startsWith('http')
+          as bool) {
+        offline = false;
+      } else {
+        offline = true;
+      }
+    } else {
+      offline = widget.offline!;
+    }
+
+    if (response.isEmpty || same) {
+      fromMiniplayer = true;
+    } else {
+      fromMiniplayer = false;
+      if (!enforceRepeat) {
+        repeatMode = 'None';
+        Hive.box('settings').put('repeatMode', repeatMode);
+      }
+      shuffle = false;
+      Hive.box('settings').put('shuffle', shuffle);
+      if (offline) {
+        fromDownloads ? setDownValues(response) : setOffValues(response);
+      } else {
+        setValues(response);
+        updateNplay();
+      }
+    }
   }
 
   Future<MediaItem> setTags(Map response, Directory tempDir) async {
@@ -168,7 +209,6 @@ class _PlayScreenState extends State<PlayScreen> {
           await setTags(response[i] as Map, tempDir),
         );
       }
-      fetched = true;
       updateNplay();
     });
   }
@@ -176,21 +216,21 @@ class _PlayScreenState extends State<PlayScreen> {
   void setDownValues(List response) {
     globalQueue.addAll(
       response.map(
-        (song) => MediaItemConverter().downMapToMediaItem(song as Map),
+        (song) => MediaItemConverter.downMapToMediaItem(song as Map),
       ),
     );
-    fetched = true;
     updateNplay();
   }
 
   void setValues(List response) {
     globalQueue.addAll(
       response.map(
-        (song) => MediaItemConverter()
-            .mapToMediaItem(song as Map, autoplay: widget.recommend),
+        (song) => MediaItemConverter.mapToMediaItem(
+          song as Map,
+          autoplay: widget.recommend,
+        ),
       ),
     );
-    fetched = true;
   }
 
   Future<void> updateNplay() async {
@@ -217,61 +257,20 @@ class _PlayScreenState extends State<PlayScreen> {
     }
   }
 
+  String format(String msg) {
+    return '${msg[0].toUpperCase()}${msg.substring(1)}: '.replaceAll('_', ' ');
+  }
+
+  Future<void> getColors(ImageProvider imageProvider) async {
+    final PaletteGenerator paletteGenerator =
+        await PaletteGenerator.fromImageProvider(imageProvider);
+    gradientColor.value = paletteGenerator.dominantColor?.color;
+    currentTheme.setLastPlayGradient(gradientColor.value);
+  }
+
   @override
   Widget build(BuildContext context) {
     BuildContext? scaffoldContext;
-    final Map data = widget.data;
-    if (response == data['response'] && globalIndex == data['index']) {
-      same = true;
-    }
-    response = data['response'] as List;
-    globalIndex = data['index'] as int;
-    if (globalIndex == -1) {
-      globalIndex = 0;
-    }
-    fromYT = data['fromYT'] as bool? ?? false;
-    downloaded = data['downloaded'] as bool? ?? false;
-    if (data['offline'] == null) {
-      if (audioHandler.mediaItem.value?.extras!['url'].startsWith('http')
-          as bool) {
-        offline = false;
-      } else {
-        offline = true;
-      }
-    } else {
-      offline = data['offline'] as bool;
-    }
-    if (!fetched) {
-      if (response.isEmpty || same) {
-        fromMiniplayer = true;
-      } else {
-        fromMiniplayer = false;
-        if (!enforceRepeat) {
-          repeatMode = 'None';
-          Hive.box('settings').put('repeatMode', repeatMode);
-        }
-        shuffle = false;
-        Hive.box('settings').put('shuffle', shuffle);
-        if (offline) {
-          downloaded ? setDownValues(response) : setOffValues(response);
-        } else {
-          setValues(response);
-          updateNplay();
-        }
-      }
-    }
-
-    String format(String msg) {
-      return '${msg[0].toUpperCase()}${msg.substring(1)}: '
-          .replaceAll('_', ' ');
-    }
-
-    Future<void> getColors(ImageProvider imageProvider) async {
-      final PaletteGenerator paletteGenerator =
-          await PaletteGenerator.fromImageProvider(imageProvider);
-      gradientColor.value = paletteGenerator.dominantColor?.color;
-      currentTheme.setLastPlayGradient(gradientColor.value);
-    }
 
     return Dismissible(
       direction: DismissDirection.down,
@@ -344,7 +343,7 @@ class _PlayScreenState extends State<PlayScreen> {
                       onSelected: (int? value) {
                         if (value == 10) {
                           final Map details =
-                              MediaItemConverter().mediaItemtoMap(mediaItem);
+                              MediaItemConverter.mediaItemtoMap(mediaItem);
                           PopupDialog().showPopup(
                             context: context,
                             child: SingleChildScrollView(
@@ -406,7 +405,7 @@ class _PlayScreenState extends State<PlayScreen> {
                         }
                         if (value == 3) {
                           launch(
-                            fromYT
+                            mediaItem.genre == 'YouTube'
                                 ? 'https://youtube.com/watch?v=${mediaItem.id}'
                                 : 'https://www.youtube.com/results?search_query=${mediaItem.title} by ${mediaItem.artist}',
                           );
@@ -606,7 +605,7 @@ class _PlayScreenState extends State<PlayScreen> {
                                     ),
                                     const SizedBox(width: 10.0),
                                     Text(
-                                      fromYT
+                                      mediaItem.genre == 'YouTube'
                                           ? AppLocalizations.of(
                                               context,
                                             )!
@@ -1249,6 +1248,7 @@ class NowPlayingStream extends StatelessWidget {
                                         errorWidget:
                                             (BuildContext context, _, __) =>
                                                 const Image(
+                                          fit: BoxFit.cover,
                                           image: AssetImage(
                                             'assets/cover.jpg',
                                           ),
@@ -1256,6 +1256,7 @@ class NowPlayingStream extends StatelessWidget {
                                         placeholder:
                                             (BuildContext context, _) =>
                                                 const Image(
+                                          fit: BoxFit.cover,
                                           image: AssetImage(
                                             'assets/cover.jpg',
                                           ),
@@ -1334,25 +1335,21 @@ class _ArtWorkWidgetState extends State<ArtWorkWidget> {
                     (!value && lyrics['lyrics'] == '' && !done.value)) {
                   done.value = false;
                   if (widget.offline) {
-                    Lyrics()
-                        .getOffLyrics(
+                    Lyrics.getOffLyrics(
                       widget.mediaItem.extras!['url'].toString(),
-                    )
-                        .then((value) {
+                    ).then((value) {
                       lyrics['lyrics'] = value;
                       lyrics['id'] = widget.mediaItem.id;
                       done.value = true;
                     });
                   } else {
-                    Lyrics()
-                        .getLyrics(
+                    Lyrics.getLyrics(
                       id: widget.mediaItem.id,
                       saavnHas:
                           widget.mediaItem.extras?['has_lyrics'] == 'true',
                       title: widget.mediaItem.title,
                       artist: widget.mediaItem.artist.toString(),
-                    )
-                        .then((value) {
+                    ).then((value) {
                       lyrics['lyrics'] = value;
                       lyrics['id'] = widget.mediaItem.id;
                       done.value = true;
@@ -1399,7 +1396,7 @@ class _ArtWorkWidgetState extends State<ArtWorkWidget> {
                             ) {
                               return value
                                   ? lyrics['lyrics'] == ''
-                                      ? EmptyScreen().emptyScreen(
+                                      ? emptyScreen(
                                           context,
                                           0,
                                           ':( ',
@@ -1433,12 +1430,10 @@ class _ArtWorkWidgetState extends State<ArtWorkWidget> {
                         child: IconButton(
                           tooltip: AppLocalizations.of(context)!.copy,
                           onPressed: () {
-                            Clipboard.setData(
-                              ClipboardData(text: lyrics['lyrics'].toString()),
-                            );
-                            ShowSnackBar().showSnackBar(
-                              context,
-                              AppLocalizations.of(context)!.copied,
+                            Feedback.forLongPress(context);
+                            copyToClipboard(
+                              context: context,
+                              text: lyrics['lyrics'].toString(),
                             );
                           },
                           icon: const Icon(Icons.copy_rounded),
@@ -1469,7 +1464,10 @@ class _ArtWorkWidgetState extends State<ArtWorkWidget> {
                           },
                     onDoubleTap: !enabled
                         ? null
-                        : () => widget.cardKey.currentState!.toggleCard(),
+                        : () {
+                            Feedback.forLongPress(context);
+                            widget.cardKey.currentState!.toggleCard();
+                          },
                     onHorizontalDragEnd: !enabled
                         ? null
                         : (DragEndDetails details) {
@@ -1489,6 +1487,7 @@ class _ArtWorkWidgetState extends State<ArtWorkWidget> {
                         ? null
                         : () {
                             if (!widget.offline) {
+                              Feedback.forLongPress(context);
                               AddToPlaylist()
                                   .addToPlaylist(context, widget.mediaItem);
                             }
@@ -1544,10 +1543,12 @@ class _ArtWorkWidgetState extends State<ArtWorkWidget> {
                                   fit: BoxFit.cover,
                                   errorWidget: (BuildContext context, _, __) =>
                                       const Image(
+                                    fit: BoxFit.cover,
                                     image: AssetImage('assets/cover.jpg'),
                                   ),
                                   placeholder: (BuildContext context, _) =>
                                       const Image(
+                                    fit: BoxFit.cover,
                                     image: AssetImage('assets/cover.jpg'),
                                   ),
                                   imageUrl: widget.mediaItem.artUri.toString(),

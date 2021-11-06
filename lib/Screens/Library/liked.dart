@@ -8,7 +8,7 @@ import 'package:blackhole/CustomWidgets/gradient_containers.dart';
 import 'package:blackhole/CustomWidgets/miniplayer.dart';
 import 'package:blackhole/CustomWidgets/snackbar.dart';
 import 'package:blackhole/Helpers/mediaitem_converter.dart';
-import 'package:blackhole/Helpers/songs_count.dart';
+import 'package:blackhole/Helpers/songs_count.dart' as songs_count;
 import 'package:blackhole/Screens/Library/show_songs.dart';
 import 'package:blackhole/Screens/Player/audioplayer.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -60,7 +60,7 @@ class _LikedSongsState extends State<LikedSongs>
   void getLiked() {
     likedBox = Hive.box(widget.playlistName);
     _songs = likedBox?.values.toList() ?? [];
-    AddSongsCount().addSong(
+    songs_count.addSongsCount(
       widget.playlistName,
       _songs.length,
       _songs.length >= 4
@@ -216,7 +216,7 @@ class _LikedSongsState extends State<LikedSongs>
     _genres[_songs[index]['genre']]!.remove(_songs[index]);
 
     _songs.remove(_songs[index]);
-    AddSongsCount().addSong(
+    songs_count.addSongsCount(
       widget.playlistName,
       _songs.length,
       _songs.length >= 4
@@ -518,7 +518,7 @@ class _LikedSongsState extends State<LikedSongs>
                         controller: _tcontroller,
                         children: [
                           if (_songs.isEmpty)
-                            EmptyScreen().emptyScreen(
+                            emptyScreen(
                               context,
                               3,
                               AppLocalizations.of(context)!.nothingTo,
@@ -551,6 +551,7 @@ class _LikedSongsState extends State<LikedSongs>
                                         fit: BoxFit.cover,
                                         errorWidget: (context, _, __) =>
                                             const Image(
+                                          fit: BoxFit.cover,
                                           image: AssetImage(
                                             'assets/cover.jpg',
                                           ),
@@ -560,6 +561,7 @@ class _LikedSongsState extends State<LikedSongs>
                                             .replaceAll('http:', 'https:'),
                                         placeholder: (context, url) =>
                                             const Image(
+                                          fit: BoxFit.cover,
                                           image: AssetImage(
                                             'assets/cover.jpg',
                                           ),
@@ -572,12 +574,11 @@ class _LikedSongsState extends State<LikedSongs>
                                       PageRouteBuilder(
                                         opaque: false, // set to false
                                         pageBuilder: (_, __, ___) => PlayScreen(
-                                          data: {
-                                            'index': index,
-                                            'response': _songs,
-                                            'offline': false,
-                                          },
+                                          songsList: _songs,
+                                          index: index,
+                                          offline: false,
                                           fromMiniplayer: false,
+                                          fromDownloads: false,
                                           recommend: false,
                                         ),
                                       ),
@@ -651,8 +652,7 @@ class _LikedSongsState extends State<LikedSongs>
                                           if (value == 1) {
                                             AddToPlaylist().addToPlaylist(
                                               context,
-                                              MediaItemConverter()
-                                                  .mapToMediaItem(
+                                              MediaItemConverter.mapToMediaItem(
                                                 _songs[index] as Map,
                                               ),
                                             );
@@ -689,7 +689,7 @@ class _LikedSongsState extends State<LikedSongs>
 
   Widget albumsTab() {
     return sortedAlbumKeysList.isEmpty
-        ? EmptyScreen().emptyScreen(
+        ? emptyScreen(
             context,
             3,
             AppLocalizations.of(context)!.nothingTo,
@@ -743,7 +743,7 @@ class _LikedSongsState extends State<LikedSongs>
 
   Widget artistsTab() {
     return (sortedArtistKeysList.isEmpty)
-        ? EmptyScreen().emptyScreen(
+        ? emptyScreen(
             context,
             3,
             AppLocalizations.of(context)!.nothingTo,
@@ -797,7 +797,7 @@ class _LikedSongsState extends State<LikedSongs>
 
   Widget genresTab() {
     return (sortedGenreKeysList.isEmpty)
-        ? EmptyScreen().emptyScreen(
+        ? emptyScreen(
             context,
             3,
             AppLocalizations.of(context)!.nothingTo,

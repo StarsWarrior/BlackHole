@@ -1,5 +1,5 @@
 class CountryCodes {
-  Map<String, String> countryCodes = {
+  static const Map<String, String> countryCodes = {
     'Argentina': 'ar',
     'Austria': 'at',
     'Australia': 'au',

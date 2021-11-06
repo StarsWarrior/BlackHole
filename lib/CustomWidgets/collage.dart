@@ -41,13 +41,16 @@ class Collage extends StatelessWidget {
               children: imageList
                   .map(
                     (image) => CachedNetworkImage(
+                      fit: BoxFit.cover,
                       errorWidget: (context, _, __) => Image(
+                        fit: BoxFit.cover,
                         image: AssetImage(placeholderImage),
                       ),
                       imageUrl: image['image']
                           .toString()
                           .replaceAll('http:', 'https:'),
                       placeholder: (context, _) => Image(
+                        fit: BoxFit.cover,
                         image: AssetImage(placeholderImage),
                       ),
                     ),

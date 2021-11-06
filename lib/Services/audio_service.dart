@@ -26,7 +26,6 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
   late String preferredQuality;
   // late bool cacheSong;
   final _equalizer = AndroidEqualizer();
-  final converter = MediaItemConverter();
 
   int? index;
   Box downloadsBox = Hive.box('downloads');
@@ -117,8 +116,9 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
       final List recentList = await Hive.box('cache')
           .get('recentSongs', defaultValue: [])?.toList() as List;
 
-      final List<MediaItem> lastQueue =
-          recentList.map((e) => converter.mapToMediaItem(e as Map)).toList();
+      final List<MediaItem> lastQueue = recentList
+          .map((e) => MediaItemConverter.mapToMediaItem(e as Map))
+          .toList();
       await updateQueue(lastQueue);
     }
 
@@ -132,7 +132,7 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
       }
 
       if (item.artUri.toString().startsWith('http') &&
-          !item.artUri.toString().startsWith('https://img.youtube.com')) {
+          item.genre != 'YouTube') {
         addRecentlyPlayed(item);
         _recentSubject.add([item]);
 
@@ -141,7 +141,7 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
             final List value = await SaavnAPI().getReco(item.id);
 
             for (int i = 0; i < value.length; i++) {
-              final element = converter.mapToMediaItem(
+              final element = MediaItemConverter.mapToMediaItem(
                 value[i] as Map,
                 addedByAutoplay: true,
               );
@@ -299,7 +299,7 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
     List recentList = await Hive.box('cache')
         .get('recentSongs', defaultValue: [])?.toList() as List;
 
-    final Map item = converter.mediaItemtoMap(mediaitem);
+    final Map item = MediaItemConverter.mediaItemtoMap(mediaitem);
     recentList.insert(0, item);
 
     final jsonList = recentList.map((item) => jsonEncode(item)).toList();

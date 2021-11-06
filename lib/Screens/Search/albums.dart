@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:blackhole/APIs/api.dart';
+import 'package:blackhole/CustomWidgets/copy_clipboard.dart';
 import 'package:blackhole/CustomWidgets/download_button.dart';
 import 'package:blackhole/CustomWidgets/empty_screen.dart';
 import 'package:blackhole/CustomWidgets/gradient_containers.dart';
@@ -80,7 +81,7 @@ class _AlbumSearchPageState extends State<AlbumSearchPage> {
                       ),
                     )
                   : searchedList.isEmpty
-                      ? EmptyScreen().emptyScreen(
+                      ? emptyScreen(
                           context,
                           0,
                           ':( ',
@@ -154,6 +155,12 @@ class _AlbumSearchPageState extends State<AlbumSearchPage> {
                                             fontWeight: FontWeight.w500,
                                           ),
                                         ),
+                                        onLongPress: () {
+                                          copyToClipboard(
+                                            context: context,
+                                            text: '${entry["title"]}',
+                                          );
+                                        },
                                         subtitle: Text(
                                           '${entry["subtitle"]}',
                                           overflow: TextOverflow.ellipsis,
@@ -169,8 +176,10 @@ class _AlbumSearchPageState extends State<AlbumSearchPage> {
                                           ),
                                           clipBehavior: Clip.antiAlias,
                                           child: CachedNetworkImage(
+                                            fit: BoxFit.cover,
                                             errorWidget: (context, _, __) =>
                                                 Image(
+                                              fit: BoxFit.cover,
                                               image: AssetImage(
                                                 widget.type == 'Artists'
                                                     ? 'assets/artist.png'
@@ -181,6 +190,7 @@ class _AlbumSearchPageState extends State<AlbumSearchPage> {
                                                 '${entry["image"].replaceAll('http:', 'https:')}',
                                             placeholder: (context, url) =>
                                                 Image(
+                                              fit: BoxFit.cover,
                                               image: AssetImage(
                                                 widget.type == 'Artists'
                                                     ? 'assets/artist.png'

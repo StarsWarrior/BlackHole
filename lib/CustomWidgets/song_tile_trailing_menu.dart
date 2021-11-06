@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:hive/hive.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
 class SongTileTrailingMenu extends StatefulWidget {
@@ -88,7 +89,7 @@ class _SongTileTrailingMenuState extends State<SongTileTrailingMenu> {
       ],
       onSelected: (int? value) {
         final MediaItem mediaItem =
-            MediaItemConverter().mapToMediaItem(widget.data);
+            MediaItemConverter.mapToMediaItem(widget.data);
         if (value == 3) {
           Share.share(widget.data['perma_url'].toString());
         }
@@ -96,10 +97,10 @@ class _SongTileTrailingMenuState extends State<SongTileTrailingMenu> {
           AddToPlaylist().addToPlaylist(context, mediaItem);
         }
         if (value == 1) {
-          AddToQueue().addToNowPlaying(mediaItem, context);
+          addToNowPlaying(mediaItem, context);
         }
         if (value == 2) {
-          AddToQueue().playNext(mediaItem, context);
+          playNext(mediaItem, context);
         }
       },
     );
@@ -193,6 +194,20 @@ class _YtSongTileTrailingMenuState extends State<YtSongTileTrailingMenu> {
           child: Row(
             children: [
               Icon(
+                // Icons.music_video_rounded,
+                Icons.video_library_rounded,
+                color: Theme.of(context).iconTheme.color,
+              ),
+              const SizedBox(width: 10.0),
+              Text(AppLocalizations.of(context)!.watchVideo),
+            ],
+          ),
+        ),
+        PopupMenuItem(
+          value: 5,
+          child: Row(
+            children: [
+              Icon(
                 Icons.share_rounded,
                 color: Theme.of(context).iconTheme.color,
               ),
@@ -226,12 +241,12 @@ class _YtSongTileTrailingMenuState extends State<YtSongTileTrailingMenu> {
           )
               .then((songMap) {
             final MediaItem mediaItem =
-                MediaItemConverter().mapToMediaItem(songMap!);
+                MediaItemConverter.mapToMediaItem(songMap!);
             if (value == 1) {
-              AddToQueue().playNext(mediaItem, context);
+              playNext(mediaItem, context);
             }
             if (value == 2) {
-              AddToQueue().addToNowPlaying(mediaItem, context);
+              addToNowPlaying(mediaItem, context);
             }
             if (value == 3) {
               AddToPlaylist().addToPlaylist(context, mediaItem);
@@ -239,6 +254,9 @@ class _YtSongTileTrailingMenuState extends State<YtSongTileTrailingMenu> {
           });
         }
         if (value == 4) {
+          launch(widget.data.url);
+        }
+        if (value == 5) {
           Share.share(widget.data.url);
         }
       },

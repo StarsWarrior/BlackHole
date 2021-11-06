@@ -6,8 +6,9 @@ import 'package:blackhole/APIs/api.dart';
 import 'package:dart_des/dart_des.dart';
 import 'package:hive/hive.dart';
 
+// ignore: avoid_classes_with_only_static_members
 class FormatResponse {
-  String decode(String input) {
+  static String decode(String input) {
     const String key = '38346591';
     final DES desECB = DES(key: key.codeUnits);
 
@@ -18,11 +19,11 @@ class FormatResponse {
     return decoded.replaceAll('http:', 'https:');
   }
 
-  String capitalize(String msg) {
+  static String capitalize(String msg) {
     return '${msg[0].toUpperCase()}${msg.substring(1)}';
   }
 
-  String formatString(String text) {
+  static String formatString(String text) {
     return text
         .replaceAll('&amp;', '&')
         .replaceAll('&#039;', "'")
@@ -30,7 +31,10 @@ class FormatResponse {
         .trim();
   }
 
-  Future<List> formatSongsResponse(List responseList, String type) async {
+  static Future<List> formatSongsResponse(
+    List responseList,
+    String type,
+  ) async {
     final List searchedList = [];
     for (int i = 0; i < responseList.length; i++) {
       Map? response;
@@ -53,7 +57,7 @@ class FormatResponse {
     return searchedList;
   }
 
-  Future<Map> formatSingleSongResponse(Map response) async {
+  static Future<Map> formatSingleSongResponse(Map response) async {
     // Map cachedSong = Hive.box('cache').get(response['id']);
     // if (cachedSong != null) {
     //   return cachedSong;
@@ -121,7 +125,7 @@ class FormatResponse {
     }
   }
 
-  Future<Map> formatSingleAlbumSongResponse(Map response) async {
+  static Future<Map> formatSingleAlbumSongResponse(Map response) async {
     try {
       final List artistNames = [];
       if (response['primary_artists'] == null ||
@@ -188,7 +192,10 @@ class FormatResponse {
     }
   }
 
-  Future<List<Map>> formatAlbumResponse(List responseList, String type) async {
+  static Future<List<Map>> formatAlbumResponse(
+    List responseList,
+    String type,
+  ) async {
     final List<Map> searchedAlbumList = [];
     for (int i = 0; i < responseList.length; i++) {
       Map? response;
@@ -215,7 +222,7 @@ class FormatResponse {
     return searchedAlbumList;
   }
 
-  Future<Map> formatSingleAlbumResponse(Map response) async {
+  static Future<Map> formatSingleAlbumResponse(Map response) async {
     try {
       return {
         'id': response['id'],
@@ -267,7 +274,7 @@ class FormatResponse {
     }
   }
 
-  Future<Map> formatSinglePlaylistResponse(Map response) async {
+  static Future<Map> formatSinglePlaylistResponse(Map response) async {
     try {
       return {
         'id': response['id'],
@@ -304,7 +311,7 @@ class FormatResponse {
     }
   }
 
-  Future<Map> formatSingleArtistResponse(Map response) async {
+  static Future<Map> formatSingleArtistResponse(Map response) async {
     try {
       return {
         'id': response['id'],
@@ -343,7 +350,7 @@ class FormatResponse {
     }
   }
 
-  Future<List> formatArtistTopAlbumsResponse(List responseList) async {
+  static Future<List> formatArtistTopAlbumsResponse(List responseList) async {
     final List result = [];
     for (int i = 0; i < responseList.length; i++) {
       final Map response =
@@ -357,7 +364,9 @@ class FormatResponse {
     return result;
   }
 
-  Future<Map> formatSingleArtistTopAlbumSongResponse(Map response) async {
+  static Future<Map> formatSingleArtistTopAlbumSongResponse(
+    Map response,
+  ) async {
     try {
       final List artistNames = [];
       if (response['more_info']?['artistMap']?['primary_artists'] == null ||
@@ -415,28 +424,28 @@ class FormatResponse {
     }
   }
 
-  // Future<List> formatArtistSinglesResponse(List response) async {
+  // static Future<List> formatArtistSinglesResponse(List response) async {
   // List result = [];
   // return result;
   // }
 
-  // Future<List> formatArtistLatestReleaseResponse(List response) async {
+  // static Future<List> formatArtistLatestReleaseResponse(List response) async {
   //   List result = [];
   //   return result;
   // }
 
-  // Future<List> formatArtistDedicatedArtistPlaylistResponse(
+  // static Future<List> formatArtistDedicatedArtistPlaylistResponse(
   //     List response) async {
   //   List result = [];
   //   return result;
   // }
 
-  // Future<List> formatArtistFeaturedArtistPlaylistResponse(List response) async {
+  // static Future<List> formatArtistFeaturedArtistPlaylistResponse(List response) async {
   //   List result = [];
   //   return result;
   // }
 
-  Future<Map> formatSingleShowResponse(Map response) async {
+  static Future<Map> formatSingleShowResponse(Map response) async {
     try {
       return {
         'id': response['id'],
@@ -457,7 +466,7 @@ class FormatResponse {
     }
   }
 
-  Future<Map> formatHomePageData(Map data) async {
+  static Future<Map> formatHomePageData(Map data) async {
     try {
       data['new_trending'] = await formatSongsInList(
         data['new_trending'] as List,
@@ -508,7 +517,7 @@ class FormatResponse {
     return data;
   }
 
-  Future<Map> formatPromoLists(Map data) async {
+  static Future<Map> formatPromoLists(Map data) async {
     try {
       final List promoList = data['collections_temp'] as List;
       for (int i = 0; i < promoList.length; i++) {
@@ -525,7 +534,7 @@ class FormatResponse {
     return data;
   }
 
-  Future<List> formatSongsInList(
+  static Future<List> formatSongsInList(
     List list, {
     required bool fetchDetails,
   }) async {

@@ -55,7 +55,7 @@ class _RecentlyPlayedState extends State<RecentlyPlayed> {
                 ],
               ),
               body: _songs.isEmpty
-                  ? EmptyScreen().emptyScreen(
+                  ? emptyScreen(
                       context,
                       3,
                       AppLocalizations.of(context)!.nothingTo,
@@ -104,8 +104,10 @@ class _RecentlyPlayedState extends State<RecentlyPlayed> {
                                     ),
                                     clipBehavior: Clip.antiAlias,
                                     child: CachedNetworkImage(
+                                      fit: BoxFit.cover,
                                       errorWidget: (context, _, __) =>
                                           const Image(
+                                        fit: BoxFit.cover,
                                         image: AssetImage('assets/cover.jpg'),
                                       ),
                                       imageUrl: _songs[index]['image']
@@ -113,6 +115,7 @@ class _RecentlyPlayedState extends State<RecentlyPlayed> {
                                           .replaceAll('http:', 'https:'),
                                       placeholder: (context, url) =>
                                           const Image(
+                                        fit: BoxFit.cover,
                                         image: AssetImage('assets/cover.jpg'),
                                       ),
                                     ),
@@ -131,12 +134,12 @@ class _RecentlyPlayedState extends State<RecentlyPlayed> {
                                       PageRouteBuilder(
                                         opaque: false,
                                         pageBuilder: (_, __, ___) => PlayScreen(
-                                          data: {
-                                            'response': _songs,
-                                            'index': index,
-                                            'offline': false,
-                                          },
+                                          songsList: _songs,
+                                          index: index,
+                                          offline: false,
+                                          fromDownloads: false,
                                           fromMiniplayer: false,
+                                          recommend: true,
                                         ),
                                       ),
                                     );

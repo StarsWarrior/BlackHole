@@ -1,3 +1,4 @@
+import 'package:blackhole/CustomWidgets/copy_clipboard.dart';
 import 'package:blackhole/CustomWidgets/gradient_containers.dart';
 import 'package:blackhole/CustomWidgets/miniplayer.dart';
 import 'package:blackhole/CustomWidgets/song_tile_trailing_menu.dart';
@@ -107,10 +108,12 @@ class _YouTubePlaylistState extends State<YouTubePlaylist> {
                               child: CachedNetworkImage(
                                 fit: BoxFit.cover,
                                 errorWidget: (context, _, __) => const Image(
+                                  fit: BoxFit.cover,
                                   image: AssetImage('assets/cover.jpg'),
                                 ),
                                 imageUrl: widget.playlistImage,
                                 placeholder: (context, url) => const Image(
+                                  fit: BoxFit.cover,
                                   image: AssetImage('assets/cover.jpg'),
                                 ),
                               ),
@@ -146,6 +149,7 @@ class _YouTubePlaylistState extends State<YouTubePlaylist> {
                                                 entry.thumbnails.standardResUrl,
                                             errorWidget: (context, _, __) =>
                                                 const Image(
+                                              fit: BoxFit.cover,
                                               image: AssetImage(
                                                 'assets/cover.jpg',
                                               ),
@@ -154,6 +158,7 @@ class _YouTubePlaylistState extends State<YouTubePlaylist> {
                                           imageUrl: entry.thumbnails.maxResUrl,
                                           placeholder: (context, url) =>
                                               const Image(
+                                            fit: BoxFit.cover,
                                             image: AssetImage(
                                               'assets/cover.jpg',
                                             ),
@@ -168,6 +173,12 @@ class _YouTubePlaylistState extends State<YouTubePlaylist> {
                                         fontWeight: FontWeight.w500,
                                       ),
                                     ),
+                                    onLongPress: () {
+                                      copyToClipboard(
+                                        context: context,
+                                        text: entry.title,
+                                      );
+                                    },
                                     subtitle: Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
@@ -214,13 +225,12 @@ class _YouTubePlaylistState extends State<YouTubePlaylist> {
                                           opaque: false,
                                           pageBuilder: (_, __, ___) =>
                                               PlayScreen(
+                                            songsList: [response],
+                                            index: 0,
+                                            recommend: false,
+                                            fromDownloads: false,
                                             fromMiniplayer: false,
-                                            data: {
-                                              'response': [response],
-                                              'index': 0,
-                                              'offline': false,
-                                              'fromYT': true,
-                                            },
+                                            offline: false,
                                           ),
                                         ),
                                       );

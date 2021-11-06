@@ -72,10 +72,8 @@ class _PlaylistPopupMenuState extends State<PlaylistPopupMenu> {
               currentMediaItem.extras!['url'].toString().startsWith('http')) {
             // TODO: make sure to check if song is already in queue
             final queue = audioHandler.queue.value;
-            final converter = MediaItemConverter();
-
             widget.data.map((e) {
-              final element = converter.mapToMediaItem(e as Map);
+              final element = MediaItemConverter.mapToMediaItem(e as Map);
               if (!queue.contains(element)) {
                 audioHandler.addQueueItem(element);
               }

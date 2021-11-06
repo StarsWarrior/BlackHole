@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:blackhole/APIs/api.dart';
+import 'package:blackhole/CustomWidgets/copy_clipboard.dart';
 import 'package:blackhole/CustomWidgets/download_button.dart';
 import 'package:blackhole/CustomWidgets/empty_screen.dart';
 import 'package:blackhole/CustomWidgets/gradient_containers.dart';
@@ -90,7 +91,7 @@ class _SearchPageState extends State<SearchPage> {
       AppLocalizations.of(context)!.useVpn,
       duration: const Duration(seconds: 5),
     );
-    return EmptyScreen().emptyScreen(
+    return emptyScreen(
       context,
       0,
       ':( ',
@@ -182,6 +183,12 @@ class _SearchPageState extends State<SearchPage> {
                                         leading: const Icon(
                                           Icons.trending_up_rounded,
                                         ),
+                                        onLongPress: () {
+                                          copyToClipboard(
+                                            context: context,
+                                            text: value[index],
+                                          );
+                                        },
                                         onTap: () {
                                           setState(
                                             () {
@@ -340,9 +347,11 @@ class _SearchPageState extends State<SearchPage> {
                                                     clipBehavior:
                                                         Clip.antiAlias,
                                                     child: CachedNetworkImage(
+                                                      fit: BoxFit.cover,
                                                       errorWidget:
                                                           (context, _, __) =>
                                                               Image(
+                                                        fit: BoxFit.cover,
                                                         image: AssetImage(
                                                           key == 'Artists' ||
                                                                   (key == 'Top Result' &&
@@ -360,6 +369,7 @@ class _SearchPageState extends State<SearchPage> {
                                                       placeholder:
                                                           (context, url) =>
                                                               Image(
+                                                        fit: BoxFit.cover,
                                                         image: AssetImage(
                                                           key == 'Artists' ||
                                                                   (key == 'Top Result' &&
@@ -412,6 +422,13 @@ class _SearchPageState extends State<SearchPage> {
                                                                   ['id']
                                                               .toString(),
                                                         ),
+                                                  onLongPress: () {
+                                                    copyToClipboard(
+                                                      context: context,
+                                                      text:
+                                                          '${value[index]["title"]}',
+                                                    );
+                                                  },
                                                   onTap: () {
                                                     Navigator.push(
                                                       context,
@@ -449,18 +466,20 @@ class _SearchPageState extends State<SearchPage> {
                                                                   )
                                                                 : key == 'Songs'
                                                                     ? PlayScreen(
-                                                                        data: {
-                                                                          'response':
-                                                                              [
-                                                                            value[index]
-                                                                          ],
-                                                                          'index':
-                                                                              0,
-                                                                          'offline':
-                                                                              false,
-                                                                        },
+                                                                        songsList: [
+                                                                          value[
+                                                                              index]
+                                                                        ],
+                                                                        index:
+                                                                            0,
+                                                                        offline:
+                                                                            false,
                                                                         fromMiniplayer:
                                                                             false,
+                                                                        fromDownloads:
+                                                                            false,
+                                                                        recommend:
+                                                                            true,
                                                                       )
                                                                     : SongsListPage(
                                                                         listItem:

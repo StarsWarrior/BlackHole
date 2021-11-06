@@ -496,7 +496,7 @@ class _DownloadsState extends State<Downloads>
                         controller: _tcontroller,
                         children: [
                           if (_songs.isEmpty)
-                            EmptyScreen().emptyScreen(
+                            emptyScreen(
                               context,
                               3,
                               AppLocalizations.of(context)!.nothingTo,
@@ -555,13 +555,12 @@ class _DownloadsState extends State<Downloads>
                                       PageRouteBuilder(
                                         opaque: false, // set to false
                                         pageBuilder: (_, __, ___) => PlayScreen(
-                                          data: {
-                                            'index': index,
-                                            'response': _songs,
-                                            'offline': true,
-                                            'downloaded': true,
-                                          },
+                                          songsList: _songs,
+                                          index: index,
+                                          offline: true,
+                                          fromDownloads: true,
                                           fromMiniplayer: false,
+                                          recommend: false,
                                         ),
                                       ),
                                     );
@@ -666,7 +665,7 @@ class _DownloadsState extends State<Downloads>
 
   Widget albumsTab() {
     return sortedAlbumKeysList.isEmpty
-        ? EmptyScreen().emptyScreen(
+        ? emptyScreen(
             context,
             3,
             AppLocalizations.of(context)!.nothingTo,
@@ -720,7 +719,7 @@ class _DownloadsState extends State<Downloads>
 
   Widget artistsTab() {
     return (sortedArtistKeysList.isEmpty)
-        ? EmptyScreen().emptyScreen(
+        ? emptyScreen(
             context,
             3,
             AppLocalizations.of(context)!.nothingTo,
@@ -774,7 +773,7 @@ class _DownloadsState extends State<Downloads>
 
   Widget genresTab() {
     return (sortedGenreKeysList.isEmpty)
-        ? EmptyScreen().emptyScreen(
+        ? emptyScreen(
             context,
             3,
             AppLocalizations.of(context)!.nothingTo,
@@ -864,7 +863,7 @@ Future<Map> editTags(Map song, BuildContext context) async {
               children: [
                 GestureDetector(
                   onTap: () async {
-                    final String filePath = await Picker().selectFile(
+                    final String filePath = await Picker.selectFile(
                       context,
                       ['png', 'jpg', 'jpeg'],
                       'Pick Image',

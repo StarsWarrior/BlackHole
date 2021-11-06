@@ -37,6 +37,7 @@ class _MiniPlayerState extends State<MiniPlayer> {
             return Dismissible(
               key: Key(mediaItem.id),
               onDismissed: (_) {
+                Feedback.forLongPress(context);
                 audioHandler.stop();
               },
               child: ValueListenableBuilder(
@@ -109,12 +110,12 @@ class _MiniPlayerState extends State<MiniPlayer> {
                                 PageRouteBuilder(
                                   opaque: false,
                                   pageBuilder: (_, __, ___) => const PlayScreen(
-                                    data: {
-                                      'response': [],
-                                      'index': 1,
-                                      'offline': null,
-                                    },
+                                    songsList: [],
+                                    index: 1,
+                                    offline: null,
                                     fromMiniplayer: true,
+                                    fromDownloads: false,
+                                    recommend: false,
                                   ),
                                 ),
                               );
@@ -161,6 +162,7 @@ class _MiniPlayerState extends State<MiniPlayer> {
                                             __,
                                           ) =>
                                               const Image(
+                                            fit: BoxFit.cover,
                                             image: AssetImage(
                                               'assets/cover.jpg',
                                             ),
@@ -170,6 +172,7 @@ class _MiniPlayerState extends State<MiniPlayer> {
                                             _,
                                           ) =>
                                               const Image(
+                                            fit: BoxFit.cover,
                                             image: AssetImage(
                                               'assets/cover.jpg',
                                             ),
@@ -199,3 +202,5 @@ class _MiniPlayerState extends State<MiniPlayer> {
     );
   }
 }
+
+MiniPlayer miniPlayer = MiniPlayer();

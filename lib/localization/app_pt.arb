@@ -48,6 +48,7 @@
   "changeDefault":"Predefinir",
   "chartLocation":"Spotify Local Charts Location",
   "chartLocationSub":"País para Top Spotify Local Charts",
+  "checkingUpdate":"Verificando atualizações ...",
   "checkUpdate":"Checar automaticamente por atualizações",
   "checkUpdateSub":"Se você baixou BlackHole por qualquer repositório como 'F-Droid', 'IzzyOnDroid', etc que dispõe de checagem de atualizações, mantenha essa opção DESATIVADA. E se você baixou pelo 'GitHub' ou qualquer outro local em que não dispõe de atualizações automáticas deixe essa opção ATIVADA, para que possa receber mensagens de atualização.\n",
   "clear":"Limpar",

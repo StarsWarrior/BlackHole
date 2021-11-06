@@ -4,8 +4,9 @@ import 'package:audiotagger/audiotagger.dart';
 import 'package:audiotagger/models/tag.dart';
 import 'package:http/http.dart';
 
+// ignore: avoid_classes_with_only_static_members
 class Lyrics {
-  Future<String> getLyrics({
+  static Future<String> getLyrics({
     required String id,
     required String title,
     required String artist,
@@ -23,7 +24,7 @@ class Lyrics {
     return lyrics;
   }
 
-  Future<String> getSaavnLyrics(String id) async {
+  static Future<String> getSaavnLyrics(String id) async {
     final Uri lyricsUrl = Uri.https(
       'www.jiosaavn.com',
       '/api.php?__call=lyrics.getLyrics&lyrics_id=$id&ctx=web6dot0&api_version=4&_format=json',
@@ -38,7 +39,7 @@ class Lyrics {
     return lyrics;
   }
 
-  Future<String> getGoogleLyrics({
+  static Future<String> getGoogleLyrics({
     required String title,
     required String artist,
   }) async {
@@ -90,13 +91,13 @@ class Lyrics {
     return lyrics.trim();
   }
 
-  Future<String> getOffLyrics(String path) async {
+  static Future<String> getOffLyrics(String path) async {
     final Audiotagger tagger = Audiotagger();
     final Tag? tags = await tagger.readTags(path: path);
     return tags?.lyrics ?? '';
   }
 
-  Future<String> getLyricsLink(String song, String artist) async {
+  static Future<String> getLyricsLink(String song, String artist) async {
     const String authority = 'www.musixmatch.com';
     final String unencodedPath = '/search/$song $artist';
     final Response res = await get(Uri.https(authority, unencodedPath));
@@ -106,7 +107,7 @@ class Lyrics {
     return result == null ? '' : result[1]!;
   }
 
-  Future<String> scrapLink(String unencodedPath) async {
+  static Future<String> scrapLink(String unencodedPath) async {
     const String authority = 'www.musixmatch.com';
     final Response res = await get(Uri.https(authority, unencodedPath));
     if (res.statusCode != 200) return '';
@@ -118,7 +119,7 @@ class Lyrics {
     return lyrics.isEmpty ? '' : lyrics.join('\n');
   }
 
-  Future<String> getMusixMatchLyrics({
+  static Future<String> getMusixMatchLyrics({
     required String title,
     required String artist,
   }) async {

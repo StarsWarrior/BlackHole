@@ -6,8 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
+// ignore: avoid_classes_with_only_static_members
 class SearchAddPlaylist {
-  Future<Map> addYtPlaylist(String inLink) async {
+  static Future<Map> addYtPlaylist(String inLink) async {
     final String link = '$inLink&';
     try {
       final RegExpMatch? id = RegExp(r'.*list\=(.*?)&').firstMatch(link);
@@ -31,7 +32,7 @@ class SearchAddPlaylist {
     }
   }
 
-  Stream<Map> songsAdder(String playName, List tracks) async* {
+  static Stream<Map> songsAdder(String playName, List tracks) async* {
     int _done = 0;
     for (final track in tracks) {
       String? trackName;
@@ -51,7 +52,7 @@ class SearchAddPlaylist {
     }
   }
 
-  Future<void> showProgress(
+  static Future<void> showProgress(
     int _total,
     BuildContext cxt,
     Stream songAdd,

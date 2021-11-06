@@ -87,7 +87,7 @@ class _AuthScreenState extends State<AuthScreen> {
                     children: [
                       TextButton(
                         onPressed: () async {
-                          await BackupNRestore().restore(context);
+                          await restore(context);
                           currentTheme.refresh();
                           Navigator.popAndPushNamed(context, '/');
                         },

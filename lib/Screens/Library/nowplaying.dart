@@ -41,7 +41,7 @@ class _NowPlayingState extends State<NowPlaying> {
                           elevation: 0,
                         ),
                   body: processingState == AudioProcessingState.idle
-                      ? EmptyScreen().emptyScreen(
+                      ? emptyScreen(
                           context,
                           3,
                           AppLocalizations.of(context)!.nothingIs,
@@ -114,6 +114,7 @@ class _NowPlayingState extends State<NowPlaying> {
                                                       __,
                                                     ) =>
                                                         const Image(
+                                                      fit: BoxFit.cover,
                                                       image: AssetImage(
                                                         'assets/cover.jpg',
                                                       ),
@@ -123,6 +124,7 @@ class _NowPlayingState extends State<NowPlaying> {
                                                       _,
                                                     ) =>
                                                         const Image(
+                                                      fit: BoxFit.cover,
                                                       image: AssetImage(
                                                         'assets/cover.jpg',
                                                       ),

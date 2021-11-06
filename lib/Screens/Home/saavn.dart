@@ -35,7 +35,7 @@ class _SaavnHomePageState extends State<SaavnHomePage>
       lists = ['recent', ...?data['collections']];
     }
     setState(() {});
-    recievedData = await FormatResponse().formatPromoLists(data);
+    recievedData = await FormatResponse.formatPromoLists(data);
     if (recievedData.isNotEmpty) {
       Hive.box('cache').put('homepage', recievedData);
       data = recievedData;
@@ -122,6 +122,7 @@ class _SaavnHomePageState extends State<SaavnHomePage>
                         itemBuilder: (context, index) {
                           return GestureDetector(
                             onLongPress: () {
+                              Feedback.forLongPress(context);
                               showDialog(
                                 context: context,
                                 builder: (context) {
@@ -142,6 +143,7 @@ class _SaavnHomePageState extends State<SaavnHomePage>
                                         fit: BoxFit.cover,
                                         errorWidget: (context, _, __) =>
                                             const Image(
+                                          fit: BoxFit.cover,
                                           image: AssetImage('assets/cover.jpg'),
                                         ),
                                         imageUrl: recentList[index]['image']
@@ -151,6 +153,7 @@ class _SaavnHomePageState extends State<SaavnHomePage>
                                             .replaceAll('150x150', '500x500'),
                                         placeholder: (context, url) =>
                                             const Image(
+                                          fit: BoxFit.cover,
                                           image: AssetImage('assets/cover.jpg'),
                                         ),
                                       ),
@@ -165,12 +168,12 @@ class _SaavnHomePageState extends State<SaavnHomePage>
                                 PageRouteBuilder(
                                   opaque: false,
                                   pageBuilder: (_, __, ___) => PlayScreen(
-                                    data: {
-                                      'response': recentList,
-                                      'index': index,
-                                      'offline': false,
-                                    },
+                                    songsList: recentList,
+                                    index: index,
+                                    offline: false,
+                                    fromDownloads: false,
                                     fromMiniplayer: false,
+                                    recommend: true,
                                   ),
                                 ),
                               );
@@ -179,26 +182,32 @@ class _SaavnHomePageState extends State<SaavnHomePage>
                               width: boxSize / 2 - 30,
                               child: Column(
                                 children: [
-                                  Card(
-                                    elevation: 5,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10.0),
-                                    ),
-                                    clipBehavior: Clip.antiAlias,
-                                    child: CachedNetworkImage(
-                                      fit: BoxFit.cover,
-                                      errorWidget: (context, _, __) =>
-                                          const Image(
-                                        image: AssetImage('assets/cover.jpg'),
+                                  SizedBox.square(
+                                    dimension: boxSize / 2 - 30,
+                                    child: Card(
+                                      elevation: 5,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
                                       ),
-                                      imageUrl: recentList[index]['image']
-                                          .toString()
-                                          .replaceAll('http:', 'https:')
-                                          .replaceAll('50x50', '500x500')
-                                          .replaceAll('150x150', '500x500'),
-                                      placeholder: (context, url) =>
-                                          const Image(
-                                        image: AssetImage('assets/cover.jpg'),
+                                      clipBehavior: Clip.antiAlias,
+                                      child: CachedNetworkImage(
+                                        fit: BoxFit.cover,
+                                        errorWidget: (context, _, __) =>
+                                            const Image(
+                                          fit: BoxFit.cover,
+                                          image: AssetImage('assets/cover.jpg'),
+                                        ),
+                                        imageUrl: recentList[index]['image']
+                                            .toString()
+                                            .replaceAll('http:', 'https:')
+                                            .replaceAll('50x50', '500x500')
+                                            .replaceAll('150x150', '500x500'),
+                                        placeholder: (context, url) =>
+                                            const Image(
+                                          fit: BoxFit.cover,
+                                          image: AssetImage('assets/cover.jpg'),
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -285,6 +294,7 @@ class _SaavnHomePageState extends State<SaavnHomePage>
                         if (item.isEmpty) return const SizedBox();
                         return GestureDetector(
                           onLongPress: () {
+                            Feedback.forLongPress(context);
                             showDialog(
                               context: context,
                               builder: (context) {
@@ -308,6 +318,7 @@ class _SaavnHomePageState extends State<SaavnHomePage>
                                       fit: BoxFit.cover,
                                       errorWidget: (context, _, __) =>
                                           const Image(
+                                        fit: BoxFit.cover,
                                         image: AssetImage('assets/cover.jpg'),
                                       ),
                                       imageUrl: item['image']
@@ -316,6 +327,7 @@ class _SaavnHomePageState extends State<SaavnHomePage>
                                           .replaceAll('50x50', '500x500')
                                           .replaceAll('150x150', '500x500'),
                                       placeholder: (context, url) => Image(
+                                        fit: BoxFit.cover,
                                         image: (item['type'] == 'playlist' ||
                                                 item['type'] == 'album')
                                             ? const AssetImage(
@@ -363,12 +375,12 @@ class _SaavnHomePageState extends State<SaavnHomePage>
                                             opaque: false,
                                             pageBuilder: (_, __, ___) =>
                                                 PlayScreen(
-                                              data: {
-                                                'response': value,
-                                                'index': 0,
-                                                'offline': false,
-                                              },
+                                              songsList: value,
+                                              index: 0,
+                                              offline: false,
+                                              fromDownloads: false,
                                               fromMiniplayer: false,
+                                              recommend: true,
                                             ),
                                           ),
                                         ),
@@ -380,22 +392,21 @@ class _SaavnHomePageState extends State<SaavnHomePage>
                                 context,
                                 PageRouteBuilder(
                                   opaque: false,
-                                  pageBuilder: (_, __, ___) =>
-                                      item['type'] == 'song'
-                                          ? PlayScreen(
-                                              data: {
-                                                'response': currentSongList,
-                                                'index':
-                                                    currentSongList.indexWhere(
-                                                  (e) => e['id'] == item['id'],
-                                                ),
-                                                'offline': false,
-                                              },
-                                              fromMiniplayer: false,
-                                            )
-                                          : SongsListPage(
-                                              listItem: item,
-                                            ),
+                                  pageBuilder: (_, __, ___) => item['type'] ==
+                                          'song'
+                                      ? PlayScreen(
+                                          songsList: currentSongList as List,
+                                          index: currentSongList.indexWhere(
+                                            (e) => e['id'] == item['id'],
+                                          ),
+                                          offline: false,
+                                          fromDownloads: false,
+                                          fromMiniplayer: false,
+                                          recommend: true,
+                                        )
+                                      : SongsListPage(
+                                          listItem: item,
+                                        ),
                                 ),
                               );
                             }
@@ -406,40 +417,47 @@ class _SaavnHomePageState extends State<SaavnHomePage>
                               children: [
                                 Column(
                                   children: [
-                                    Card(
-                                      elevation: 5,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(
-                                          item['type'] == 'radio_station'
-                                              ? 1000.0
-                                              : 10.0,
+                                    SizedBox.square(
+                                      dimension: boxSize / 2 - 30,
+                                      child: Card(
+                                        elevation: 5,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            item['type'] == 'radio_station'
+                                                ? 1000.0
+                                                : 10.0,
+                                          ),
                                         ),
-                                      ),
-                                      clipBehavior: Clip.antiAlias,
-                                      child: CachedNetworkImage(
-                                        fit: BoxFit.cover,
-                                        errorWidget: (context, _, __) =>
-                                            const Image(
-                                          image: AssetImage('assets/cover.jpg'),
-                                        ),
-                                        imageUrl: item['image']
-                                            .toString()
-                                            .replaceAll('http:', 'https:')
-                                            .replaceAll('50x50', '500x500')
-                                            .replaceAll('150x150', '500x500'),
-                                        placeholder: (context, url) => Image(
-                                          image: (item['type'] == 'playlist' ||
-                                                  item['type'] == 'album')
-                                              ? const AssetImage(
-                                                  'assets/album.png',
-                                                )
-                                              : item['type'] == 'artist'
-                                                  ? const AssetImage(
-                                                      'assets/artist.png',
-                                                    )
-                                                  : const AssetImage(
-                                                      'assets/cover.jpg',
-                                                    ),
+                                        clipBehavior: Clip.antiAlias,
+                                        child: CachedNetworkImage(
+                                          fit: BoxFit.cover,
+                                          errorWidget: (context, _, __) =>
+                                              const Image(
+                                            fit: BoxFit.cover,
+                                            image:
+                                                AssetImage('assets/cover.jpg'),
+                                          ),
+                                          imageUrl: item['image']
+                                              .toString()
+                                              .replaceAll('http:', 'https:')
+                                              .replaceAll('50x50', '500x500')
+                                              .replaceAll('150x150', '500x500'),
+                                          placeholder: (context, url) => Image(
+                                            fit: BoxFit.cover,
+                                            image:
+                                                (item['type'] == 'playlist' ||
+                                                        item['type'] == 'album')
+                                                    ? const AssetImage(
+                                                        'assets/album.png',
+                                                      )
+                                                    : item['type'] == 'artist'
+                                                        ? const AssetImage(
+                                                            'assets/artist.png',
+                                                          )
+                                                        : const AssetImage(
+                                                            'assets/cover.jpg',
+                                                          ),
+                                          ),
                                         ),
                                       ),
                                     ),

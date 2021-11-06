@@ -1,3 +1,4 @@
+import 'package:blackhole/CustomWidgets/copy_clipboard.dart';
 import 'package:blackhole/CustomWidgets/gradient_containers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -158,6 +159,16 @@ class _AboutScreenState extends State<AboutScreen> {
                         const String upiUrl =
                             'upi://pay?pa=8570094149@okbizaxis&pn=BlackHole&mc=5732&aid=uGICAgIDn98OpSw&tr=BCR2DN6T37O6DB3Q';
                         launch(upiUrl);
+                      },
+                      onLongPress: () {
+                        copyToClipboard(
+                          context: context,
+                          text: 'ankit.sangwan.5688@oksbi',
+                          displayText: AppLocalizations.of(
+                            context,
+                          )!
+                              .upiCopied,
+                        );
                       },
                       child: SizedBox(
                         width: MediaQuery.of(context).size.width / 2,

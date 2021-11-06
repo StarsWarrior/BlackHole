@@ -3,13 +3,17 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
+// ignore: avoid_classes_with_only_static_members
 class Picker {
-  Future<String> selectFolder(BuildContext context, String message) async {
+  static Future<String> selectFolder(
+    BuildContext context,
+    String message,
+  ) async {
     final String? temp = await FilePicker.platform.getDirectoryPath();
     return (temp == '/' || temp == null) ? '' : temp;
   }
 
-  Future<String> selectFile(
+  static Future<String> selectFile(
     BuildContext context,
     List<String> ext,
     String message,

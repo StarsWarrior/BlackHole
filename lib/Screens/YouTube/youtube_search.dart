@@ -5,6 +5,7 @@ import 'package:blackhole/CustomWidgets/gradient_containers.dart';
 import 'package:blackhole/CustomWidgets/miniplayer.dart';
 import 'package:blackhole/CustomWidgets/search_bar.dart';
 import 'package:blackhole/CustomWidgets/snackbar.dart';
+import 'package:blackhole/CustomWidgets/song_tile_trailing_menu.dart';
 import 'package:blackhole/Screens/Player/audioplayer.dart';
 import 'package:blackhole/Services/youtube_services.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -95,7 +96,7 @@ class _YouTubeSearchPageState extends State<YouTubeSearchPage> {
                           ),
                         )
                       : searchedList.isEmpty
-                          ? EmptyScreen().emptyScreen(
+                          ? emptyScreen(
                               context,
                               0,
                               ':( ',
@@ -177,38 +178,93 @@ class _YouTubeSearchPageState extends State<YouTubeSearchPage> {
                                                             (_, __, ___) =>
                                                                 PlayScreen(
                                                           fromMiniplayer: false,
-                                                          data: {
-                                                            'response': [
-                                                              response
-                                                            ],
-                                                            'index': 0,
-                                                            'offline': false,
-                                                            'fromYT': true,
-                                                          },
+                                                          songsList: [response],
+                                                          index: 0,
+                                                          offline: false,
+                                                          fromDownloads: false,
+                                                          recommend: false,
                                                         ),
                                                       ),
                                                     );
                                             },
                                             child: Column(
                                               children: [
-                                                CachedNetworkImage(
-                                                  errorWidget:
-                                                      (context, _, __) => Image(
-                                                    image: NetworkImage(
-                                                      searchedList[index]
-                                                          .thumbnails
-                                                          .standardResUrl,
+                                                Stack(
+                                                  children: [
+                                                    CachedNetworkImage(
+                                                      fit: BoxFit.cover,
+                                                      errorWidget:
+                                                          (context, _, __) =>
+                                                              Image(
+                                                        fit: BoxFit.cover,
+                                                        image: NetworkImage(
+                                                          searchedList[index]
+                                                              .thumbnails
+                                                              .standardResUrl,
+                                                        ),
+                                                      ),
+                                                      imageUrl:
+                                                          searchedList[index]
+                                                              .thumbnails
+                                                              .maxResUrl,
+                                                      placeholder:
+                                                          (context, url) =>
+                                                              const Image(
+                                                        fit: BoxFit.cover,
+                                                        image: AssetImage(
+                                                          'assets/ytCover.png',
+                                                        ),
+                                                      ),
                                                     ),
-                                                  ),
-                                                  imageUrl: searchedList[index]
-                                                      .thumbnails
-                                                      .maxResUrl,
-                                                  placeholder: (context, url) =>
-                                                      const Image(
-                                                    image: AssetImage(
-                                                      'assets/ytCover.png',
-                                                    ),
-                                                  ),
+                                                    Positioned(
+                                                      bottom: 0,
+                                                      right: 0,
+                                                      child: Card(
+                                                        elevation: 0.0,
+                                                        color: Colors.black54,
+                                                        shape:
+                                                            RoundedRectangleBorder(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(
+                                                            6.0,
+                                                          ),
+                                                        ),
+                                                        child: Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .all(4.5),
+                                                          child: Text(
+                                                            searchedList[index]
+                                                                        .duration
+                                                                        .toString() ==
+                                                                    'null'
+                                                                ? AppLocalizations
+                                                                        .of(
+                                                                    context,
+                                                                  )!
+                                                                    .live
+                                                                : searchedList[
+                                                                        index]
+                                                                    .duration
+                                                                    .toString()
+                                                                    .split(
+                                                                      '.',
+                                                                    )[0]
+                                                                    .replaceFirst(
+                                                                      '0:0',
+                                                                      '',
+                                                                    ),
+                                                            style:
+                                                                const TextStyle(
+                                                              color:
+                                                                  Colors.white,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    )
+                                                  ],
                                                 ),
                                                 ListTile(
                                                   dense: true,
@@ -226,61 +282,11 @@ class _YouTubeSearchPageState extends State<YouTubeSearchPage> {
                                                     ),
                                                   ),
                                                   // isThreeLine: true,
-                                                  subtitle: Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceBetween,
-                                                    children: [
-                                                      Column(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .start,
-                                                        children: [
-                                                          Text(
-                                                            searchedList[index]
-                                                                .author,
-                                                            overflow:
-                                                                TextOverflow
-                                                                    .ellipsis,
-                                                            // '${searchedList[index]["channelName"]}'
-                                                          ),
-                                                          // Text(searchedList[index]
-                                                          //         .engagement
-                                                          //         .viewCount
-                                                          //         .toString()
-
-                                                          //     // '${searchedList[index]["views"]}'
-                                                          //     ),
-                                                        ],
-                                                      ),
-                                                      Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .only(
-                                                          right: 15.0,
-                                                        ),
-                                                        child: Text(
-                                                          searchedList[index]
-                                                                      .duration
-                                                                      .toString() ==
-                                                                  'null'
-                                                              ? AppLocalizations
-                                                                      .of(
-                                                                  context,
-                                                                )!
-                                                                  .live
-                                                              : searchedList[
-                                                                      index]
-                                                                  .duration
-                                                                  .toString()
-                                                                  .split('.')[0]
-                                                                  .replaceFirst(
-                                                                    '0:0',
-                                                                    '',
-                                                                  ),
-                                                        ),
-                                                      ),
-                                                    ],
+                                                  subtitle: Text(
+                                                    searchedList[index].author,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    // '${searchedList[index]["channelName"]}'
                                                   ),
                                                   // leading: CircleAvatar(
                                                   //   maxRadius: 20,
@@ -294,6 +300,10 @@ class _YouTubeSearchPageState extends State<YouTubeSearchPage> {
                                                   //           // ["channelImage"],
                                                   //           ),
                                                   // ),
+                                                  trailing:
+                                                      YtSongTileTrailingMenu(
+                                                    data: searchedList[index],
+                                                  ),
                                                 ),
                                               ],
                                             ),

@@ -116,8 +116,12 @@ class DataSearch extends SearchDelegate {
             PageRouteBuilder(
               opaque: false,
               pageBuilder: (_, __, ___) => PlayScreen(
-                data: {'response': singleSongMap, 'index': 0, 'offline': true},
+                songsList: singleSongMap,
+                index: 0,
+                offline: true,
                 fromMiniplayer: false,
+                fromDownloads: false,
+                recommend: false,
               ),
             ),
           );
@@ -242,12 +246,14 @@ class DownloadsSearch extends SearchDelegate {
                 : CachedNetworkImage(
                     fit: BoxFit.cover,
                     errorWidget: (context, _, __) => const Image(
+                      fit: BoxFit.cover,
                       image: AssetImage('assets/cover.jpg'),
                     ),
                     imageUrl: suggestionList[index]['image']
                         .toString()
                         .replaceAll('http:', 'https:'),
                     placeholder: (context, url) => const Image(
+                      fit: BoxFit.cover,
                       image: AssetImage('assets/cover.jpg'),
                     ),
                   ),
@@ -266,12 +272,12 @@ class DownloadsSearch extends SearchDelegate {
             PageRouteBuilder(
               opaque: false,
               pageBuilder: (_, __, ___) => PlayScreen(
-                data: {
-                  'response': suggestionList,
-                  'index': index,
-                  'offline': isDowns,
-                },
+                songsList: suggestionList,
+                index: index,
+                offline: isDowns,
                 fromMiniplayer: false,
+                fromDownloads: isDowns,
+                recommend: false,
               ),
             ),
           );

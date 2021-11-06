@@ -1,7 +1,8 @@
 import 'package:audio_service/audio_service.dart';
 
+// ignore: avoid_classes_with_only_static_members
 class MediaItemConverter {
-  Map mediaItemtoMap(MediaItem mediaItem) {
+  static Map mediaItemtoMap(MediaItem mediaItem) {
     return {
       'id': mediaItem.id,
       'album': mediaItem.album.toString(),
@@ -23,7 +24,7 @@ class MediaItemConverter {
     };
   }
 
-  MediaItem mapToMediaItem(
+  static MediaItem mapToMediaItem(
     Map song, {
     bool addedByAutoplay = false,
     bool autoplay = true,
@@ -64,7 +65,7 @@ class MediaItemConverter {
     );
   }
 
-  MediaItem downMapToMediaItem(Map song) {
+  static MediaItem downMapToMediaItem(Map song) {
     return MediaItem(
       id: song['id'].toString(),
       album: song['album'].toString(),

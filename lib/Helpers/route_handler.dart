@@ -50,11 +50,11 @@ class SongUrlHandler extends StatelessWidget {
           PageRouteBuilder(
             opaque: false,
             pageBuilder: (_, __, ___) => PlayScreen(
-              data: {
-                'response': value['songs'],
-                'index': 0,
-                'offline': false,
-              },
+              songsList: value['songs'] as List,
+              index: 0,
+              offline: false,
+              fromDownloads: false,
+              recommend: true,
               fromMiniplayer: false,
             ),
           ),
@@ -107,7 +107,11 @@ class OfflinePlayHandler extends StatelessWidget {
         PageRouteBuilder(
           opaque: false,
           pageBuilder: (_, __, ___) => PlayScreen(
-            data: {'response': value[1], 'index': value[0], 'offline': true},
+            songsList: value[1] as List,
+            index: value[0] as int,
+            offline: true,
+            fromDownloads: false,
+            recommend: false,
             fromMiniplayer: false,
           ),
         ),
