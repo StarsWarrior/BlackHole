@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:blackhole/Screens/Library/liked.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -67,13 +69,14 @@ class _LibraryPageState extends State<LibraryPage> {
             );
           },
         ),
-        LibraryTile(
-          title: AppLocalizations.of(context)!.myMusic,
-          icon: MdiIcons.folderMusic,
-          onTap: () {
-            Navigator.pushNamed(context, '/mymusic');
-          },
-        ),
+        if (Platform.isAndroid)
+          LibraryTile(
+            title: AppLocalizations.of(context)!.myMusic,
+            icon: MdiIcons.folderMusic,
+            onTap: () {
+              Navigator.pushNamed(context, '/mymusic');
+            },
+          ),
         LibraryTile(
           title: AppLocalizations.of(context)!.downs,
           icon: Icons.download_done_rounded,

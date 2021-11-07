@@ -19,7 +19,7 @@ import 'dart:io';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:blackhole/Helpers/config.dart';
-// import 'package:blackhole/Helpers/handle_native.dart';
+import 'package:blackhole/Helpers/handle_native.dart';
 import 'package:blackhole/Helpers/route_handler.dart';
 import 'package:blackhole/Screens/About/about.dart';
 import 'package:blackhole/Screens/Home/home.dart';
@@ -128,7 +128,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    // callIntent();
+    callIntent();
     final String lang =
         Hive.box('settings').get('lang', defaultValue: 'English') as String;
     final Map<String, String> codes = {
@@ -143,12 +143,9 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
-  // Future<void> callIntent() async {
-  // final String? intent = await NativeMethod.handleIntent();
-  // if (intent != null) {
-  // print('Found intent: $intent');
-  // }
-  // }
+  Future<void> callIntent() async {
+    await NativeMethod.handleIntent();
+  }
 
   void setLocale(Locale value) {
     setState(() {

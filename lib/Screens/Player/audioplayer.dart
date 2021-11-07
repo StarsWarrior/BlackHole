@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:blackhole/CustomWidgets/add_playlist.dart';
@@ -29,6 +28,7 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:hive/hive.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:on_audio_query/on_audio_query.dart';
 import 'package:palette_generator/palette_generator.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:rxdart/rxdart.dart';
@@ -64,13 +64,10 @@ class _PlayScreenState extends State<PlayScreen> {
       Hive.box('settings').get('repeatMode', defaultValue: 'None').toString();
   bool enforceRepeat =
       Hive.box('settings').get('enforceRepeat', defaultValue: false) as bool;
-  bool shuffle =
-      Hive.box('settings').get('shuffle', defaultValue: false) as bool;
   bool useImageColor =
       Hive.box('settings').get('useImageColor', defaultValue: true) as bool;
   List<MediaItem> globalQueue = [];
   int globalIndex = 0;
-  bool same = false;
   List response = [];
   bool offline = false;
   bool fromDownloads = false;
@@ -98,9 +95,6 @@ class _PlayScreenState extends State<PlayScreen> {
   void initState() {
     super.initState();
     main();
-    if (response == widget.songsList && globalIndex == widget.index) {
-      same = true;
-    }
     response = widget.songsList;
     globalIndex = widget.index;
     if (globalIndex == -1) {
@@ -118,16 +112,8 @@ class _PlayScreenState extends State<PlayScreen> {
       offline = widget.offline!;
     }
 
-    if (response.isEmpty || same) {
-      fromMiniplayer = true;
-    } else {
-      fromMiniplayer = false;
-      if (!enforceRepeat) {
-        repeatMode = 'None';
-        Hive.box('settings').put('repeatMode', repeatMode);
-      }
-      shuffle = false;
-      Hive.box('settings').put('shuffle', shuffle);
+    fromMiniplayer = widget.fromMiniplayer;
+    if (!fromMiniplayer) {
       if (offline) {
         fromDownloads ? setDownValues(response) : setOffValues(response);
       } else {
@@ -137,60 +123,36 @@ class _PlayScreenState extends State<PlayScreen> {
     }
   }
 
-  Future<MediaItem> setTags(Map response, Directory tempDir) async {
-    String? playTitle = response['title'].toString();
+  Future<MediaItem> setTags(SongModel response, Directory tempDir) async {
+    String playTitle = response.title;
     playTitle == ''
-        ? playTitle = response['_display_name_wo_ext']?.toString()
-        : playTitle = response['title']?.toString();
-    String? playArtist = response['artist']?.toString();
+        ? playTitle = response.displayNameWOExt
+        : playTitle = response.title;
+    String playArtist = response.artist!;
     playArtist == '<unknown>'
         ? playArtist = 'Unknown'
-        : playArtist = response['artist']?.toString();
+        : playArtist = response.artist!;
 
-    final String playAlbum = response['album'].toString();
-    final int playDuration = response['duration'] as int? ?? 180000;
-    String? filePath;
-    if (response['image'] != null) {
-      try {
-        final File file =
-            File('${tempDir.path}/${response["_display_name_wo_ext"]}.jpg');
-        filePath = file.path;
-        if (!await file.exists()) {
-          await file.create();
-          file.writeAsBytesSync(response['image'] as Uint8List);
-        }
-      } catch (e) {
-        filePath = null;
-      }
-    } else {
-      filePath = await getImageFileFromAssets();
-    }
+    final String playAlbum = response.album!;
+    final int playDuration = response.duration ?? 180000;
+    final String imagePath = '${tempDir.path}/${response.displayNameWOExt}.jpg';
 
     final MediaItem tempDict = MediaItem(
-      id: response['_id'].toString(),
+      id: response.id.toString(),
       album: playAlbum,
       duration: Duration(milliseconds: playDuration),
-      title: playTitle != null ? playTitle.split('(')[0] : 'Unknown',
-      artist: playArtist ?? 'Unknown',
-      artUri: Uri.file(filePath!),
+      title: playTitle.split('(')[0],
+      artist: playArtist,
+      genre: response.genre,
+      artUri: Uri.file(imagePath),
       extras: {
-        'url': response['_data'].toString(),
+        'url': response.data,
+        'date_added': response.dateAdded,
+        'date_modified': response.dateModified,
+        'size': response.size,
       },
     );
     return tempDict;
-  }
-
-  Future<String> getImageFileFromAssets() async {
-    if (defaultCover != '') return defaultCover;
-    final file = File('${(await getTemporaryDirectory()).path}/cover.jpg');
-    defaultCover = file.path;
-    if (await file.exists()) return file.path;
-    final byteData = await rootBundle.load('assets/cover.jpg');
-    await file.writeAsBytes(
-      byteData.buffer
-          .asUint8List(byteData.offsetInBytes, byteData.lengthInBytes),
-    );
-    return file.path;
   }
 
   void setOffValues(List response, {bool downloaed = false}) {
@@ -206,7 +168,7 @@ class _PlayScreenState extends State<PlayScreen> {
       }
       for (int i = 0; i < response.length; i++) {
         globalQueue.add(
-          await setTags(response[i] as Map, tempDir),
+          await setTags(response[i] as SongModel, tempDir),
         );
       }
       updateNplay();
@@ -254,6 +216,7 @@ class _PlayScreenState extends State<PlayScreen> {
       }
     } else {
       audioHandler.setRepeatMode(AudioServiceRepeatMode.none);
+      Hive.box('settings').put('repeatMode', 'None');
     }
   }
 
@@ -344,6 +307,18 @@ class _PlayScreenState extends State<PlayScreen> {
                         if (value == 10) {
                           final Map details =
                               MediaItemConverter.mediaItemtoMap(mediaItem);
+                          if (mediaItem.extras?['size'] != null) {
+                            details.addEntries([
+                              MapEntry(
+                                'date_modified',
+                                '${mediaItem.extras?['date_modified']}',
+                              ),
+                              MapEntry(
+                                'size',
+                                '${((mediaItem.extras?['size'] as int) / (1024 * 1024)).toStringAsFixed(2)} MB',
+                              ),
+                            ]);
+                          }
                           PopupDialog().showPopup(
                             context: context,
                             child: SingleChildScrollView(
@@ -815,7 +790,7 @@ class _PlayScreenState extends State<PlayScreen> {
   }
 
   Future<dynamic> setCounter(BuildContext scaffoldContext) async {
-    await TextInputDialog().showTextInputDialog(
+    await showTextInputDialog(
       context: scaffoldContext,
       title: AppLocalizations.of(context)!.enterSongsCount,
       initialText: '',

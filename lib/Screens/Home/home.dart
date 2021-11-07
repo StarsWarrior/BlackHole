@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:blackhole/CustomWidgets/custom_physics.dart';
@@ -310,19 +311,21 @@ class _HomePageState extends State<HomePage> {
                               Navigator.pop(context);
                             },
                           ),
-                          ListTile(
-                            title: Text(AppLocalizations.of(context)!.myMusic),
-                            contentPadding:
-                                const EdgeInsets.symmetric(horizontal: 20.0),
-                            leading: Icon(
-                              MdiIcons.folderMusic,
-                              color: Theme.of(context).iconTheme.color,
+                          if (Platform.isAndroid)
+                            ListTile(
+                              title:
+                                  Text(AppLocalizations.of(context)!.myMusic),
+                              contentPadding:
+                                  const EdgeInsets.symmetric(horizontal: 20.0),
+                              leading: Icon(
+                                MdiIcons.folderMusic,
+                                color: Theme.of(context).iconTheme.color,
+                              ),
+                              onTap: () {
+                                Navigator.pop(context);
+                                Navigator.pushNamed(context, '/mymusic');
+                              },
                             ),
-                            onTap: () {
-                              Navigator.pop(context);
-                              Navigator.pushNamed(context, '/mymusic');
-                            },
-                          ),
                           ListTile(
                             title: Text(AppLocalizations.of(context)!.downs),
                             contentPadding:
@@ -441,8 +444,7 @@ class _HomePageState extends State<HomePage> {
                                         // collapseMode: CollapseMode.parallax,
                                         background: GestureDetector(
                                           onTap: () async {
-                                            await TextInputDialog()
-                                                .showTextInputDialog(
+                                            await showTextInputDialog(
                                               context: context,
                                               title: 'Name',
                                               initialText: name,

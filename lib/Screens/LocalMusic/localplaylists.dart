@@ -68,7 +68,7 @@ class _LocalPlaylistScreenState extends State<LocalPlaylistScreen> {
                         ),
                       ),
                       onTap: () async {
-                        await TextInputDialog().showTextInputDialog(
+                        await showTextInputDialog(
                           context: context,
                           title:
                               AppLocalizations.of(context)!.createNewPlaylist,

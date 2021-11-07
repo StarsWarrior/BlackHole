@@ -10,8 +10,9 @@ import 'package:on_audio_query/on_audio_query.dart';
 
 class DataSearch extends SearchDelegate {
   final List<SongModel> data;
+  final String tempPath;
 
-  DataSearch(this.data);
+  DataSearch({required this.data, required this.tempPath}) : super();
 
   @override
   List<Widget> buildActions(BuildContext context) {
@@ -75,27 +76,11 @@ class DataSearch extends SearchDelegate {
       itemExtent: 70.0,
       itemCount: suggestionList.length,
       itemBuilder: (context, index) => ListTile(
-        leading: Card(
-          elevation: 5,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(7.0),
-          ),
-          clipBehavior: Clip.antiAlias,
-          child: QueryArtworkWidget(
-            id: suggestionList[index].id,
-            type: ArtworkType.AUDIO,
-            artworkBorder: BorderRadius.circular(7.0),
-            keepOldArtwork: true,
-            nullArtworkWidget: ClipRRect(
-              borderRadius: BorderRadius.circular(7.0),
-              child: const Image(
-                fit: BoxFit.cover,
-                height: 50.0,
-                width: 50.0,
-                image: AssetImage('assets/cover.jpg'),
-              ),
-            ),
-          ),
+        leading: OfflineAudioQuery.offlineArtworkWidget(
+          id: suggestionList[index].id,
+          type: ArtworkType.AUDIO,
+          tempPath: tempPath,
+          fileName: suggestionList[index].displayNameWOExt,
         ),
         title: Text(
           suggestionList[index].title.trim() != ''
@@ -110,14 +95,12 @@ class DataSearch extends SearchDelegate {
           overflow: TextOverflow.ellipsis,
         ),
         onTap: () async {
-          final singleSongMap =
-              await OfflineAudioQuery().getArtwork([suggestionList[index]]);
           Navigator.of(context).push(
             PageRouteBuilder(
               opaque: false,
               pageBuilder: (_, __, ___) => PlayScreen(
-                songsList: singleSongMap,
-                index: 0,
+                songsList: suggestionList,
+                index: index,
                 offline: true,
                 fromMiniplayer: false,
                 fromDownloads: false,

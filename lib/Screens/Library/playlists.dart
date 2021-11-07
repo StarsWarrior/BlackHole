@@ -76,7 +76,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                         ),
                       ),
                       onTap: () async {
-                        await TextInputDialog().showTextInputDialog(
+                        await showTextInputDialog(
                           context: context,
                           title:
                               AppLocalizations.of(context)!.createNewPlaylist,
@@ -182,7 +182,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                         ),
                       ),
                       onTap: () async {
-                        await TextInputDialog().showTextInputDialog(
+                        await showTextInputDialog(
                           context: context,
                           title:
                               AppLocalizations.of(context)!.enterPlaylistLink,
@@ -578,7 +578,7 @@ Future<void> fetchPlaylists(
                     ),
                   ),
                   onTap: () async {
-                    await TextInputDialog().showTextInputDialog(
+                    await showTextInputDialog(
                       context: context,
                       title: AppLocalizations.of(context)!.enterPlaylistLink,
                       initialText: '',

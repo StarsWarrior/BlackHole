@@ -45,7 +45,7 @@ class AddToOffPlaylist {
                     ),
                   ),
                   onTap: () {
-                    TextInputDialog().showTextInputDialog(
+                    showTextInputDialog(
                       context: context,
                       keyboardType: TextInputType.text,
                       title: AppLocalizations.of(context)!.createNewPlaylist,
@@ -155,7 +155,7 @@ class AddToPlaylist {
                     ),
                   ),
                   onTap: () {
-                    TextInputDialog().showTextInputDialog(
+                    showTextInputDialog(
                       context: context,
                       keyboardType: TextInputType.name,
                       title: AppLocalizations.of(context)!.createNewPlaylist,

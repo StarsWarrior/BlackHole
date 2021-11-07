@@ -1,8 +1,13 @@
+import 'dart:io';
+import 'dart:typed_data';
+
+import 'package:flutter/material.dart';
 import 'package:on_audio_query/on_audio_query.dart';
+import 'package:path_provider/path_provider.dart';
 
 class OfflineAudioQuery {
-  OnAudioQuery audioQuery = OnAudioQuery();
-  final RegExp avoid = RegExp(r'[\.\\\*\:\"\?#/;\|]');
+  static OnAudioQuery audioQuery = OnAudioQuery();
+  static final RegExp avoid = RegExp(r'[\.\\\*\:\"\?#/;\|]');
 
   Future<void> requestPermission() async {
     while (!await audioQuery.permissionsStatus()) {
@@ -104,22 +109,109 @@ class OfflineAudioQuery {
     );
   }
 
-  Future<List> getArtwork(
-    List<SongModel> songs, {
-    List? songsMap,
-    ArtworkType artworkType = ArtworkType.AUDIO,
+  static Future<String> queryNSave({
+    required int id,
+    required ArtworkType type,
+    required String tempPath,
+    required String fileName,
+    int size = 200,
+    int quality = 100,
+    ArtworkFormat format = ArtworkFormat.JPEG,
   }) async {
-    final List<Map> songsMap = [];
-    for (final SongModel song in songs) {
-      final songMap = song.getMap;
-      songMap.addEntries([
-        MapEntry(
-          'image',
-          await audioQuery.queryArtwork(song.id, artworkType, size: 350),
-        )
-      ]);
-      songsMap.add(songMap);
+    final File file = File('$tempPath/$fileName.jpg');
+
+    if (!await file.exists()) {
+      await file.create();
+      final Uint8List? image = await audioQuery.queryArtwork(
+        id,
+        type,
+        format: format,
+        size: size,
+        quality: quality,
+      );
+      file.writeAsBytesSync(image!);
     }
-    return songsMap;
+    return file.path;
+  }
+
+  static Widget offlineArtworkWidget({
+    required int id,
+    required ArtworkType type,
+    required String tempPath,
+    required String fileName,
+    int size = 200,
+    int quality = 100,
+    ArtworkFormat format = ArtworkFormat.JPEG,
+    ArtworkType artworkType = ArtworkType.AUDIO,
+    BorderRadius? borderRadius,
+    Clip clipBehavior = Clip.antiAlias,
+    BoxFit fit = BoxFit.cover,
+    FilterQuality filterQuality = FilterQuality.low,
+    double height = 50.0,
+    double width = 50.0,
+    double elevation = 5,
+    ImageRepeat imageRepeat = ImageRepeat.noRepeat,
+    bool gaplessPlayback = true,
+    Widget? errorWidget,
+    Widget? placeholder,
+  }) {
+    return FutureBuilder<String>(
+      future: queryNSave(
+        id: id,
+        type: type,
+        format: format,
+        quality: quality,
+        size: size,
+        tempPath: tempPath,
+        fileName: fileName,
+      ),
+      builder: (context, item) {
+        if (item.data != null && item.data!.isNotEmpty) {
+          return Card(
+            elevation: elevation,
+            shape: RoundedRectangleBorder(
+              borderRadius: borderRadius ?? BorderRadius.circular(7.0),
+            ),
+            clipBehavior: clipBehavior,
+            child: Image(
+              image: FileImage(
+                File(
+                  item.data!,
+                ),
+              ),
+              gaplessPlayback: gaplessPlayback,
+              repeat: imageRepeat,
+              width: width,
+              height: height,
+              fit: fit,
+              filterQuality: filterQuality,
+              errorBuilder: (context, exception, stackTrace) {
+                return errorWidget ??
+                    Image(
+                      fit: BoxFit.cover,
+                      height: height,
+                      width: width,
+                      image: const AssetImage('assets/cover.jpg'),
+                    );
+              },
+            ),
+          );
+        }
+        return Card(
+          elevation: elevation,
+          shape: RoundedRectangleBorder(
+            borderRadius: borderRadius ?? BorderRadius.circular(7.0),
+          ),
+          clipBehavior: clipBehavior,
+          child: placeholder ??
+              Image(
+                fit: BoxFit.cover,
+                height: height,
+                width: width,
+                image: const AssetImage('assets/cover.jpg'),
+              ),
+        );
+      },
+    );
   }
 }

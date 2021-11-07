@@ -26,6 +26,8 @@ class _SaavnHomePageState extends State<SaavnHomePage>
     with AutomaticKeepAliveClientMixin<SaavnHomePage> {
   List recentList =
       Hive.box('cache').get('recentSongs', defaultValue: []) as List;
+  List blacklistedHomeSections = Hive.box('settings')
+      .get('blacklistedHomeSections', defaultValue: []) as List;
 
   Future<void> getHomePageData() async {
     Map recievedData = await SaavnAPI().fetchHomePageData();
@@ -243,26 +245,28 @@ class _SaavnHomePageState extends State<SaavnHomePage>
                   ],
                 );
         }
-        return (data[lists[idx]] == null)
+        return (data[lists[idx]] == null ||
+                blacklistedHomeSections.contains(
+                  data['modules'][lists[idx]]?['title']
+                      ?.toString()
+                      .toLowerCase(),
+                ))
             ? const SizedBox()
             : Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(15, 10, 0, 5),
-                        child: Text(
-                          formatString(
-                            data['modules'][lists[idx]]?['title']?.toString(),
-                          ),
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.secondary,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(15, 10, 0, 5),
+                    child: Text(
+                      formatString(
+                        data['modules'][lists[idx]]?['title']?.toString(),
                       ),
-                    ],
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.secondary,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
                   SizedBox(
                     height: boxSize / 2 + 10,

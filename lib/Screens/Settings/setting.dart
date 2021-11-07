@@ -39,6 +39,8 @@ class _SettingPageState extends State<SettingPage> {
       .get('downloadPath', defaultValue: '/storage/emulated/0/Music') as String;
   // List dirPaths =
   // Hive.box('settings').get('blacklistedPaths', defaultValue: []) as List;
+  List blacklistedHomeSections = Hive.box('settings')
+      .get('blacklistedHomeSections', defaultValue: []) as List;
   String streamingQuality = Hive.box('settings')
       .get('streamingQuality', defaultValue: '96 kbps') as String;
   String downloadQuality = Hive.box('settings')
@@ -1167,7 +1169,7 @@ class _SettingPageState extends State<SettingPage> {
                               final initialThemeName = '${AppLocalizations.of(
                                 context,
                               )!.theme} ${userThemes.length + 1}';
-                              TextInputDialog().showTextInputDialog(
+                              showTextInputDialog(
                                 context: context,
                                 title: AppLocalizations.of(
                                   context,
@@ -1411,6 +1413,129 @@ class _SettingPageState extends State<SettingPage> {
                             );
                           },
                         ),
+
+                        ListTile(
+                          title: Text(
+                            AppLocalizations.of(
+                              context,
+                            )!
+                                .blacklistedHomeSections,
+                          ),
+                          subtitle: Text(
+                            AppLocalizations.of(
+                              context,
+                            )!
+                                .blacklistedHomeSectionsSub,
+                          ),
+                          dense: true,
+                          onTap: () {
+                            final GlobalKey<AnimatedListState> _listKey =
+                                GlobalKey<AnimatedListState>();
+                            showModalBottomSheet(
+                              isDismissible: true,
+                              backgroundColor: Colors.transparent,
+                              context: context,
+                              builder: (BuildContext context) {
+                                return BottomGradientContainer(
+                                  borderRadius: BorderRadius.circular(
+                                    20.0,
+                                  ),
+                                  child: AnimatedList(
+                                    physics: const BouncingScrollPhysics(),
+                                    shrinkWrap: true,
+                                    padding: const EdgeInsets.fromLTRB(
+                                      0,
+                                      10,
+                                      0,
+                                      10,
+                                    ),
+                                    key: _listKey,
+                                    initialItemCount:
+                                        blacklistedHomeSections.length + 1,
+                                    itemBuilder: (cntxt, idx, animation) {
+                                      return (idx == 0)
+                                          ? ListTile(
+                                              title: Text(
+                                                AppLocalizations.of(context)!
+                                                    .addNew,
+                                              ),
+                                              leading: const Icon(
+                                                CupertinoIcons.add,
+                                              ),
+                                              onTap: () async {
+                                                showTextInputDialog(
+                                                  context: context,
+                                                  title: AppLocalizations.of(
+                                                    context,
+                                                  )!
+                                                      .enterText,
+                                                  keyboardType:
+                                                      TextInputType.text,
+                                                  onSubmitted: (String value) {
+                                                    Navigator.pop(context);
+                                                    blacklistedHomeSections.add(
+                                                      value
+                                                          .trim()
+                                                          .toLowerCase(),
+                                                    );
+                                                    Hive.box('settings').put(
+                                                      'blacklistedHomeSections',
+                                                      blacklistedHomeSections,
+                                                    );
+                                                    _listKey.currentState!
+                                                        .insertItem(
+                                                      blacklistedHomeSections
+                                                          .length,
+                                                    );
+                                                  },
+                                                );
+                                              },
+                                            )
+                                          : SizeTransition(
+                                              sizeFactor: animation,
+                                              child: ListTile(
+                                                leading: const Icon(
+                                                  CupertinoIcons.folder,
+                                                ),
+                                                title: Text(
+                                                  blacklistedHomeSections[
+                                                          idx - 1]
+                                                      .toString(),
+                                                ),
+                                                trailing: IconButton(
+                                                  icon: const Icon(
+                                                    CupertinoIcons.clear,
+                                                    size: 15.0,
+                                                  ),
+                                                  tooltip: 'Remove',
+                                                  onPressed: () {
+                                                    blacklistedHomeSections
+                                                        .removeAt(idx - 1);
+                                                    Hive.box('settings').put(
+                                                      'blacklistedHomeSections',
+                                                      blacklistedHomeSections,
+                                                    );
+                                                    _listKey.currentState!
+                                                        .removeItem(
+                                                      idx,
+                                                      (
+                                                        context,
+                                                        animation,
+                                                      ) =>
+                                                          Container(),
+                                                    );
+                                                  },
+                                                ),
+                                              ),
+                                            );
+                                    },
+                                  ),
+                                );
+                              },
+                            );
+                          },
+                        ),
+
                         BoxSwitchTile(
                           title: Text(
                             AppLocalizations.of(
@@ -1797,97 +1922,97 @@ class _SettingPageState extends State<SettingPage> {
                         //   keyName: 'cacheSong',
                         //   defaultValue: false,
                         // ),
-                        //   ListTile(
-                        //       title: const Text('BlackList Location'),
-                        //       subtitle: const Text(
-                        //           'Locations blacklisted from "My Music" section'),
-                        //       dense: true,
-                        //       onTap: () {
-                        //         final GlobalKey<AnimatedListState> _listKey =
-                        //             GlobalKey<AnimatedListState>();
-                        //         showModalBottomSheet(
-                        //             isDismissible: true,
-                        //             backgroundColor: Colors.transparent,
-                        //             context: context,
-                        //             builder: (BuildContext context) {
-                        //               return BottomGradientContainer(
-                        //                 borderRadius: BorderRadius.circular(20.0,),
-                        //                 child: AnimatedList(
-                        //                   physics: const BouncingScrollPhysics(),
-                        //                   shrinkWrap: true,
-                        //                   padding: const EdgeInsets.fromLTRB(
-                        //                       0, 10, 0, 10,),
-                        //                   key: _listKey,
-                        //                   initialItemCount: dirPaths.length + 1,
-                        //                   itemBuilder: (cntxt, idx, animation) {
-                        //                     return (idx == 0)
-                        //                         ? ListTile(
-                        //                             title:
-                        //                                 const Text('Add Location'),
-                        //                             leading: const Icon(
-                        //                                 CupertinoIcons.add,),
-                        //                             onTap: () async {
-                        //                               final String temp =
-                        //                                   await Picker()
-                        //                                       .selectFolder(context,
-                        //                                           'Select Folder');
-                        //                               if (temp.trim() != '' &&
-                        //                                   !dirPaths
-                        //                                       .contains(temp)) {
-                        //                                 dirPaths.add(temp);
-                        //                                 Hive.box('settings').put(
-                        //                                     'blacklistedPaths',
-                        //                                     dirPaths);
-                        //                                 _listKey.currentState!
-                        //                                     .insertItem(
-                        //                                         dirPaths.length);
-                        //                               } else {
-                        //                                 if (temp.trim() == '') {
-                        //                                   Navigator.pop(context);
-                        //                                 }
-                        //                                 ShowSnackBar().showSnackBar(
-                        //                                   context,
-                        //                                   temp.trim() == ''
-                        //                                       ? 'No folder selected'
-                        //                                       : 'Already added',
-                        //                                 );
-                        //                               }
-                        //                             },
-                        //                           )
-                        //                         : SizeTransition(
-                        //                             sizeFactor: animation,
-                        //                             child: ListTile(
+                        //     ListTile(
+                        //         title: const Text('BlackList Location'),
+                        //         subtitle: const Text(
+                        //             'Locations blacklisted from "My Music" section'),
+                        //         dense: true,
+                        //         onTap: () {
+                        //           final GlobalKey<AnimatedListState> _listKey =
+                        //               GlobalKey<AnimatedListState>();
+                        //           showModalBottomSheet(
+                        //               isDismissible: true,
+                        //               backgroundColor: Colors.transparent,
+                        //               context: context,
+                        //               builder: (BuildContext context) {
+                        //                 return BottomGradientContainer(
+                        //                   borderRadius: BorderRadius.circular(20.0,),
+                        //                   child: AnimatedList(
+                        //                     physics: const BouncingScrollPhysics(),
+                        //                     shrinkWrap: true,
+                        //                     padding: const EdgeInsets.fromLTRB(
+                        //                         0, 10, 0, 10,),
+                        //                     key: _listKey,
+                        //                     initialItemCount: dirPaths.length + 1,
+                        //                     itemBuilder: (cntxt, idx, animation) {
+                        //                       return (idx == 0)
+                        //                           ? ListTile(
+                        //                               title:
+                        //                                   const Text('Add Location'),
                         //                               leading: const Icon(
-                        //                                   CupertinoIcons.folder,),
-                        //                               title: Text(dirPaths[idx - 1]
-                        //                                   .toString(),),
-                        //                               trailing: IconButton(
-                        //                                 icon: const Icon(
-                        //                                   CupertinoIcons.clear,
-                        //                                   size: 15.0,
-                        //                                 ),
-                        //                                 tooltip: 'Remove',
-                        //                                 onPressed: () {
-                        //                                   dirPaths
-                        //                                       .removeAt(idx - 1);
+                        //                                   CupertinoIcons.add,),
+                        //                               onTap: () async {
+                        //                                 final String temp =
+                        //                                     await Picker()
+                        //                                         .selectFolder(context,
+                        //                                             'Select Folder');
+                        //                                 if (temp.trim() != '' &&
+                        //                                     !dirPaths
+                        //                                         .contains(temp)) {
+                        //                                   dirPaths.add(temp);
                         //                                   Hive.box('settings').put(
                         //                                       'blacklistedPaths',
                         //                                       dirPaths);
                         //                                   _listKey.currentState!
-                        //                                       .removeItem(
-                        //                                           idx,
-                        //                                           (context,
-                        //                                                   animation) =>
-                        //                                               Container());
-                        //                                 },
+                        //                                       .insertItem(
+                        //                                           dirPaths.length);
+                        //                                 } else {
+                        //                                   if (temp.trim() == '') {
+                        //                                     Navigator.pop(context);
+                        //                                   }
+                        //                                   ShowSnackBar().showSnackBar(
+                        //                                     context,
+                        //                                     temp.trim() == ''
+                        //                                         ? 'No folder selected'
+                        //                                         : 'Already added',
+                        //                                   );
+                        //                                 }
+                        //                               },
+                        //                             )
+                        //                           : SizeTransition(
+                        //                               sizeFactor: animation,
+                        //                               child: ListTile(
+                        //                                 leading: const Icon(
+                        //                                     CupertinoIcons.folder,),
+                        //                                 title: Text(dirPaths[idx - 1]
+                        //                                     .toString(),),
+                        //                                 trailing: IconButton(
+                        //                                   icon: const Icon(
+                        //                                     CupertinoIcons.clear,
+                        //                                     size: 15.0,
+                        //                                   ),
+                        //                                   tooltip: 'Remove',
+                        //                                   onPressed: () {
+                        //                                     dirPaths
+                        //                                         .removeAt(idx - 1);
+                        //                                     Hive.box('settings').put(
+                        //                                         'blacklistedPaths',
+                        //                                         dirPaths);
+                        //                                     _listKey.currentState!
+                        //                                         .removeItem(
+                        //                                             idx,
+                        //                                             (context,
+                        //                                                     animation) =>
+                        //                                                 Container());
+                        //                                   },
+                        //                                 ),
                         //                               ),
-                        //                             ),
-                        //                           );
-                        //                   },
-                        //                 ),
-                        //               );
-                        //             },);
-                        //       })
+                        //                             );
+                        //                     },
+                        //                   ),
+                        //                 );
+                        //               },);
+                        //         })
                       ],
                     ),
                   ),
@@ -2187,7 +2312,7 @@ class _SettingPageState extends State<SettingPage> {
                           ),
                           dense: true,
                           onTap: () {
-                            TextInputDialog().showTextInputDialog(
+                            showTextInputDialog(
                               context: context,
                               title: AppLocalizations.of(
                                 context,
