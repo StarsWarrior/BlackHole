@@ -3,7 +3,6 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:on_audio_query/on_audio_query.dart';
-import 'package:path_provider/path_provider.dart';
 
 class OfflineAudioQuery {
   static OnAudioQuery audioQuery = OnAudioQuery();
