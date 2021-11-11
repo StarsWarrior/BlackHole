@@ -225,14 +225,12 @@ class _PlayScreenState extends State<PlayScreen> {
   }
 
   Future<void> getColors(ImageProvider imageProvider) async {
-    Color dominantColor = Colors.black;
-    Color contrastColor = Colors.black;
-
     PaletteGenerator paletteGenerator;
     paletteGenerator = await PaletteGenerator.fromImageProvider(imageProvider);
-    dominantColor = paletteGenerator.dominantColor?.color ?? Colors.black;
+    Color dominantColor = paletteGenerator.dominantColor?.color ?? Colors.black;
     if (dominantColor.computeLuminance() > 0.6) {
-      contrastColor = paletteGenerator.darkMutedColor?.color ?? Colors.black;
+      Color contrastColor =
+          paletteGenerator.darkMutedColor?.color ?? Colors.black;
       if (dominantColor == contrastColor) {
         contrastColor = paletteGenerator.lightMutedColor?.color ?? Colors.white;
       }
