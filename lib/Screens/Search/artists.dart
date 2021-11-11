@@ -32,6 +32,8 @@ class ArtistSearchPage extends StatefulWidget {
 
 class _ArtistSearchPageState extends State<ArtistSearchPage> {
   bool status = false;
+  String category = '';
+  String sortOrder = '';
   Map<String, List> data = {};
   bool fetched = false;
 
@@ -39,7 +41,13 @@ class _ArtistSearchPageState extends State<ArtistSearchPage> {
   Widget build(BuildContext context) {
     if (!status) {
       status = true;
-      SaavnAPI().fetchArtistSongs(widget.artistToken).then((value) {
+      SaavnAPI()
+          .fetchArtistSongs(
+        artistToken: widget.artistToken,
+        category: category,
+        sortOrder: sortOrder,
+      )
+          .then((value) {
         setState(() {
           data = value;
           fetched = true;
@@ -140,6 +148,8 @@ class _ArtistSearchPageState extends State<ArtistSearchPage> {
                                             top: 15,
                                           ),
                                           child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
                                             children: [
                                               Text(
                                                 entry.key,
@@ -151,12 +161,142 @@ class _ArtistSearchPageState extends State<ArtistSearchPage> {
                                                   fontWeight: FontWeight.w800,
                                                 ),
                                               ),
+                                              if (entry.key == 'Top Songs')
+                                                PopupMenuButton(
+                                                  icon: const Icon(
+                                                    Icons.sort_rounded,
+                                                  ),
+                                                  shape:
+                                                      const RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.all(
+                                                      Radius.circular(
+                                                        15.0,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  onSelected: (int value) {
+                                                    switch (value) {
+                                                      case 0:
+                                                        category = '';
+                                                        sortOrder = '';
+                                                        break;
+                                                      case 1:
+                                                        category = 'latest';
+                                                        sortOrder = 'desc';
+                                                        break;
+                                                      case 2:
+                                                        category =
+                                                            'alphabetical';
+                                                        sortOrder = 'asc';
+                                                        break;
+                                                      default:
+                                                        category = '';
+                                                        sortOrder = '';
+                                                        break;
+                                                    }
+                                                    status = false;
+                                                    setState(() {});
+                                                  },
+                                                  itemBuilder: (context) => [
+                                                    PopupMenuItem(
+                                                      value: 0,
+                                                      child: Row(
+                                                        children: [
+                                                          if (category == '')
+                                                            Icon(
+                                                              Icons
+                                                                  .check_rounded,
+                                                              color: Theme.of(context)
+                                                                          .brightness ==
+                                                                      Brightness
+                                                                          .dark
+                                                                  ? Colors.white
+                                                                  : Colors.grey[
+                                                                      700],
+                                                            )
+                                                          else
+                                                            const SizedBox(),
+                                                          const SizedBox(
+                                                            width: 10,
+                                                          ),
+                                                          Text(
+                                                            AppLocalizations.of(
+                                                              context,
+                                                            )!
+                                                                .popularity,
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                    PopupMenuItem(
+                                                      value: 1,
+                                                      child: Row(
+                                                        children: [
+                                                          if (category ==
+                                                              'latest')
+                                                            Icon(
+                                                              Icons
+                                                                  .check_rounded,
+                                                              color: Theme.of(context)
+                                                                          .brightness ==
+                                                                      Brightness
+                                                                          .dark
+                                                                  ? Colors.white
+                                                                  : Colors.grey[
+                                                                      700],
+                                                            )
+                                                          else
+                                                            const SizedBox(),
+                                                          const SizedBox(
+                                                            width: 10,
+                                                          ),
+                                                          Text(
+                                                            AppLocalizations.of(
+                                                              context,
+                                                            )!
+                                                                .date,
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                    PopupMenuItem(
+                                                      value: 2,
+                                                      child: Row(
+                                                        children: [
+                                                          if (category ==
+                                                              'alphabetical')
+                                                            Icon(
+                                                              Icons
+                                                                  .check_rounded,
+                                                              color: Theme.of(context)
+                                                                          .brightness ==
+                                                                      Brightness
+                                                                          .dark
+                                                                  ? Colors.white
+                                                                  : Colors.grey[
+                                                                      700],
+                                                            )
+                                                          else
+                                                            const SizedBox(),
+                                                          const SizedBox(
+                                                            width: 10,
+                                                          ),
+                                                          Text(
+                                                            AppLocalizations.of(
+                                                              context,
+                                                            )!
+                                                                .alphabetical,
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
                                             ],
                                           ),
                                         ),
-                                        if (entry.key == 'Latest Releases' ||
-                                            entry.key == 'Top Albums' ||
-                                            entry.key == 'Singles')
+                                        if (entry.key != 'Top Songs')
                                           Padding(
                                             padding: const EdgeInsets.fromLTRB(
                                               5,
