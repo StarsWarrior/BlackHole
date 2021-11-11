@@ -282,7 +282,7 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
 
   Future<void> startService() async {
     final bool withPipeline =
-        Hive.box('settings').get('supportEq', defaultValue: true) as bool;
+        Hive.box('settings').get('supportEq', defaultValue: false) as bool;
     if (withPipeline && Platform.isAndroid) {
       final AudioPipeline _pipeline = AudioPipeline(
         androidAudioEffects: [

@@ -143,11 +143,8 @@ class _AlbumSearchPageState extends State<AlbumSearchPage> {
                                 searchedList.map(
                                   (Map entry) {
                                     return Padding(
-                                      padding:
-                                          const EdgeInsets.fromLTRB(0, 7, 7, 5),
+                                      padding: const EdgeInsets.only(right: 7),
                                       child: ListTile(
-                                        contentPadding:
-                                            const EdgeInsets.only(left: 15.0),
                                         title: Text(
                                           '${entry["title"]}',
                                           overflow: TextOverflow.ellipsis,

@@ -325,21 +325,15 @@ class SaavnAPI {
         '${endpoints["fromToken"]}&type=artist&p=&n_song=50&n_album=50&sub_type=&category=&sort_order=&includeMetaTags=0&token=$artistToken';
     final res = await getResponse(params);
     if (res.statusCode == 200) {
-      final getMain = json.decode(res.body);
+      final getMain = json.decode(res.body) as Map;
       final List topSongsResponseList = getMain['topSongs'] as List;
+      final List latestReleaseResponseList = getMain['latest_release'] as List;
       final List topAlbumsResponseList = getMain['topAlbums'] as List;
-      // List singlesResponseList = getMain["singles"];
-      // List latestReleaseResponseList = getMain["latest_release"];
-      // List dedicatedArtistPlaylistResponseList = [];
-      // if (getMain["dedicated_artist_playlist"] is List) {
-      //   dedicatedArtistPlaylistResponseList =
-      //       getMain["dedicated_artist_playlist"];
-      // }
-      // List featuredArtistPlaylistResponseList = [];
-      // if (getMain["featured_artist_playlist"] is List) {
-      //   featuredArtistPlaylistResponseList =
-      //       getMain["featured_artist_playlist"];
-      // }
+      final List singlesResponseList = getMain['singles'] as List;
+      // final List dedicatedPlaylistsResponseList = getMain['dedicated_artist_playlist'] as List;
+      // final List featuredPlaylistsResponseList = getMain['featured_artist_playlist'] as List;
+
+      // final List similarArtistsResponseList = getMain['similarArtists'] as List;
 
       final List topSongsSearchedList =
           await FormatResponse.formatSongsResponse(
@@ -350,6 +344,14 @@ class SaavnAPI {
         data['Top Songs'] = topSongsSearchedList;
       }
 
+      final List latestReleaseSearchedList =
+          await FormatResponse.formatArtistTopAlbumsResponse(
+        latestReleaseResponseList,
+      );
+      if (latestReleaseSearchedList.isNotEmpty) {
+        data['Latest Releases'] = latestReleaseSearchedList;
+      }
+
       final List topAlbumsSearchedList =
           await FormatResponse.formatArtistTopAlbumsResponse(
         topAlbumsResponseList,
@@ -358,14 +360,13 @@ class SaavnAPI {
         data['Top Albums'] = topAlbumsSearchedList;
       }
 
-      // List latestReleaseSearchedList = await FormatResponse()
-      // .formatSongsResponse(latestReleaseResponseList, 'songs');
-      // if (latestReleaseSearchedList.isNotEmpty)
-      // data['Latest Release'] = latestReleaseSearchedList;
-
-      // List singlesSearchedList = await FormatResponse()
-      // .formatSongsResponse(singlesResponseList, 'songs');
-      // if (singlesSearchedList.isNotEmpty) data['Singles'] = singlesSearchedList;
+      final List singlesSearchedList =
+          await FormatResponse.formatArtistTopAlbumsResponse(
+        singlesResponseList,
+      );
+      if (singlesSearchedList.isNotEmpty) {
+        data['Singles'] = singlesSearchedList;
+      }
 
       // List dedicatedArtistPlaylistSearchedList = await FormatResponse()
       //     .formatArtistDedicatedArtistPlaylistResponse(

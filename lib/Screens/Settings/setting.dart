@@ -2383,7 +2383,7 @@ class _SettingPageState extends State<SettingPage> {
                           ),
                           keyName: 'supportEq',
                           isThreeLine: true,
-                          defaultValue: true,
+                          defaultValue: false,
                         ),
                         BoxSwitchTile(
                           title: Text(

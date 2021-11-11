@@ -1,4 +1,5 @@
 import 'package:blackhole/APIs/api.dart';
+import 'package:blackhole/CustomWidgets/horizontal_albumlist.dart';
 import 'package:blackhole/CustomWidgets/snackbar.dart';
 import 'package:blackhole/Helpers/format.dart';
 import 'package:blackhole/Screens/Common/song_list.dart';
@@ -114,133 +115,24 @@ class _SaavnHomePageState extends State<SaavnHomePage>
                         ),
                       ],
                     ),
-                    SizedBox(
-                      height: boxSize / 2 + 10,
-                      child: ListView.builder(
-                        physics: const BouncingScrollPhysics(),
-                        scrollDirection: Axis.horizontal,
-                        padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                        itemCount: recentList.length,
-                        itemBuilder: (context, index) {
-                          return GestureDetector(
-                            onLongPress: () {
-                              Feedback.forLongPress(context);
-                              showDialog(
-                                context: context,
-                                builder: (context) {
-                                  return AlertDialog(
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(15.0),
-                                    ),
-                                    backgroundColor: Colors.transparent,
-                                    contentPadding: EdgeInsets.zero,
-                                    content: Card(
-                                      elevation: 5,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(15.0),
-                                      ),
-                                      clipBehavior: Clip.antiAlias,
-                                      child: CachedNetworkImage(
-                                        fit: BoxFit.cover,
-                                        errorWidget: (context, _, __) =>
-                                            const Image(
-                                          fit: BoxFit.cover,
-                                          image: AssetImage('assets/cover.jpg'),
-                                        ),
-                                        imageUrl: recentList[index]['image']
-                                            .toString()
-                                            .replaceAll('http:', 'https:')
-                                            .replaceAll('50x50', '500x500')
-                                            .replaceAll('150x150', '500x500'),
-                                        placeholder: (context, url) =>
-                                            const Image(
-                                          fit: BoxFit.cover,
-                                          image: AssetImage('assets/cover.jpg'),
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                },
-                              );
-                            },
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                PageRouteBuilder(
-                                  opaque: false,
-                                  pageBuilder: (_, __, ___) => PlayScreen(
-                                    songsList: recentList,
-                                    index: index,
-                                    offline: false,
-                                    fromDownloads: false,
-                                    fromMiniplayer: false,
-                                    recommend: true,
-                                  ),
-                                ),
-                              );
-                            },
-                            child: SizedBox(
-                              width: boxSize / 2 - 30,
-                              child: Column(
-                                children: [
-                                  SizedBox.square(
-                                    dimension: boxSize / 2 - 30,
-                                    child: Card(
-                                      elevation: 5,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(10.0),
-                                      ),
-                                      clipBehavior: Clip.antiAlias,
-                                      child: CachedNetworkImage(
-                                        fit: BoxFit.cover,
-                                        errorWidget: (context, _, __) =>
-                                            const Image(
-                                          fit: BoxFit.cover,
-                                          image: AssetImage('assets/cover.jpg'),
-                                        ),
-                                        imageUrl: recentList[index]['image']
-                                            .toString()
-                                            .replaceAll('http:', 'https:')
-                                            .replaceAll('50x50', '500x500')
-                                            .replaceAll('150x150', '500x500'),
-                                        placeholder: (context, url) =>
-                                            const Image(
-                                          fit: BoxFit.cover,
-                                          image: AssetImage('assets/cover.jpg'),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  Text(
-                                    '${recentList[index]["title"]}',
-                                    textAlign: TextAlign.center,
-                                    softWrap: false,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                  Text(
-                                    '${recentList[index]["artist"]}',
-                                    textAlign: TextAlign.center,
-                                    softWrap: false,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                      fontSize: 11,
-                                      color: Theme.of(context)
-                                          .textTheme
-                                          .caption!
-                                          .color,
-                                    ),
-                                  ),
-                                ],
-                              ),
+                    HorizontalAlbumsList(
+                      songsList: recentList,
+                      onTap: (int idx) {
+                        Navigator.push(
+                          context,
+                          PageRouteBuilder(
+                            opaque: false,
+                            pageBuilder: (_, __, ___) => PlayScreen(
+                              songsList: recentList,
+                              index: idx,
+                              offline: false,
+                              fromDownloads: false,
+                              fromMiniplayer: false,
+                              recommend: true,
                             ),
-                          );
-                        },
-                      ),
+                          ),
+                        );
+                      },
                     ),
                   ],
                 );

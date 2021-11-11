@@ -485,7 +485,7 @@ class _PlayScreenState extends State<PlayScreen> {
                               ),
                               if (Hive.box('settings').get(
                                 'supportEq',
-                                defaultValue: true,
+                                defaultValue: false,
                               ) as bool)
                                 PopupMenuItem(
                                   value: 4,
@@ -568,7 +568,7 @@ class _PlayScreenState extends State<PlayScreen> {
                               ),
                               if (Hive.box('settings').get(
                                 'supportEq',
-                                defaultValue: true,
+                                defaultValue: false,
                               ) as bool)
                                 PopupMenuItem(
                                   value: 4,

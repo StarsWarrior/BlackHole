@@ -5,6 +5,7 @@ import 'package:blackhole/CustomWidgets/copy_clipboard.dart';
 import 'package:blackhole/CustomWidgets/download_button.dart';
 import 'package:blackhole/CustomWidgets/empty_screen.dart';
 import 'package:blackhole/CustomWidgets/gradient_containers.dart';
+import 'package:blackhole/CustomWidgets/horizontal_albumlist.dart';
 import 'package:blackhole/CustomWidgets/miniplayer.dart';
 import 'package:blackhole/CustomWidgets/song_tile_trailing_menu.dart';
 import 'package:blackhole/Screens/Common/song_list.dart';
@@ -134,11 +135,9 @@ class _ArtistSearchPageState extends State<ArtistSearchPage> {
                                     return Column(
                                       children: [
                                         Padding(
-                                          padding: const EdgeInsets.fromLTRB(
-                                            25,
-                                            30,
-                                            0,
-                                            0,
+                                          padding: const EdgeInsets.only(
+                                            left: 25,
+                                            top: 15,
                                           ),
                                           child: Row(
                                             children: [
@@ -155,27 +154,51 @@ class _ArtistSearchPageState extends State<ArtistSearchPage> {
                                             ],
                                           ),
                                         ),
-                                        ListView.builder(
-                                          itemCount: entry.value.length,
-                                          physics:
-                                              const NeverScrollableScrollPhysics(),
-                                          shrinkWrap: true,
-                                          padding: const EdgeInsets.fromLTRB(
-                                            5,
-                                            10,
-                                            5,
-                                            0,
-                                          ),
-                                          itemBuilder: (context, index) {
-                                            return Padding(
-                                              padding:
-                                                  const EdgeInsets.fromLTRB(
-                                                0,
-                                                7,
-                                                7,
-                                                5,
-                                              ),
-                                              child: ListTile(
+                                        if (entry.key == 'Latest Releases' ||
+                                            entry.key == 'Top Albums' ||
+                                            entry.key == 'Singles')
+                                          Padding(
+                                            padding: const EdgeInsets.fromLTRB(
+                                              5,
+                                              10,
+                                              5,
+                                              0,
+                                            ),
+                                            child: HorizontalAlbumsList(
+                                              songsList: entry.value,
+                                              onTap: (int idx) {
+                                                Navigator.push(
+                                                  context,
+                                                  PageRouteBuilder(
+                                                    opaque: false,
+                                                    pageBuilder: (
+                                                      _,
+                                                      __,
+                                                      ___,
+                                                    ) =>
+                                                        SongsListPage(
+                                                      listItem: entry.value[idx]
+                                                          as Map,
+                                                    ),
+                                                  ),
+                                                );
+                                              },
+                                            ),
+                                          )
+                                        else
+                                          ListView.builder(
+                                            itemCount: entry.value.length,
+                                            padding: const EdgeInsets.fromLTRB(
+                                              5,
+                                              10,
+                                              5,
+                                              0,
+                                            ),
+                                            physics:
+                                                const NeverScrollableScrollPhysics(),
+                                            shrinkWrap: true,
+                                            itemBuilder: (context, index) {
+                                              return ListTile(
                                                 contentPadding:
                                                     const EdgeInsets.only(
                                                   left: 15.0,
@@ -301,10 +324,9 @@ class _ArtistSearchPageState extends State<ArtistSearchPage> {
                                                     ),
                                                   );
                                                 },
-                                              ),
-                                            );
-                                          },
-                                        ),
+                                              );
+                                            },
+                                          ),
                                       ],
                                     );
                                   },
