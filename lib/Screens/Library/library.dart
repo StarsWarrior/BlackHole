@@ -19,6 +19,9 @@ class _LibraryPageState extends State<LibraryPage> {
         AppBar(
           title: Text(
             AppLocalizations.of(context)!.library,
+            style: TextStyle(
+              color: Theme.of(context).iconTheme.color,
+            ),
           ),
           centerTitle: true,
           backgroundColor: Colors.transparent,

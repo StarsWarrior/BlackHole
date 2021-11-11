@@ -4,11 +4,15 @@ import 'package:blackhole/main.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-void addToNowPlaying(MediaItem mediaItem, BuildContext context) {
+void addToNowPlaying({
+  required BuildContext context,
+  required MediaItem mediaItem,
+  bool showNotification = true,
+}) {
   final MediaItem? currentMediaItem = audioHandler.mediaItem.value;
   if (currentMediaItem != null &&
       currentMediaItem.extras!['url'].toString().startsWith('http')) {
-    if (audioHandler.queue.value.contains(mediaItem)) {
+    if (audioHandler.queue.value.contains(mediaItem) && showNotification) {
       ShowSnackBar().showSnackBar(
         context,
         AppLocalizations.of(context)!.alreadyInQueue,
@@ -16,18 +20,22 @@ void addToNowPlaying(MediaItem mediaItem, BuildContext context) {
     } else {
       audioHandler.addQueueItem(mediaItem);
 
-      ShowSnackBar().showSnackBar(
-        context,
-        AppLocalizations.of(context)!.addedToQueue,
-      );
+      if (showNotification) {
+        ShowSnackBar().showSnackBar(
+          context,
+          AppLocalizations.of(context)!.addedToQueue,
+        );
+      }
     }
   } else {
-    ShowSnackBar().showSnackBar(
-      context,
-      currentMediaItem == null
-          ? AppLocalizations.of(context)!.nothingPlaying
-          : AppLocalizations.of(context)!.cantAddToQueue,
-    );
+    if (showNotification) {
+      ShowSnackBar().showSnackBar(
+        context,
+        currentMediaItem == null
+            ? AppLocalizations.of(context)!.nothingPlaying
+            : AppLocalizations.of(context)!.cantAddToQueue,
+      );
+    }
   }
 }
 

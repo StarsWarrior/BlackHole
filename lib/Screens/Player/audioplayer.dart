@@ -225,9 +225,22 @@ class _PlayScreenState extends State<PlayScreen> {
   }
 
   Future<void> getColors(ImageProvider imageProvider) async {
-    final PaletteGenerator paletteGenerator =
-        await PaletteGenerator.fromImageProvider(imageProvider);
-    gradientColor.value = paletteGenerator.dominantColor?.color;
+    Color dominantColor = Colors.black;
+    Color contrastColor = Colors.black;
+
+    PaletteGenerator paletteGenerator;
+    paletteGenerator = await PaletteGenerator.fromImageProvider(imageProvider);
+    dominantColor = paletteGenerator.dominantColor?.color ?? Colors.black;
+    if (dominantColor.computeLuminance() > 0.6) {
+      contrastColor = paletteGenerator.darkMutedColor?.color ?? Colors.black;
+      if (dominantColor == contrastColor) {
+        contrastColor = paletteGenerator.lightMutedColor?.color ?? Colors.white;
+      }
+      if (contrastColor.computeLuminance() < 0.6) {
+        dominantColor = contrastColor;
+      }
+    }
+    gradientColor.value = dominantColor;
     currentTheme.setLastPlayGradient(gradientColor.value);
   }
 
@@ -445,8 +458,10 @@ class _PlayScreenState extends State<PlayScreen> {
                                   value: 5,
                                   child: Row(
                                     children: [
-                                      const Icon(
+                                      Icon(
                                         Icons.album_rounded,
+                                        color:
+                                            Theme.of(context).iconTheme.color,
                                       ),
                                       const SizedBox(width: 10.0),
                                       Text(
@@ -459,8 +474,9 @@ class _PlayScreenState extends State<PlayScreen> {
                                 value: 1,
                                 child: Row(
                                   children: [
-                                    const Icon(
+                                    Icon(
                                       CupertinoIcons.timer,
+                                      color: Theme.of(context).iconTheme.color,
                                     ),
                                     const SizedBox(width: 10.0),
                                     Text(
@@ -477,8 +493,10 @@ class _PlayScreenState extends State<PlayScreen> {
                                   value: 4,
                                   child: Row(
                                     children: [
-                                      const Icon(
+                                      Icon(
                                         Icons.equalizer_rounded,
+                                        color:
+                                            Theme.of(context).iconTheme.color,
                                       ),
                                       const SizedBox(width: 10.0),
                                       Text(
@@ -855,11 +873,13 @@ class ControlButtons extends StatelessWidget {
   final bool shuffle;
   final bool miniplayer;
   final List buttons;
+  final Color? dominantColor;
 
   const ControlButtons(
     this.audioHandler, {
     this.shuffle = false,
     this.miniplayer = false,
+    this.dominantColor,
     this.buttons = const ['Previous', 'Play/Pause', 'Next'],
   });
 

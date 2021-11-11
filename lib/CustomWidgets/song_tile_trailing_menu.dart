@@ -97,7 +97,7 @@ class _SongTileTrailingMenuState extends State<SongTileTrailingMenu> {
           AddToPlaylist().addToPlaylist(context, mediaItem);
         }
         if (value == 1) {
-          addToNowPlaying(mediaItem, context);
+          addToNowPlaying(context: context, mediaItem: mediaItem);
         }
         if (value == 2) {
           playNext(mediaItem, context);
@@ -246,7 +246,7 @@ class _YtSongTileTrailingMenuState extends State<YtSongTileTrailingMenu> {
               playNext(mediaItem, context);
             }
             if (value == 2) {
-              addToNowPlaying(mediaItem, context);
+              addToNowPlaying(context: context, mediaItem: mediaItem);
             }
             if (value == 3) {
               AddToPlaylist().addToPlaylist(context, mediaItem);

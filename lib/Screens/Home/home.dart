@@ -280,6 +280,7 @@ class _HomePageState extends State<HomePage> {
                           },
                           blendMode: BlendMode.dstIn,
                           child: Image(
+                            fit: BoxFit.cover,
                             alignment: Alignment.topCenter,
                             image: AssetImage(
                               Theme.of(context).brightness == Brightness.dark

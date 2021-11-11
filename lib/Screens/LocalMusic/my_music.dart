@@ -16,7 +16,9 @@ class _MyMusicPageState extends State<MyMusicPage> {
           AppLocalizations.of(context)!.myMusic,
         ),
         centerTitle: true,
-        backgroundColor: Colors.transparent,
+        backgroundColor: Theme.of(context).brightness == Brightness.dark
+            ? Colors.transparent
+            : Theme.of(context).colorScheme.secondary,
         elevation: 0,
       ),
       body: ListView(
