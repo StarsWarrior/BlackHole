@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:blackhole/APIs/api.dart';
+import 'package:blackhole/CustomWidgets/artist_like_button.dart';
 import 'package:blackhole/CustomWidgets/copy_clipboard.dart';
 import 'package:blackhole/CustomWidgets/download_button.dart';
 import 'package:blackhole/CustomWidgets/empty_screen.dart';
@@ -91,6 +92,10 @@ class _ArtistSearchPageState extends State<ArtistSearchPage> {
                               expandedHeight:
                                   MediaQuery.of(context).size.height * 0.4,
                               actions: [
+                                ArtistLikeButton(
+                                  data: widget.data,
+                                  size: 27.0,
+                                ),
                                 IconButton(
                                   icon: const Icon(Icons.share_rounded),
                                   tooltip: AppLocalizations.of(context)!.share,

@@ -4,6 +4,7 @@ import 'package:blackhole/CustomWidgets/snackbar.dart';
 import 'package:blackhole/Helpers/format.dart';
 import 'package:blackhole/Screens/Common/song_list.dart';
 import 'package:blackhole/Screens/Player/audioplayer.dart';
+import 'package:blackhole/Screens/Search/artists.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -27,6 +28,8 @@ class _SaavnHomePageState extends State<SaavnHomePage>
     with AutomaticKeepAliveClientMixin<SaavnHomePage> {
   List recentList =
       Hive.box('cache').get('recentSongs', defaultValue: []) as List;
+  Map likedArtists =
+      Hive.box('settings').get('likedArtists', defaultValue: {}) as Map;
   List blacklistedHomeSections = Hive.box('settings')
       .get('blacklistedHomeSections', defaultValue: []) as List;
 
@@ -36,6 +39,7 @@ class _SaavnHomePageState extends State<SaavnHomePage>
       Hive.box('cache').put('homepage', recievedData);
       data = recievedData;
       lists = ['recent', ...?data['collections']];
+      lists.insert((lists.length / 2).round(), 'likedArtists');
     }
     setState(() {});
     recievedData = await FormatResponse.formatPromoLists(data);
@@ -43,6 +47,7 @@ class _SaavnHomePageState extends State<SaavnHomePage>
       Hive.box('cache').put('homepage', recievedData);
       data = recievedData;
       lists = ['recent', ...?data['collections']];
+      lists.insert((lists.length / 2).round(), 'likedArtists');
     }
     setState(() {});
   }
@@ -129,6 +134,44 @@ class _SaavnHomePageState extends State<SaavnHomePage>
                               fromDownloads: false,
                               fromMiniplayer: false,
                               recommend: true,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                );
+        }
+        if (lists[idx] == 'likedArtists') {
+          final List likedArtistsList = likedArtists.values.toList();
+          return likedArtists.isEmpty
+              ? const SizedBox()
+              : Column(
+                  children: [
+                    Row(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(15, 10, 0, 5),
+                          child: Text(
+                            'Liked Artists',
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.secondary,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    HorizontalAlbumsList(
+                      songsList: likedArtistsList,
+                      onTap: (int idx) {
+                        Navigator.push(
+                          context,
+                          PageRouteBuilder(
+                            opaque: false,
+                            pageBuilder: (_, __, ___) => ArtistSearchPage(
+                              data: likedArtistsList[idx] as Map,
                             ),
                           ),
                         );
