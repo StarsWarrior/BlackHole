@@ -127,7 +127,10 @@ class HorizontalAlbumsList extends StatelessWidget {
                       elevation: 5,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(
-                          item['type'] == 'radio_station' ? 1000.0 : 10.0,
+                          item['type'] == 'radio_station' ||
+                                  item['type'] == 'artist'
+                              ? 1000.0
+                              : 10.0,
                         ),
                       ),
                       clipBehavior: Clip.antiAlias,

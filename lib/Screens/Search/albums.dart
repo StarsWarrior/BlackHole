@@ -211,15 +211,7 @@ class _AlbumSearchPageState extends State<AlbumSearchPage> {
                                               pageBuilder: (_, __, ___) =>
                                                   widget.type == 'Artists'
                                                       ? ArtistSearchPage(
-                                                          artistName:
-                                                              entry['title']
-                                                                  .toString(),
-                                                          artistToken: entry[
-                                                                  'artistToken']
-                                                              .toString(),
-                                                          artistImage:
-                                                              entry['image']
-                                                                  .toString(),
+                                                          data: entry,
                                                         )
                                                       : SongsListPage(
                                                           listItem: entry,

@@ -135,7 +135,7 @@ class _SongsListPageState extends State<SongsListPage> {
                                   data: songList,
                                   title: widget.listItem['title']?.toString() ??
                                       'Songs',
-                                )
+                                ),
                               ],
                               flexibleSpace: FlexibleSpaceBar(
                                 title: Text(

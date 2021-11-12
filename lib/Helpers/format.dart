@@ -267,6 +267,7 @@ class FormatResponse {
             ? 0
             : response['more_info']['song_pids'].toString().split(', ').length,
         'songs_pids': response['more_info']['song_pids'].toString().split(', '),
+        'perma_url': response['url'].toString(),
       };
     } catch (e) {
       log('Error inside formatSingleAlbumResponse: $e');
@@ -304,6 +305,7 @@ class FormatResponse {
             .replaceAll('150x150', '500x500')
             .replaceAll('50x50', '500x500')
             .replaceAll('http:', 'https:'),
+        'perma_url': response['url'].toString(),
       };
     } catch (e) {
       log('Error inside formatSinglePlaylistResponse: $e');
@@ -333,7 +335,7 @@ class FormatResponse {
             : formatString(response['title'].toString()),
         // .split('(')
         // .first
-
+        'perma_url': response['url'].toString(),
         'artist': formatString(response['title'].toString()),
         'album_artist': response['more_info'] == null
             ? response['music']
@@ -424,26 +426,40 @@ class FormatResponse {
     }
   }
 
-  // static Future<List> formatArtistSinglesResponse(List response) async {
-  // List result = [];
-  // return result;
-  // }
+  static Future<List> formatSimilarArtistsResponse(List responseList) async {
+    final List result = [];
+    for (int i = 0; i < responseList.length; i++) {
+      final Map response =
+          await formatSingleSimilarArtistResponse(responseList[i] as Map);
+      if (response.containsKey('Error')) {
+        log('Error at index $i inside FormatResponse: ${response["Error"]}');
+      } else {
+        result.add(response);
+      }
+    }
+    return result;
+  }
 
-  // static Future<List> formatArtistLatestReleaseResponse(List response) async {
-  //   List result = [];
-  //   return result;
-  // }
-
-  // static Future<List> formatArtistDedicatedArtistPlaylistResponse(
-  //     List response) async {
-  //   List result = [];
-  //   return result;
-  // }
-
-  // static Future<List> formatArtistFeaturedArtistPlaylistResponse(List response) async {
-  //   List result = [];
-  //   return result;
-  // }
+  static Future<Map> formatSingleSimilarArtistResponse(Map response) async {
+    try {
+      return {
+        'id': response['id'],
+        'type': response['type'],
+        'artist': formatString(response['name'].toString()),
+        'title': formatString(response['name'].toString()),
+        'subtitle': capitalize(response['dominantType'].toString()),
+        'image': response['image_url']
+            .toString()
+            .replaceAll('150x150', '500x500')
+            .replaceAll('50x50', '500x500')
+            .replaceAll('http:', 'https:'),
+        'artistToken': response['perma_url'].toString().split('/').last,
+        'perma_url': response['perma_url'].toString(),
+      };
+    } catch (e) {
+      return {'Error': e};
+    }
+  }
 
   static Future<Map> formatSingleShowResponse(Map response) async {
     try {

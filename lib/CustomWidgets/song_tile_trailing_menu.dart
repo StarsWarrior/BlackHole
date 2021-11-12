@@ -2,6 +2,7 @@ import 'package:audio_service/audio_service.dart';
 import 'package:blackhole/CustomWidgets/add_playlist.dart';
 import 'package:blackhole/Helpers/add_mediitem_to_queue.dart';
 import 'package:blackhole/Helpers/mediaitem_converter.dart';
+import 'package:blackhole/Screens/Common/song_list.dart';
 import 'package:blackhole/Screens/Search/search.dart';
 import 'package:blackhole/Services/youtube_services.dart';
 import 'package:flutter/cupertino.dart';
@@ -74,6 +75,19 @@ class _SongTileTrailingMenuState extends State<SongTileTrailingMenu> {
           ),
         ),
         PopupMenuItem(
+          value: 4,
+          child: Row(
+            children: [
+              Icon(
+                Icons.album_rounded,
+                color: Theme.of(context).iconTheme.color,
+              ),
+              const SizedBox(width: 10.0),
+              Text(AppLocalizations.of(context)!.viewAlbum),
+            ],
+          ),
+        ),
+        PopupMenuItem(
           value: 3,
           child: Row(
             children: [
@@ -92,6 +106,22 @@ class _SongTileTrailingMenuState extends State<SongTileTrailingMenu> {
             MediaItemConverter.mapToMediaItem(widget.data);
         if (value == 3) {
           Share.share(widget.data['perma_url'].toString());
+        }
+        if (value == 4) {
+          Navigator.push(
+            context,
+            PageRouteBuilder(
+              opaque: false,
+              pageBuilder: (_, __, ___) => SongsListPage(
+                listItem: {
+                  'type': 'album',
+                  'id': mediaItem.extras?['album_id'],
+                  'title': mediaItem.album,
+                  'image': mediaItem.artUri,
+                },
+              ),
+            ),
+          );
         }
         if (value == 0) {
           AddToPlaylist().addToPlaylist(context, mediaItem);

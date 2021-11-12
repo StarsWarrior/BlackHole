@@ -338,8 +338,7 @@ class SaavnAPI {
           getMain['dedicated_artist_playlist'] as List;
       final List featuredResponseList =
           getMain['featured_artist_playlist'] as List;
-
-      // final List similarArtistsResponseList = getMain['similarArtists'] as List;
+      final List similarArtistsResponseList = getMain['similarArtists'] as List;
 
       final List topSongsSearchedList =
           await FormatResponse.formatSongsResponse(
@@ -396,6 +395,15 @@ class SaavnAPI {
         data[getMain['modules']?['featured_artist_playlist']?['title']
                 ?.toString() ??
             'Featured Playlists'] = featuredSearchedList;
+      }
+
+      final List similarArtistsSearchedList =
+          await FormatResponse.formatSimilarArtistsResponse(
+        similarArtistsResponseList,
+      );
+      if (similarArtistsSearchedList.isNotEmpty) {
+        data[getMain['modules']?['similarArtists']?['title']?.toString() ??
+            'Similar Artists'] = similarArtistsSearchedList;
       }
     }
     return data;

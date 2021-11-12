@@ -444,25 +444,9 @@ class _SearchPageState extends State<SearchPage> {
                                                                         value[0]['type'] ==
                                                                             'artist')
                                                                 ? ArtistSearchPage(
-                                                                    artistName: value[index]
-                                                                            [
-                                                                            'title']
-                                                                        .toString(),
-                                                                    artistToken:
-                                                                        value[index]['artistToken']
-                                                                            .toString(),
-                                                                    artistImage: value[index]
-                                                                            [
-                                                                            'image']
-                                                                        .toString()
-                                                                        .replaceAll(
-                                                                          '150x150',
-                                                                          '500x500',
-                                                                        )
-                                                                        .replaceAll(
-                                                                          '50x50',
-                                                                          '500x500',
-                                                                        ),
+                                                                    data: value[
+                                                                            index]
+                                                                        as Map,
                                                                   )
                                                                 : key == 'Songs'
                                                                     ? PlayScreen(
