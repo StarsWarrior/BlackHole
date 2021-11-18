@@ -9,8 +9,12 @@ class DownloadButton extends StatefulWidget {
   final Map data;
   final String? icon;
   final double? size;
-  const DownloadButton({Key? key, required this.data, this.icon, this.size})
-      : super(key: key);
+  const DownloadButton({
+    Key? key,
+    required this.data,
+    this.icon,
+    this.size,
+  }) : super(key: key);
 
   @override
   _DownloadButtonState createState() => _DownloadButtonState();

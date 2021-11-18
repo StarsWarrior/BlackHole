@@ -242,13 +242,13 @@ class Download with ChangeNotifier {
     notifyListeners();
     String? filepath;
     late String filepath2;
-    String appPath;
+    String? appPath;
     final List<int> _bytes = [];
     String lyrics;
     final artname = fileName.replaceAll('.m4a', '.jpg');
     if (!Platform.isWindows) {
-      final Directory appDir = await getTemporaryDirectory();
-      appPath = appDir.path;
+      appPath = Hive.box('settings').get('tempDirPath')?.toString();
+      appPath ??= (await getTemporaryDirectory()).path;
     } else {
       final Directory? temp = await getDownloadsDirectory();
       appPath = temp!.path;

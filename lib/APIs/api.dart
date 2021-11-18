@@ -17,7 +17,6 @@ class SaavnAPI {
   Map<String, String> endpoints = {
     'homeData': '__call=webapi.getLaunchData',
     'topSearches': '__call=content.getTopSearches',
-    'getResult': '__call=search.getResults',
     'fromToken': '__call=webapi.get',
     'featuredRadio': '__call=webradio.createFeaturedStation',
     'artistRadio': '__call=webradio.createArtistStation',
@@ -166,9 +165,13 @@ class SaavnAPI {
     return List.empty();
   }
 
-  Future<List> fetchSongSearchResults(String searchQuery, String count) async {
+  Future<List> fetchSongSearchResults({
+    required String searchQuery,
+    int count = 20,
+    int page = 1,
+  }) async {
     final String params =
-        "p=1&q=$searchQuery&n=$count&${endpoints['getResult']}";
+        "p=$page&q=$searchQuery&n=$count&${endpoints['getResults']}";
 
     try {
       final res = await getResponse(params, useProxy: true);
@@ -287,16 +290,22 @@ class SaavnAPI {
     return [result, position];
   }
 
-  Future<List<Map>> fetchAlbums(String searchQuery, String type) async {
+  Future<List<Map>> fetchAlbums({
+    required String searchQuery,
+    required String type,
+    int count = 20,
+    int page = 1,
+  }) async {
     String? params;
     if (type == 'playlist') {
-      params = 'p=1&q=$searchQuery&n=20&${endpoints["playlistResults"]}';
+      params =
+          'p=$page&q=$searchQuery&n=$count&${endpoints["playlistResults"]}';
     }
     if (type == 'album') {
-      params = 'p=1&q=$searchQuery&n=20&${endpoints["albumResults"]}';
+      params = 'p=$page&q=$searchQuery&n=$count&${endpoints["albumResults"]}';
     }
     if (type == 'artist') {
-      params = 'p=1&q=$searchQuery&n=20&${endpoints["artistResults"]}';
+      params = 'p=$page&q=$searchQuery&n=$count&${endpoints["artistResults"]}';
     }
 
     final res = await getResponse(params!);

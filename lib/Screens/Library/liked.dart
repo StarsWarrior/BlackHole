@@ -17,6 +17,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:hive/hive.dart';
+import 'package:path_provider/path_provider.dart';
 
 class LikedSongs extends StatefulWidget {
   final String playlistName;
@@ -31,6 +32,7 @@ class _LikedSongsState extends State<LikedSongs>
     with SingleTickerProviderStateMixin {
   Box? likedBox;
   bool added = false;
+  String? tempPath = Hive.box('settings').get('tempDirPath')?.toString();
   List _songs = [];
   final Map<String, List<Map>> _albums = {};
   final Map<String, List<Map>> _artists = {};
@@ -39,15 +41,26 @@ class _LikedSongsState extends State<LikedSongs>
   List _sortedArtistKeysList = [];
   List _sortedGenreKeysList = [];
   TabController? _tcontroller;
-  int currentIndex = 0;
-  int sortValue = Hive.box('settings').get('sortValue', defaultValue: 2) as int;
+  // int currentIndex = 0;
+  int sortValue = Hive.box('settings').get('sortValue', defaultValue: 1) as int;
+  int orderValue =
+      Hive.box('settings').get('orderValue', defaultValue: 1) as int;
   int albumSortValue =
       Hive.box('settings').get('albumSortValue', defaultValue: 2) as int;
+
+  Future<void> main() async {
+    WidgetsFlutterBinding.ensureInitialized();
+  }
 
   @override
   void initState() {
     _tcontroller = TabController(length: 4, vsync: this);
-    _tcontroller!.addListener(changeTitle);
+    if (tempPath == null) {
+      getTemporaryDirectory().then((value) {
+        Hive.box('settings').put('tempDirPath', value.path);
+      });
+    }
+    // _tcontroller!.addListener(changeTitle);
     getLiked();
     super.initState();
   }
@@ -58,11 +71,11 @@ class _LikedSongsState extends State<LikedSongs>
     _tcontroller!.dispose();
   }
 
-  void changeTitle() {
-    setState(() {
-      currentIndex = _tcontroller!.index;
-    });
-  }
+  // void changeTitle() {
+  //   setState(() {
+  //     currentIndex = _tcontroller!.index;
+  //   });
+  // }
 
   void getLiked() {
     likedBox = Hive.box(widget.playlistName);
@@ -111,7 +124,7 @@ class _LikedSongsState extends State<LikedSongs>
       }
     }
 
-    sortSongs();
+    sortSongs(sortVal: sortValue, order: orderValue);
 
     _sortedAlbumKeysList = _albums.keys.toList();
     _sortedArtistKeysList = _artists.keys.toList();
@@ -123,33 +136,60 @@ class _LikedSongsState extends State<LikedSongs>
     setState(() {});
   }
 
-  void sortSongs() {
-    if (sortValue == 0) {
-      _songs.sort(
-        (a, b) => a['title']
-            .toString()
-            .toUpperCase()
-            .compareTo(b['title'].toString().toUpperCase()),
-      );
+  void sortSongs({required int sortVal, required int order}) {
+    switch (sortVal) {
+      case 0:
+        _songs.sort(
+          (a, b) => a['title']
+              .toString()
+              .toUpperCase()
+              .compareTo(b['title'].toString().toUpperCase()),
+        );
+        break;
+      case 1:
+        _songs.sort(
+          (a, b) => a['dateAdded']
+              .toString()
+              .toUpperCase()
+              .compareTo(b['dateAdded'].toString().toUpperCase()),
+        );
+        break;
+      case 2:
+        _songs.sort(
+          (a, b) => a['album']
+              .toString()
+              .toUpperCase()
+              .compareTo(b['album'].toString().toUpperCase()),
+        );
+        break;
+      case 3:
+        _songs.sort(
+          (a, b) => a['artist']
+              .toString()
+              .toUpperCase()
+              .compareTo(b['artist'].toString().toUpperCase()),
+        );
+        break;
+      case 4:
+        _songs.sort(
+          (a, b) => a['duration']
+              .toString()
+              .toUpperCase()
+              .compareTo(b['duration'].toString().toUpperCase()),
+        );
+        break;
+      default:
+        _songs.sort(
+          (b, a) => a['dateAdded']
+              .toString()
+              .toUpperCase()
+              .compareTo(b['dateAdded'].toString().toUpperCase()),
+        );
+        break;
     }
-    if (sortValue == 1) {
-      _songs.sort(
-        (b, a) => a['title']
-            .toString()
-            .toUpperCase()
-            .compareTo(b['title'].toString().toUpperCase()),
-      );
-    }
-    if (sortValue == 2) {
-      _songs.sort(
-        (b, a) => a['dateAdded']
-            .toString()
-            .toUpperCase()
-            .compareTo(b['dateAdded'].toString().toUpperCase()),
-      );
-    }
-    if (sortValue == 3) {
-      _songs.shuffle();
+
+    if (order == 1) {
+      _songs = _songs.reversed.toList();
     }
   }
 
@@ -300,26 +340,49 @@ class _LikedSongsState extends State<LikedSongs>
                       shape: const RoundedRectangleBorder(
                         borderRadius: BorderRadius.all(Radius.circular(15.0)),
                       ),
-                      onSelected: (currentIndex == 0)
-                          ? (int value) {
-                              sortValue = value;
-                              Hive.box('settings').put('sortValue', value);
-                              sortSongs();
-                              setState(() {});
-                            }
-                          : (int value) {
-                              albumSortValue = value;
-                              Hive.box('settings').put('albumSortValue', value);
-                              sortAlbums();
-                              setState(() {});
-                            },
-                      itemBuilder: (currentIndex == 0)
-                          ? (context) => [
-                                PopupMenuItem(
-                                  value: 0,
+                      onSelected:
+                          // (currentIndex == 0) ?
+                          (int value) {
+                        if (value < 5) {
+                          sortValue = value;
+                          Hive.box('settings').put('sortValue', value);
+                        } else {
+                          orderValue = value - 5;
+                          Hive.box('settings').put('orderValue', orderValue);
+                        }
+                        sortSongs(sortVal: sortValue, order: orderValue);
+                        setState(() {});
+                      },
+                      // : (int value) {
+                      //     albumSortValue = value;
+                      //     Hive.box('settings').put('albumSortValue', value);
+                      //     sortAlbums();
+                      //     setState(() {});
+                      //   },
+                      itemBuilder:
+                          // (currentIndex == 0)
+                          // ?
+                          (context) {
+                        final List<String> sortTypes = [
+                          AppLocalizations.of(context)!.displayName,
+                          AppLocalizations.of(context)!.dateAdded,
+                          AppLocalizations.of(context)!.album,
+                          AppLocalizations.of(context)!.artist,
+                          AppLocalizations.of(context)!.duration,
+                        ];
+                        final List<String> orderTypes = [
+                          AppLocalizations.of(context)!.inc,
+                          AppLocalizations.of(context)!.dec,
+                        ];
+                        final menuList = <PopupMenuEntry<int>>[];
+                        menuList.addAll(
+                          sortTypes
+                              .map(
+                                (e) => PopupMenuItem(
+                                  value: sortTypes.indexOf(e),
                                   child: Row(
                                     children: [
-                                      if (sortValue == 0)
+                                      if (sortValue == sortTypes.indexOf(e))
                                         Icon(
                                           Icons.check_rounded,
                                           color: Theme.of(context).brightness ==
@@ -331,16 +394,28 @@ class _LikedSongsState extends State<LikedSongs>
                                         const SizedBox(),
                                       const SizedBox(width: 10),
                                       Text(
-                                        AppLocalizations.of(context)!.az,
+                                        e,
                                       ),
                                     ],
                                   ),
                                 ),
-                                PopupMenuItem(
-                                  value: 1,
+                              )
+                              .toList(),
+                        );
+                        menuList.add(
+                          const PopupMenuDivider(
+                            height: 10,
+                          ),
+                        );
+                        menuList.addAll(
+                          orderTypes
+                              .map(
+                                (e) => PopupMenuItem(
+                                  value:
+                                      sortTypes.length + orderTypes.indexOf(e),
                                   child: Row(
                                     children: [
-                                      if (sortValue == 1)
+                                      if (orderValue == orderTypes.indexOf(e))
                                         Icon(
                                           Icons.check_rounded,
                                           color: Theme.of(context).brightness ==
@@ -352,161 +427,210 @@ class _LikedSongsState extends State<LikedSongs>
                                         const SizedBox(),
                                       const SizedBox(width: 10),
                                       Text(
-                                        AppLocalizations.of(context)!.za,
+                                        e,
                                       ),
                                     ],
                                   ),
                                 ),
-                                PopupMenuItem(
-                                  value: 2,
-                                  child: Row(
-                                    children: [
-                                      if (sortValue == 2)
-                                        Icon(
-                                          Icons.check_rounded,
-                                          color: Theme.of(context).brightness ==
-                                                  Brightness.dark
-                                              ? Colors.white
-                                              : Colors.grey[700],
-                                        )
-                                      else
-                                        const SizedBox(),
-                                      const SizedBox(width: 10),
-                                      Text(
-                                        AppLocalizations.of(context)!.lastAdded,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                PopupMenuItem(
-                                  value: 3,
-                                  child: Row(
-                                    children: [
-                                      if (sortValue == 3)
-                                        Icon(
-                                          Icons.shuffle_rounded,
-                                          color: Theme.of(context).brightness ==
-                                                  Brightness.dark
-                                              ? Colors.white
-                                              : Colors.grey[700],
-                                        )
-                                      else
-                                        const SizedBox(),
-                                      const SizedBox(width: 10),
-                                      Text(
-                                        AppLocalizations.of(context)!.shuffle,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ]
-                          : (context) => [
-                                PopupMenuItem(
-                                  value: 0,
-                                  child: Row(
-                                    children: [
-                                      if (albumSortValue == 0)
-                                        Icon(
-                                          Icons.check_rounded,
-                                          color: Theme.of(context).brightness ==
-                                                  Brightness.dark
-                                              ? Colors.white
-                                              : Colors.grey[700],
-                                        )
-                                      else
-                                        const SizedBox(),
-                                      const SizedBox(width: 10),
-                                      Text(
-                                        AppLocalizations.of(context)!.az,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                PopupMenuItem(
-                                  value: 1,
-                                  child: Row(
-                                    children: [
-                                      if (albumSortValue == 1)
-                                        Icon(
-                                          Icons.check_rounded,
-                                          color: Theme.of(context).brightness ==
-                                                  Brightness.dark
-                                              ? Colors.white
-                                              : Colors.grey[700],
-                                        )
-                                      else
-                                        const SizedBox(),
-                                      const SizedBox(width: 10),
-                                      Text(
-                                        AppLocalizations.of(context)!.za,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                PopupMenuItem(
-                                  value: 2,
-                                  child: Row(
-                                    children: [
-                                      if (albumSortValue == 2)
-                                        Icon(
-                                          Icons.check_rounded,
-                                          color: Theme.of(context).brightness ==
-                                                  Brightness.dark
-                                              ? Colors.white
-                                              : Colors.grey[700],
-                                        )
-                                      else
-                                        const SizedBox(),
-                                      const SizedBox(width: 10),
-                                      Text(
-                                        AppLocalizations.of(context)!.tenToOne,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                PopupMenuItem(
-                                  value: 3,
-                                  child: Row(
-                                    children: [
-                                      if (albumSortValue == 3)
-                                        Icon(
-                                          Icons.check_rounded,
-                                          color: Theme.of(context).brightness ==
-                                                  Brightness.dark
-                                              ? Colors.white
-                                              : Colors.grey[700],
-                                        )
-                                      else
-                                        const SizedBox(),
-                                      const SizedBox(width: 10),
-                                      Text(
-                                        AppLocalizations.of(context)!.oneToTen,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                PopupMenuItem(
-                                  value: 4,
-                                  child: Row(
-                                    children: [
-                                      if (albumSortValue == 4)
-                                        Icon(
-                                          Icons.shuffle_rounded,
-                                          color: Theme.of(context).brightness ==
-                                                  Brightness.dark
-                                              ? Colors.white
-                                              : Colors.grey[700],
-                                        )
-                                      else
-                                        const SizedBox(),
-                                      const SizedBox(width: 10),
-                                      Text(
-                                        AppLocalizations.of(context)!.shuffle,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
+                              )
+                              .toList(),
+                        );
+                        return menuList;
+                        //       return  [
+                        //             PopupMenuItem(
+                        //               value: 0,
+                        //               child: Row(
+                        //                 children: [
+                        //                   if (sortValue == 0)
+                        //                     Icon(
+                        //                       Icons.check_rounded,
+                        //                       color: Theme.of(context).brightness ==
+                        //                               Brightness.dark
+                        //                           ? Colors.white
+                        //                           : Colors.grey[700],
+                        //                     )
+                        //                   else
+                        //                     const SizedBox(),
+                        //                   const SizedBox(width: 10),
+                        //                   Text(
+                        //                     AppLocalizations.of(context)!.az,
+                        //                   ),
+                        //                 ],
+                        //               ),
+                        //             ),
+                        //             PopupMenuItem(
+                        //               value: 1,
+                        //               child: Row(
+                        //                 children: [
+                        //                   if (sortValue == 1)
+                        //                     Icon(
+                        //                       Icons.check_rounded,
+                        //                       color: Theme.of(context).brightness ==
+                        //                               Brightness.dark
+                        //                           ? Colors.white
+                        //                           : Colors.grey[700],
+                        //                     )
+                        //                   else
+                        //                     const SizedBox(),
+                        //                   const SizedBox(width: 10),
+                        //                   Text(
+                        //                     AppLocalizations.of(context)!.za,
+                        //                   ),
+                        //                 ],
+                        //               ),
+                        //             ),
+                        //             PopupMenuItem(
+                        //               value: 2,
+                        //               child: Row(
+                        //                 children: [
+                        //                   if (sortValue == 2)
+                        //                     Icon(
+                        //                       Icons.check_rounded,
+                        //                       color: Theme.of(context).brightness ==
+                        //                               Brightness.dark
+                        //                           ? Colors.white
+                        //                           : Colors.grey[700],
+                        //                     )
+                        //                   else
+                        //                     const SizedBox(),
+                        //                   const SizedBox(width: 10),
+                        //                   Text(
+                        //                     AppLocalizations.of(context)!.lastAdded,
+                        //                   ),
+                        //                 ],
+                        //               ),
+                        //             ),
+                        //             PopupMenuItem(
+                        //               value: 3,
+                        //               child: Row(
+                        //                 children: [
+                        //                   if (sortValue == 3)
+                        //                     Icon(
+                        //                       Icons.shuffle_rounded,
+                        //                       color: Theme.of(context).brightness ==
+                        //                               Brightness.dark
+                        //                           ? Colors.white
+                        //                           : Colors.grey[700],
+                        //                     )
+                        //                   else
+                        //                     const SizedBox(),
+                        //                   const SizedBox(width: 10),
+                        //                   Text(
+                        //                     AppLocalizations.of(context)!.shuffle,
+                        //                   ),
+                        //                 ],
+                        //               ),
+                        //             ),
+                        //           ]
+                        //       : (context) => [
+                        //             PopupMenuItem(
+                        //               value: 0,
+                        //               child: Row(
+                        //                 children: [
+                        //                   if (albumSortValue == 0)
+                        //                     Icon(
+                        //                       Icons.check_rounded,
+                        //                       color: Theme.of(context).brightness ==
+                        //                               Brightness.dark
+                        //                           ? Colors.white
+                        //                           : Colors.grey[700],
+                        //                     )
+                        //                   else
+                        //                     const SizedBox(),
+                        //                   const SizedBox(width: 10),
+                        //                   Text(
+                        //                     AppLocalizations.of(context)!.az,
+                        //                   ),
+                        //                 ],
+                        //               ),
+                        //             ),
+                        //             PopupMenuItem(
+                        //               value: 1,
+                        //               child: Row(
+                        //                 children: [
+                        //                   if (albumSortValue == 1)
+                        //                     Icon(
+                        //                       Icons.check_rounded,
+                        //                       color: Theme.of(context).brightness ==
+                        //                               Brightness.dark
+                        //                           ? Colors.white
+                        //                           : Colors.grey[700],
+                        //                     )
+                        //                   else
+                        //                     const SizedBox(),
+                        //                   const SizedBox(width: 10),
+                        //                   Text(
+                        //                     AppLocalizations.of(context)!.za,
+                        //                   ),
+                        //                 ],
+                        //               ),
+                        //             ),
+                        //             PopupMenuItem(
+                        //               value: 2,
+                        //               child: Row(
+                        //                 children: [
+                        //                   if (albumSortValue == 2)
+                        //                     Icon(
+                        //                       Icons.check_rounded,
+                        //                       color: Theme.of(context).brightness ==
+                        //                               Brightness.dark
+                        //                           ? Colors.white
+                        //                           : Colors.grey[700],
+                        //                     )
+                        //                   else
+                        //                     const SizedBox(),
+                        //                   const SizedBox(width: 10),
+                        //                   Text(
+                        //                     AppLocalizations.of(context)!.tenToOne,
+                        //                   ),
+                        //                 ],
+                        //               ),
+                        //             ),
+                        //             PopupMenuItem(
+                        //               value: 3,
+                        //               child: Row(
+                        //                 children: [
+                        //                   if (albumSortValue == 3)
+                        //                     Icon(
+                        //                       Icons.check_rounded,
+                        //                       color: Theme.of(context).brightness ==
+                        //                               Brightness.dark
+                        //                           ? Colors.white
+                        //                           : Colors.grey[700],
+                        //                     )
+                        //                   else
+                        //                     const SizedBox(),
+                        //                   const SizedBox(width: 10),
+                        //                   Text(
+                        //                     AppLocalizations.of(context)!.oneToTen,
+                        //                   ),
+                        //                 ],
+                        //               ),
+                        //             ),
+                        //             PopupMenuItem(
+                        //               value: 4,
+                        //               child: Row(
+                        //                 children: [
+                        //                   if (albumSortValue == 4)
+                        //                     Icon(
+                        //                       Icons.shuffle_rounded,
+                        //                       color: Theme.of(context).brightness ==
+                        //                               Brightness.dark
+                        //                           ? Colors.white
+                        //                           : Colors.grey[700],
+                        //                     )
+                        //                   else
+                        //                     const SizedBox(),
+                        //                   const SizedBox(width: 10),
+                        //                   Text(
+                        //                     AppLocalizations.of(context)!.shuffle,
+                        //                   ),
+                        //                 ],
+                        //               ),
+                        //             ),
+                        //           ],
+                        // ),
+                      },
                     ),
                   ],
                 ),
@@ -533,17 +657,20 @@ class _LikedSongsState extends State<LikedSongs>
                           ),
                           AlbumsTab(
                             albums: _albums,
+                            type: 'album',
                             offline: false,
                             sortedAlbumKeysList: _sortedAlbumKeysList,
                           ),
                           AlbumsTab(
                             albums: _artists,
-                            artistTab: true,
+                            type: 'artist',
+                            tempPath: tempPath,
                             offline: false,
                             sortedAlbumKeysList: _sortedArtistKeysList,
                           ),
                           AlbumsTab(
                             albums: _genres,
+                            type: 'genre',
                             offline: false,
                             sortedAlbumKeysList: _sortedGenreKeysList,
                           ),
@@ -659,7 +786,7 @@ class _SongsTabState extends State<SongsTab>
                         overflow: TextOverflow.ellipsis,
                       ),
                       subtitle: Text(
-                        '${widget.songs[index]['artist'] ?? 'Artist name'}',
+                        '${widget.songs[index]['artist'] ?? 'Unknown'} - ${widget.songs[index]['album'] ?? 'Unknown'}',
                         overflow: TextOverflow.ellipsis,
                       ),
                       trailing: Row(
@@ -752,14 +879,16 @@ class _SongsTabState extends State<SongsTab>
 class AlbumsTab extends StatefulWidget {
   final Map<String, List> albums;
   final List sortedAlbumKeysList;
-  final bool artistTab;
+  final String? tempPath;
+  final String type;
   final bool offline;
   const AlbumsTab({
     Key? key,
     required this.albums,
     required this.offline,
     required this.sortedAlbumKeysList,
-    this.artistTab = false,
+    required this.type,
+    this.tempPath,
   }) : super(key: key);
 
   @override
@@ -785,11 +914,18 @@ class _AlbumsTabState extends State<AlbumsTab>
             AppLocalizations.of(context)!.addSomething,
             23.0,
           )
-        : ListView.builder(
+        : GridView.builder(
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: MediaQuery.of(context).size.width >
+                      MediaQuery.of(context).size.height
+                  ? 4
+                  : 2,
+              childAspectRatio: 0.8,
+            ),
             physics: const BouncingScrollPhysics(),
-            padding: const EdgeInsets.only(bottom: 10),
+            padding: const EdgeInsets.only(top: 15.0, bottom: 10.0),
             shrinkWrap: true,
-            itemExtent: 70.0,
+            // itemExtent: 70.0,
             itemCount: widget.sortedAlbumKeysList.length,
             itemBuilder: (context, index) {
               final List imageList = widget
@@ -801,28 +937,63 @@ class _AlbumsTabState extends State<AlbumsTab>
                       0,
                       widget.albums[widget.sortedAlbumKeysList[index]]!.length,
                     );
-              return ListTile(
-                leading: widget.offline
-                    ? OfflineCollage(
+              return GestureDetector(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (widget.offline)
+                      OfflineCollage(
+                        fixSize: false,
                         imageList: imageList,
-                        placeholderImage: widget.artistTab
+                        showGrid: widget.type == 'genre',
+                        artistName: widget.type == 'artist'
+                            ? widget
+                                .albums[widget.sortedAlbumKeysList[index]]![0]
+                                    ['artist']
+                                .toString()
+                            : null,
+                        tempDirPath: widget.tempPath,
+                        placeholderImage: widget.type == 'artist'
                             ? 'assets/artist.png'
                             : 'assets/album.png',
                       )
-                    : Collage(
+                    else
+                      Collage(
+                        fixSize: false,
                         imageList: imageList,
-                        placeholderImage: widget.artistTab
+                        showGrid: widget.type == 'genre',
+                        artistName: widget.type == 'artist'
+                            ? widget
+                                .albums[widget.sortedAlbumKeysList[index]]![0]
+                                    ['artist']
+                                .toString()
+                            : null,
+                        tempDirPath: widget.tempPath,
+                        placeholderImage: widget.type == 'artist'
                             ? 'assets/artist.png'
                             : 'assets/album.png',
                       ),
-                title: Text(
-                  '${widget.sortedAlbumKeysList[index]}',
-                  overflow: TextOverflow.ellipsis,
-                ),
-                subtitle: Text(
-                  widget.albums[widget.sortedAlbumKeysList[index]]!.length == 1
-                      ? '${widget.albums[widget.sortedAlbumKeysList[index]]!.length} ${AppLocalizations.of(context)!.song}'
-                      : '${widget.albums[widget.sortedAlbumKeysList[index]]!.length} ${AppLocalizations.of(context)!.songs}',
+                    ListTile(
+                      dense: true,
+                      minVerticalPadding: 0.0,
+                      contentPadding:
+                          const EdgeInsets.symmetric(horizontal: 10.0),
+                      title: Text(
+                        '${widget.sortedAlbumKeysList[index]}',
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      subtitle: Text(
+                        widget.albums[widget.sortedAlbumKeysList[index]]!
+                                    .length ==
+                                1
+                            ? '${widget.albums[widget.sortedAlbumKeysList[index]]!.length} ${AppLocalizations.of(context)!.song}'
+                            : '${widget.albums[widget.sortedAlbumKeysList[index]]!.length} ${AppLocalizations.of(context)!.songs}',
+                        style: TextStyle(
+                          color: Theme.of(context).textTheme.caption!.color,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
                 onTap: () {
                   Navigator.of(context).push(

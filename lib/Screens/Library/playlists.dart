@@ -268,6 +268,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                                 : Collage(
                                     imageList: playlistDetails[name]
                                         ['imagesList'] as List,
+                                    showGrid: true,
                                     placeholderImage: 'assets/cover.jpg',
                                   ),
                             title: Text(

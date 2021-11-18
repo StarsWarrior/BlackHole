@@ -29,50 +29,78 @@ class SongsListPage extends StatefulWidget {
 }
 
 class _SongsListPageState extends State<SongsListPage> {
-  bool status = false;
+  int page = 1;
+  bool loading = false;
   List songList = [];
   bool fetched = false;
   HtmlUnescape unescape = HtmlUnescape();
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchSongs();
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels >=
+              _scrollController.position.maxScrollExtent &&
+          widget.listItem['type'].toString() == 'songs' &&
+          !loading) {
+        page += 1;
+        _fetchSongs();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _scrollController.dispose();
+  }
+
+  void _fetchSongs() {
+    loading = true;
+    switch (widget.listItem['type'].toString()) {
+      case 'songs':
+        SaavnAPI()
+            .fetchSongSearchResults(
+          searchQuery: widget.listItem['id'].toString(),
+          page: page,
+        )
+            .then((value) {
+          setState(() {
+            songList.addAll(value);
+            fetched = true;
+            loading = false;
+          });
+        });
+        break;
+      case 'album':
+        SaavnAPI()
+            .fetchAlbumSongs(widget.listItem['id'].toString())
+            .then((value) {
+          setState(() {
+            songList = value;
+            fetched = true;
+          });
+        });
+        break;
+      case 'playlist':
+        SaavnAPI()
+            .fetchPlaylistSongs(widget.listItem['id'].toString())
+            .then((value) {
+          setState(() {
+            songList = value;
+            fetched = true;
+          });
+        });
+        break;
+      default:
+        break;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    if (!status) {
-      status = true;
-      switch (widget.listItem['type'].toString()) {
-        case 'songs':
-          SaavnAPI()
-              .fetchSongSearchResults(widget.listItem['id'].toString(), '20')
-              .then((value) {
-            setState(() {
-              songList = value;
-              fetched = true;
-            });
-          });
-          break;
-        case 'album':
-          SaavnAPI()
-              .fetchAlbumSongs(widget.listItem['id'].toString())
-              .then((value) {
-            setState(() {
-              songList = value;
-              fetched = true;
-            });
-          });
-          break;
-        case 'playlist':
-          SaavnAPI()
-              .fetchPlaylistSongs(widget.listItem['id'].toString())
-              .then((value) {
-            setState(() {
-              songList = value;
-              fetched = true;
-            });
-          });
-          break;
-        default:
-          break;
-      }
-    }
     return GradientContainer(
       child: Column(
         children: [
@@ -101,14 +129,10 @@ class _SongsListPageState extends State<SongsListPage> {
                           20,
                         )
                       : CustomScrollView(
+                          controller: _scrollController,
                           physics: const BouncingScrollPhysics(),
                           slivers: [
                             SliverAppBar(
-                              // backgroundColor:
-                              // Theme.of(context).brightness ==
-                              // Brightness.light
-                              // ? Colors.transparent
-                              // : null,
                               elevation: 0,
                               stretch: true,
                               // floating: true,

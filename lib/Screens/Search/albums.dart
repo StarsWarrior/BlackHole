@@ -27,50 +27,96 @@ class AlbumSearchPage extends StatefulWidget {
 }
 
 class _AlbumSearchPageState extends State<AlbumSearchPage> {
-  bool status = false;
-  List<Map> searchedList = [];
-  bool fetched = false;
+  int page = 1;
+  bool loading = false;
+  List<Map>? _searchedList;
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchData();
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels >=
+              _scrollController.position.maxScrollExtent &&
+          !loading) {
+        page += 1;
+        _fetchData();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _scrollController.dispose();
+  }
+
+  void _fetchData() {
+    loading = true;
+    switch (widget.type) {
+      case 'Playlists':
+        SaavnAPI()
+            .fetchAlbums(
+          searchQuery: widget.query,
+          type: 'playlist',
+          page: page,
+        )
+            .then((value) {
+          final temp = _searchedList ?? [];
+          temp.addAll(value);
+          setState(() {
+            _searchedList = temp;
+            loading = false;
+          });
+        });
+        break;
+      case 'Albums':
+        SaavnAPI()
+            .fetchAlbums(
+          searchQuery: widget.query,
+          type: 'album',
+          page: page,
+        )
+            .then((value) {
+          final temp = _searchedList ?? [];
+          temp.addAll(value);
+          setState(() {
+            _searchedList = temp;
+            loading = false;
+          });
+        });
+        break;
+      case 'Artists':
+        SaavnAPI()
+            .fetchAlbums(
+          searchQuery: widget.query,
+          type: 'artist',
+          page: page,
+        )
+            .then((value) {
+          final temp = _searchedList ?? [];
+          temp.addAll(value);
+          setState(() {
+            _searchedList = temp;
+            loading = false;
+          });
+        });
+        break;
+      default:
+        break;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    if (!status) {
-      status = true;
-      switch (widget.type) {
-        case 'Playlists':
-          SaavnAPI().fetchAlbums(widget.query, 'playlist').then((value) {
-            setState(() {
-              searchedList = value;
-              fetched = true;
-            });
-          });
-          break;
-        case 'Albums':
-          SaavnAPI().fetchAlbums(widget.query, 'album').then((value) {
-            setState(() {
-              searchedList = value;
-              fetched = true;
-            });
-          });
-          break;
-        case 'Artists':
-          SaavnAPI().fetchAlbums(widget.query, 'artist').then((value) {
-            setState(() {
-              searchedList = value;
-              fetched = true;
-            });
-          });
-          break;
-        default:
-          break;
-      }
-    }
     return GradientContainer(
       child: Column(
         children: [
           Expanded(
             child: Scaffold(
               backgroundColor: Colors.transparent,
-              body: !fetched
+              body: _searchedList == null
                   ? SizedBox(
                       child: Center(
                         child: SizedBox(
@@ -80,7 +126,7 @@ class _AlbumSearchPageState extends State<AlbumSearchPage> {
                         ),
                       ),
                     )
-                  : searchedList.isEmpty
+                  : _searchedList!.isEmpty
                       ? emptyScreen(
                           context,
                           0,
@@ -93,6 +139,7 @@ class _AlbumSearchPageState extends State<AlbumSearchPage> {
                         )
                       : CustomScrollView(
                           physics: const BouncingScrollPhysics(),
+                          controller: _scrollController,
                           slivers: [
                             SliverAppBar(
                               // backgroundColor: Colors.transparent,
@@ -140,7 +187,7 @@ class _AlbumSearchPageState extends State<AlbumSearchPage> {
                             ),
                             SliverList(
                               delegate: SliverChildListDelegate(
-                                searchedList.map(
+                                _searchedList!.map(
                                   (Map entry) {
                                     return Padding(
                                       padding: const EdgeInsets.only(right: 7),

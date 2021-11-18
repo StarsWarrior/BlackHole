@@ -15,6 +15,7 @@ import 'package:blackhole/CustomWidgets/seek_bar.dart';
 import 'package:blackhole/CustomWidgets/snackbar.dart';
 import 'package:blackhole/CustomWidgets/textinput_dialog.dart';
 import 'package:blackhole/Helpers/config.dart';
+import 'package:blackhole/Helpers/dominant_color.dart';
 import 'package:blackhole/Helpers/lyrics.dart';
 import 'package:blackhole/Helpers/mediaitem_converter.dart';
 import 'package:blackhole/Screens/Common/song_list.dart';
@@ -29,7 +30,6 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:hive/hive.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:on_audio_query/on_audio_query.dart';
-import 'package:palette_generator/palette_generator.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:share_plus/share_plus.dart';
@@ -157,8 +157,7 @@ class _PlayScreenState extends State<PlayScreen> {
 
   void setOffValues(List response, {bool downloaed = false}) {
     getTemporaryDirectory().then((tempDir) async {
-      final File file =
-          File('${(await getTemporaryDirectory()).path}/cover.jpg');
+      final File file = File('${tempDir.path}/cover.jpg');
       if (!await file.exists()) {
         final byteData = await rootBundle.load('assets/cover.jpg');
         await file.writeAsBytes(
@@ -224,24 +223,6 @@ class _PlayScreenState extends State<PlayScreen> {
     return '${msg[0].toUpperCase()}${msg.substring(1)}: '.replaceAll('_', ' ');
   }
 
-  Future<void> getColors(ImageProvider imageProvider) async {
-    PaletteGenerator paletteGenerator;
-    paletteGenerator = await PaletteGenerator.fromImageProvider(imageProvider);
-    Color dominantColor = paletteGenerator.dominantColor?.color ?? Colors.black;
-    if (dominantColor.computeLuminance() > 0.6) {
-      Color contrastColor =
-          paletteGenerator.darkMutedColor?.color ?? Colors.black;
-      if (dominantColor == contrastColor) {
-        contrastColor = paletteGenerator.lightMutedColor?.color ?? Colors.white;
-      }
-      if (contrastColor.computeLuminance() < 0.6) {
-        dominantColor = contrastColor;
-      }
-    }
-    gradientColor.value = dominantColor;
-    currentTheme.setLastPlayGradient(gradientColor.value);
-  }
-
   @override
   Widget build(BuildContext context) {
     BuildContext? scaffoldContext;
@@ -265,12 +246,12 @@ class _PlayScreenState extends State<PlayScreen> {
                       mediaItem.artUri!.toFilePath(),
                     ),
                   ),
-                )
+                ).then((value) => gradientColor.value = value)
               : getColors(
                   CachedNetworkImageProvider(
                     mediaItem.artUri.toString(),
                   ),
-                );
+                ).then((value) => gradientColor.value = value);
           return ValueListenableBuilder(
             valueListenable: gradientColor,
             child: SafeArea(
@@ -435,9 +416,10 @@ class _PlayScreenState extends State<PlayScreen> {
                                           .sleepAfterSub,
                                     ),
                                     dense: true,
+                                    isThreeLine: true,
                                     onTap: () {
                                       Navigator.pop(context);
-                                      setCounter(scaffoldContext!);
+                                      setCounter();
                                     },
                                   ),
                                 ],
@@ -805,9 +787,9 @@ class _PlayScreenState extends State<PlayScreen> {
     );
   }
 
-  Future<dynamic> setCounter(BuildContext scaffoldContext) async {
+  Future<dynamic> setCounter() async {
     await showTextInputDialog(
-      context: scaffoldContext,
+      context: context,
       title: AppLocalizations.of(context)!.enterSongsCount,
       initialText: '',
       keyboardType: TextInputType.number,
@@ -815,7 +797,7 @@ class _PlayScreenState extends State<PlayScreen> {
         sleepCounter(
           int.parse(value),
         );
-        Navigator.pop(scaffoldContext);
+        Navigator.pop(context);
         ShowSnackBar().showSnackBar(
           context,
           '${AppLocalizations.of(context)!.sleepTimerSetFor} $value ${AppLocalizations.of(context)!.songs}',

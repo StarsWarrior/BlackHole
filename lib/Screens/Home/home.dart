@@ -53,7 +53,7 @@ class _HomePageState extends State<HomePage> {
 
   void _onItemTapped(int index) {
     _selectedIndex.value = index;
-    pageController.jumpToPage(
+    _pageController.jumpToPage(
       index,
     );
   }
@@ -208,6 +208,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   final ScrollController _scrollController = ScrollController();
+  final PageController _pageController = PageController();
 
   @override
   void initState() {
@@ -216,11 +217,10 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void dispose() {
-    pageController.dispose();
+    _pageController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
-
-  PageController pageController = PageController();
 
   @override
   Widget build(BuildContext context) {
@@ -417,7 +417,7 @@ class _HomePageState extends State<HomePage> {
                     onPageChanged: (indx) {
                       _selectedIndex.value = indx;
                     },
-                    controller: pageController,
+                    controller: _pageController,
                     children: [
                       Stack(
                         children: [
@@ -674,7 +674,7 @@ class _HomePageState extends State<HomePage> {
                         ],
                       ),
                       TopCharts(
-                        pageController: pageController,
+                        pageController: _pageController,
                       ),
                       const YouTube(),
                       LibraryPage(),

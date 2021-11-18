@@ -209,6 +209,7 @@ class AddToPlaylist {
                             : Collage(
                                 imageList: playlistDetails[playlistNames[index]]
                                     ['imagesList'] as List,
+                                showGrid: true,
                                 placeholderImage: 'assets/cover.jpg',
                               ),
                         title: Text(

@@ -245,8 +245,12 @@ class FormatResponse {
             : formatString(response['description'].toString()),
         'title': formatString(response['title'].toString()),
         'artist': response['music'] == null
-            ? response['more_info']['music'] == null
-                ? response['more_info']['artistMap']['primary_artists'] == null
+            ? (response['more_info']?['music']) == null
+                ? (response['more_info']?['artistMap']?['primary_artists'] ==
+                            null ||
+                        (response['more_info']?['artistMap']?['primary_artists']
+                                as List)
+                            .isEmpty)
                     ? ''
                     : formatString(
                         response['more_info']['artistMap']['primary_artists'][0]

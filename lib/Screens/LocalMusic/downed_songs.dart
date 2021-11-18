@@ -33,7 +33,7 @@ class DownloadedSongs extends StatefulWidget {
 class _DownloadedSongsState extends State<DownloadedSongs>
     with TickerProviderStateMixin {
   List<SongModel> _songs = [];
-  String tempPath = '';
+  String? tempPath = Hive.box('settings').get('tempDirPath')?.toString();
   final Map<String, List<SongModel>> _albums = {};
   final Map<String, List<SongModel>> _artists = {};
   final Map<String, List<SongModel>> _genres = {};
@@ -87,7 +87,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
 
   Future<void> getCached() async {
     await offlineAudioQuery.requestPermission();
-    tempPath = (await getTemporaryDirectory()).path;
+    tempPath ??= (await getTemporaryDirectory()).path;
     if (widget.cachedSongs == null) {
       _songs = (await offlineAudioQuery.getSongs(
         sortType: songSortTypes[sortValue],
@@ -221,7 +221,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                           context: context,
                           delegate: DataSearch(
                             data: _songs,
-                            tempPath: tempPath,
+                            tempPath: tempPath!,
                           ),
                         );
                       },
@@ -345,22 +345,22 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                             songs: _songs,
                             playlistId: widget.playlistId,
                             playlistName: widget.title,
-                            tempPath: tempPath,
+                            tempPath: tempPath!,
                           ),
                           AlbumsTab(
                             albums: _albums,
                             albumsList: _sortedAlbumKeysList,
-                            tempPath: tempPath,
+                            tempPath: tempPath!,
                           ),
                           AlbumsTab(
                             albums: _artists,
                             albumsList: _sortedArtistKeysList,
-                            tempPath: tempPath,
+                            tempPath: tempPath!,
                           ),
                           AlbumsTab(
                             albums: _genres,
                             albumsList: _sortedGenreKeysList,
-                            tempPath: tempPath,
+                            tempPath: tempPath!,
                           ),
                           // videosTab(),
                         ],
@@ -675,9 +675,7 @@ class _SongsTabState extends State<SongsTab>
                         overflow: TextOverflow.ellipsis,
                       ),
                       subtitle: Text(
-                        widget.songs[index].artist
-                                ?.replaceAll('<unknown>', 'Unknown') ??
-                            AppLocalizations.of(context)!.unknown,
+                        '${widget.songs[index].artist?.replaceAll('<unknown>', 'Unknown') ?? AppLocalizations.of(context)!.unknown} - ${widget.songs[index].album?.replaceAll('<unknown>', 'Unknown') ?? AppLocalizations.of(context)!.unknown}',
                         overflow: TextOverflow.ellipsis,
                       ),
                       trailing: PopupMenuButton(
@@ -1270,23 +1268,6 @@ class _AlbumsTabState extends State<AlbumsTab>
             fileName:
                 widget.albums[widget.albumsList[index]]![0].displayNameWOExt,
           ),
-          // OfflineCollage(
-          //   imageList: (_cachedAlbums[sortedCachedAlbumKeysList[index]]
-          //                   as List)
-          //               .length >=
-          //           4
-          //       ? (_cachedAlbums[sortedCachedAlbumKeysList[index]]
-          //               as List)
-          //           .sublist(0, 4)
-          //       : (_cachedAlbums[sortedCachedAlbumKeysList[index]]
-          //               as List)
-          //           .sublist(
-          //               0,
-          //               (_cachedAlbums[sortedCachedAlbumKeysList[index]]
-          //                       as List)
-          //                   .length),
-          //   placeholderImage: 'assets/album.png',
-          // ),
           title: Text(
             widget.albumsList[index],
             overflow: TextOverflow.ellipsis,

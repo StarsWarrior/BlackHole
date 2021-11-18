@@ -17,6 +17,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:hive/hive.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class Downloads extends StatefulWidget {
@@ -37,15 +38,23 @@ class _DownloadsState extends State<Downloads>
   List _sortedArtistKeysList = [];
   List _sortedGenreKeysList = [];
   TabController? _tcontroller;
-  int currentIndex = 0;
-  int sortValue = Hive.box('settings').get('sortValue', defaultValue: 2) as int;
+  // int currentIndex = 0;
+  String? tempPath = Hive.box('settings').get('tempDirPath')?.toString();
+  int sortValue = Hive.box('settings').get('sortValue', defaultValue: 1) as int;
+  int orderValue =
+      Hive.box('settings').get('orderValue', defaultValue: 1) as int;
   int albumSortValue =
       Hive.box('settings').get('albumSortValue', defaultValue: 2) as int;
 
   @override
   void initState() {
     _tcontroller = TabController(length: 4, vsync: this);
-    _tcontroller!.addListener(changeTitle);
+    // _tcontroller!.addListener(changeTitle);
+    if (tempPath == null) {
+      getTemporaryDirectory().then((value) {
+        Hive.box('settings').put('tempDirPath', value.path);
+      });
+    }
     getDownloads();
     super.initState();
   }
@@ -56,11 +65,11 @@ class _DownloadsState extends State<Downloads>
     _tcontroller!.dispose();
   }
 
-  void changeTitle() {
-    setState(() {
-      currentIndex = _tcontroller!.index;
-    });
-  }
+  // void changeTitle() {
+  //   setState(() {
+  //     currentIndex = _tcontroller!.index;
+  //   });
+  // }
 
   Future<void> getDownloads() async {
     _songs = downloadsBox.values.toList();
@@ -101,7 +110,7 @@ class _DownloadsState extends State<Downloads>
       }
     }
 
-    sortSongs();
+    sortSongs(sortVal: sortValue, order: orderValue);
 
     _sortedAlbumKeysList = _albums.keys.toList();
     _sortedArtistKeysList = _artists.keys.toList();
@@ -113,31 +122,60 @@ class _DownloadsState extends State<Downloads>
     setState(() {});
   }
 
-  void sortSongs() {
-    if (sortValue == 0) {
-      _songs.sort(
-        (a, b) => a['title']
-            .toString()
-            .toUpperCase()
-            .compareTo(b['title'].toString().toUpperCase()),
-      );
+  void sortSongs({required int sortVal, required int order}) {
+    switch (sortVal) {
+      case 0:
+        _songs.sort(
+          (a, b) => a['title']
+              .toString()
+              .toUpperCase()
+              .compareTo(b['title'].toString().toUpperCase()),
+        );
+        break;
+      case 1:
+        _songs.sort(
+          (a, b) => a['dateAdded']
+              .toString()
+              .toUpperCase()
+              .compareTo(b['dateAdded'].toString().toUpperCase()),
+        );
+        break;
+      case 2:
+        _songs.sort(
+          (a, b) => a['album']
+              .toString()
+              .toUpperCase()
+              .compareTo(b['album'].toString().toUpperCase()),
+        );
+        break;
+      case 3:
+        _songs.sort(
+          (a, b) => a['artist']
+              .toString()
+              .toUpperCase()
+              .compareTo(b['artist'].toString().toUpperCase()),
+        );
+        break;
+      case 4:
+        _songs.sort(
+          (a, b) => a['duration']
+              .toString()
+              .toUpperCase()
+              .compareTo(b['duration'].toString().toUpperCase()),
+        );
+        break;
+      default:
+        _songs.sort(
+          (b, a) => a['dateAdded']
+              .toString()
+              .toUpperCase()
+              .compareTo(b['dateAdded'].toString().toUpperCase()),
+        );
+        break;
     }
-    if (sortValue == 1) {
-      _songs.sort(
-        (b, a) => a['title']
-            .toString()
-            .toUpperCase()
-            .compareTo(b['title'].toString().toUpperCase()),
-      );
-    }
-    if (sortValue == 2) {
-      _songs = downloadsBox.values.toList();
-      _songs.sort(
-        (b, a) => a['dateAdded']
-            .toString()
-            .toUpperCase()
-            .compareTo(b['dateAdded'].toString().toUpperCase()),
-      );
+
+    if (order == 1) {
+      _songs = _songs.reversed.toList();
     }
   }
 
@@ -280,27 +318,51 @@ class _DownloadsState extends State<Downloads>
                         shape: const RoundedRectangleBorder(
                           borderRadius: BorderRadius.all(Radius.circular(15.0)),
                         ),
-                        onSelected: (currentIndex == 0)
-                            ? (int value) {
-                                sortValue = value;
-                                Hive.box('settings').put('sortValue', value);
-                                sortSongs();
-                                setState(() {});
-                              }
-                            : (int value) {
-                                albumSortValue = value;
-                                Hive.box('settings')
-                                    .put('albumSortValue', value);
-                                sortAlbums();
-                                setState(() {});
-                              },
-                        itemBuilder: (currentIndex == 0)
-                            ? (context) => [
-                                  PopupMenuItem(
-                                    value: 0,
+                        onSelected:
+                            // (currentIndex == 0)
+                            // ?
+                            (int value) {
+                          if (value < 5) {
+                            sortValue = value;
+                            Hive.box('settings').put('sortValue', value);
+                          } else {
+                            orderValue = value - 5;
+                            Hive.box('settings').put('orderValue', orderValue);
+                          }
+                          sortSongs(sortVal: sortValue, order: orderValue);
+                          setState(() {});
+                          //   }
+                          // : (int value) {
+                          //     albumSortValue = value;
+                          //     Hive.box('settings')
+                          //         .put('albumSortValue', value);
+                          //     sortAlbums();
+                          //     setState(() {});
+                        },
+                        itemBuilder:
+                            // (currentIndex == 0)
+                            // ?
+                            (context) {
+                          final List<String> sortTypes = [
+                            AppLocalizations.of(context)!.displayName,
+                            AppLocalizations.of(context)!.dateAdded,
+                            AppLocalizations.of(context)!.album,
+                            AppLocalizations.of(context)!.artist,
+                            AppLocalizations.of(context)!.duration,
+                          ];
+                          final List<String> orderTypes = [
+                            AppLocalizations.of(context)!.inc,
+                            AppLocalizations.of(context)!.dec,
+                          ];
+                          final menuList = <PopupMenuEntry<int>>[];
+                          menuList.addAll(
+                            sortTypes
+                                .map(
+                                  (e) => PopupMenuItem(
+                                    value: sortTypes.indexOf(e),
                                     child: Row(
                                       children: [
-                                        if (sortValue == 0)
+                                        if (sortValue == sortTypes.indexOf(e))
                                           Icon(
                                             Icons.check_rounded,
                                             color:
@@ -313,16 +375,28 @@ class _DownloadsState extends State<Downloads>
                                           const SizedBox(),
                                         const SizedBox(width: 10),
                                         Text(
-                                          AppLocalizations.of(context)!.az,
+                                          e,
                                         ),
                                       ],
                                     ),
                                   ),
-                                  PopupMenuItem(
-                                    value: 1,
+                                )
+                                .toList(),
+                          );
+                          menuList.add(
+                            const PopupMenuDivider(
+                              height: 10,
+                            ),
+                          );
+                          menuList.addAll(
+                            orderTypes
+                                .map(
+                                  (e) => PopupMenuItem(
+                                    value: sortTypes.length +
+                                        orderTypes.indexOf(e),
                                     child: Row(
                                       children: [
-                                        if (sortValue == 1)
+                                        if (orderValue == orderTypes.indexOf(e))
                                           Icon(
                                             Icons.check_rounded,
                                             color:
@@ -335,127 +409,16 @@ class _DownloadsState extends State<Downloads>
                                           const SizedBox(),
                                         const SizedBox(width: 10),
                                         Text(
-                                          AppLocalizations.of(context)!.za,
+                                          e,
                                         ),
                                       ],
                                     ),
                                   ),
-                                  PopupMenuItem(
-                                    value: 2,
-                                    child: Row(
-                                      children: [
-                                        if (sortValue == 2)
-                                          Icon(
-                                            Icons.check_rounded,
-                                            color:
-                                                Theme.of(context).brightness ==
-                                                        Brightness.dark
-                                                    ? Colors.white
-                                                    : Colors.grey[700],
-                                          )
-                                        else
-                                          const SizedBox(),
-                                        const SizedBox(width: 10),
-                                        Text(
-                                          AppLocalizations.of(context)!
-                                              .lastAdded,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ]
-                            : (context) => [
-                                  PopupMenuItem(
-                                    value: 0,
-                                    child: Row(
-                                      children: [
-                                        if (albumSortValue == 0)
-                                          Icon(
-                                            Icons.check_rounded,
-                                            color:
-                                                Theme.of(context).brightness ==
-                                                        Brightness.dark
-                                                    ? Colors.white
-                                                    : Colors.grey[700],
-                                          )
-                                        else
-                                          const SizedBox(),
-                                        const SizedBox(width: 10),
-                                        Text(
-                                          AppLocalizations.of(context)!.az,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  PopupMenuItem(
-                                    value: 1,
-                                    child: Row(
-                                      children: [
-                                        if (albumSortValue == 1)
-                                          Icon(
-                                            Icons.check_rounded,
-                                            color:
-                                                Theme.of(context).brightness ==
-                                                        Brightness.dark
-                                                    ? Colors.white
-                                                    : Colors.grey[700],
-                                          )
-                                        else
-                                          const SizedBox(),
-                                        const SizedBox(width: 10),
-                                        Text(
-                                          AppLocalizations.of(context)!.za,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  PopupMenuItem(
-                                    value: 2,
-                                    child: Row(
-                                      children: [
-                                        if (albumSortValue == 2)
-                                          Icon(
-                                            Icons.check_rounded,
-                                            color:
-                                                Theme.of(context).brightness ==
-                                                        Brightness.dark
-                                                    ? Colors.white
-                                                    : Colors.grey[700],
-                                          )
-                                        else
-                                          const SizedBox(),
-                                        const SizedBox(width: 10),
-                                        Text(
-                                          AppLocalizations.of(context)!
-                                              .tenToOne,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  PopupMenuItem(
-                                    value: 3,
-                                    child: Row(
-                                      children: [
-                                        if (albumSortValue == 3)
-                                          Icon(
-                                            Icons.check_rounded,
-                                            color:
-                                                Theme.of(context).brightness ==
-                                                        Brightness.dark
-                                                    ? Colors.white
-                                                    : Colors.grey[700],
-                                          )
-                                        else
-                                          const SizedBox(),
-                                        const SizedBox(width: 10),
-                                        Text(
-                                          AppLocalizations.of(context)!
-                                              .oneToTen,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
+                                )
+                                .toList(),
+                          );
+                          return menuList;
+                        },
                       ),
                   ],
                 ),
@@ -482,16 +445,19 @@ class _DownloadsState extends State<Downloads>
                           AlbumsTab(
                             albums: _albums,
                             offline: true,
+                            type: 'album',
                             sortedAlbumKeysList: _sortedAlbumKeysList,
                           ),
                           AlbumsTab(
                             albums: _artists,
-                            artistTab: true,
+                            type: 'artist',
+                            tempPath: tempPath,
                             offline: true,
                             sortedAlbumKeysList: _sortedArtistKeysList,
                           ),
                           AlbumsTab(
                             albums: _genres,
+                            type: 'genre',
                             offline: true,
                             sortedAlbumKeysList: _sortedGenreKeysList,
                           ),

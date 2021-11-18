@@ -64,8 +64,10 @@ class _SearchPageState extends State<SearchPage> {
 
   Future<void> fetchResults() async {
     // this fetches top 5 songs results
-    final List songResults = await SaavnAPI()
-        .fetchSongSearchResults(query == '' ? widget.query : query, '5');
+    final List songResults = await SaavnAPI().fetchSongSearchResults(
+      searchQuery: query == '' ? widget.query : query,
+      count: 5,
+    );
     if (songResults.isNotEmpty) searchedData['Songs'] = songResults;
     fetched = true;
     // this fetches albums, playlists, artists, etc
@@ -229,7 +231,7 @@ class _SearchPageState extends State<SearchPage> {
                               ? nothingFound(context)
                               : SingleChildScrollView(
                                   padding: const EdgeInsets.only(
-                                    top: 80,
+                                    top: 70,
                                   ),
                                   physics: const BouncingScrollPhysics(),
                                   child: Column(
@@ -239,26 +241,17 @@ class _SearchPageState extends State<SearchPage> {
                                             position[e].toString();
                                         final List? value =
                                             searchedData[key] as List?;
-                                        final bool first = e == sortedKeys[0];
+
                                         if (value == null) {
                                           return const SizedBox();
                                         }
                                         return Column(
                                           children: [
                                             Padding(
-                                              padding: first
-                                                  ? const EdgeInsets.fromLTRB(
-                                                      25,
-                                                      0,
-                                                      0,
-                                                      0,
-                                                    )
-                                                  : const EdgeInsets.fromLTRB(
-                                                      25,
-                                                      30,
-                                                      0,
-                                                      0,
-                                                    ),
+                                              padding: const EdgeInsets.only(
+                                                left: 25,
+                                                top: 10,
+                                              ),
                                               child: Row(
                                                 children: [
                                                   Text(
@@ -280,12 +273,9 @@ class _SearchPageState extends State<SearchPage> {
                                               physics:
                                                   const NeverScrollableScrollPhysics(),
                                               shrinkWrap: true,
-                                              padding:
-                                                  const EdgeInsets.fromLTRB(
-                                                5,
-                                                0,
-                                                10,
-                                                0,
+                                              padding: const EdgeInsets.only(
+                                                left: 5,
+                                                right: 10,
                                               ),
                                               itemBuilder: (context, index) {
                                                 final int count = value[index]
