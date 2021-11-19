@@ -139,8 +139,7 @@ class _NowPlayingState extends State<NowPlaying> {
                                         delegate: SliverChildListDelegate(
                                           [
                                             NowPlayingStream(
-                                              audioHandler,
-                                              hideHeader: true,
+                                              audioHandler: audioHandler,
                                             )
                                           ],
                                         ),
