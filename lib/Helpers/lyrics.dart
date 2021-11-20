@@ -84,7 +84,6 @@ class Lyrics {
           if (lyrics.contains('<meta charset="UTF-8">')) throw Error();
         } catch (_) {
           lyrics = '';
-          throw Exception('No lyrics found');
         }
       }
     }

@@ -4,6 +4,7 @@ import 'package:blackhole/Helpers/config.dart';
 import 'package:blackhole/Helpers/supabase.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:get_it/get_it.dart';
 import 'package:hive/hive.dart';
 import 'package:uuid/uuid.dart';
 
@@ -88,7 +89,7 @@ class _AuthScreenState extends State<AuthScreen> {
                       TextButton(
                         onPressed: () async {
                           await restore(context);
-                          currentTheme.refresh();
+                          GetIt.I<MyTheme>().refresh();
                           Navigator.popAndPushNamed(context, '/');
                         },
                         child: Text(

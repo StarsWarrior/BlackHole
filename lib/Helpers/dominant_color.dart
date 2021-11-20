@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:palette_generator/palette_generator.dart';
 
 import 'config.dart';
@@ -17,6 +18,6 @@ Future<Color> getColors(ImageProvider imageProvider) async {
       dominantColor = contrastColor;
     }
   }
-  currentTheme.setLastPlayGradient(dominantColor);
+  GetIt.I<MyTheme>().playGradientColor = dominantColor;
   return dominantColor;
 }

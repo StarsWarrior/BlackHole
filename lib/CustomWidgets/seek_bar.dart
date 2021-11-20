@@ -1,11 +1,12 @@
 import 'dart:math';
 
-import 'package:blackhole/main.dart';
+import 'package:blackhole/Screens/Player/audioplayer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SeekBar extends StatefulWidget {
+  final AudioPlayerHandler audioHandler;
   final Duration duration;
   final Duration position;
   final Duration bufferedPosition;
@@ -17,6 +18,7 @@ class SeekBar extends StatefulWidget {
     required this.duration,
     required this.position,
     required this.offline,
+    required this.audioHandler,
     this.bufferedPosition = Duration.zero,
     this.onChanged,
     this.onChangeEnd,
@@ -115,7 +117,7 @@ class _SeekBarState extends State<SeekBar> {
             right: 13.0,
             bottom: 25.0,
             child: StreamBuilder<double>(
-              stream: audioHandler.speed,
+              stream: widget.audioHandler.speed,
               builder: (context, snapshot) {
                 final String speedValue =
                     '${snapshot.data?.toStringAsFixed(1) ?? 1.0}x';
@@ -136,6 +138,7 @@ class _SeekBarState extends State<SeekBar> {
                       divisions: 25,
                       min: 0.5,
                       max: 3.0,
+                      audioHandler: widget.audioHandler,
                     );
                   },
                 );
@@ -200,6 +203,7 @@ void showSliderDialog({
   required int divisions,
   required double min,
   required double max,
+  required AudioPlayerHandler audioHandler,
   String valueSuffix = '',
 }) {
   showDialog<void>(

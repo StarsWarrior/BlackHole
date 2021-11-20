@@ -1,5 +1,3 @@
-library config.globals;
-
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 
@@ -25,7 +23,10 @@ class MyTheme with ChangeNotifier {
   int colorHue = Hive.box('settings').get('colorHue', defaultValue: 400) as int;
   Color? playGradientColor;
 
-  List<List<Color>> backOpt = [
+  List<List<Color>> get backOpt => _backOpt;
+  List<List<Color>> get cardOpt => _cardOpt;
+
+  final List<List<Color>> _backOpt = [
     [
       Colors.grey[850]!,
       Colors.grey[900]!,
@@ -51,7 +52,7 @@ class MyTheme with ChangeNotifier {
     ]
   ];
 
-  List<List<Color>> cardOpt = [
+  final List<List<Color>> _cardOpt = [
     [
       Colors.grey[850]!,
       Colors.grey[850]!,
@@ -87,7 +88,7 @@ class MyTheme with ChangeNotifier {
     ]
   ];
 
-  List<List<Color>> transOpt = [
+  final List<List<Color>> _transOpt = [
     [
       Colors.grey[850]!.withOpacity(0.8),
       Colors.grey[900]!.withOpacity(0.9),
@@ -165,10 +166,6 @@ class MyTheme with ChangeNotifier {
     return colorHue;
   }
 
-  Future<void> setLastPlayGradient(Color? color) async {
-    playGradientColor = color;
-  }
-
   Color getColor(String color, int hue) {
     switch (color) {
       case 'Red':
@@ -238,7 +235,7 @@ class MyTheme with ChangeNotifier {
   }
 
   List<Color> getCardGradient({bool miniplayer = false}) {
-    final List<Color> output = cardOpt[cardGrad];
+    final List<Color> output = _cardOpt[cardGrad];
     if (miniplayer && output.length > 2) {
       output.removeAt(0);
     }
@@ -246,19 +243,19 @@ class MyTheme with ChangeNotifier {
   }
 
   List<Color> getBackGradient() {
-    return backOpt[backGrad];
+    return _backOpt[backGrad];
   }
 
   Color getPlayGradient() {
-    return backOpt[backGrad].last;
+    return _backOpt[backGrad].last;
   }
 
   List<Color> getTransBackGradient() {
-    return transOpt[backGrad];
+    return _transOpt[backGrad];
   }
 
   List<Color> getBottomGradient() {
-    return backOpt[bottomGrad];
+    return _backOpt[bottomGrad];
   }
 
   Color currentColor() {
@@ -342,5 +339,3 @@ class MyTheme with ChangeNotifier {
     return Hive.box('settings').get('theme') as String;
   }
 }
-
-MyTheme currentTheme = MyTheme();

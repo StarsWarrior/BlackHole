@@ -1,9 +1,10 @@
 import 'dart:math';
 
-import 'package:blackhole/main.dart';
+import 'package:blackhole/Screens/Player/audioplayer.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:get_it/get_it.dart';
 import 'package:hive/hive.dart';
 
 class Equalizer extends StatefulWidget {
@@ -16,6 +17,7 @@ class Equalizer extends StatefulWidget {
 class _EqualizerState extends State<Equalizer> {
   bool enabled =
       Hive.box('settings').get('setEqualizer', defaultValue: false) as bool;
+  AudioPlayerHandler audioHandler = GetIt.I<AudioPlayerHandler>();
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +44,9 @@ class _EqualizerState extends State<Equalizer> {
             if (enabled)
               SizedBox(
                 height: MediaQuery.of(context).size.height / 2,
-                child: EqualizerControls(),
+                child: EqualizerControls(
+                  audioHandler: audioHandler,
+                ),
               ),
           ],
         ),
@@ -52,6 +56,8 @@ class _EqualizerState extends State<Equalizer> {
 }
 
 class EqualizerControls extends StatefulWidget {
+  final AudioPlayerHandler audioHandler;
+  const EqualizerControls({required this.audioHandler});
   @override
   _EqualizerControlsState createState() => _EqualizerControlsState();
 }
@@ -59,7 +65,7 @@ class EqualizerControls extends StatefulWidget {
 class _EqualizerControlsState extends State<EqualizerControls> {
   Future<Map> getEq() async {
     final Map parameters =
-        await audioHandler.customAction('getEqualizerParams') as Map;
+        await widget.audioHandler.customAction('getEqualizerParams') as Map;
     return parameters;
   }
 
@@ -85,6 +91,7 @@ class _EqualizerControlsState extends State<EqualizerControls> {
                         max: data['maxDecibels'] as double,
                         value: band['gain'] as double,
                         bandIndex: band['index'] as int,
+                        audioHandler: widget.audioHandler,
                       ),
                     ),
                     Text(
@@ -106,6 +113,7 @@ class VerticalSlider extends StatefulWidget {
   final double? min;
   final double? max;
   final int bandIndex;
+  final AudioPlayerHandler audioHandler;
 
   const VerticalSlider({
     Key? key,
@@ -113,6 +121,7 @@ class VerticalSlider extends StatefulWidget {
     this.min = 0.0,
     this.max = 1.0,
     required this.bandIndex,
+    required this.audioHandler,
   }) : super(key: key);
 
   @override
@@ -123,7 +132,8 @@ class _VerticalSliderState extends State<VerticalSlider> {
   double? sliderValue;
 
   void setGain(int bandIndex, double gain) {
-    audioHandler.customAction('setBandGain', {'band': bandIndex, 'gain': gain});
+    widget.audioHandler
+        .customAction('setBandGain', {'band': bandIndex, 'gain': gain});
   }
 
   @override

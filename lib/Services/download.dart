@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:audiotagger/audiotagger.dart';
 import 'package:audiotagger/models/tag.dart';
 import 'package:blackhole/CustomWidgets/snackbar.dart';
+import 'package:blackhole/Helpers/image_downs.dart';
 import 'package:blackhole/Helpers/lyrics.dart';
 import 'package:blackhole/Services/ext_storage_provider.dart';
 import 'package:flutter/cupertino.dart';
@@ -424,6 +425,7 @@ class Download with ChangeNotifier {
           'dateAdded': DateTime.now().toString(),
         };
         Hive.box('downloads').put(songData['id'], songData);
+        getArtistImage(name: data['artist'].toString(), tempDirPath: appPath!);
       } else {
         download = true;
         progress = 0.0;

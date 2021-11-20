@@ -27,24 +27,21 @@ import 'package:blackhole/Screens/Library/downloads.dart';
 import 'package:blackhole/Screens/Library/nowplaying.dart';
 import 'package:blackhole/Screens/Library/playlists.dart';
 import 'package:blackhole/Screens/Library/recent.dart';
-import 'package:blackhole/Screens/LocalMusic/localplaylists.dart';
-import 'package:blackhole/Screens/LocalMusic/my_music.dart';
 import 'package:blackhole/Screens/Login/auth.dart';
 import 'package:blackhole/Screens/Login/pref.dart';
 import 'package:blackhole/Screens/Player/audioplayer.dart';
 import 'package:blackhole/Screens/Settings/setting.dart';
 import 'package:blackhole/Services/audio_service.dart';
+import 'package:blackhole/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_displaymode/flutter_displaymode.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:get_it/get_it.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
-
-// TODO: use getit to register handler in future
-late AudioPlayerHandler audioHandler;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -82,7 +79,7 @@ Future<void> setOptimalDisplayMode() async {
 }
 
 Future<void> startService() async {
-  audioHandler = await AudioService.init(
+  final AudioPlayerHandler audioHandler = await AudioService.init(
     builder: () => AudioPlayerHandlerImpl(),
     config: AudioServiceConfig(
       androidNotificationChannelId: 'com.shadow.blackhole.channel.audio',
@@ -95,6 +92,8 @@ Future<void> startService() async {
       notificationColor: Colors.grey[900],
     ),
   );
+  GetIt.I.registerSingleton<AudioPlayerHandler>(audioHandler);
+  GetIt.I.registerSingleton<MyTheme>(MyTheme());
 }
 
 Future<void> openHiveBox(String boxName, {bool limit = false}) async {
@@ -138,7 +137,8 @@ class _MyAppState extends State<MyApp> {
       'Indonesia': 'id',
     };
     _locale = Locale(codes[lang]!);
-    currentTheme.addListener(() {
+
+    AppTheme.currentTheme.addListener(() {
       setState(() {});
     });
   }
@@ -183,80 +183,12 @@ class _MyAppState extends State<MyApp> {
       title: 'BlackHole',
       restorationScopeId: 'blackhole',
       debugShowCheckedModeBanner: false,
-      themeMode: currentTheme.currentTheme(),
-      theme: ThemeData(
-        textSelectionTheme: TextSelectionThemeData(
-          selectionHandleColor: currentTheme.currentColor(),
-          cursorColor: currentTheme.currentColor(),
-          selectionColor: currentTheme.currentColor(),
-        ),
-        inputDecorationTheme: InputDecorationTheme(
-          focusedBorder: UnderlineInputBorder(
-            borderSide:
-                BorderSide(width: 1.5, color: currentTheme.currentColor()),
-          ),
-        ),
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-        appBarTheme: AppBarTheme(
-          backgroundColor: currentTheme.currentColor(),
-        ),
-        disabledColor: Colors.grey[600],
-        brightness: Brightness.light,
-        indicatorColor: currentTheme.currentColor(),
-        progressIndicatorTheme: const ProgressIndicatorThemeData()
-            .copyWith(color: currentTheme.currentColor()),
-        iconTheme: IconThemeData(
-          color: Colors.grey[800],
-          opacity: 1.0,
-          size: 24.0,
-        ),
-        colorScheme: Theme.of(context).colorScheme.copyWith(
-              primary: Colors.grey[800],
-              brightness: Brightness.light,
-              secondary: currentTheme.currentColor(),
-            ),
+      themeMode: AppTheme.themeMode,
+      theme: AppTheme.lightTheme(
+        context: context,
       ),
-      darkTheme: ThemeData(
-        textButtonTheme: TextButtonThemeData(
-          style: TextButton.styleFrom(
-            primary: Colors.white,
-            backgroundColor: Colors.transparent,
-            elevation: 0.0,
-          ),
-        ),
-        textSelectionTheme: TextSelectionThemeData(
-          selectionHandleColor: currentTheme.currentColor(),
-          cursorColor: currentTheme.currentColor(),
-          selectionColor: currentTheme.currentColor(),
-        ),
-        inputDecorationTheme: InputDecorationTheme(
-          focusedBorder: UnderlineInputBorder(
-            borderSide:
-                BorderSide(width: 1.5, color: currentTheme.currentColor()),
-          ),
-        ),
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-        brightness: Brightness.dark,
-        appBarTheme: AppBarTheme(
-          color: currentTheme.getCanvasColor(),
-          foregroundColor: Colors.white,
-        ),
-        canvasColor: currentTheme.getCanvasColor(),
-        cardColor: currentTheme.getCardColor(),
-        dialogBackgroundColor: currentTheme.getCardColor(),
-        progressIndicatorTheme: const ProgressIndicatorThemeData()
-            .copyWith(color: currentTheme.currentColor()),
-        iconTheme: const IconThemeData(
-          color: Colors.white,
-          opacity: 1.0,
-          size: 24.0,
-        ),
-        indicatorColor: currentTheme.currentColor(),
-        colorScheme: Theme.of(context).colorScheme.copyWith(
-              primary: Colors.white,
-              secondary: currentTheme.currentColor(),
-              brightness: Brightness.dark,
-            ),
+      darkTheme: AppTheme.darkTheme(
+        context: context,
       ),
       locale: _locale,
       localizationsDelegates: const [
@@ -277,8 +209,6 @@ class _MyAppState extends State<MyApp> {
         '/setting': (context) => const SettingPage(),
         '/about': (context) => AboutScreen(),
         '/playlists': (context) => PlaylistScreen(),
-        '/localplaylists': (context) => LocalPlaylistScreen(),
-        '/mymusic': (context) => MyMusicPage(),
         '/nowplaying': (context) => NowPlaying(),
         '/recent': (context) => RecentlyPlayed(),
         '/downloads': (context) => const Downloads(),

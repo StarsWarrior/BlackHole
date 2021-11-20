@@ -10,6 +10,7 @@ import 'package:blackhole/Helpers/backup_restore.dart';
 import 'package:blackhole/Helpers/supabase.dart';
 import 'package:blackhole/Screens/Home/saavn.dart';
 import 'package:blackhole/Screens/Library/library.dart';
+import 'package:blackhole/Screens/LocalMusic/downed_songs.dart';
 import 'package:blackhole/Screens/Search/search.dart';
 import 'package:blackhole/Screens/Settings/setting.dart';
 import 'package:blackhole/Screens/Top Charts/top.dart';
@@ -324,7 +325,14 @@ class _HomePageState extends State<HomePage> {
                               ),
                               onTap: () {
                                 Navigator.pop(context);
-                                Navigator.pushNamed(context, '/mymusic');
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const DownloadedSongs(
+                                      showPlaylists: true,
+                                    ),
+                                  ),
+                                );
                               },
                             ),
                           ListTile(

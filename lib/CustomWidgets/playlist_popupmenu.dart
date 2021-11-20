@@ -2,9 +2,10 @@ import 'package:audio_service/audio_service.dart';
 import 'package:blackhole/CustomWidgets/snackbar.dart';
 import 'package:blackhole/Helpers/mediaitem_converter.dart';
 import 'package:blackhole/Helpers/playlist.dart';
-import 'package:blackhole/main.dart';
+import 'package:blackhole/Screens/Player/audioplayer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:get_it/get_it.dart';
 
 class PlaylistPopupMenu extends StatefulWidget {
   final List data;
@@ -67,6 +68,7 @@ class _PlaylistPopupMenuState extends State<PlaylistPopupMenu> {
           );
         }
         if (value == 0) {
+          final AudioPlayerHandler audioHandler = GetIt.I<AudioPlayerHandler>();
           final MediaItem? currentMediaItem = audioHandler.mediaItem.value;
           if (currentMediaItem != null &&
               currentMediaItem.extras!['url'].toString().startsWith('http')) {

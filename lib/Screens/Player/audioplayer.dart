@@ -18,7 +18,6 @@ import 'package:blackhole/Helpers/dominant_color.dart';
 import 'package:blackhole/Helpers/lyrics.dart';
 import 'package:blackhole/Helpers/mediaitem_converter.dart';
 import 'package:blackhole/Screens/Common/song_list.dart';
-import 'package:blackhole/main.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flip_card/flip_card.dart';
 import 'package:flutter/cupertino.dart';
@@ -26,6 +25,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:get_it/get_it.dart';
 import 'package:hive/hive.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:on_audio_query/on_audio_query.dart';
@@ -72,10 +72,11 @@ class _PlayScreenState extends State<PlayScreen> {
   bool offline = false;
   bool fromDownloads = false;
   String defaultCover = '';
+  final MyTheme currentTheme = GetIt.I<MyTheme>();
   final ValueNotifier<Color?> gradientColor =
-      ValueNotifier<Color?>(currentTheme.playGradientColor);
+      ValueNotifier<Color?>(GetIt.I<MyTheme>().playGradientColor);
   final PanelController _panelController = PanelController();
-
+  final AudioPlayerHandler audioHandler = GetIt.I<AudioPlayerHandler>();
   GlobalKey<FlipCardState> cardKey = GlobalKey<FlipCardState>();
 
   void sleepTimer(int time) {
@@ -383,6 +384,9 @@ class _PlayScreenState extends State<PlayScreen> {
                             context: context,
                             builder: (context) {
                               return SimpleDialog(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15.0),
+                                ),
                                 title: Text(
                                   AppLocalizations.of(context)!.sleepTimer,
                                   style: TextStyle(
@@ -622,9 +626,10 @@ class _PlayScreenState extends State<PlayScreen> {
                         children: [
                           // Artwork
                           ArtWorkWidget(
-                            cardKey,
-                            mediaItem,
-                            constraints.maxHeight / 0.9,
+                            cardKey: cardKey,
+                            mediaItem: mediaItem,
+                            width: constraints.maxHeight / 0.9,
+                            audioHandler: audioHandler,
                             offline: offline,
                           ),
 
@@ -636,6 +641,7 @@ class _PlayScreenState extends State<PlayScreen> {
                               offline: offline,
                               width: constraints.maxWidth / 2,
                               panelController: _panelController,
+                              audioHandler: audioHandler,
                             ),
                           ),
                         ],
@@ -645,9 +651,10 @@ class _PlayScreenState extends State<PlayScreen> {
                       children: [
                         // Artwork
                         ArtWorkWidget(
-                          cardKey,
-                          mediaItem,
-                          constraints.maxWidth,
+                          cardKey: cardKey,
+                          mediaItem: mediaItem,
+                          width: constraints.maxWidth,
+                          audioHandler: audioHandler,
                           offline: offline,
                         ),
 
@@ -658,6 +665,7 @@ class _PlayScreenState extends State<PlayScreen> {
                             offline: offline,
                             width: constraints.maxWidth,
                             panelController: _panelController,
+                            audioHandler: audioHandler,
                           ),
                         ),
                       ],
@@ -1260,12 +1268,14 @@ class ArtWorkWidget extends StatefulWidget {
   final MediaItem mediaItem;
   final bool offline;
   final double width;
+  final AudioPlayerHandler audioHandler;
 
-  const ArtWorkWidget(
-    this.cardKey,
-    this.mediaItem,
-    this.width, {
+  const ArtWorkWidget({
+    required this.cardKey,
+    required this.mediaItem,
+    required this.width,
     this.offline = false,
+    required this.audioHandler,
   });
 
   @override
@@ -1409,7 +1419,7 @@ class _ArtWorkWidgetState extends State<ArtWorkWidget> {
                 ),
               ),
               front: StreamBuilder<QueueState>(
-                stream: audioHandler.queueState,
+                stream: widget.audioHandler.queueState,
                 builder: (context, snapshot) {
                   final queueState = snapshot.data ?? QueueState.empty;
 
@@ -1419,9 +1429,9 @@ class _ArtWorkWidgetState extends State<ArtWorkWidget> {
                     onTap: !enabled
                         ? null
                         : () {
-                            audioHandler.playbackState.value.playing
-                                ? audioHandler.pause()
-                                : audioHandler.play();
+                            widget.audioHandler.playbackState.value.playing
+                                ? widget.audioHandler.pause()
+                                : widget.audioHandler.play();
                           },
                     onDoubleTap: !enabled
                         ? null
@@ -1434,13 +1444,13 @@ class _ArtWorkWidgetState extends State<ArtWorkWidget> {
                         : (DragEndDetails details) {
                             if ((details.primaryVelocity ?? 0) > 100) {
                               if (queueState.hasPrevious) {
-                                audioHandler.skipToPrevious();
+                                widget.audioHandler.skipToPrevious();
                               }
                             }
 
                             if ((details.primaryVelocity ?? 0) < -100) {
                               if (queueState.hasNext) {
-                                audioHandler.skipToNext();
+                                widget.audioHandler.skipToNext();
                               }
                             }
                           },
@@ -1467,7 +1477,7 @@ class _ArtWorkWidgetState extends State<ArtWorkWidget> {
                         ? null
                         : (DragUpdateDetails details) {
                             if (details.delta.dy != 0.0) {
-                              double volume = audioHandler.volume.value;
+                              double volume = widget.audioHandler.volume.value;
                               volume -= details.delta.dy / 150;
                               if (volume < 0) {
                                 volume = 0;
@@ -1475,7 +1485,7 @@ class _ArtWorkWidgetState extends State<ArtWorkWidget> {
                               if (volume > 1.0) {
                                 volume = 1.0;
                               }
-                              audioHandler.setVolume(volume);
+                              widget.audioHandler.setVolume(volume);
                             }
                           },
                     child: Stack(
@@ -1519,7 +1529,7 @@ class _ArtWorkWidgetState extends State<ArtWorkWidget> {
                         ValueListenableBuilder(
                           valueListenable: dragging,
                           child: StreamBuilder<double>(
-                            stream: audioHandler.volume,
+                            stream: widget.audioHandler.volume,
                             builder: (context, snapshot) {
                               final double volumeValue = snapshot.data ?? 1.0;
                               return Center(
@@ -1561,7 +1571,7 @@ class _ArtWorkWidgetState extends State<ArtWorkWidget> {
                                                 ),
                                                 child: ExcludeSemantics(
                                                   child: Slider(
-                                                    value: audioHandler
+                                                    value: widget.audioHandler
                                                         .volume.value,
                                                     onChanged: (_) {},
                                                   ),
@@ -1619,9 +1629,11 @@ class NameNControls extends StatelessWidget {
   final bool offline;
   final double? width;
   final PanelController panelController;
+  final AudioPlayerHandler audioHandler;
 
   const NameNControls({
     required this.mediaItem,
+    required this.audioHandler,
     required this.panelController,
     this.offline = false,
     this.width,
@@ -1762,6 +1774,7 @@ class NameNControls extends StatelessWidget {
                   onChangeEnd: (newPosition) {
                     audioHandler.seek(newPosition);
                   },
+                  audioHandler: audioHandler,
                 );
               },
             ),
@@ -1945,6 +1958,11 @@ class NameNControls extends StatelessWidget {
                 } else {
                   panelController.open();
                 }
+              }
+            },
+            onVerticalDragUpdate: (DragUpdateDetails details) {
+              if (details.delta.dy > 0.0) {
+                panelController.animatePanelToPosition(0.0);
               }
             },
             child: Container(

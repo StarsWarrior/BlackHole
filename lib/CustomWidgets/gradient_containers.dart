@@ -1,5 +1,6 @@
 import 'package:blackhole/Helpers/config.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 
 class GradientContainer extends StatefulWidget {
   final Widget? child;
@@ -10,6 +11,7 @@ class GradientContainer extends StatefulWidget {
 }
 
 class _GradientContainerState extends State<GradientContainer> {
+  MyTheme currentTheme = GetIt.I<MyTheme>();
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -49,6 +51,7 @@ class BottomGradientContainer extends StatefulWidget {
 }
 
 class _BottomGradientContainerState extends State<BottomGradientContainer> {
+  MyTheme currentTheme = GetIt.I<MyTheme>();
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -76,7 +79,7 @@ class _BottomGradientContainerState extends State<BottomGradientContainer> {
 class GradientCard extends StatefulWidget {
   final Widget child;
   final bool? miniplayer;
-  final double? radius;
+  final BorderRadius? radius;
   final double? elevation;
   const GradientCard({
     required this.child,
@@ -89,12 +92,13 @@ class GradientCard extends StatefulWidget {
 }
 
 class _GradientCardState extends State<GradientCard> {
+  MyTheme currentTheme = GetIt.I<MyTheme>();
   @override
   Widget build(BuildContext context) {
     return Card(
       elevation: widget.elevation ?? 3,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(widget.radius ?? 10.0),
+        borderRadius: widget.radius ?? BorderRadius.circular(10.0),
       ),
       clipBehavior: Clip.antiAlias,
       margin: EdgeInsets.zero,

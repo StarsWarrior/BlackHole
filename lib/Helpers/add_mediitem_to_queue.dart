@@ -1,14 +1,16 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:blackhole/CustomWidgets/snackbar.dart';
-import 'package:blackhole/main.dart';
+import 'package:blackhole/Screens/Player/audioplayer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:get_it/get_it.dart';
 
 void addToNowPlaying({
   required BuildContext context,
   required MediaItem mediaItem,
   bool showNotification = true,
 }) {
+  final AudioPlayerHandler audioHandler = GetIt.I<AudioPlayerHandler>();
   final MediaItem? currentMediaItem = audioHandler.mediaItem.value;
   if (currentMediaItem != null &&
       currentMediaItem.extras!['url'].toString().startsWith('http')) {
@@ -39,7 +41,11 @@ void addToNowPlaying({
   }
 }
 
-void playNext(MediaItem mediaItem, BuildContext context) {
+void playNext(
+  MediaItem mediaItem,
+  BuildContext context,
+) {
+  final AudioPlayerHandler audioHandler = GetIt.I<AudioPlayerHandler>();
   final MediaItem? currentMediaItem = audioHandler.mediaItem.value;
   if (currentMediaItem != null &&
       currentMediaItem.extras!['url'].toString().startsWith('http')) {

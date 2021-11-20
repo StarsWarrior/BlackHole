@@ -7,6 +7,7 @@ import 'package:blackhole/CustomWidgets/miniplayer.dart';
 import 'package:blackhole/CustomWidgets/playlist_head.dart';
 import 'package:blackhole/CustomWidgets/snackbar.dart';
 import 'package:blackhole/Helpers/audio_query.dart';
+import 'package:blackhole/Screens/LocalMusic/localplaylists.dart';
 import 'package:blackhole/Screens/Player/audioplayer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -20,11 +21,13 @@ class DownloadedSongs extends StatefulWidget {
   final List<SongModel>? cachedSongs;
   final String? title;
   final int? playlistId;
+  final bool showPlaylists;
   const DownloadedSongs({
     Key? key,
     this.cachedSongs,
     this.title,
     this.playlistId,
+    this.showPlaylists = false,
   }) : super(key: key);
   @override
   _DownloadedSongsState createState() => _DownloadedSongsState();
@@ -57,6 +60,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
       Hive.box('settings').get('blacklistedPaths', defaultValue: []) as List;
   TabController? _tcontroller;
   OfflineAudioQuery offlineAudioQuery = OfflineAudioQuery();
+  List<PlaylistModel> playlistDetails = [];
 
   final Map<int, SongSortType> songSortTypes = {
     0: SongSortType.DISPLAY_NAME,
@@ -74,8 +78,9 @@ class _DownloadedSongsState extends State<DownloadedSongs>
 
   @override
   void initState() {
-    _tcontroller = TabController(length: 4, vsync: this);
-    getCached();
+    _tcontroller =
+        TabController(length: widget.showPlaylists ? 5 : 4, vsync: this);
+    getData();
     super.initState();
   }
 
@@ -85,9 +90,10 @@ class _DownloadedSongsState extends State<DownloadedSongs>
     _tcontroller!.dispose();
   }
 
-  Future<void> getCached() async {
+  Future<void> getData() async {
     await offlineAudioQuery.requestPermission();
     tempPath ??= (await getTemporaryDirectory()).path;
+    playlistDetails = await offlineAudioQuery.getPlaylists();
     if (widget.cachedSongs == null) {
       _songs = (await offlineAudioQuery.getSongs(
         sortType: songSortTypes[sortValue],
@@ -185,7 +191,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
         children: [
           Expanded(
             child: DefaultTabController(
-              length: 4,
+              length: widget.showPlaylists ? 5 : 4,
               child: Scaffold(
                 backgroundColor: Colors.transparent,
                 appBar: AppBar(
@@ -193,6 +199,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                     widget.title ?? AppLocalizations.of(context)!.myMusic,
                   ),
                   bottom: TabBar(
+                    isScrollable: widget.showPlaylists,
                     controller: _tcontroller,
                     tabs: [
                       Tab(
@@ -207,6 +214,10 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                       Tab(
                         text: AppLocalizations.of(context)!.genres,
                       ),
+                      if (widget.showPlaylists)
+                        Tab(
+                          text: AppLocalizations.of(context)!.playlists,
+                        ),
                       //     Tab(
                       //       text: AppLocalizations.of(context)!.videos,
                       //     )
@@ -362,6 +373,11 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                             albumsList: _sortedGenreKeysList,
                             tempPath: tempPath!,
                           ),
+                          if (widget.showPlaylists)
+                            LocalPlaylists(
+                              playlistDetails: playlistDetails,
+                              offlineAudioQuery: offlineAudioQuery,
+                            ),
                           // videosTab(),
                         ],
                       ),
