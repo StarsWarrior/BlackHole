@@ -135,6 +135,7 @@ class _MyAppState extends State<MyApp> {
       'Russian': 'ru',
       'Portuguese': 'pt',
       'Indonesia': 'id',
+      'French': 'fr',
     };
     _locale = Locale(codes[lang]!);
 
@@ -202,6 +203,7 @@ class _MyAppState extends State<MyApp> {
         Locale('ru', ''), // Russian
         Locale('pt', ''), // Portuguese, no country code
         Locale('id', ''), // Indonesia, no country code
+        Locale('fr', ''), // French
       ],
       routes: {
         '/': (context) => initialFuntion(),
