@@ -35,7 +35,7 @@ Awesome Music Player made with Flutter!
 - [Russian :ru:](/README.RU.md)
 - [French :fr:](/README.FR.md)
 
-Thanks to [Euri](https://github.com/EuriNaiz) and [Nikita](https://github.com/TireX228) for translations
+[Translate App on Weblate](https://hosted.weblate.org/projects/blackhole/localization/)
 
 ## Features
 
