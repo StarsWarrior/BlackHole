@@ -52,7 +52,7 @@ class _SettingPageState extends State<SettingPage> {
   String canvasColor =
       Hive.box('settings').get('canvasColor', defaultValue: 'Grey') as String;
   String cardColor =
-      Hive.box('settings').get('cardColor', defaultValue: 'Grey850') as String;
+      Hive.box('settings').get('cardColor', defaultValue: 'Grey900') as String;
   String theme =
       Hive.box('settings').get('theme', defaultValue: 'Default') as String;
   Map userThemes =
@@ -922,6 +922,7 @@ class _SettingPageState extends State<SettingPage> {
                             )!
                                 .currentTheme,
                           ),
+                          subtitle: const Text(''),
                           trailing: DropdownButton(
                             value: theme,
                             style: TextStyle(
@@ -946,32 +947,32 @@ class _SettingPageState extends State<SettingPage> {
                                     settingsBox.put(
                                       'backGrad',
                                       themeChoice == deflt
-                                          ? 1
+                                          ? 2
                                           : selectedTheme['backGrad'],
                                     );
                                     currentTheme.backGrad = themeChoice == deflt
-                                        ? 1
+                                        ? 2
                                         : selectedTheme['backGrad'] as int;
 
                                     settingsBox.put(
                                       'cardGrad',
                                       themeChoice == deflt
-                                          ? 3
+                                          ? 4
                                           : selectedTheme['cardGrad'],
                                     );
                                     currentTheme.cardGrad = themeChoice == deflt
-                                        ? 3
+                                        ? 4
                                         : selectedTheme['cardGrad'] as int;
 
                                     settingsBox.put(
                                       'bottomGrad',
                                       themeChoice == deflt
-                                          ? 2
+                                          ? 3
                                           : selectedTheme['bottomGrad'],
                                     );
                                     currentTheme.bottomGrad = themeChoice ==
                                             deflt
-                                        ? 2
+                                        ? 3
                                         : selectedTheme['bottomGrad'] as int;
 
                                     currentTheme.switchCanvasColor(
@@ -988,13 +989,13 @@ class _SettingPageState extends State<SettingPage> {
 
                                     currentTheme.switchCardColor(
                                       themeChoice == deflt
-                                          ? 'Grey850'
+                                          ? 'Grey900'
                                           : selectedTheme['cardColor']
                                               as String,
                                       notify: false,
                                     );
                                     cardColor = themeChoice == deflt
-                                        ? 'Grey850'
+                                        ? 'Grey900'
                                         : selectedTheme['cardColor'] as String;
 
                                     themeColor = themeChoice == deflt
@@ -1588,6 +1589,7 @@ class _SettingPageState extends State<SettingPage> {
                           ),
                           keyName: 'enableGesture',
                           defaultValue: true,
+                          isThreeLine: true,
                         ),
                       ],
                     ),
@@ -1907,6 +1909,7 @@ class _SettingPageState extends State<SettingPage> {
                           ),
                           keyName: 'autoplay',
                           defaultValue: true,
+                          isThreeLine: true,
                         ),
                         // BoxSwitchTile(
                         //   title: Text(

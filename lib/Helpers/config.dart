@@ -13,12 +13,12 @@ class MyTheme with ChangeNotifier {
   String canvasColor =
       Hive.box('settings').get('canvasColor', defaultValue: 'Grey') as String;
   String cardColor =
-      Hive.box('settings').get('cardColor', defaultValue: 'Grey850') as String;
+      Hive.box('settings').get('cardColor', defaultValue: 'Grey900') as String;
 
-  int backGrad = Hive.box('settings').get('backGrad', defaultValue: 1) as int;
-  int cardGrad = Hive.box('settings').get('cardGrad', defaultValue: 3) as int;
+  int backGrad = Hive.box('settings').get('backGrad', defaultValue: 2) as int;
+  int cardGrad = Hive.box('settings').get('cardGrad', defaultValue: 4) as int;
   int bottomGrad =
-      Hive.box('settings').get('bottomGrad', defaultValue: 2) as int;
+      Hive.box('settings').get('bottomGrad', defaultValue: 3) as int;
 
   int colorHue = Hive.box('settings').get('colorHue', defaultValue: 400) as int;
   Color? playGradientColor;
@@ -124,11 +124,11 @@ class MyTheme with ChangeNotifier {
     accentColor = settingsBox.get('themeColor', defaultValue: 'Teal') as String;
     canvasColor =
         settingsBox.get('canvasColor', defaultValue: 'Grey') as String;
-    cardColor = settingsBox.get('cardColor', defaultValue: 'Grey850') as String;
+    cardColor = settingsBox.get('cardColor', defaultValue: 'Grey900') as String;
 
-    backGrad = settingsBox.get('backGrad', defaultValue: 1) as int;
-    cardGrad = settingsBox.get('cardGrad', defaultValue: 3) as int;
-    bottomGrad = settingsBox.get('bottomGrad', defaultValue: 2) as int;
+    backGrad = settingsBox.get('backGrad', defaultValue: 2) as int;
+    cardGrad = settingsBox.get('cardGrad', defaultValue: 4) as int;
+    bottomGrad = settingsBox.get('bottomGrad', defaultValue: 3) as int;
 
     colorHue = settingsBox.get('colorHue', defaultValue: 400) as int;
     notifyListeners();
@@ -234,12 +234,8 @@ class MyTheme with ChangeNotifier {
     if (notify) notifyListeners();
   }
 
-  List<Color> getCardGradient({bool miniplayer = false}) {
-    final List<Color> output = _cardOpt[cardGrad];
-    if (miniplayer && output.length > 2) {
-      output.removeAt(0);
-    }
-    return output;
+  List<Color> getCardGradient() {
+    return _cardOpt[cardGrad];
   }
 
   List<Color> getBackGradient() {

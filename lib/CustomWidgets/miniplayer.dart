@@ -98,10 +98,7 @@ class _MiniPlayerState extends State<MiniPlayer> {
 
                   return SizedBox(
                     height: useDense ? 68.0 : 76.0,
-                    child: GradientCard(
-                      miniplayer: true,
-                      radius: BorderRadius.zero,
-                      elevation: 0.0,
+                    child: GradientContainer(
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [

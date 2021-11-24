@@ -42,7 +42,7 @@ class Download with ChangeNotifier {
     download = true;
     if (!Platform.isWindows) {
       PermissionStatus status = await Permission.storage.status;
-      if (status.isPermanentlyDenied || status.isDenied) {
+      if (status.isDenied) {
         await [
           Permission.storage,
           Permission.accessMediaLocation,
@@ -50,6 +50,9 @@ class Download with ChangeNotifier {
         ].request();
       }
       status = await Permission.storage.status;
+      if (status.isPermanentlyDenied) {
+        await openAppSettings();
+      }
     }
     final RegExp avoid = RegExp(r'[\.\\\*\:\"\?#/;\|]');
     data['title'] = data['title'].toString().split('(From')[0].trim();

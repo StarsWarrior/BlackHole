@@ -19,7 +19,7 @@ Future<void> createBackup(
 }) async {
   if (!Platform.isWindows) {
     PermissionStatus status = await Permission.storage.status;
-    if (status.isPermanentlyDenied || status.isDenied) {
+    if (status.isDenied) {
       await [
         Permission.storage,
         Permission.accessMediaLocation,
@@ -27,6 +27,9 @@ Future<void> createBackup(
       ].request();
     }
     status = await Permission.storage.status;
+    if (status.isPermanentlyDenied) {
+      await openAppSettings();
+    }
   }
   final String savePath = path ??
       await Picker.selectFolder(

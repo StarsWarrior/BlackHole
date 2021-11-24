@@ -1756,7 +1756,6 @@ class NameNControls extends StatelessWidget {
             ),
 
             /// Seekbar starts from here
-
             StreamBuilder<PositionData>(
               stream: _positionDataStream,
               builder: (context, snapshot) {
@@ -1902,10 +1901,11 @@ class NameNControls extends StatelessWidget {
             ),
 
             const SizedBox(
-              height: 55,
-            )
+              height: 10,
+            ),
           ],
         ),
+
         // Now playing
         SlidingUpPanel(
           minHeight: 50,

@@ -1,5 +1,3 @@
-import 'package:blackhole/CustomWidgets/gradient_containers.dart';
-import 'package:blackhole/CustomWidgets/miniplayer.dart';
 import 'package:blackhole/CustomWidgets/snackbar.dart';
 import 'package:blackhole/CustomWidgets/textinput_dialog.dart';
 import 'package:blackhole/Helpers/audio_query.dart';
@@ -11,8 +9,10 @@ import 'package:on_audio_query/on_audio_query.dart';
 class LocalPlaylists extends StatefulWidget {
   final List<PlaylistModel> playlistDetails;
   final OfflineAudioQuery offlineAudioQuery;
-  const LocalPlaylists(
-      {required this.playlistDetails, required this.offlineAudioQuery});
+  const LocalPlaylists({
+    required this.playlistDetails,
+    required this.offlineAudioQuery,
+  });
   @override
   _LocalPlaylistsState createState() => _LocalPlaylistsState();
 }

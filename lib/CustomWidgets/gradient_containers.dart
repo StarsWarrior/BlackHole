@@ -78,12 +78,10 @@ class _BottomGradientContainerState extends State<BottomGradientContainer> {
 
 class GradientCard extends StatefulWidget {
   final Widget child;
-  final bool? miniplayer;
   final BorderRadius? radius;
   final double? elevation;
   const GradientCard({
     required this.child,
-    this.miniplayer,
     this.radius,
     this.elevation,
   });
@@ -108,9 +106,7 @@ class _GradientCardState extends State<GradientCard> {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: Theme.of(context).brightness == Brightness.dark
-                ? currentTheme.getCardGradient(
-                    miniplayer: widget.miniplayer ?? false,
-                  )
+                ? currentTheme.getCardGradient()
                 : [
                     Colors.white,
                     Theme.of(context).canvasColor,
