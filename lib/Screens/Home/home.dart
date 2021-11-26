@@ -647,6 +647,7 @@ class _HomePageState extends State<HomePage> {
                                                   const SearchPage(
                                                 query: '',
                                                 fromHome: true,
+                                                autofocus: true,
                                               ),
                                             ),
                                           ),
@@ -685,11 +686,11 @@ class _HomePageState extends State<HomePage> {
                         pageController: _pageController,
                       ),
                       const YouTube(),
-                      LibraryPage(),
+                      const LibraryPage(),
                     ],
                   ),
                 ),
-                MiniPlayer()
+                const MiniPlayer()
               ],
             ),
           ),

@@ -82,13 +82,10 @@ class _SettingPageState extends State<SettingPage> {
     'Odia',
     'Assamese'
   ];
-  List<String> miniButtons = [
-    'Like',
-    'Previous',
-    'Play/Pause',
-    'Next',
-    'Download'
-  ];
+  List miniButtonsOrder = Hive.box('settings').get(
+    'miniButtonsOrder',
+    defaultValue: ['Like', 'Previous', 'Play/Pause', 'Next', 'Download'],
+  ) as List;
   List preferredLanguage = Hive.box('settings')
       .get('preferredLanguage', defaultValue: ['Hindi'])?.toList() as List;
   List preferredMiniButtons = Hive.box('settings').get(
@@ -1292,6 +1289,8 @@ class _SettingPageState extends State<SettingPage> {
                               builder: (BuildContext context) {
                                 final List checked =
                                     List.from(preferredMiniButtons);
+                                final List<String> order =
+                                    List.from(miniButtonsOrder);
                                 return StatefulBuilder(
                                   builder: (
                                     BuildContext context,
@@ -1320,17 +1319,26 @@ class _SettingPageState extends State<SettingPage> {
                                             if (oldIndex < newIndex) {
                                               newIndex--;
                                             }
-                                            final temp = checked.removeAt(
+                                            final temp = order.removeAt(
                                               oldIndex,
                                             );
-                                            checked.insert(newIndex, temp);
+                                            order.insert(newIndex, temp);
                                             setStt(
                                               () {},
                                             );
                                           },
-                                          children: miniButtons.map((e) {
+                                          header: Center(
+                                            child: Text(
+                                              AppLocalizations.of(
+                                                context,
+                                              )!
+                                                  .changeOrder,
+                                            ),
+                                          ),
+                                          children: order.map((e) {
                                             return CheckboxListTile(
                                               key: Key(e),
+                                              dense: true,
                                               activeColor: Theme.of(context)
                                                   .colorScheme
                                                   .secondary,
@@ -1389,11 +1397,25 @@ class _SettingPageState extends State<SettingPage> {
                                           onPressed: () {
                                             setState(
                                               () {
-                                                preferredMiniButtons = checked;
+                                                final List temp = [];
+                                                for (int i = 0;
+                                                    i < order.length;
+                                                    i++) {
+                                                  if (checked
+                                                      .contains(order[i])) {
+                                                    temp.add(order[i]);
+                                                  }
+                                                }
+                                                preferredMiniButtons = temp;
+                                                miniButtonsOrder = order;
                                                 Navigator.pop(context);
                                                 Hive.box('settings').put(
                                                   'preferredMiniButtons',
                                                   preferredMiniButtons,
+                                                );
+                                                Hive.box('settings').put(
+                                                  'miniButtonsOrder',
+                                                  order,
                                                 );
                                               },
                                             );

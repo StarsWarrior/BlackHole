@@ -531,7 +531,7 @@ class _ArtistSearchPageState extends State<ArtistSearchPage> {
                         ),
             ),
           ),
-          MiniPlayer(),
+          const MiniPlayer(),
         ],
       ),
     );

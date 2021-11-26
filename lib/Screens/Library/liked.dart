@@ -436,92 +436,6 @@ class _LikedSongsState extends State<LikedSongs>
                               .toList(),
                         );
                         return menuList;
-                        //       return  [
-                        //             PopupMenuItem(
-                        //               value: 0,
-                        //               child: Row(
-                        //                 children: [
-                        //                   if (sortValue == 0)
-                        //                     Icon(
-                        //                       Icons.check_rounded,
-                        //                       color: Theme.of(context).brightness ==
-                        //                               Brightness.dark
-                        //                           ? Colors.white
-                        //                           : Colors.grey[700],
-                        //                     )
-                        //                   else
-                        //                     const SizedBox(),
-                        //                   const SizedBox(width: 10),
-                        //                   Text(
-                        //                     AppLocalizations.of(context)!.az,
-                        //                   ),
-                        //                 ],
-                        //               ),
-                        //             ),
-                        //             PopupMenuItem(
-                        //               value: 1,
-                        //               child: Row(
-                        //                 children: [
-                        //                   if (sortValue == 1)
-                        //                     Icon(
-                        //                       Icons.check_rounded,
-                        //                       color: Theme.of(context).brightness ==
-                        //                               Brightness.dark
-                        //                           ? Colors.white
-                        //                           : Colors.grey[700],
-                        //                     )
-                        //                   else
-                        //                     const SizedBox(),
-                        //                   const SizedBox(width: 10),
-                        //                   Text(
-                        //                     AppLocalizations.of(context)!.za,
-                        //                   ),
-                        //                 ],
-                        //               ),
-                        //             ),
-                        //             PopupMenuItem(
-                        //               value: 2,
-                        //               child: Row(
-                        //                 children: [
-                        //                   if (sortValue == 2)
-                        //                     Icon(
-                        //                       Icons.check_rounded,
-                        //                       color: Theme.of(context).brightness ==
-                        //                               Brightness.dark
-                        //                           ? Colors.white
-                        //                           : Colors.grey[700],
-                        //                     )
-                        //                   else
-                        //                     const SizedBox(),
-                        //                   const SizedBox(width: 10),
-                        //                   Text(
-                        //                     AppLocalizations.of(context)!.lastAdded,
-                        //                   ),
-                        //                 ],
-                        //               ),
-                        //             ),
-                        //             PopupMenuItem(
-                        //               value: 3,
-                        //               child: Row(
-                        //                 children: [
-                        //                   if (sortValue == 3)
-                        //                     Icon(
-                        //                       Icons.shuffle_rounded,
-                        //                       color: Theme.of(context).brightness ==
-                        //                               Brightness.dark
-                        //                           ? Colors.white
-                        //                           : Colors.grey[700],
-                        //                     )
-                        //                   else
-                        //                     const SizedBox(),
-                        //                   const SizedBox(width: 10),
-                        //                   Text(
-                        //                     AppLocalizations.of(context)!.shuffle,
-                        //                   ),
-                        //                 ],
-                        //               ),
-                        //             ),
-                        //           ]
                         //       : (context) => [
                         //             PopupMenuItem(
                         //               value: 0,
@@ -679,7 +593,7 @@ class _LikedSongsState extends State<LikedSongs>
               ),
             ),
           ),
-          MiniPlayer(),
+          const MiniPlayer(),
         ],
       ),
     );

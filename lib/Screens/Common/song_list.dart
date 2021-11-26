@@ -459,7 +459,7 @@ class _SongsListPageState extends State<SongsListPage> {
                         ),
             ),
           ),
-          MiniPlayer(),
+          const MiniPlayer(),
         ],
       ),
     );

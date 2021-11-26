@@ -23,8 +23,13 @@ import 'package:hive/hive.dart';
 class SearchPage extends StatefulWidget {
   final String query;
   final bool fromHome;
-  const SearchPage({Key? key, required this.query, this.fromHome = false})
-      : super(key: key);
+  final bool autofocus;
+  const SearchPage({
+    Key? key,
+    required this.query,
+    this.fromHome = false,
+    this.autofocus = false,
+  }) : super(key: key);
 
   @override
   _SearchPageState createState() => _SearchPageState();
@@ -123,7 +128,7 @@ class _SearchPageState extends State<SearchPage> {
                 body: SearchBar(
                   controller: controller,
                   liveSearch: liveSearch,
-                  autofocus: true,
+                  autofocus: widget.autofocus,
                   hintText: AppLocalizations.of(context)!.searchText,
                   leading: IconButton(
                     icon: const Icon(Icons.arrow_back_rounded),
@@ -586,7 +591,7 @@ class _SearchPageState extends State<SearchPage> {
                 ),
               ),
             ),
-            MiniPlayer(),
+            const MiniPlayer(),
           ],
         ),
       ),

@@ -11,6 +11,8 @@ import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 class MiniPlayer extends StatefulWidget {
+  const MiniPlayer({Key? key}) : super(key: key);
+
   @override
   _MiniPlayerState createState() => _MiniPlayerState();
 }
@@ -70,18 +72,21 @@ class _MiniPlayerState extends State<MiniPlayer> {
                                     overlayRadius: 2.0,
                                   ),
                                 ),
-                                child: Slider(
-                                  inactiveColor: Colors.transparent,
-                                  // activeColor: Colors.white,
-                                  value: position.inSeconds.toDouble(),
-                                  max: mediaItem.duration!.inSeconds.toDouble(),
-                                  onChanged: (newPosition) {
-                                    audioHandler.seek(
-                                      Duration(
-                                        seconds: newPosition.round(),
-                                      ),
-                                    );
-                                  },
+                                child: Center(
+                                  child: Slider(
+                                    inactiveColor: Colors.transparent,
+                                    // activeColor: Colors.white,
+                                    value: position.inSeconds.toDouble(),
+                                    max: mediaItem.duration!.inSeconds
+                                        .toDouble(),
+                                    onChanged: (newPosition) {
+                                      audioHandler.seek(
+                                        Duration(
+                                          seconds: newPosition.round(),
+                                        ),
+                                      );
+                                    },
+                                  ),
                                 ),
                               );
                   },
@@ -96,99 +101,111 @@ class _MiniPlayerState extends State<MiniPlayer> {
                     defaultValue: ['Previous', 'Play/Pause', 'Next'],
                   )?.toList() as List;
 
-                  return SizedBox(
-                    height: useDense ? 68.0 : 76.0,
-                    child: GradientContainer(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          ListTile(
-                            dense: useDense,
-                            onTap: () {
-                              Navigator.of(context).push(
-                                PageRouteBuilder(
-                                  opaque: false,
-                                  pageBuilder: (_, __, ___) => const PlayScreen(
-                                    songsList: [],
-                                    index: 1,
-                                    offline: null,
-                                    fromMiniplayer: true,
-                                    fromDownloads: false,
-                                    recommend: false,
+                  return Card(
+                    margin: const EdgeInsets.symmetric(
+                      horizontal: 2.0,
+                      vertical: 1.0,
+                    ),
+                    child: SizedBox(
+                      height: useDense ? 68.0 : 76.0,
+                      child: GradientContainer(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            ListTile(
+                              dense: useDense,
+                              onTap: () {
+                                Navigator.of(context).push(
+                                  PageRouteBuilder(
+                                    opaque: false,
+                                    pageBuilder: (_, __, ___) =>
+                                        const PlayScreen(
+                                      songsList: [],
+                                      index: 1,
+                                      offline: null,
+                                      fromMiniplayer: true,
+                                      fromDownloads: false,
+                                      recommend: false,
+                                    ),
                                   ),
+                                );
+                              },
+                              title: Text(
+                                mediaItem.title,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              subtitle: Text(
+                                mediaItem.artist ?? '',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              leading: Hero(
+                                tag: 'currentArtwork',
+                                child: Card(
+                                  elevation: 8,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(7.0),
+                                  ),
+                                  clipBehavior: Clip.antiAlias,
+                                  child: (mediaItem.artUri
+                                          .toString()
+                                          .startsWith('file:'))
+                                      ? SizedBox.square(
+                                          dimension: useDense ? 40.0 : 50.0,
+                                          child: Image(
+                                            fit: BoxFit.cover,
+                                            image: FileImage(
+                                              File(
+                                                mediaItem.artUri!.toFilePath(),
+                                              ),
+                                            ),
+                                          ),
+                                        )
+                                      : SizedBox.square(
+                                          dimension: useDense ? 40.0 : 50.0,
+                                          child: CachedNetworkImage(
+                                            fit: BoxFit.cover,
+                                            errorWidget: (
+                                              BuildContext context,
+                                              _,
+                                              __,
+                                            ) =>
+                                                const Image(
+                                              fit: BoxFit.cover,
+                                              image: AssetImage(
+                                                'assets/cover.jpg',
+                                              ),
+                                            ),
+                                            placeholder: (
+                                              BuildContext context,
+                                              _,
+                                            ) =>
+                                                const Image(
+                                              fit: BoxFit.cover,
+                                              image: AssetImage(
+                                                'assets/cover.jpg',
+                                              ),
+                                            ),
+                                            imageUrl:
+                                                mediaItem.artUri.toString(),
+                                          ),
+                                        ),
                                 ),
-                              );
-                            },
-                            title: Text(
-                              mediaItem.title,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            subtitle: Text(
-                              mediaItem.artist ?? '',
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            leading: Hero(
-                              tag: 'currentArtwork',
-                              child: Card(
-                                elevation: 8,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(7.0),
-                                ),
-                                clipBehavior: Clip.antiAlias,
-                                child: (mediaItem.artUri
+                              ),
+                              trailing: ControlButtons(
+                                audioHandler,
+                                miniplayer: true,
+                                buttons: mediaItem.artUri
                                         .toString()
-                                        .startsWith('file:'))
-                                    ? SizedBox.square(
-                                        dimension: useDense ? 40.0 : 50.0,
-                                        child: Image(
-                                          fit: BoxFit.cover,
-                                          image: FileImage(
-                                            File(
-                                              mediaItem.artUri!.toFilePath(),
-                                            ),
-                                          ),
-                                        ),
-                                      )
-                                    : SizedBox.square(
-                                        dimension: useDense ? 40.0 : 50.0,
-                                        child: CachedNetworkImage(
-                                          fit: BoxFit.cover,
-                                          errorWidget: (
-                                            BuildContext context,
-                                            _,
-                                            __,
-                                          ) =>
-                                              const Image(
-                                            fit: BoxFit.cover,
-                                            image: AssetImage(
-                                              'assets/cover.jpg',
-                                            ),
-                                          ),
-                                          placeholder: (
-                                            BuildContext context,
-                                            _,
-                                          ) =>
-                                              const Image(
-                                            fit: BoxFit.cover,
-                                            image: AssetImage(
-                                              'assets/cover.jpg',
-                                            ),
-                                          ),
-                                          imageUrl: mediaItem.artUri.toString(),
-                                        ),
-                                      ),
+                                        .startsWith('file:')
+                                    ? ['Previous', 'Play/Pause', 'Next']
+                                    : preferredMiniButtons,
                               ),
                             ),
-                            trailing: ControlButtons(
-                              audioHandler,
-                              miniplayer: true,
-                              buttons: preferredMiniButtons,
-                            ),
-                          ),
-                          child!,
-                        ],
+                            child!,
+                          ],
+                        ),
                       ),
                     ),
                   );

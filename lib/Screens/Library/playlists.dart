@@ -529,7 +529,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
               ),
             ),
           ),
-          MiniPlayer(),
+          const MiniPlayer(),
         ],
       ),
     );

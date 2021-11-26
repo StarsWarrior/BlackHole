@@ -372,7 +372,7 @@ class _YouTubeSearchPageState extends State<YouTubeSearchPage> {
                 ),
               ),
             ),
-            MiniPlayer(),
+            const MiniPlayer(),
           ],
         ),
       ),

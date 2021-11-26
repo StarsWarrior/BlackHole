@@ -428,7 +428,10 @@ class Download with ChangeNotifier {
           'dateAdded': DateTime.now().toString(),
         };
         Hive.box('downloads').put(songData['id'], songData);
-        getArtistImage(name: data['artist'].toString(), tempDirPath: appPath!);
+        getArtistImage(
+          name: data['artist'].toString().split(', ').first,
+          tempDirPath: appPath!,
+        );
       } else {
         download = true;
         progress = 0.0;

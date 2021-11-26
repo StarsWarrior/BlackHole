@@ -384,7 +384,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
               ),
             ),
           ),
-          MiniPlayer(),
+          const MiniPlayer(),
         ],
       ),
     );

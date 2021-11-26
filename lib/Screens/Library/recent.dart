@@ -150,7 +150,7 @@ class _RecentlyPlayedState extends State<RecentlyPlayed> {
                     ),
             ),
           ),
-          MiniPlayer(),
+          const MiniPlayer(),
         ],
       ),
     );

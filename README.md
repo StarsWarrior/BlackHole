@@ -35,6 +35,10 @@ Awesome Music Player made with Flutter!
 - [Russian :ru:](/README.RU.md)
 - [French :fr:](/README.FR.md)
 
+<a href="https://hosted.weblate.org/engage/blackhole/">
+<img src="https://hosted.weblate.org/widgets/blackhole/-/localization/svg-badge.svg" alt="Translation status" />
+</a>
+
 [Translate App on Weblate](https://hosted.weblate.org/projects/blackhole/localization/)
 
 ## Features

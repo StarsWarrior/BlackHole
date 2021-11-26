@@ -466,7 +466,7 @@ class _DownloadsState extends State<Downloads>
               ),
             ),
           ),
-          MiniPlayer(),
+          const MiniPlayer(),
         ],
       ),
     );

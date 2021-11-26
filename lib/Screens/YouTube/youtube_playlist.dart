@@ -326,7 +326,7 @@ class _YouTubePlaylistState extends State<YouTubePlaylist> {
               ),
             ),
           ),
-          MiniPlayer(),
+          const MiniPlayer(),
         ],
       ),
     );

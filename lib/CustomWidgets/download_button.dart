@@ -35,9 +35,8 @@ class _DownloadButtonState extends State<DownloadButton> {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 50,
-      height: 50,
+    return SizedBox.square(
+      dimension: 50,
       child: Center(
         child: (downloadsBox.containsKey(widget.data['id']))
             ? IconButton(

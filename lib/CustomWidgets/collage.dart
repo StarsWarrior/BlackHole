@@ -39,12 +39,12 @@ class Collage extends StatelessWidget {
                 fit: BoxFit.cover,
                 image: FileImage(
                   File(
-                    '$tempDirPath/images/artists/$artistName.jpg',
+                    '$tempDirPath/images/artists/${artistName!.split(", ").first}.jpg',
                   ),
                 ),
                 errorBuilder: (context, _, __) {
                   getArtistImage(
-                    name: artistName!,
+                    name: artistName!.split(', ').first,
                     tempDirPath: tempDirPath!,
                   );
                   return CachedNetworkImage(
@@ -126,6 +126,7 @@ class OfflineCollage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       elevation: 5,
+      margin: const EdgeInsets.symmetric(horizontal: 8.0),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(
           (artistName != null && tempDirPath != null) ? 100.0 : 7.0,
@@ -139,12 +140,12 @@ class OfflineCollage extends StatelessWidget {
                 fit: BoxFit.cover,
                 image: FileImage(
                   File(
-                    '$tempDirPath/images/artists/$artistName.jpg',
+                    '$tempDirPath/images/artists/${artistName!.split(", ").first}.jpg',
                   ),
                 ),
                 errorBuilder: (context, _, __) {
                   getArtistImage(
-                    name: artistName!,
+                    name: artistName!.split(', ').first,
                     tempDirPath: tempDirPath!,
                   );
                   return imageList[0] == null
