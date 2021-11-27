@@ -896,13 +896,13 @@ class ControlButtons extends StatelessWidget {
             return StreamBuilder<QueueState>(
               stream: audioHandler.queueState,
               builder: (context, snapshot) {
-                final queueState = snapshot.data ?? QueueState.empty;
+                final queueState = snapshot.data;
                 return IconButton(
                   icon: const Icon(Icons.skip_previous_rounded),
                   iconSize: miniplayer ? 24.0 : 45.0,
                   tooltip: AppLocalizations.of(context)!.skipPrevious,
                   color: Theme.of(context).iconTheme.color,
-                  onPressed: queueState.hasPrevious
+                  onPressed: queueState?.hasPrevious ?? true
                       ? audioHandler.skipToPrevious
                       : null,
                 );
@@ -917,7 +917,7 @@ class ControlButtons extends StatelessWidget {
                 builder: (context, snapshot) {
                   final playbackState = snapshot.data;
                   final processingState = playbackState?.processingState;
-                  final playing = playbackState?.playing ?? false;
+                  final playing = playbackState?.playing ?? true;
                   return Stack(
                     children: [
                       if (processingState == AudioProcessingState.loading ||
@@ -996,14 +996,15 @@ class ControlButtons extends StatelessWidget {
             return StreamBuilder<QueueState>(
               stream: audioHandler.queueState,
               builder: (context, snapshot) {
-                final queueState = snapshot.data ?? QueueState.empty;
+                final queueState = snapshot.data;
                 return IconButton(
                   icon: const Icon(Icons.skip_next_rounded),
                   iconSize: miniplayer ? 24.0 : 45.0,
                   tooltip: AppLocalizations.of(context)!.skipNext,
                   color: Theme.of(context).iconTheme.color,
-                  onPressed:
-                      queueState.hasNext ? audioHandler.skipToNext : null,
+                  onPressed: queueState?.hasNext ?? true
+                      ? audioHandler.skipToNext
+                      : null,
                 );
               },
             );

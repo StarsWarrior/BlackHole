@@ -14,6 +14,7 @@ import 'package:blackhole/Screens/Home/saavn.dart' as home_screen;
 import 'package:blackhole/Screens/Top Charts/top.dart' as top_screen;
 import 'package:blackhole/Services/ext_storage_provider.dart';
 import 'package:blackhole/main.dart';
+import 'package:device_info/device_info.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -3007,29 +3008,49 @@ class _SettingPageState extends State<SettingPage> {
                             );
 
                             SupaBase().getUpdate().then(
-                              (Map value) {
+                              (Map value) async {
                                 if (compareVersion(
                                   value['LatestVersion'].toString(),
                                   appVersion!,
                                 )) {
+                                  List? abis = await Hive.box('settings')
+                                      .get('supportedAbis') as List?;
+
+                                  if (abis == null) {
+                                    final DeviceInfoPlugin deviceInfo =
+                                        DeviceInfoPlugin();
+                                    final AndroidDeviceInfo androidDeviceInfo =
+                                        await deviceInfo.androidInfo;
+                                    abis = androidDeviceInfo.supportedAbis;
+                                    await Hive.box('settings')
+                                        .put('supportedAbis', abis);
+                                  }
                                   ShowSnackBar().showSnackBar(
                                     context,
-                                    AppLocalizations.of(
-                                      context,
-                                    )!
+                                    AppLocalizations.of(context)!
                                         .updateAvailable,
+                                    duration: const Duration(seconds: 15),
                                     action: SnackBarAction(
                                       textColor: Theme.of(context)
                                           .colorScheme
                                           .secondary,
-                                      label: AppLocalizations.of(
-                                        context,
-                                      )!
-                                          .update,
+                                      label:
+                                          AppLocalizations.of(context)!.update,
                                       onPressed: () {
-                                        launch(
-                                          value['LatestUrl'].toString(),
-                                        );
+                                        Navigator.pop(context);
+                                        if (abis!.contains('arm64-v8a')) {
+                                          launch(value['arm64-v8a'] as String);
+                                        } else {
+                                          if (abis.contains('armeabi-v7a')) {
+                                            launch(
+                                              value['armeabi-v7a'] as String,
+                                            );
+                                          } else {
+                                            launch(
+                                              value['universal'] as String,
+                                            );
+                                          }
+                                        }
                                       },
                                     ),
                                   );

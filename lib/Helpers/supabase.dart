@@ -14,7 +14,10 @@ class SupaBase {
         ? {}
         : {
             'LatestVersion': response.data[0]['LatestVersion'],
-            'LatestUrl': response.data[0]['LatestUrl']
+            'LatestUrl': response.data[0]['LatestUrl'],
+            'arm64-v8a': response.data[0]['arm64-v8a'],
+            'armeabi-v7a': response.data[0]['armeabi-v7a'],
+            'universal': response.data[0]['universal'],
           };
   }
 

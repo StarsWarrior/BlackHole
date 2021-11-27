@@ -16,6 +16,7 @@ import 'package:blackhole/Screens/Settings/setting.dart';
 import 'package:blackhole/Screens/Top Charts/top.dart';
 import 'package:blackhole/Screens/YouTube/youtube_home.dart';
 import 'package:blackhole/Services/ext_storage_provider.dart';
+import 'package:device_info/device_info.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
@@ -128,8 +129,22 @@ class _HomePageState extends State<HomePage> {
         updateUserDetails('version', packageInfo.version);
 
         if (checkUpdate) {
-          db.getUpdate().then((Map value) {
-            if (compareVersion(value['LatestVersion'] as String, appVersion!)) {
+          db.getUpdate().then((Map value) async {
+            if (compareVersion(
+              value['LatestVersion'] as String,
+              appVersion!,
+            )) {
+              List? abis =
+                  await Hive.box('settings').get('supportedAbis') as List?;
+
+              if (abis == null) {
+                final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+                final AndroidDeviceInfo androidDeviceInfo =
+                    await deviceInfo.androidInfo;
+                abis = androidDeviceInfo.supportedAbis;
+                await Hive.box('settings').put('supportedAbis', abis);
+              }
+
               ShowSnackBar().showSnackBar(
                 context,
                 AppLocalizations.of(context)!.updateAvailable,
@@ -139,7 +154,15 @@ class _HomePageState extends State<HomePage> {
                   label: AppLocalizations.of(context)!.update,
                   onPressed: () {
                     Navigator.pop(context);
-                    launch(value['LatestUrl'] as String);
+                    if (abis!.contains('arm64-v8a')) {
+                      launch(value['arm64-v8a'] as String);
+                    } else {
+                      if (abis.contains('armeabi-v7a')) {
+                        launch(value['armeabi-v7a'] as String);
+                      } else {
+                        launch(value['universal'] as String);
+                      }
+                    }
                   },
                 ),
               );

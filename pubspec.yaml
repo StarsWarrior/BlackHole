@@ -16,6 +16,7 @@ dependencies:
   cached_network_image: ^3.1.0
   cupertino_icons: ^1.0.3
   dart_des: ^1.0.0
+  device_info: ^2.0.3
   file_picker: ^4.2.4
   flip_card: ^0.6.0
   flutter:
