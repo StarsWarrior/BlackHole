@@ -592,5 +592,9 @@
   "youTube": "YouTube",
   "@youTube": {},
   "ytLiveAlert": "La vidéo est en direct. Merci d'attendre qu'elle se termine puis réessayer.",
-  "@ytLiveAlert": {}
+  "@ytLiveAlert": {},
+  "useDominantFullScreen": "Utiliser une couleur dominante pour l'ensemble de l'écran de lecture",
+  "@useDominantFullScreen": {},
+  "useDominantFullScreenSub": "La couleur dominante de l'image sera utilisée pour l'arrière-plan de tout l'écran de lecture. Disponible uniquement si l'option Utiliser la dominante est activée",
+  "@useDominantFullScreenSub": {}
 }
