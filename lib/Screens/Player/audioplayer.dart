@@ -66,6 +66,8 @@ class _PlayScreenState extends State<PlayScreen> {
       Hive.box('settings').get('enforceRepeat', defaultValue: false) as bool;
   bool useImageColor =
       Hive.box('settings').get('useImageColor', defaultValue: true) as bool;
+  bool useFullScreenGradient = Hive.box('settings')
+      .get('useFullScreenGradient', defaultValue: false) as bool;
   List<MediaItem> globalQueue = [];
   int globalIndex = 0;
   List response = [];
@@ -685,7 +687,9 @@ class _PlayScreenState extends State<PlayScreen> {
                         : Alignment.topCenter,
                     end: !useImageColor
                         ? Alignment.bottomRight
-                        : Alignment.center,
+                        : !useFullScreenGradient
+                            ? Alignment.center
+                            : Alignment.bottomCenter,
                     colors: !useImageColor
                         ? Theme.of(context).brightness == Brightness.dark
                             ? currentTheme.getBackGradient()

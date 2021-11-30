@@ -29,7 +29,6 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
-
       # Setup the flutter environment.
       - uses: subosito/flutter-action@v1
         with:

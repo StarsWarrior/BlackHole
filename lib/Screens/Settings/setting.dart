@@ -1258,6 +1258,24 @@ class _SettingPageState extends State<SettingPage> {
                             AppLocalizations.of(
                               context,
                             )!
+                                .useDominantFullScreen,
+                          ),
+                          subtitle: Text(
+                            AppLocalizations.of(
+                              context,
+                            )!
+                                .useDominantFullScreenSub,
+                          ),
+                          keyName: 'useFullScreenGradient',
+                          defaultValue: false,
+                          isThreeLine: false,
+                        ),
+
+                        BoxSwitchTile(
+                          title: Text(
+                            AppLocalizations.of(
+                              context,
+                            )!
                                 .useDenseMini,
                           ),
                           subtitle: Text(
