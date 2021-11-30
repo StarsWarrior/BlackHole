@@ -586,5 +586,11 @@
   "useProxy": "Proxy verwenden",
   "@useProxy": {},
   "useDominantFullScreenSub": "Die dominante Farbe des Bildes wird für den Hintergrund des gesamten Abspielbildschirms verwendet. Nur verfügbar, wenn Dominant verwenden eingeschaltet ist",
-  "@useDominantFullScreenSub": {}
+  "@useDominantFullScreenSub": {},
+  "shuffle": "Mischen",
+  "@shuffle": {},
+  "cardGradSub": "Farbverlauf für Karten",
+  "@cardGradSub": {},
+  "cardGrad": "Karte Farbverlauf",
+  "@cardGrad": {}
 }
