@@ -274,5 +274,11 @@
   "enterName": "Entre su nombre",
   "@enterName": {},
   "ytLiveAlert": "El Video es en directo. Por favor, esperé hasta que el streaming en vivo finalice el intente nuevamente.",
-  "@ytLiveAlert": {}
+  "@ytLiveAlert": {},
+  "dec": "Descendente",
+  "@dec": {},
+  "downLyricsSub": "Descargar las letras junto a la canción si están disponibles",
+  "@downLyricsSub": {},
+  "enableGesture": "Habilitar los gestos en la Imágen",
+  "@enableGesture": {}
 }
