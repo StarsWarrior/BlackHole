@@ -345,7 +345,7 @@
   "@yesReplace": {},
   "youTube": "YouTube",
   "@youTube": {},
-  "aboard": "An Bord",
+  "aboard": "an Bord",
   "@aboard": {},
   "accent": "Akzentfarbe und Farbton",
   "@accent": {},
@@ -401,7 +401,7 @@
   "@backNRest": {},
   "backupSuccess": "Sicherung erfolgreich",
   "@backupSuccess": {},
-  "bgGrad": "Hintergrund-Gradient",
+  "bgGrad": "Hintergrund-Farbverlauf",
   "@bgGrad": {},
   "blacklistedHomeSections": "Startseite-Bereiche auf der schwarzen Liste",
   "@blacklistedHomeSections": {},
@@ -591,6 +591,12 @@
   "@shuffle": {},
   "cardGradSub": "Farbverlauf für Karten",
   "@cardGradSub": {},
-  "cardGrad": "Karte Farbverlauf",
-  "@cardGrad": {}
+  "cardGrad": "Kartenfarbverlauf",
+  "@cardGrad": {},
+  "favSongs": "Lieblingslieder",
+  "@favSongs": {},
+  "bottomGrad": "Unterer Farbverlauf",
+  "@bottomGrad": {},
+  "bottomGradSub": "Unten verwendeter Farbverlauf",
+  "@bottomGradSub": {}
 }
