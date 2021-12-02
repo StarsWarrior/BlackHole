@@ -280,7 +280,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                                     playlistDetails[name]['count'] == 0
                                 ? null
                                 : Text(
-                                    '${playlistDetails[name]['count']} Songs',
+                                    '${playlistDetails[name]['count']} ${AppLocalizations.of(context)!.songs}',
                                   ),
                             trailing: PopupMenuButton(
                               icon: const Icon(Icons.more_vert_rounded),
@@ -663,7 +663,9 @@ Future<void> fetchPlaylists(
                   : ListTile(
                       title: Text(playName),
                       subtitle: Text(
-                        playTotal == 1 ? '$playTotal Song' : '$playTotal Songs',
+                        playTotal == 1
+                            ? '$playTotal ${AppLocalizations.of(context)!.song}'
+                            : '$playTotal ${AppLocalizations.of(context)!.songs}',
                       ),
                       leading: Card(
                         elevation: 8,

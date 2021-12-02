@@ -1289,7 +1289,7 @@ class _AlbumsTabState extends State<AlbumsTab>
             overflow: TextOverflow.ellipsis,
           ),
           subtitle: Text(
-            '${widget.albums[widget.albumsList[index]]!.length} Songs',
+            '${widget.albums[widget.albumsList[index]]!.length} ${AppLocalizations.of(context)!.songs}',
           ),
           onTap: () {
             Navigator.push(

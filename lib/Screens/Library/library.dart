@@ -69,8 +69,13 @@ class _LibraryPageState extends State<LibraryPage> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) =>
-                    const LikedSongs(playlistName: 'Favorite Songs'),
+                builder: (context) => LikedSongs(
+                  playlistName: 'Favorite Songs',
+                  showName: AppLocalizations.of(
+                    context,
+                  )!
+                      .favSongs,
+                ),
               ),
             );
           },

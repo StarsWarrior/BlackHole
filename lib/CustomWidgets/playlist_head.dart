@@ -27,7 +27,9 @@ class PlaylistHead extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            '${songsList.length} Songs',
+            '${songsList.length} ${AppLocalizations.of(
+              context,
+            )!.songs}',
             style: const TextStyle(fontWeight: FontWeight.w600),
           ),
           const Spacer(),

@@ -243,6 +243,8 @@
   "@failedTagEdit": {},
   "favorites": "Favorites",
   "@favorites": {},
+  "favSongs": "Favorite Songs",
+  "@favSongs": {},
   "fetchingStream": "Fetching Audio Stream",
   "@fetchingStream": {},
   "finish": "Finish",

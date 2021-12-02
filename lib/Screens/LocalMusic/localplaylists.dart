@@ -104,7 +104,7 @@ class _LocalPlaylistsState extends State<LocalPlaylists> {
                     overflow: TextOverflow.ellipsis,
                   ),
                   subtitle: Text(
-                    '${playlistDetails[index].numOfSongs} Songs',
+                    '${playlistDetails[index].numOfSongs} ${AppLocalizations.of(context)!.songs}',
                   ),
                   trailing: PopupMenuButton(
                     icon: const Icon(Icons.more_vert_rounded),
