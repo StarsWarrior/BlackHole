@@ -1,4 +1,6 @@
-<img width="125px" src="https://github.com/Sangwan5688/BlackHole/blob/main/assets/icon-white-trans.png" align="center" />
+![Repo Banner](https://user-images.githubusercontent.com/87353286/144381080-faf8e557-7909-43a1-a8e2-208936e5a8f8.png)
+
+
 
 # BlackHole
 
@@ -6,6 +8,7 @@ Awesome Music Player made with Flutter!
 
 [![made-with-flutter](https://img.shields.io/badge/Made%20with-Flutter-1f425f.svg)](https://flutter.dev/) ![Release](https://img.shields.io/github/v/release/Sangwan5688/BlackHole) ![Downloads](https://img.shields.io/github/downloads/Sangwan5688/BlackHole/total)
 [![Build](https://github.com/Sangwan5688/BlackHole/actions/workflows/flutter.yml/badge.svg)](https://github.com/Sangwan5688/BlackHole/actions/workflows/flutter.yml)
+[![Translation-Status](https://hosted.weblate.org/widgets/blackhole/-/translations/svg-badge.svg)](https://hosted.weblate.org/engage/blackhole/)
 
 ### Dont forget to :star: the repo
 
@@ -35,11 +38,7 @@ Awesome Music Player made with Flutter!
 - [Russian :ru:](/README.RU.md)
 - [French :fr:](/README.FR.md)
 
-<a href="https://hosted.weblate.org/engage/blackhole/">
-<img src="https://hosted.weblate.org/widgets/blackhole/-/localization/svg-badge.svg" alt="Translation status" />
-</a>
-
-[Translate App on Weblate](https://hosted.weblate.org/projects/blackhole/localization/)
+[Translate App on Weblate](https://hosted.weblate.org/projects/blackhole/translations/)
 
 ## Features
 
