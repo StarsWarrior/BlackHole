@@ -592,5 +592,11 @@
   "youTube": "Youtube",
   "@youTube": {},
   "ytLiveAlert": "Video ditayangkan. Harap tunggu hingga streaming langsung selesai dan coba lagi.",
-  "@ytLiveAlert": {}
+  "@ytLiveAlert": {},
+  "favSongs": "Lagu favorit",
+  "@favSongs": {},
+  "useDominantFullScreen": "Gunakan Warna Dominan untuk Seluruh Layar Putar",
+  "@useDominantFullScreen": {},
+  "useDominantFullScreenSub": "Warna Dominan dari Gambar akan digunakan untuk Seluruh Latar Layar Putar. Hanya tersedia jika Gunakan Dominan AKTIF",
+  "@useDominantFullScreenSub": {}
 }
