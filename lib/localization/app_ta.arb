@@ -169,7 +169,7 @@
   "@noFolderSelected": {},
   "notAvailable": "கிடைக்கவில்லை",
   "@notAvailable": {},
-  "nothingPlaying": "ஒன்றும் இயங்கவில்லை",
+  "nothingPlaying": "ஒன்றுமே இயங்கவில்லை",
   "@nothingPlaying": {},
   "nowPlaying": "இப்போது இயங்குபவை",
   "@nowPlaying": {},
@@ -547,9 +547,9 @@
   "@lastAdded": {},
   "lastModified": "கடைசியாக மாற்றப்பட்டது",
   "@lastModified": {},
-  "nothingIs": "",
+  "nothingIs": "ஒன்றுமே ",
   "@nothingIs": {},
-  "nothingTo": "",
+  "nothingTo": "ஒன்றுமில்லை ",
   "@nothingTo": {},
   "port": "புறை",
   "@port": {},
@@ -596,5 +596,7 @@
   "useDominantFullScreen": "முழு இசை திரைக்கும் ஆதிக்க நிறத்தைப் பயன்படுத்து",
   "@useDominantFullScreen": {},
   "useDominantFullScreenSub": "முழு இசை திரை பின்புலத்துக்கு படத்தின் ஆதிக்க நிறம் பயன்படுத்தப்படும். ஆதக்கம் இயக்கத்தில் இருந்தால் மட்டுமே கிடைக்கும்",
-  "@useDominantFullScreenSub": {}
+  "@useDominantFullScreenSub": {},
+  "favSongs": "அபிமான பாடல்கள்",
+  "@favSongs": {}
 }
