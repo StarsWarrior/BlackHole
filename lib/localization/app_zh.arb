@@ -1,1 +1,12 @@
-{}
+{
+  "autoplay": "自动播放",
+  "@autoplay": {},
+  "cache": "缓存",
+  "@cache": {},
+  "about": "关于",
+  "@about": {},
+  "addNew": "新增",
+  "@addNew": {},
+  "addToPlaylist": "添加到播放列表",
+  "@addToPlaylist": {}
+}
