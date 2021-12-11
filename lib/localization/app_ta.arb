@@ -598,5 +598,7 @@
   "useDominantFullScreenSub": "முழு இசை திரை பின்புலத்துக்கு படத்தின் ஆதிக்க நிறம் பயன்படுத்தப்படும். ஆதக்கம் இயக்கத்தில் இருந்தால் மட்டுமே கிடைக்கும்",
   "@useDominantFullScreenSub": {},
   "favSongs": "அபிமான பாடல்கள்",
-  "@favSongs": {}
+  "@favSongs": {},
+  "viewArtist": "கலைஞரைப் பார்",
+  "@viewArtist": {}
 }
