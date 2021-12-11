@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:blackhole/Screens/Player/audioplayer.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:get_it/get_it.dart';

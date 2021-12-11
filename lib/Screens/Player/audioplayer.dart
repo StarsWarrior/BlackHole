@@ -18,10 +18,10 @@ import 'package:blackhole/Helpers/dominant_color.dart';
 import 'package:blackhole/Helpers/lyrics.dart';
 import 'package:blackhole/Helpers/mediaitem_converter.dart';
 import 'package:blackhole/Screens/Common/song_list.dart';
+import 'package:blackhole/Screens/Search/albums.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flip_card/flip_card.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -1700,6 +1700,18 @@ class NameNControls extends StatelessWidget {
                     ),
                   );
                 }
+                if (value == 5) {
+                  Navigator.push(
+                    context,
+                    PageRouteBuilder(
+                      opaque: false,
+                      pageBuilder: (_, __, ___) => AlbumSearchPage(
+                        query: mediaItem.artist.toString(),
+                        type: 'Artists',
+                      ),
+                    ),
+                  );
+                }
               },
               itemBuilder: (BuildContext context) => <PopupMenuEntry<int>>[
                 if (mediaItem.extras?['album_id'] != null)
@@ -1711,7 +1723,24 @@ class NameNControls extends StatelessWidget {
                           Icons.album_rounded,
                         ),
                         const SizedBox(width: 10.0),
-                        Text(AppLocalizations.of(context)!.viewAlbum),
+                        Text(
+                          AppLocalizations.of(context)!.viewAlbum,
+                        ),
+                      ],
+                    ),
+                  ),
+                if (mediaItem.artist != null)
+                  PopupMenuItem<int>(
+                    value: 5,
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.person,
+                        ),
+                        const SizedBox(width: 10.0),
+                        Text(
+                          AppLocalizations.of(context)!.viewArtist,
+                        ),
                       ],
                     ),
                   ),

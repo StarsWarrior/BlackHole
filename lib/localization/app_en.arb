@@ -581,6 +581,8 @@
   "@versionSub": {},
   "viewAlbum": "View Album",
   "@viewAlbum": {},
+  "viewArtist": "View Artist",
+  "@viewArtist": {},
   "viewAll": "View All",
   "@viewAll": {},
   "watchVideo": "Watch Video",
