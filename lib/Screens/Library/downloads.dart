@@ -17,7 +17,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:hive/hive.dart';
-import 'package:path_provider/path_provider.dart';
+// import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class Downloads extends StatefulWidget {
@@ -39,7 +39,7 @@ class _DownloadsState extends State<Downloads>
   List _sortedGenreKeysList = [];
   TabController? _tcontroller;
   // int currentIndex = 0;
-  String? tempPath = Hive.box('settings').get('tempDirPath')?.toString();
+  // String? tempPath = Hive.box('settings').get('tempDirPath')?.toString();
   int sortValue = Hive.box('settings').get('sortValue', defaultValue: 1) as int;
   int orderValue =
       Hive.box('settings').get('orderValue', defaultValue: 1) as int;
@@ -50,11 +50,11 @@ class _DownloadsState extends State<Downloads>
   void initState() {
     _tcontroller = TabController(length: 4, vsync: this);
     // _tcontroller!.addListener(changeTitle);
-    if (tempPath == null) {
-      getTemporaryDirectory().then((value) {
-        Hive.box('settings').put('tempDirPath', value.path);
-      });
-    }
+    // if (tempPath == null) {
+    //   getTemporaryDirectory().then((value) {
+    //     Hive.box('settings').put('tempDirPath', value.path);
+    //   });
+    // }
     getDownloads();
     super.initState();
   }
@@ -451,7 +451,7 @@ class _DownloadsState extends State<Downloads>
                           AlbumsTab(
                             albums: _artists,
                             type: 'artist',
-                            tempPath: tempPath,
+                            // tempPath: tempPath,
                             offline: true,
                             sortedAlbumKeysList: _sortedArtistKeysList,
                           ),

@@ -2308,8 +2308,10 @@ class _SettingPageState extends State<SettingPage> {
                                 'English': 'en',
                                 'Russian': 'ru',
                                 'Portuguese': 'pt',
-                                'Indonesia': 'id',
+                                'Indonesian': 'id',
                                 'French': 'fr',
+                                'German': 'de',
+                                'Tamil': 'ta',
                               };
                               if (newValue != null) {
                                 setState(
@@ -2329,8 +2331,10 @@ class _SettingPageState extends State<SettingPage> {
                               'English',
                               'Russian',
                               'Portuguese',
-                              'Indonesia',
+                              'Indonesian',
                               'French',
+                              'German',
+                              'Tamil'
                             ].map<DropdownMenuItem<String>>((String value) {
                               return DropdownMenuItem<String>(
                                 value: value,

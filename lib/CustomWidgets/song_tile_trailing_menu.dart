@@ -3,6 +3,7 @@ import 'package:blackhole/CustomWidgets/add_playlist.dart';
 import 'package:blackhole/Helpers/add_mediitem_to_queue.dart';
 import 'package:blackhole/Helpers/mediaitem_converter.dart';
 import 'package:blackhole/Screens/Common/song_list.dart';
+import 'package:blackhole/Screens/Search/albums.dart';
 import 'package:blackhole/Screens/Search/search.dart';
 import 'package:blackhole/Services/youtube_services.dart';
 import 'package:flutter/cupertino.dart';
@@ -88,6 +89,19 @@ class _SongTileTrailingMenuState extends State<SongTileTrailingMenu> {
           ),
         ),
         PopupMenuItem(
+          value: 5,
+          child: Row(
+            children: [
+              Icon(
+                Icons.person_rounded,
+                color: Theme.of(context).iconTheme.color,
+              ),
+              const SizedBox(width: 10.0),
+              Text(AppLocalizations.of(context)!.viewArtist),
+            ],
+          ),
+        ),
+        PopupMenuItem(
           value: 3,
           child: Row(
             children: [
@@ -119,6 +133,18 @@ class _SongTileTrailingMenuState extends State<SongTileTrailingMenu> {
                   'title': mediaItem.album,
                   'image': mediaItem.artUri,
                 },
+              ),
+            ),
+          );
+        }
+        if (value == 5) {
+          Navigator.push(
+            context,
+            PageRouteBuilder(
+              opaque: false,
+              pageBuilder: (_, __, ___) => AlbumSearchPage(
+                query: mediaItem.artist.toString().split(', ').first,
+                type: 'Artists',
               ),
             ),
           );

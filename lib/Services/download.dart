@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:audiotagger/audiotagger.dart';
 import 'package:audiotagger/models/tag.dart';
 import 'package:blackhole/CustomWidgets/snackbar.dart';
-import 'package:blackhole/Helpers/image_downs.dart';
 import 'package:blackhole/Helpers/lyrics.dart';
 import 'package:blackhole/Services/ext_storage_provider.dart';
 import 'package:flutter/foundation.dart';
@@ -399,11 +398,6 @@ class Download with ChangeNotifier {
         progress = 0.0;
         notifyListeners();
 
-        ShowSnackBar().showSnackBar(
-          context,
-          '"${data['title'].toString()}" ${AppLocalizations.of(context)!.downed}',
-        );
-
         final songData = {
           'id': data['id'].toString(),
           'title': data['title'].toString(),
@@ -426,10 +420,11 @@ class Download with ChangeNotifier {
           'from_yt': data['language'].toString() == 'YouTube',
           'dateAdded': DateTime.now().toString(),
         };
-        Hive.box('downloads').put(songData['id'], songData);
-        getArtistImage(
-          name: data['artist'].toString().split(', ').first,
-          tempDirPath: appPath!,
+        Hive.box('downloads').put(songData['id'].toString(), songData);
+
+        ShowSnackBar().showSnackBar(
+          context,
+          '"${data['title'].toString()}" ${AppLocalizations.of(context)!.downed}',
         );
       } else {
         download = true;

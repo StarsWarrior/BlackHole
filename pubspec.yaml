@@ -11,13 +11,13 @@ environment:
 
 dependencies:
   app_links: ^2.2.0
-  audio_service: ^0.18.1
+  audio_service: ^0.18.2
   audiotagger: ^2.2.1
-  cached_network_image: ^3.1.0
-  cupertino_icons: ^1.0.3
+  cached_network_image: ^3.2.0
+  cupertino_icons: ^1.0.4
   dart_des: ^1.0.0
   device_info: ^2.0.3
-  file_picker: ^4.2.4
+  file_picker: ^4.2.7
   flip_card: ^0.6.0
   flutter:
     sdk: flutter
@@ -37,13 +37,13 @@ dependencies:
   on_audio_query: ^2.5.3
   package_info: ^2.0.2
   palette_generator: ^0.3.2
-  path_provider: ^2.0.7
+  path_provider: ^2.0.8
   permission_handler: ^8.3.0
-  salomon_bottom_bar: ^3.1.0
+  salomon_bottom_bar: ^3.2.0
   share_plus: ^3.0.4
   sliding_up_panel: ^2.0.0+1
-  supabase: ^0.2.9
-  url_launcher: ^6.0.15
+  supabase: ^0.2.10
+  url_launcher: ^6.0.17
   uuid: ^3.0.5
   youtube_explode_dart: 1.10.6
 

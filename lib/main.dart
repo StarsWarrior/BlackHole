@@ -133,8 +133,10 @@ class _MyAppState extends State<MyApp> {
       'English': 'en',
       'Russian': 'ru',
       'Portuguese': 'pt',
-      'Indonesia': 'id',
+      'Indonesian': 'id',
       'French': 'fr',
+      'German': 'de',
+      'Tamil': 'ta',
     };
     _locale = Locale(codes[lang]!);
 
@@ -200,9 +202,11 @@ class _MyAppState extends State<MyApp> {
       supportedLocales: const [
         Locale('en', ''), // English, no country code
         Locale('ru', ''), // Russian
-        Locale('pt', ''), // Portuguese, no country code
-        Locale('id', ''), // Indonesia, no country code
+        Locale('pt', ''), // Portuguese
+        Locale('id', ''), // Indonesian
         Locale('fr', ''), // French
+        Locale('de', ''), // German
+        Locale('ta', ''), // Tamil
       ],
       routes: {
         '/': (context) => initialFuntion(),

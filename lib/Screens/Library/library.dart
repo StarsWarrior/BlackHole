@@ -71,10 +71,7 @@ class _LibraryPageState extends State<LibraryPage> {
               MaterialPageRoute(
                 builder: (context) => LikedSongs(
                   playlistName: 'Favorite Songs',
-                  showName: AppLocalizations.of(
-                    context,
-                  )!
-                      .favSongs,
+                  showName: AppLocalizations.of(context)!.favSongs,
                 ),
               ),
             );

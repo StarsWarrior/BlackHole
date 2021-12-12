@@ -17,7 +17,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:hive/hive.dart';
-import 'package:path_provider/path_provider.dart';
+// import 'package:path_provider/path_provider.dart';
 
 class LikedSongs extends StatefulWidget {
   final String playlistName;
@@ -32,7 +32,7 @@ class _LikedSongsState extends State<LikedSongs>
     with SingleTickerProviderStateMixin {
   Box? likedBox;
   bool added = false;
-  String? tempPath = Hive.box('settings').get('tempDirPath')?.toString();
+  // String? tempPath = Hive.box('settings').get('tempDirPath')?.toString();
   List _songs = [];
   final Map<String, List<Map>> _albums = {};
   final Map<String, List<Map>> _artists = {};
@@ -55,11 +55,11 @@ class _LikedSongsState extends State<LikedSongs>
   @override
   void initState() {
     _tcontroller = TabController(length: 4, vsync: this);
-    if (tempPath == null) {
-      getTemporaryDirectory().then((value) {
-        Hive.box('settings').put('tempDirPath', value.path);
-      });
-    }
+    // if (tempPath == null) {
+    //   getTemporaryDirectory().then((value) {
+    //     Hive.box('settings').put('tempDirPath', value.path);
+    //   });
+    // }
     // _tcontroller!.addListener(changeTitle);
     getLiked();
     super.initState();
@@ -578,7 +578,6 @@ class _LikedSongsState extends State<LikedSongs>
                           AlbumsTab(
                             albums: _artists,
                             type: 'artist',
-                            tempPath: tempPath,
                             offline: false,
                             sortedAlbumKeysList: _sortedArtistKeysList,
                           ),
@@ -793,7 +792,7 @@ class _SongsTabState extends State<SongsTab>
 class AlbumsTab extends StatefulWidget {
   final Map<String, List> albums;
   final List sortedAlbumKeysList;
-  final String? tempPath;
+  // final String? tempPath;
   final String type;
   final bool offline;
   const AlbumsTab({
@@ -802,7 +801,7 @@ class AlbumsTab extends StatefulWidget {
     required this.offline,
     required this.sortedAlbumKeysList,
     required this.type,
-    this.tempPath,
+    // this.tempPath,
   }) : super(key: key);
 
   @override
@@ -828,18 +827,11 @@ class _AlbumsTabState extends State<AlbumsTab>
             AppLocalizations.of(context)!.addSomething,
             23.0,
           )
-        : GridView.builder(
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: MediaQuery.of(context).size.width >
-                      MediaQuery.of(context).size.height
-                  ? 4
-                  : 2,
-              childAspectRatio: 0.8,
-            ),
+        : ListView.builder(
             physics: const BouncingScrollPhysics(),
-            padding: const EdgeInsets.only(top: 15.0, bottom: 10.0),
+            padding: const EdgeInsets.only(bottom: 10.0),
             shrinkWrap: true,
-            // itemExtent: 70.0,
+            itemExtent: 70.0,
             itemCount: widget.sortedAlbumKeysList.length,
             itemBuilder: (context, index) {
               final List imageList = widget
@@ -851,63 +843,33 @@ class _AlbumsTabState extends State<AlbumsTab>
                       0,
                       widget.albums[widget.sortedAlbumKeysList[index]]!.length,
                     );
-              return GestureDetector(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (widget.offline)
-                      OfflineCollage(
-                        fixSize: false,
+              return ListTile(
+                leading: (widget.offline)
+                    ? OfflineCollage(
                         imageList: imageList,
                         showGrid: widget.type == 'genre',
-                        artistName: widget.type == 'artist'
-                            ? widget
-                                .albums[widget.sortedAlbumKeysList[index]]![0]
-                                    ['artist']
-                                .toString()
-                            : null,
-                        tempDirPath: widget.tempPath,
                         placeholderImage: widget.type == 'artist'
                             ? 'assets/artist.png'
                             : 'assets/album.png',
                       )
-                    else
-                      Collage(
-                        fixSize: false,
+                    : Collage(
                         imageList: imageList,
                         showGrid: widget.type == 'genre',
-                        artistName: widget.type == 'artist'
-                            ? widget
-                                .albums[widget.sortedAlbumKeysList[index]]![0]
-                                    ['artist']
-                                .toString()
-                            : null,
-                        tempDirPath: widget.tempPath,
                         placeholderImage: widget.type == 'artist'
                             ? 'assets/artist.png'
                             : 'assets/album.png',
                       ),
-                    ListTile(
-                      dense: true,
-                      minVerticalPadding: 0.0,
-                      contentPadding:
-                          const EdgeInsets.symmetric(horizontal: 10.0),
-                      title: Text(
-                        '${widget.sortedAlbumKeysList[index]}',
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      subtitle: Text(
-                        widget.albums[widget.sortedAlbumKeysList[index]]!
-                                    .length ==
-                                1
-                            ? '${widget.albums[widget.sortedAlbumKeysList[index]]!.length} ${AppLocalizations.of(context)!.song}'
-                            : '${widget.albums[widget.sortedAlbumKeysList[index]]!.length} ${AppLocalizations.of(context)!.songs}',
-                        style: TextStyle(
-                          color: Theme.of(context).textTheme.caption!.color,
-                        ),
-                      ),
-                    ),
-                  ],
+                title: Text(
+                  '${widget.sortedAlbumKeysList[index]}',
+                  overflow: TextOverflow.ellipsis,
+                ),
+                subtitle: Text(
+                  widget.albums[widget.sortedAlbumKeysList[index]]!.length == 1
+                      ? '${widget.albums[widget.sortedAlbumKeysList[index]]!.length} ${AppLocalizations.of(context)!.song}'
+                      : '${widget.albums[widget.sortedAlbumKeysList[index]]!.length} ${AppLocalizations.of(context)!.songs}',
+                  style: TextStyle(
+                    color: Theme.of(context).textTheme.caption!.color,
+                  ),
                 ),
                 onTap: () {
                   Navigator.of(context).push(

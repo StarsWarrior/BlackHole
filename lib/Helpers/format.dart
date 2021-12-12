@@ -49,7 +49,7 @@ class FormatResponse {
       }
 
       if (response!.containsKey('Error')) {
-        log('Error at index $i inside FormatResponse: ${response["Error"]}');
+        log('Error at index $i inside FormatSongsResponse: ${response["Error"]}');
       } else {
         searchedList.add(response);
       }
@@ -73,10 +73,16 @@ class FormatResponse {
               response['more_info']?['artistMap']?['artists'].length == 0) {
             artistNames.add('Unknown');
           } else {
-            response['more_info']['artistMap']['artists'][0]['id']
-                .forEach((element) {
-              artistNames.add(element['name']);
-            });
+            try {
+              response['more_info']['artistMap']['artists'][0]['id']
+                  .forEach((element) {
+                artistNames.add(element['name']);
+              });
+            } catch (e) {
+              response['more_info']['artistMap']['artists'].forEach((element) {
+                artistNames.add(element['name']);
+              });
+            }
           }
         } else {
           response['more_info']['artistMap']['featured_artists']
@@ -119,8 +125,9 @@ class FormatResponse {
         'perma_url': response['perma_url'],
         'url': decode(response['more_info']['encrypted_media_url'].toString()),
       };
-      // Hive.box('cache').put(response['id'], info);
+      // Hive.box('cache').put(response['id'].toString(), info);
     } catch (e) {
+      // log('Error inside FormatSingleSongResponse: $e');
       return {'Error': e};
     }
   }
@@ -362,7 +369,7 @@ class FormatResponse {
       final Map response =
           await formatSingleArtistTopAlbumSongResponse(responseList[i] as Map);
       if (response.containsKey('Error')) {
-        log('Error at index $i inside FormatResponse: ${response["Error"]}');
+        log('Error at index $i inside FormatArtistTopAlbumsResponse: ${response["Error"]}');
       } else {
         result.add(response);
       }
@@ -436,7 +443,7 @@ class FormatResponse {
       final Map response =
           await formatSingleSimilarArtistResponse(responseList[i] as Map);
       if (response.containsKey('Error')) {
-        log('Error at index $i inside FormatResponse: ${response["Error"]}');
+        log('Error at index $i inside FormatSimilarArtistsResponse: ${response["Error"]}');
       } else {
         result.add(response);
       }
@@ -488,14 +495,18 @@ class FormatResponse {
 
   static Future<Map> formatHomePageData(Map data) async {
     try {
-      data['new_trending'] = await formatSongsInList(
-        data['new_trending'] as List,
-        fetchDetails: false,
-      );
-      data['new_albums'] = await formatSongsInList(
-        data['new_albums'] as List,
-        fetchDetails: false,
-      );
+      if (data['new_trending'] != null) {
+        data['new_trending'] = await formatSongsInList(
+          data['new_trending'] as List,
+          fetchDetails: false,
+        );
+      }
+      if (data['new_albums'] != null) {
+        data['new_albums'] = await formatSongsInList(
+          data['new_albums'] as List,
+          fetchDetails: false,
+        );
+      }
       if (data['city_mod'] != null) {
         data['city_mod'] = await formatSongsInList(
           data['city_mod'] as List,
@@ -564,12 +575,13 @@ class FormatResponse {
         if (item['type'] == 'song') {
           if (item['mini_obj'] as bool? ?? false) {
             if (fetchDetails) {
-              Map cachedDetails =
-                  Hive.box('cache').get(item['id'], defaultValue: {}) as Map;
+              Map cachedDetails = Hive.box('cache')
+                  .get(item['id'].toString(), defaultValue: {}) as Map;
               if (cachedDetails.isEmpty) {
                 cachedDetails =
                     await SaavnAPI().fetchSongDetails(item['id'].toString());
-                Hive.box('cache').put(cachedDetails['id'], cachedDetails);
+                Hive.box('cache')
+                    .put(cachedDetails['id'].toString(), cachedDetails);
               }
               list[i] = cachedDetails;
             }

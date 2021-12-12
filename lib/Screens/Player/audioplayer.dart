@@ -1706,7 +1706,7 @@ class NameNControls extends StatelessWidget {
                     PageRouteBuilder(
                       opaque: false,
                       pageBuilder: (_, __, ___) => AlbumSearchPage(
-                        query: mediaItem.artist.toString(),
+                        query: mediaItem.artist.toString().split(', ').first,
                         type: 'Artists',
                       ),
                     ),
@@ -1735,7 +1735,7 @@ class NameNControls extends StatelessWidget {
                     child: Row(
                       children: [
                         const Icon(
-                          Icons.person,
+                          Icons.person_rounded,
                         ),
                         const SizedBox(width: 10.0),
                         Text(
