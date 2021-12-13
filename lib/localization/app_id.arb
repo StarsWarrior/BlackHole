@@ -598,5 +598,7 @@
   "useDominantFullScreen": "Gunakan Warna Dominan untuk Seluruh Layar Putar",
   "@useDominantFullScreen": {},
   "useDominantFullScreenSub": "Warna Dominan dari Gambar akan digunakan untuk Seluruh Latar Layar Putar. Hanya tersedia jika Gunakan Dominan AKTIF",
-  "@useDominantFullScreenSub": {}
+  "@useDominantFullScreenSub": {},
+  "viewArtist": "Lihat Artis",
+  "@viewArtist": {}
 }
