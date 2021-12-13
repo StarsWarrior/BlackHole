@@ -1,1 +1,14 @@
-{}
+{
+  "aboutLine1": "To jest otwartoźródłowy projekt który można znaleźć na",
+  "@aboutLine1": {},
+  "albums": "Albumy",
+  "@albums": {},
+  "album": "Album",
+  "@album": {},
+  "artist": "Artysta",
+  "@artist": {},
+  "artists": "Artyści",
+  "@artists": {},
+  "about": "O aplikacji",
+  "@about": {}
+}
