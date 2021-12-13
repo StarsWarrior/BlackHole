@@ -154,6 +154,7 @@ class _PlayScreenState extends State<PlayScreen> {
         'date_added': response.dateAdded,
         'date_modified': response.dateModified,
         'size': response.size,
+        'year': response.getMap['year'],
       },
     );
     return tempDict;
@@ -303,15 +304,24 @@ class _PlayScreenState extends State<PlayScreen> {
                         if (value == 10) {
                           final Map details =
                               MediaItemConverter.mediaItemtoMap(mediaItem);
+                          details['duration'] =
+                              '${int.parse(details["duration"].toString()) ~/ 60}:${int.parse(details["duration"].toString()) % 60}';
+                          // style: Theme.of(context).textTheme.caption,
                           if (mediaItem.extras?['size'] != null) {
                             details.addEntries([
                               MapEntry(
                                 'date_modified',
-                                '${mediaItem.extras?['date_modified']}',
+                                DateTime.fromMillisecondsSinceEpoch(
+                                  int.parse(
+                                        mediaItem.extras!['date_modified']
+                                            .toString(),
+                                      ) *
+                                      1000,
+                                ).toString().split('.').first,
                               ),
                               MapEntry(
                                 'size',
-                                '${((mediaItem.extras?['size'] as int) / (1024 * 1024)).toStringAsFixed(2)} MB',
+                                '${((mediaItem.extras!['size'] as int) / (1024 * 1024)).toStringAsFixed(2)} MB',
                               ),
                             ]);
                           }

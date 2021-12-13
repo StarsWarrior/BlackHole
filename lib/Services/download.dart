@@ -54,7 +54,14 @@ class Download with ChangeNotifier {
     }
     final RegExp avoid = RegExp(r'[\.\\\*\:\"\?#/;\|]');
     data['title'] = data['title'].toString().split('(From')[0].trim();
-    String filename = '${data["title"]} - ${data["artist"]}';
+
+    String filename = '';
+    if (Hive.box('settings').get('downFilename', defaultValue: 0) as int == 0) {
+      filename = '${data["title"]} - ${data["artist"]}';
+    } else {
+      filename = '${data["artist"]} - ${data["title"]}';
+    }
+    // String filename = '${data["title"]} - ${data["artist"]}';
     String dlPath =
         Hive.box('settings').get('downloadPath', defaultValue: '') as String;
     if (filename.length > 200) {

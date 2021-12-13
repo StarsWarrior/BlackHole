@@ -66,6 +66,8 @@ class _SettingPageState extends State<SettingPage> {
   String themeColor =
       Hive.box('settings').get('themeColor', defaultValue: 'Teal') as String;
   int colorHue = Hive.box('settings').get('colorHue', defaultValue: 400) as int;
+  int downFilename =
+      Hive.box('settings').get('downFilename', defaultValue: 0) as int;
   List<String> languages = [
     'Hindi',
     'English',
@@ -2107,6 +2109,75 @@ class _SettingPageState extends State<SettingPage> {
                             }
                           },
                           dense: true,
+                        ),
+                        ListTile(
+                          title: Text(
+                            AppLocalizations.of(
+                              context,
+                            )!
+                                .downFilename,
+                          ),
+                          subtitle: Text(
+                            AppLocalizations.of(
+                              context,
+                            )!
+                                .downFilenameSub,
+                          ),
+                          dense: true,
+                          onTap: () {
+                            showModalBottomSheet(
+                              isDismissible: true,
+                              backgroundColor: Colors.transparent,
+                              context: context,
+                              builder: (BuildContext context) {
+                                return BottomGradientContainer(
+                                  borderRadius: BorderRadius.circular(
+                                    20.0,
+                                  ),
+                                  child: ListView(
+                                    physics: const BouncingScrollPhysics(),
+                                    shrinkWrap: true,
+                                    padding: const EdgeInsets.fromLTRB(
+                                      0,
+                                      10,
+                                      0,
+                                      10,
+                                    ),
+                                    children: [
+                                      CheckboxListTile(
+                                        title: Text(
+                                          '${AppLocalizations.of(context)!.title} - ${AppLocalizations.of(context)!.artist}',
+                                        ),
+                                        value: downFilename == 0,
+                                        selected: downFilename == 0,
+                                        onChanged: (bool? val) {
+                                          if (val ?? false) {
+                                            downFilename = 0;
+                                            settingsBox.put('downFilename', 0);
+                                            Navigator.pop(context);
+                                          }
+                                        },
+                                      ),
+                                      CheckboxListTile(
+                                        title: Text(
+                                          '${AppLocalizations.of(context)!.artist} - ${AppLocalizations.of(context)!.title}',
+                                        ),
+                                        value: downFilename == 1,
+                                        selected: downFilename == 1,
+                                        onChanged: (val) {
+                                          if (val ?? false) {
+                                            downFilename = 1;
+                                            settingsBox.put('downFilename', 1);
+                                            Navigator.pop(context);
+                                          }
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
+                            );
+                          },
                         ),
                         BoxSwitchTile(
                           title: Text(
