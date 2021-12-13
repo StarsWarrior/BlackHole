@@ -592,5 +592,13 @@
   "youTube": "YouTube",
   "@youTube": {},
   "ytLiveAlert": "Видео идет в прямом эфире. Пожалуйста, дождитесь окончания прямой трансляции и повторите попытку.",
-  "@ytLiveAlert": {}
+  "@ytLiveAlert": {},
+  "favSongs": "Любимые песни",
+  "@favSongs": {},
+  "useDominantFullScreenSub": "Доминирующий цвет изображения будет использоваться для фона всего экрана воспроизведения. Доступно, только если параметр Use Dominant включен",
+  "@useDominantFullScreenSub": {},
+  "useDominantFullScreen": "Используйте доминирующий цвет для всего экрана воспроизведения",
+  "@useDominantFullScreen": {},
+  "viewArtist": "Посмотреть исполнителя",
+  "@viewArtist": {}
 }
