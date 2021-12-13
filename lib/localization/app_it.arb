@@ -1,1 +1,12 @@
-{}
+{
+  "about": "Informazioni",
+  "@about": {},
+  "aboutLine1": "Il codice sorgente di questo progetto è aperto e può essere trovato su",
+  "@aboutLine1": {},
+  "accent": "Colore e tonalità di accento",
+  "@accent": {},
+  "addNew": "Aggiungi nuovo",
+  "@addNew": {},
+  "addSomething": "Vai e aggiungi qualcosa",
+  "@addSomething": {}
+}
