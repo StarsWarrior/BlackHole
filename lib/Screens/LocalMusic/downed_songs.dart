@@ -55,8 +55,10 @@ class _DownloadedSongsState extends State<DownloadedSongs>
       Hive.box('settings').get('searchPaths', defaultValue: []) as List;
   int minDuration =
       Hive.box('settings').get('minDuration', defaultValue: 10) as int;
-  List blackLists =
-      Hive.box('settings').get('blacklistedPaths', defaultValue: []) as List;
+  bool includeOrExclude =
+      Hive.box('settings').get('includeOrExclude', defaultValue: false) as bool;
+  List includedExcludedPaths = Hive.box('settings')
+      .get('includedExcludedPaths', defaultValue: []) as List;
   TabController? _tcontroller;
   OfflineAudioQuery offlineAudioQuery = OfflineAudioQuery();
   List<PlaylistModel> playlistDetails = [];
@@ -89,6 +91,13 @@ class _DownloadedSongsState extends State<DownloadedSongs>
     _tcontroller!.dispose();
   }
 
+  bool checkIncludedOrExcluded(SongModel _song) {
+    for (final path in includedExcludedPaths) {
+      if (_song.data.contains(path.toString())) return true;
+    }
+    return false;
+  }
+
   Future<void> getData() async {
     await offlineAudioQuery.requestPermission();
     tempPath ??= (await getTemporaryDirectory()).path;
@@ -101,7 +110,10 @@ class _DownloadedSongsState extends State<DownloadedSongs>
           .where(
             (i) =>
                 (i.duration ?? 60000) > 1000 * minDuration &&
-                (i.isMusic! || i.isPodcast! || i.isAudioBook!),
+                (i.isMusic! || i.isPodcast! || i.isAudioBook!) &&
+                (includeOrExclude
+                    ? checkIncludedOrExcluded(i)
+                    : !checkIncludedOrExcluded(i)),
           )
           .toList();
     } else {

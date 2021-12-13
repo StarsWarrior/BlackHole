@@ -511,9 +511,9 @@ Future<Map> editTags(Map song, BuildContext context) async {
                 GestureDetector(
                   onTap: () async {
                     final String filePath = await Picker.selectFile(
-                      context,
-                      ['png', 'jpg', 'jpeg'],
-                      'Pick Image',
+                      context: context,
+                      ext: ['png', 'jpg', 'jpeg'],
+                      message: 'Pick Image',
                     );
                     if (filePath != '') {
                       final _imagePath = filePath;

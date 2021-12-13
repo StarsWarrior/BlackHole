@@ -90,10 +90,6 @@ class _ArtistSearchPageState extends State<ArtistSearchPage> {
                               expandedHeight:
                                   MediaQuery.of(context).size.height * 0.4,
                               actions: [
-                                ArtistLikeButton(
-                                  data: widget.data,
-                                  size: 27.0,
-                                ),
                                 IconButton(
                                   icon: const Icon(Icons.share_rounded),
                                   tooltip: AppLocalizations.of(context)!.share,
@@ -102,6 +98,10 @@ class _ArtistSearchPageState extends State<ArtistSearchPage> {
                                       widget.data['perma_url'].toString(),
                                     );
                                   },
+                                ),
+                                ArtistLikeButton(
+                                  data: widget.data,
+                                  size: 27.0,
                                 ),
                                 if (data['Top Songs'] != null)
                                   PlaylistPopupMenu(

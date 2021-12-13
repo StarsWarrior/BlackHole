@@ -5,21 +5,25 @@ import 'package:flutter/material.dart';
 
 // ignore: avoid_classes_with_only_static_members
 class Picker {
-  static Future<String> selectFolder(
-    BuildContext context,
-    String message,
-  ) async {
-    final String? temp = await FilePicker.platform.getDirectoryPath();
+  static Future<String> selectFolder({
+    required BuildContext context,
+    String? message,
+  }) async {
+    final String? temp =
+        await FilePicker.platform.getDirectoryPath(dialogTitle: message);
     return (temp == '/' || temp == null) ? '' : temp;
   }
 
-  static Future<String> selectFile(
-    BuildContext context,
-    List<String> ext,
-    String message,
-  ) async {
-    final FilePickerResult? result = await FilePicker.platform
-        .pickFiles(type: FileType.custom, allowedExtensions: ext);
+  static Future<String> selectFile({
+    required BuildContext context,
+    required List<String> ext,
+    String? message,
+  }) async {
+    final FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ext,
+      dialogTitle: message,
+    );
 
     if (result != null) {
       final File file = File(result.files.first.path!);

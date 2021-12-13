@@ -38,8 +38,11 @@ class _SettingPageState extends State<SettingPage> {
   final MyTheme currentTheme = GetIt.I<MyTheme>();
   String downloadPath = Hive.box('settings')
       .get('downloadPath', defaultValue: '/storage/emulated/0/Music') as String;
-  // List dirPaths =
-  // Hive.box('settings').get('blacklistedPaths', defaultValue: []) as List;
+  final ValueNotifier<bool> includeOrExclude = ValueNotifier<bool>(
+    Hive.box('settings').get('includeOrExclude', defaultValue: false) as bool,
+  );
+  List includedExcludedPaths = Hive.box('settings')
+      .get('includedExcludedPaths', defaultValue: []) as List;
   List blacklistedHomeSections = Hive.box('settings')
       .get('blacklistedHomeSections', defaultValue: []) as List;
   String streamingQuality = Hive.box('settings')
@@ -1966,97 +1969,6 @@ class _SettingPageState extends State<SettingPage> {
                         //   keyName: 'cacheSong',
                         //   defaultValue: false,
                         // ),
-                        //     ListTile(
-                        //         title: const Text('BlackList Location'),
-                        //         subtitle: const Text(
-                        //             'Locations blacklisted from "My Music" section'),
-                        //         dense: true,
-                        //         onTap: () {
-                        //           final GlobalKey<AnimatedListState> _listKey =
-                        //               GlobalKey<AnimatedListState>();
-                        //           showModalBottomSheet(
-                        //               isDismissible: true,
-                        //               backgroundColor: Colors.transparent,
-                        //               context: context,
-                        //               builder: (BuildContext context) {
-                        //                 return BottomGradientContainer(
-                        //                   borderRadius: BorderRadius.circular(20.0,),
-                        //                   child: AnimatedList(
-                        //                     physics: const BouncingScrollPhysics(),
-                        //                     shrinkWrap: true,
-                        //                     padding: const EdgeInsets.fromLTRB(
-                        //                         0, 10, 0, 10,),
-                        //                     key: _listKey,
-                        //                     initialItemCount: dirPaths.length + 1,
-                        //                     itemBuilder: (cntxt, idx, animation) {
-                        //                       return (idx == 0)
-                        //                           ? ListTile(
-                        //                               title:
-                        //                                   const Text('Add Location'),
-                        //                               leading: const Icon(
-                        //                                   CupertinoIcons.add,),
-                        //                               onTap: () async {
-                        //                                 final String temp =
-                        //                                     await Picker()
-                        //                                         .selectFolder(context,
-                        //                                             'Select Folder');
-                        //                                 if (temp.trim() != '' &&
-                        //                                     !dirPaths
-                        //                                         .contains(temp)) {
-                        //                                   dirPaths.add(temp);
-                        //                                   Hive.box('settings').put(
-                        //                                       'blacklistedPaths',
-                        //                                       dirPaths);
-                        //                                   _listKey.currentState!
-                        //                                       .insertItem(
-                        //                                           dirPaths.length);
-                        //                                 } else {
-                        //                                   if (temp.trim() == '') {
-                        //                                     Navigator.pop(context);
-                        //                                   }
-                        //                                   ShowSnackBar().showSnackBar(
-                        //                                     context,
-                        //                                     temp.trim() == ''
-                        //                                         ? 'No folder selected'
-                        //                                         : 'Already added',
-                        //                                   );
-                        //                                 }
-                        //                               },
-                        //                             )
-                        //                           : SizeTransition(
-                        //                               sizeFactor: animation,
-                        //                               child: ListTile(
-                        //                                 leading: const Icon(
-                        //                                     CupertinoIcons.folder,),
-                        //                                 title: Text(dirPaths[idx - 1]
-                        //                                     .toString(),),
-                        //                                 trailing: IconButton(
-                        //                                   icon: const Icon(
-                        //                                     CupertinoIcons.clear,
-                        //                                     size: 15.0,
-                        //                                   ),
-                        //                                   tooltip: 'Remove',
-                        //                                   onPressed: () {
-                        //                                     dirPaths
-                        //                                         .removeAt(idx - 1);
-                        //                                     Hive.box('settings').put(
-                        //                                         'blacklistedPaths',
-                        //                                         dirPaths);
-                        //                                     _listKey.currentState!
-                        //                                         .removeItem(
-                        //                                             idx,
-                        //                                             (context,
-                        //                                                     animation) =>
-                        //                                                 Container());
-                        //                                   },
-                        //                                 ),
-                        //                               ),
-                        //                             );
-                        //                     },
-                        //                   ),
-                        //                 );
-                        //               },);
-                        //         })
                       ],
                     ),
                   ),
@@ -2172,8 +2084,8 @@ class _SettingPageState extends State<SettingPage> {
                           ),
                           onTap: () async {
                             final String temp = await Picker.selectFolder(
-                              context,
-                              AppLocalizations.of(
+                              context: context,
+                              message: AppLocalizations.of(
                                 context,
                               )!
                                   .selectDownLocation,
@@ -2346,7 +2258,240 @@ class _SettingPageState extends State<SettingPage> {
                           ),
                           dense: true,
                         ),
+                        ListTile(
+                          title: Text(
+                            AppLocalizations.of(
+                              context,
+                            )!
+                                .includeExcludeFolder,
+                          ),
+                          subtitle: Text(
+                            AppLocalizations.of(
+                              context,
+                            )!
+                                .includeExcludeFolderSub,
+                          ),
+                          dense: true,
+                          onTap: () {
+                            final GlobalKey<AnimatedListState> _listKey =
+                                GlobalKey<AnimatedListState>();
+                            showModalBottomSheet(
+                              isDismissible: true,
+                              backgroundColor: Colors.transparent,
+                              context: context,
+                              builder: (BuildContext context) {
+                                return BottomGradientContainer(
+                                  borderRadius: BorderRadius.circular(
+                                    20.0,
+                                  ),
+                                  child: AnimatedList(
+                                    physics: const BouncingScrollPhysics(),
+                                    shrinkWrap: true,
+                                    padding: const EdgeInsets.fromLTRB(
+                                      0,
+                                      10,
+                                      0,
+                                      10,
+                                    ),
+                                    key: _listKey,
+                                    initialItemCount:
+                                        includedExcludedPaths.length + 2,
+                                    itemBuilder: (cntxt, idx, animation) {
+                                      if (idx == 0) {
+                                        return ValueListenableBuilder(
+                                          valueListenable: includeOrExclude,
+                                          builder: (
+                                            BuildContext context,
+                                            bool value,
+                                            Widget? widget,
+                                          ) {
+                                            return Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Row(
+                                                  children: <Widget>[
+                                                    ChoiceChip(
+                                                      label: Text(
+                                                        AppLocalizations.of(
+                                                          context,
+                                                        )!
+                                                            .excluded,
+                                                      ),
+                                                      selectedColor:
+                                                          Theme.of(context)
+                                                              .colorScheme
+                                                              .secondary
+                                                              .withOpacity(0.2),
+                                                      labelStyle: TextStyle(
+                                                        color: !value
+                                                            ? Theme.of(context)
+                                                                .colorScheme
+                                                                .secondary
+                                                            : Theme.of(context)
+                                                                .textTheme
+                                                                .bodyText1!
+                                                                .color,
+                                                        fontWeight: !value
+                                                            ? FontWeight.w600
+                                                            : FontWeight.normal,
+                                                      ),
+                                                      selected: !value,
+                                                      onSelected:
+                                                          (bool selected) {
+                                                        includeOrExclude.value =
+                                                            !selected;
+                                                        settingsBox.put(
+                                                          'includeOrExclude',
+                                                          !selected,
+                                                        );
+                                                      },
+                                                    ),
+                                                    const SizedBox(
+                                                      width: 5,
+                                                    ),
+                                                    ChoiceChip(
+                                                      label: Text(
+                                                        AppLocalizations.of(
+                                                          context,
+                                                        )!
+                                                            .included,
+                                                      ),
+                                                      selectedColor:
+                                                          Theme.of(context)
+                                                              .colorScheme
+                                                              .secondary
+                                                              .withOpacity(0.2),
+                                                      labelStyle: TextStyle(
+                                                        color: value
+                                                            ? Theme.of(context)
+                                                                .colorScheme
+                                                                .secondary
+                                                            : Theme.of(context)
+                                                                .textTheme
+                                                                .bodyText1!
+                                                                .color,
+                                                        fontWeight: value
+                                                            ? FontWeight.w600
+                                                            : FontWeight.normal,
+                                                      ),
+                                                      selected: value,
+                                                      onSelected:
+                                                          (bool selected) {
+                                                        includeOrExclude.value =
+                                                            selected;
+                                                        settingsBox.put(
+                                                          'includeOrExclude',
+                                                          selected,
+                                                        );
+                                                      },
+                                                    ),
+                                                  ],
+                                                ),
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                    left: 5.0,
+                                                    top: 5.0,
+                                                    bottom: 10.0,
+                                                  ),
+                                                  child: Text(
+                                                    value
+                                                        ? AppLocalizations.of(
+                                                            context,
+                                                          )!
+                                                            .includedDetails
+                                                        : AppLocalizations.of(
+                                                            context,
+                                                          )!
+                                                            .excludedDetails,
+                                                    textAlign: TextAlign.start,
+                                                  ),
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        );
+                                      }
+                                      if (idx == 1) {
+                                        return ListTile(
+                                          title: Text(
+                                            AppLocalizations.of(context)!
+                                                .addNew,
+                                          ),
+                                          leading: const Icon(
+                                            CupertinoIcons.add,
+                                          ),
+                                          onTap: () async {
+                                            final String temp =
+                                                await Picker.selectFolder(
+                                              context: context,
+                                            );
+                                            if (temp.trim() != '' &&
+                                                !includedExcludedPaths
+                                                    .contains(temp)) {
+                                              includedExcludedPaths.add(temp);
+                                              Hive.box('settings').put(
+                                                'includedExcludedPaths',
+                                                includedExcludedPaths,
+                                              );
+                                              _listKey.currentState!.insertItem(
+                                                includedExcludedPaths.length,
+                                              );
+                                            } else {
+                                              if (temp.trim() == '') {
+                                                Navigator.pop(context);
+                                              }
+                                              ShowSnackBar().showSnackBar(
+                                                context,
+                                                temp.trim() == ''
+                                                    ? 'No folder selected'
+                                                    : 'Already added',
+                                              );
+                                            }
+                                          },
+                                        );
+                                      }
 
+                                      return SizeTransition(
+                                        sizeFactor: animation,
+                                        child: ListTile(
+                                          leading: const Icon(
+                                            CupertinoIcons.folder,
+                                          ),
+                                          title: Text(
+                                            includedExcludedPaths[idx - 2]
+                                                .toString(),
+                                          ),
+                                          trailing: IconButton(
+                                            icon: const Icon(
+                                              CupertinoIcons.clear,
+                                              size: 15.0,
+                                            ),
+                                            tooltip: 'Remove',
+                                            onPressed: () {
+                                              includedExcludedPaths
+                                                  .removeAt(idx - 2);
+                                              Hive.box('settings').put(
+                                                'includedExcludedPaths',
+                                                includedExcludedPaths,
+                                              );
+                                              _listKey.currentState!.removeItem(
+                                                idx,
+                                                (context, animation) =>
+                                                    Container(),
+                                              );
+                                            },
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                );
+                              },
+                            );
+                          },
+                        ),
                         ListTile(
                           title: Text(
                             AppLocalizations.of(

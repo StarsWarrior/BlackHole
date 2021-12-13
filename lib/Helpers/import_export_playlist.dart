@@ -16,8 +16,8 @@ Future<void> exportPlaylist(
   String showName,
 ) async {
   final String dirPath = await Picker.selectFolder(
-    context,
-    AppLocalizations.of(context)!.selectExportLocation,
+    context: context,
+    message: AppLocalizations.of(context)!.selectExportLocation,
   );
   if (dirPath == '') {
     ShowSnackBar().showSnackBar(
@@ -67,9 +67,9 @@ Future<void> sharePlaylist(
 Future<List> importPlaylist(BuildContext context, List playlistNames) async {
   try {
     final String temp = await Picker.selectFile(
-      context,
-      ['json'],
-      AppLocalizations.of(context)!.selectJsonImport,
+      context: context,
+      ext: ['json'],
+      message: AppLocalizations.of(context)!.selectJsonImport,
     );
     if (temp == '') {
       ShowSnackBar().showSnackBar(

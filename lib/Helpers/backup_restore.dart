@@ -33,8 +33,8 @@ Future<void> createBackup(
   }
   final String savePath = path ??
       await Picker.selectFolder(
-        context,
-        AppLocalizations.of(context)!.selectBackLocation,
+        context: context,
+        message: AppLocalizations.of(context)!.selectBackLocation,
       );
   if (savePath.trim() != '') {
     try {
@@ -100,9 +100,9 @@ Future<void> restore(
   BuildContext context,
 ) async {
   final String savePath = await Picker.selectFile(
-    context,
-    ['zip'],
-    AppLocalizations.of(context)!.selectBackFile,
+    context: context,
+    ext: ['zip'],
+    message: AppLocalizations.of(context)!.selectBackFile,
   );
   final File zipFile = File(savePath);
   final Directory tempDir = await getTemporaryDirectory();
