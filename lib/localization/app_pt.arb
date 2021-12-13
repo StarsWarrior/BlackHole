@@ -598,5 +598,7 @@
   "useDominantFullScreenSub": "A cor dominante da imagem será usada para o fundo da tela inteira do jogo. Disponível apenas se Usar dominante estiver ATIVADO",
   "@useDominantFullScreenSub": {},
   "favSongs": "Músicas favoritas",
-  "@favSongs": {}
+  "@favSongs": {},
+  "viewArtist": "Ver Artista",
+  "@viewArtist": {}
 }
