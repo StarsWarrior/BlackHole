@@ -598,5 +598,7 @@
   "bottomGrad": "Unterer Farbverlauf",
   "@bottomGrad": {},
   "bottomGradSub": "Unten verwendeter Farbverlauf",
-  "@bottomGradSub": {}
+  "@bottomGradSub": {},
+  "viewArtist": "Künstler ansehen",
+  "@viewArtist": {}
 }
