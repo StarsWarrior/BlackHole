@@ -189,9 +189,9 @@
   "@downLyrics": {},
   "downLyricsSub": "Mengunduh lirik beserta lagu, jika tersedia",
   "@downLyricsSub": {},
-  "downQuality": "Unduh Kualitas",
+  "downQuality": "Kualitas Unduhan",
   "@downQuality": {},
-  "downQualitySub": "Kualitas yang lebih tinggi menggunakan lebih banyak ruang disk",
+  "downQualitySub": "Kualitas yang lebih tinggi menggunakan lebih banyak ruang penyimpanan",
   "@downQualitySub": {},
   "downed": "telah diunduh",
   "@downed": {},
@@ -600,5 +600,9 @@
   "useDominantFullScreenSub": "Warna Dominan dari Gambar akan digunakan untuk Seluruh Latar Layar Putar. Hanya tersedia jika Gunakan Dominan AKTIF",
   "@useDominantFullScreenSub": {},
   "viewArtist": "Lihat Artis",
-  "@viewArtist": {}
+  "@viewArtist": {},
+  "excludedDetails": "Lagu dari folder yang terpilih tidak akan ditampilkan",
+  "@excludedDetails": {},
+  "excluded": "Dikecualikan",
+  "@excluded": {}
 }
