@@ -923,7 +923,6 @@ class _SettingPageState extends State<SettingPage> {
                             )!
                                 .currentTheme,
                           ),
-                          subtitle: const Text(''),
                           trailing: DropdownButton(
                             value: theme,
                             style: TextStyle(

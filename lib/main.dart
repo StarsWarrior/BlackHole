@@ -164,14 +164,17 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(
-      const SystemUiOverlayStyle(
+      SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
-        systemNavigationBarColor: Colors.black38,
-        // systemNavigationBarContrastEnforced: false,
-        // systemNavigationBarIconBrightness:
-        //     Theme.of(context).brightness == Brightness.dark
-        //         ? Brightness.light
-        //         : Brightness.dark,
+        systemNavigationBarColor: AppTheme.themeMode == ThemeMode.dark
+            ? Colors.black38
+            : Colors.white,
+        statusBarIconBrightness: AppTheme.themeMode == ThemeMode.dark
+            ? Brightness.light
+            : Brightness.dark,
+        systemNavigationBarIconBrightness: AppTheme.themeMode == ThemeMode.dark
+            ? Brightness.light
+            : Brightness.dark,
       ),
     );
     SystemChrome.setPreferredOrientations([

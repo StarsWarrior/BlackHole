@@ -11,6 +11,8 @@ class SeekBar extends StatefulWidget {
   final Duration position;
   final Duration bufferedPosition;
   final bool offline;
+  final double width;
+  final double height;
   final ValueChanged<Duration>? onChanged;
   final ValueChanged<Duration>? onChangeEnd;
 
@@ -19,6 +21,8 @@ class SeekBar extends StatefulWidget {
     required this.position,
     required this.offline,
     required this.audioHandler,
+    required this.width,
+    required this.height,
     this.bufferedPosition = Duration.zero,
     this.onChanged,
     this.onChangeEnd,
@@ -51,124 +55,119 @@ class _SeekBarState extends State<SeekBar> {
     if (_dragValue != null && !_dragging) {
       _dragValue = null;
     }
-    return SizedBox(
-      width: MediaQuery.of(context).size.width * 0.95,
-      height: 60,
-      child: Stack(
-        children: [
-          SliderTheme(
-            data: _sliderThemeData.copyWith(
-              thumbShape: HiddenThumbComponentShape(),
-              activeTrackColor:
-                  Theme.of(context).iconTheme.color!.withOpacity(0.5),
-              inactiveTrackColor:
-                  Theme.of(context).iconTheme.color!.withOpacity(0.3),
-              trackHeight: 4.0,
-              // trackShape: RoundedRectSliderTrackShape(),
-              trackShape: const RectangularSliderTrackShape(),
-            ),
-            child: ExcludeSemantics(
-              child: Slider(
-                max: widget.duration.inMilliseconds.toDouble(),
-                value: min(
-                  widget.bufferedPosition.inMilliseconds.toDouble(),
-                  widget.duration.inMilliseconds.toDouble(),
-                ),
-                onChanged: (value) {},
-              ),
-            ),
+    return Stack(
+      children: [
+        SliderTheme(
+          data: _sliderThemeData.copyWith(
+            thumbShape: HiddenThumbComponentShape(),
+            activeTrackColor:
+                Theme.of(context).iconTheme.color!.withOpacity(0.5),
+            inactiveTrackColor:
+                Theme.of(context).iconTheme.color!.withOpacity(0.3),
+            // trackShape: RoundedRectSliderTrackShape(),
+            trackShape: const RectangularSliderTrackShape(),
           ),
-          SliderTheme(
-            data: _sliderThemeData.copyWith(
-              inactiveTrackColor: Colors.transparent,
-              activeTrackColor: Theme.of(context).iconTheme.color,
-              thumbColor: Theme.of(context).iconTheme.color,
-              trackHeight: 4.0,
-            ),
+          child: ExcludeSemantics(
             child: Slider(
               max: widget.duration.inMilliseconds.toDouble(),
-              value: value,
-              onChanged: (value) {
-                if (!_dragging) {
-                  _dragging = true;
-                }
-                setState(() {
-                  _dragValue = value;
-                });
-                widget.onChanged?.call(Duration(milliseconds: value.round()));
-              },
-              onChangeEnd: (value) {
-                widget.onChangeEnd?.call(Duration(milliseconds: value.round()));
-                _dragging = false;
-              },
+              value: min(
+                widget.bufferedPosition.inMilliseconds.toDouble(),
+                widget.duration.inMilliseconds.toDouble(),
+              ),
+              onChanged: (value) {},
             ),
           ),
-          // if (widget.offline)
-          //   Positioned(
-          //     left: 22.0,
-          //     bottom: 45.0,
-          //     child: Icon(
-          //       Icons.wifi_off_rounded,
-          //       color: Theme.of(context).disabledColor,
-          //       size: 15.0,
-          //     ),
-          //   ),
-          Positioned(
-            right: 13.0,
-            bottom: 25.0,
-            child: StreamBuilder<double>(
-              stream: widget.audioHandler.speed,
-              builder: (context, snapshot) {
-                final String speedValue =
-                    '${snapshot.data?.toStringAsFixed(1) ?? 1.0}x';
-                return IconButton(
-                  icon: Text(
-                    speedValue,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w500,
-                      color: speedValue == '1.0x'
-                          ? Theme.of(context).disabledColor
-                          : null,
-                    ),
+        ),
+        SliderTheme(
+          data: _sliderThemeData.copyWith(
+            inactiveTrackColor: Colors.transparent,
+            activeTrackColor: Theme.of(context).iconTheme.color,
+            thumbColor: Theme.of(context).iconTheme.color,
+          ),
+          child: Slider(
+            max: widget.duration.inMilliseconds.toDouble(),
+            value: value,
+            onChanged: (value) {
+              if (!_dragging) {
+                _dragging = true;
+              }
+              setState(() {
+                _dragValue = value;
+              });
+              widget.onChanged?.call(Duration(milliseconds: value.round()));
+            },
+            onChangeEnd: (value) {
+              widget.onChangeEnd?.call(Duration(milliseconds: value.round()));
+              _dragging = false;
+            },
+          ),
+        ),
+        // if (widget.offline)
+        //   Positioned(
+        //     left: 22.0,
+        //     bottom: 45.0,
+        //     child: Icon(
+        //       Icons.wifi_off_rounded,
+        //       color: Theme.of(context).disabledColor,
+        //       size: 15.0,
+        //     ),
+        //   ),
+        Positioned(
+          right: 13.0,
+          bottom: widget.height / 15,
+          child: StreamBuilder<double>(
+            stream: widget.audioHandler.speed,
+            builder: (context, snapshot) {
+              final String speedValue =
+                  '${snapshot.data?.toStringAsFixed(1) ?? 1.0}x';
+              return IconButton(
+                icon: Text(
+                  speedValue,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w500,
+                    color: speedValue == '1.0x'
+                        ? Theme.of(context).disabledColor
+                        : null,
                   ),
-                  onPressed: () {
-                    showSliderDialog(
-                      context: context,
-                      title: AppLocalizations.of(context)!.adjustSpeed,
-                      divisions: 25,
-                      min: 0.5,
-                      max: 3.0,
-                      audioHandler: widget.audioHandler,
-                    );
-                  },
-                );
-              },
-            ),
+                ),
+                onPressed: () {
+                  showSliderDialog(
+                    context: context,
+                    title: AppLocalizations.of(context)!.adjustSpeed,
+                    divisions: 25,
+                    min: 0.5,
+                    max: 3.0,
+                    audioHandler: widget.audioHandler,
+                  );
+                },
+              );
+            },
           ),
-          Positioned(
-            left: 25.0,
-            bottom: 0.0,
-            child: Text(
-              RegExp(r'((^0*[1-9]\d*:)?\d{2}:\d{2})\.\d+$')
-                      .firstMatch('$_position')
-                      ?.group(1) ??
-                  '$_position',
-              // style: Theme.of(context).textTheme.caption,
-            ),
+        ),
+        Positioned(
+          left: 25.0,
+          bottom: widget.height / 30,
+          child: Text(
+            RegExp(r'((^0*[1-9]\d*:)?\d{2}:\d{2})\.\d+$')
+                    .firstMatch('$_position')
+                    ?.group(1) ??
+                '$_position',
           ),
-          Positioned(
-            right: 25.0,
-            bottom: 0.0,
-            child: Text(
-              RegExp(r'((^0*[1-9]\d*:)?\d{2}:\d{2})\.\d+$')
-                      .firstMatch('$_duration')
-                      ?.group(1) ??
-                  '$_duration',
-              // style: Theme.of(context).textTheme.caption,
-            ),
+        ),
+        Positioned(
+          right: 25.0,
+          bottom: widget.height / 30,
+          child: Text(
+            RegExp(r'((^0*[1-9]\d*:)?\d{2}:\d{2})\.\d+$')
+                    .firstMatch('$_duration')
+                    ?.group(1) ??
+                '$_duration',
+            // style: Theme.of(context).textTheme.caption!.copyWith(
+            //       color: Theme.of(context).iconTheme.color,
+            //     ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
