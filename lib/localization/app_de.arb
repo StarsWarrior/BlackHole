@@ -600,5 +600,21 @@
   "bottomGradSub": "Unten verwendeter Farbverlauf",
   "@bottomGradSub": {},
   "viewArtist": "Künstler ansehen",
-  "@viewArtist": {}
+  "@viewArtist": {},
+  "downFilename": "Namensformat herunterladen",
+  "@downFilename": {},
+  "excluded": "Ausgeschlossen",
+  "@excluded": {},
+  "excludedDetails": "Lieder der ausgewählten Ordner werden nicht angezeigt",
+  "@excludedDetails": {},
+  "includeExcludeFolder": "Ordner einschließen/ausschließen",
+  "@includeExcludeFolder": {},
+  "included": "Eingeschlossen",
+  "@included": {},
+  "includedDetails": "Nur Lieder von ausgewählten Ordnern werden angezeigt",
+  "@includedDetails": {},
+  "downFilenameSub": "Lieder werden entsprechend dieses Dateinamenformates heruntergeladen",
+  "@downFilenameSub": {},
+  "includeExcludeFolderSub": "Ausgewählte Ordner der „Meine Musik“-Sektion werden eingeschlossen/ausgeschlossen",
+  "@includeExcludeFolderSub": {}
 }
