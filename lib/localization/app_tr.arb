@@ -128,5 +128,11 @@
   "copied": "Panoya kopyalandı!",
   "@copied": {},
   "copy": "Kopyala",
-  "@copy": {}
+  "@copy": {},
+  "clearCacheSub": "Spotify Üst Sekmeler, YouTube ve Son Oturum verileri dahil önbelleğe alınmış ayrıntıları siler. Genellikle uygulama veriler büyük olunca otomatik bir şekilde siler\n",
+  "@clearCacheSub": {},
+  "connectingRadio": "Radyoya bağlanılıyor…",
+  "@connectingRadio": {},
+  "createAlbumFold": "Albüm & Oynatma Listesi indirmesi için bir klasör oluşturun",
+  "@createAlbumFold": {}
 }
