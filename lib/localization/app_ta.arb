@@ -531,7 +531,7 @@
   "@skipPrevious": {},
   "bgGradSub": "எங்கும் பின்புலமாக பயன்படுத்தப்படும் சரிமானம்",
   "@bgGradSub": {},
-  "aboard": "வெளியுலகிற்கு",
+  "aboard": "கலத்திற்கு",
   "@aboard": {},
   "appTitle": "BlackHole",
   "@appTitle": {},
@@ -600,5 +600,15 @@
   "favSongs": "அபிமான பாடல்கள்",
   "@favSongs": {},
   "viewArtist": "கலைஞரைப் பார்",
-  "@viewArtist": {}
+  "@viewArtist": {},
+  "excluded": "விலக்கப்பட்டது",
+  "@excluded": {},
+  "excludedDetails": "தேர்ந்தெடுத்த அடைவுகளிலிருக்கும் பாடல்கள் காட்டப்படா",
+  "@excludedDetails": {},
+  "downFilenameSub": "இக்கோப்பு வடிவமைப்பின்பிடி பாடல்கள் பதிவிறக்கப்படும்",
+  "@downFilenameSub": {},
+  "includeExcludeFolder": "அடைவுகளை உள்ளடக்கு/விலக்கு",
+  "@includeExcludeFolder": {},
+  "downFilename": "பதிவிறக்கப் பெயரின் வடிவமைப்பு",
+  "@downFilename": {}
 }
