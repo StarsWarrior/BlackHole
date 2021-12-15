@@ -600,5 +600,21 @@
   "favSongs": "Morceaux favoris",
   "@favSongs": {},
   "viewArtist": "Voir l'artiste",
-  "@viewArtist": {}
+  "@viewArtist": {},
+  "excluded": "Exclus",
+  "@excluded": {},
+  "excludedDetails": "Les morceaux des dossiers sélectionnés ne seront pas affichés",
+  "@excludedDetails": {},
+  "includeExcludeFolder": "Inclure/exclure des dossiers",
+  "@includeExcludeFolder": {},
+  "includeExcludeFolderSub": "Inclure/exclure les dossiers sélectionnés de la section « Ma musique »",
+  "@includeExcludeFolderSub": {},
+  "includedDetails": "Seuls les morceaux des dossiers sélectionnés seront affichés",
+  "@includedDetails": {},
+  "downFilename": "Télécharger le format du nom",
+  "@downFilename": {},
+  "downFilenameSub": "Les morceaux seront téléchargés selon le format de nom de fichier suivant",
+  "@downFilenameSub": {},
+  "included": "Inclus",
+  "@included": {}
 }
