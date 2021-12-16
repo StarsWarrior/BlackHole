@@ -610,5 +610,11 @@
   "includeExcludeFolder": "அடைவுகளை உள்ளடக்கு/விலக்கு",
   "@includeExcludeFolder": {},
   "downFilename": "பதிவிறக்கப் பெயரின் வடிவமைப்பு",
-  "@downFilename": {}
+  "@downFilename": {},
+  "includedDetails": "தேர்ந்தெடுக்கப்பட்ட கோப்புறைகளிலிருந்து பாடல்கள் மட்டுமே காண்பிக்கப்படும்",
+  "@includedDetails": {},
+  "included": "அடங்கும்",
+  "@included": {},
+  "includeExcludeFolderSub": "உள்ளடக்கியது/விலக்குகிறது தேர்ந்தெடுக்கப்பட்ட கோப்புறைகள் 'என் இசை' பிரிவில் இருந்து",
+  "@includeExcludeFolderSub": {}
 }
