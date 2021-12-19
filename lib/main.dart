@@ -131,11 +131,12 @@ class _MyAppState extends State<MyApp> {
         Hive.box('settings').get('lang', defaultValue: 'English') as String;
     final Map<String, String> codes = {
       'English': 'en',
-      'Russian': 'ru',
-      'Portuguese': 'pt',
-      'Indonesian': 'id',
       'French': 'fr',
       'German': 'de',
+      'Indonesian': 'id',
+      'Portuguese': 'pt',
+      'Russian': 'ru',
+      'Spanish': 'es',
       'Tamil': 'ta',
     };
     _locale = Locale(codes[lang]!);
@@ -204,11 +205,12 @@ class _MyAppState extends State<MyApp> {
       ],
       supportedLocales: const [
         Locale('en', ''), // English, no country code
-        Locale('ru', ''), // Russian
-        Locale('pt', ''), // Portuguese
-        Locale('id', ''), // Indonesian
         Locale('fr', ''), // French
         Locale('de', ''), // German
+        Locale('id', ''), // Indonesian
+        Locale('pt', ''), // Portuguese
+        Locale('ru', ''), // Russian
+        Locale('es', ''), // Spanish
         Locale('ta', ''), // Tamil
       ],
       routes: {
