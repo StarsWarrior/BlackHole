@@ -600,5 +600,21 @@
   "useDominantFullScreen": "Используйте доминирующий цвет для всего экрана воспроизведения",
   "@useDominantFullScreen": {},
   "viewArtist": "Посмотреть исполнителя",
-  "@viewArtist": {}
+  "@viewArtist": {},
+  "downFilename": "Формат имени загрузки",
+  "@downFilename": {},
+  "excluded": "не входит",
+  "@excluded": {},
+  "includeExcludeFolder": "Включить / исключить папки",
+  "@includeExcludeFolder": {},
+  "includeExcludeFolderSub": "Включает / исключает выбранные папки из раздела \"Моя музыка\"",
+  "@includeExcludeFolderSub": {},
+  "included": "Включено",
+  "@included": {},
+  "includedDetails": "Будут показаны только песни из выбранных папок",
+  "@includedDetails": {},
+  "downFilenameSub": "Песни будут загружены в соответствии с этим форматом файла",
+  "@downFilenameSub": {},
+  "excludedDetails": "Песни из выбранных папок отображаться не будут",
+  "@excludedDetails": {}
 }
