@@ -4,7 +4,7 @@ description: A Flutter Music Player.
 # Prevent accidental publishing to pub.dev.
 publish_to: 'none'
 
-version: 1.12.2+22
+version: 1.13.0+24
 
 environment:
   sdk: '>=2.13.0 <3.0.0'
