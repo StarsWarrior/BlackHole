@@ -600,5 +600,21 @@
   "favSongs": "Músicas favoritas",
   "@favSongs": {},
   "viewArtist": "Ver Artista",
-  "@viewArtist": {}
+  "@viewArtist": {},
+  "downFilename": "Unduh Format Nama",
+  "@downFilename": {},
+  "downFilenameSub": "Lagu akan diunduh sesuai dengan format nama file ini",
+  "@downFilenameSub": {},
+  "excluded": "Pengecualian",
+  "@excluded": {},
+  "excludedDetails": "Lagu dari folder yang dipilih tidak akan ditampilkan",
+  "@excludedDetails": {},
+  "includeExcludeFolder": "Sertakan/Kecualikan Folder",
+  "@includeExcludeFolder": {},
+  "includeExcludeFolderSub": "Menyertakan/Mengecualikan folder yang dipilih dari Bagian 'Musik Saya'",
+  "@includeExcludeFolderSub": {},
+  "included": "Termasuk",
+  "@included": {},
+  "includedDetails": "Hanya lagu dari folder yang dipilih yang akan ditampilkan",
+  "@includedDetails": {}
 }
