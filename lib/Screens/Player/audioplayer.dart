@@ -118,6 +118,10 @@ class _PlayScreenState extends State<PlayScreen> {
 
     fromMiniplayer = widget.fromMiniplayer;
     if (!fromMiniplayer) {
+      if (!Platform.isAndroid) {
+        // Don't know why but it fixes the playback issue with iOS Side
+        audioHandler.stop();
+      }
       if (offline) {
         fromDownloads ? setDownValues(response) : setOffValues(response);
       } else {
