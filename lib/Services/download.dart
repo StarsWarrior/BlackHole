@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:audiotagger/audiotagger.dart';
@@ -385,19 +386,21 @@ class Download with ChangeNotifier {
           lyrics: lyrics,
           comment: 'BlackHole',
         );
-        try {
-          final tagger = Audiotagger();
-          await tagger.writeTags(
-            path: filepath!,
-            tag: tag,
-          );
-          // await Future.delayed(const Duration(seconds: 1), () async {
-          //   if (await file2.exists()) {
-          //     await file2.delete();
-          //   }
-          // });
-        } catch (e) {
-          // print('Failed to edit tags');
+        if (Platform.isAndroid) {
+          try {
+            final tagger = Audiotagger();
+            await tagger.writeTags(
+              path: filepath!,
+              tag: tag,
+            );
+            // await Future.delayed(const Duration(seconds: 1), () async {
+            //   if (await file2.exists()) {
+            //     await file2.delete();
+            //   }
+            // });
+          } catch (e) {
+            log('Failed to edit tags');
+          }
         }
         client.close();
         // debugPrint('Done');

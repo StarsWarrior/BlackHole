@@ -31,7 +31,7 @@ dependencies:
   hive_flutter: ^1.1.0
   html_unescape: ^2.0.0
   just_audio: ^0.9.18
-  # just_audio_libwinmedia: ^0.0.4 // For windows
+  just_audio_libwinmedia: ^0.0.4 # For windows and linux
   # logging: ^1.0.1
   marquee: ^2.2.0
   material_design_icons_flutter: 5.0.5955-rc.1

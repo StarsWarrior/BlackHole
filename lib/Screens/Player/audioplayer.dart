@@ -1677,10 +1677,18 @@ class NameNControls extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final double titleBoxHeight = height * 0.25;
-    final double seekBoxHeight = height * 0.2;
-    final double controlBoxHeight =
-        offline ? height * 0.25 : (height < 350 ? height * 0.4 : height * 0.3);
-    final double nowplayingBoxHeight = height * 0.15;
+    final double seekBoxHeight = height > 500 ? height * 0.15 : height * 0.2;
+    final double controlBoxHeight = offline
+        ? height > 500
+            ? height * 0.2
+            : height * 0.25
+        : (height < 350
+            ? height * 0.4
+            : height > 500
+                ? height * 0.2
+                : height * 0.3);
+    final double nowplayingBoxHeight =
+        height > 500 ? height * 0.4 : height * 0.15;
     return SizedBox(
       width: width,
       height: height,
@@ -2046,7 +2054,7 @@ class NameNControls extends StatelessWidget {
                 }
               },
               child: Container(
-                height: nowplayingBoxHeight,
+                height: 50,
                 width: width - 40.0,
                 color: Colors.transparent,
                 child: Center(
