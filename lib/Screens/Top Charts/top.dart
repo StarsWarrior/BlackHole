@@ -251,8 +251,8 @@ class _TopPageState extends State<TopPage>
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       SizedBox(
-                        height: MediaQuery.of(context).size.width / 7,
-                        width: MediaQuery.of(context).size.width / 7,
+                        height: MediaQuery.of(context).size.width / 8,
+                        width: MediaQuery.of(context).size.width / 8,
                         child: const CircularProgressIndicator(),
                       ),
                     ],

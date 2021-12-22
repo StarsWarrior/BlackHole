@@ -118,8 +118,8 @@ class _AlbumSearchPageState extends State<AlbumSearchPage> {
                   ? SizedBox(
                       child: Center(
                         child: SizedBox(
-                          height: MediaQuery.of(context).size.width / 7,
-                          width: MediaQuery.of(context).size.width / 7,
+                          height: MediaQuery.of(context).size.width / 8,
+                          width: MediaQuery.of(context).size.width / 8,
                           child: const CircularProgressIndicator(),
                         ),
                       ),

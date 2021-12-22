@@ -1,5 +1,5 @@
 name: blackhole
-description: A Flutter Music Player.
+description: An Open Source Music Player App.
 
 # Prevent accidental publishing to pub.dev.
 publish_to: 'none'
@@ -14,6 +14,7 @@ dependencies:
   audio_service: ^0.18.2
   audiotagger: ^2.2.1
   cached_network_image: ^3.2.0
+  carousel_slider: ^4.0.0
   cupertino_icons: ^1.0.4
   dart_des: ^1.0.0
   device_info: ^2.0.3
@@ -52,6 +53,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   lint: ^1.7.2
+  msix: ^2.6.6
 
 flutter:
   uses-material-design: true

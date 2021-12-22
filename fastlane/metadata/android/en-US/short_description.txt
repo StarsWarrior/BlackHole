@@ -1,1 +1,1 @@
-Awesome Music Player made with Flutter!
+An Open-Source Music Player App for all your needs!

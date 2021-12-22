@@ -123,7 +123,11 @@ class _PlayScreenState extends State<PlayScreen> {
         audioHandler.stop();
       }
       if (offline) {
-        fromDownloads ? setDownValues(response) : setOffValues(response);
+        fromDownloads
+            ? setDownValues(response)
+            : (Platform.isWindows || Platform.isLinux)
+                ? setOffDesktopValues(response)
+                : setOffValues(response);
       } else {
         setValues(response);
         updateNplay();
@@ -164,7 +168,45 @@ class _PlayScreenState extends State<PlayScreen> {
     return tempDict;
   }
 
-  void setOffValues(List response, {bool downloaed = false}) {
+  void setOffDesktopValues(List response) {
+    getTemporaryDirectory().then((tempDir) async {
+      final File file = File('${tempDir.path}/cover.jpg');
+      if (!await file.exists()) {
+        final byteData = await rootBundle.load('assets/cover.jpg');
+        await file.writeAsBytes(
+          byteData.buffer
+              .asUint8List(byteData.offsetInBytes, byteData.lengthInBytes),
+        );
+      }
+      globalQueue.addAll(
+        response.map(
+          (song) => MediaItem(
+            id: song['id'].toString(),
+            album: song['album'].toString(),
+            artist: song['artist'].toString(),
+            duration: Duration(
+              seconds: int.parse(
+                (song['duration'] == null || song['duration'] == 'null')
+                    ? '180'
+                    : song['duration'].toString(),
+              ),
+            ),
+            title: song['title'].toString(),
+            artUri: Uri.file(file.path),
+            genre: song['genre'].toString(),
+            extras: {
+              'url': song['path'].toString(),
+              'subtitle': song['subtitle'],
+              'quality': song['quality'],
+            },
+          ),
+        ),
+      );
+      updateNplay();
+    });
+  }
+
+  void setOffValues(List response) {
     getTemporaryDirectory().then((tempDir) async {
       final File file = File('${tempDir.path}/cover.jpg');
       if (!await file.exists()) {

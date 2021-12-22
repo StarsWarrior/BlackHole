@@ -47,13 +47,13 @@ class HorizontalAlbumsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final double boxSize =
+    double boxSize =
         MediaQuery.of(context).size.height > MediaQuery.of(context).size.width
-            ? MediaQuery.of(context).size.width
-            : MediaQuery.of(context).size.height;
-
+            ? MediaQuery.of(context).size.width / 2
+            : MediaQuery.of(context).size.height / 2.5;
+    if (boxSize > 250) boxSize = 250;
     return SizedBox(
-      height: boxSize / 2 + 10,
+      height: boxSize + 10,
       child: ListView.builder(
         physics: const BouncingScrollPhysics(),
         scrollDirection: Axis.horizontal,
@@ -118,11 +118,11 @@ class HorizontalAlbumsList extends StatelessWidget {
               onTap(index);
             },
             child: SizedBox(
-              width: boxSize / 2 - 30,
+              width: boxSize - 30,
               child: Column(
                 children: [
                   SizedBox.square(
-                    dimension: boxSize / 2 - 30,
+                    dimension: boxSize - 30,
                     child: Card(
                       elevation: 5,
                       shape: RoundedRectangleBorder(

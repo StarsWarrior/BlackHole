@@ -46,7 +46,11 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   Paint.enableDithering = true;
 
-  await Hive.initFlutter();
+  if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+    await Hive.initFlutter('BlackHole');
+  } else {
+    await Hive.initFlutter();
+  }
   await openHiveBox('settings');
   await openHiveBox('downloads');
   await openHiveBox('Favorite Songs');
@@ -99,8 +103,12 @@ Future<void> openHiveBox(String boxName, {bool limit = false}) async {
   final box = await Hive.openBox(boxName).onError((error, stackTrace) async {
     final Directory dir = await getApplicationDocumentsDirectory();
     final String dirPath = dir.path;
-    final File dbFile = File('$dirPath/$boxName.hive');
-    final File lockFile = File('$dirPath/$boxName.lock');
+    File dbFile = File('$dirPath/$boxName.hive');
+    File lockFile = File('$dirPath/$boxName.lock');
+    if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+      dbFile = File('$dirPath/BlackHole/$boxName.hive');
+      lockFile = File('$dirPath/BlackHole/$boxName.lock');
+    }
     await dbFile.delete();
     await lockFile.delete();
     await Hive.openBox(boxName);

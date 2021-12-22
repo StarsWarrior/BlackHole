@@ -52,7 +52,13 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDI_APP_ICON            ICON                    "resources\\app_icon.ico"
+// IDI_APP_ICON            ICON                    "resources\\app_icon_16x16.ico"
+// IDI_APP_ICON            ICON                    "resources\\app_icon_32x32.ico"
+// IDI_APP_ICON            ICON                    "resources\\app_icon_48x48.ico"
+IDI_APP_ICON            ICON                    "resources\\app_icon_64x64.ico"
+// IDI_APP_ICON            ICON                    "resources\\app_icon_96x96.ico"
+// IDI_APP_ICON            ICON                    "resources\\app_icon_128x128.ico"
+// IDI_APP_ICON            ICON                    "resources\\app_icon_256x256.ico"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -89,13 +95,13 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "com.shadow" "\0"
-            VALUE "FileDescription", "A new Flutter project." "\0"
+            VALUE "CompanyName", "BlackHole" "\0"
+            VALUE "FileDescription", "BlackHole" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "blackhole" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2021 com.shadow. All rights reserved." "\0"
+            VALUE "InternalName", "BlackHole" "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2021 Ankit Sangwan. All rights reserved." "\0"
             VALUE "OriginalFilename", "blackhole.exe" "\0"
-            VALUE "ProductName", "blackhole" "\0"
+            VALUE "ProductName", "BlackHole" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END
