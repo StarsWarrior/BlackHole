@@ -1,4 +1,5 @@
 import 'package:blackhole/APIs/api.dart';
+import 'package:blackhole/CustomWidgets/bouncy_sliver_scroll_view.dart';
 import 'package:blackhole/CustomWidgets/copy_clipboard.dart';
 import 'package:blackhole/CustomWidgets/download_button.dart';
 import 'package:blackhole/CustomWidgets/empty_screen.dart';
@@ -135,142 +136,98 @@ class _AlbumSearchPageState extends State<AlbumSearchPage> {
                           AppLocalizations.of(context)!.resultsNotFound,
                           20,
                         )
-                      : CustomScrollView(
-                          physics: const BouncingScrollPhysics(),
-                          controller: _scrollController,
-                          slivers: [
-                            SliverAppBar(
-                              // backgroundColor: Colors.transparent,
-                              elevation: 0,
-                              stretch: true,
-                              pinned: true,
-                              // floating: true,
-                              expandedHeight:
-                                  MediaQuery.of(context).size.height * 0.4,
-                              flexibleSpace: FlexibleSpaceBar(
-                                title: Text(
-                                  widget.type,
-                                  textAlign: TextAlign.center,
-                                ),
-                                centerTitle: true,
-                                background: ShaderMask(
-                                  shaderCallback: (rect) {
-                                    return const LinearGradient(
-                                      begin: Alignment.center,
-                                      end: Alignment.bottomCenter,
-                                      colors: [
-                                        Colors.black,
-                                        Colors.transparent
-                                      ],
-                                    ).createShader(
-                                      Rect.fromLTRB(
-                                        0,
-                                        0,
-                                        rect.width,
-                                        rect.height,
+                      : BouncyImageSliverScrollView(
+                          scrollController: _scrollController,
+                          title: widget.type,
+                          placeholderImage: widget.type == 'Artists'
+                              ? 'assets/artist.png'
+                              : 'assets/album.png',
+                          sliverList: SliverList(
+                            delegate: SliverChildListDelegate(
+                              _searchedList!.map(
+                                (Map entry) {
+                                  return Padding(
+                                    padding: const EdgeInsets.only(right: 7),
+                                    child: ListTile(
+                                      title: Text(
+                                        '${entry["title"]}',
+                                        overflow: TextOverflow.ellipsis,
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.w500,
+                                        ),
                                       ),
-                                    );
-                                  },
-                                  blendMode: BlendMode.dstIn,
-                                  child: Image(
-                                    fit: BoxFit.cover,
-                                    image: AssetImage(
-                                      widget.type == 'Artists'
-                                          ? 'assets/artist.png'
-                                          : 'assets/album.png',
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            SliverList(
-                              delegate: SliverChildListDelegate(
-                                _searchedList!.map(
-                                  (Map entry) {
-                                    return Padding(
-                                      padding: const EdgeInsets.only(right: 7),
-                                      child: ListTile(
-                                        title: Text(
-                                          '${entry["title"]}',
-                                          overflow: TextOverflow.ellipsis,
-                                          style: const TextStyle(
-                                            fontWeight: FontWeight.w500,
+                                      onLongPress: () {
+                                        copyToClipboard(
+                                          context: context,
+                                          text: '${entry["title"]}',
+                                        );
+                                      },
+                                      subtitle: Text(
+                                        '${entry["subtitle"]}',
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      leading: Card(
+                                        elevation: 8,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            widget.type == 'Artists'
+                                                ? 50.0
+                                                : 7.0,
                                           ),
                                         ),
-                                        onLongPress: () {
-                                          copyToClipboard(
-                                            context: context,
-                                            text: '${entry["title"]}',
-                                          );
-                                        },
-                                        subtitle: Text(
-                                          '${entry["subtitle"]}',
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                        leading: Card(
-                                          elevation: 8,
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(
-                                              widget.type == 'Artists'
-                                                  ? 50.0
-                                                  : 7.0,
-                                            ),
-                                          ),
-                                          clipBehavior: Clip.antiAlias,
-                                          child: CachedNetworkImage(
+                                        clipBehavior: Clip.antiAlias,
+                                        child: CachedNetworkImage(
+                                          fit: BoxFit.cover,
+                                          errorWidget: (context, _, __) =>
+                                              Image(
                                             fit: BoxFit.cover,
-                                            errorWidget: (context, _, __) =>
-                                                Image(
-                                              fit: BoxFit.cover,
-                                              image: AssetImage(
-                                                widget.type == 'Artists'
-                                                    ? 'assets/artist.png'
-                                                    : 'assets/album.png',
-                                              ),
+                                            image: AssetImage(
+                                              widget.type == 'Artists'
+                                                  ? 'assets/artist.png'
+                                                  : 'assets/album.png',
                                             ),
-                                            imageUrl:
-                                                '${entry["image"].replaceAll('http:', 'https:')}',
-                                            placeholder: (context, url) =>
-                                                Image(
-                                              fit: BoxFit.cover,
-                                              image: AssetImage(
-                                                widget.type == 'Artists'
-                                                    ? 'assets/artist.png'
-                                                    : 'assets/album.png',
-                                              ),
+                                          ),
+                                          imageUrl:
+                                              '${entry["image"].replaceAll('http:', 'https:')}',
+                                          placeholder: (context, url) => Image(
+                                            fit: BoxFit.cover,
+                                            image: AssetImage(
+                                              widget.type == 'Artists'
+                                                  ? 'assets/artist.png'
+                                                  : 'assets/album.png',
                                             ),
                                           ),
                                         ),
-                                        trailing: widget.type != 'Albums'
-                                            ? null
-                                            : AlbumDownloadButton(
-                                                albumName:
-                                                    entry['title'].toString(),
-                                                albumId: entry['id'].toString(),
-                                              ),
-                                        onTap: () {
-                                          Navigator.push(
-                                            context,
-                                            PageRouteBuilder(
-                                              opaque: false,
-                                              pageBuilder: (_, __, ___) =>
-                                                  widget.type == 'Artists'
-                                                      ? ArtistSearchPage(
-                                                          data: entry,
-                                                        )
-                                                      : SongsListPage(
-                                                          listItem: entry,
-                                                        ),
-                                            ),
-                                          );
-                                        },
                                       ),
-                                    );
-                                  },
-                                ).toList(),
-                              ),
+                                      trailing: widget.type != 'Albums'
+                                          ? null
+                                          : AlbumDownloadButton(
+                                              albumName:
+                                                  entry['title'].toString(),
+                                              albumId: entry['id'].toString(),
+                                            ),
+                                      onTap: () {
+                                        Navigator.push(
+                                          context,
+                                          PageRouteBuilder(
+                                            opaque: false,
+                                            pageBuilder: (_, __, ___) =>
+                                                widget.type == 'Artists'
+                                                    ? ArtistSearchPage(
+                                                        data: entry,
+                                                      )
+                                                    : SongsListPage(
+                                                        listItem: entry,
+                                                      ),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  );
+                                },
+                              ).toList(),
                             ),
-                          ],
+                          ),
                         ),
             ),
           ),

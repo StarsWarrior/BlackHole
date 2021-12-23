@@ -57,7 +57,9 @@ class YouTubeServices {
               ? formatChartItems(
                   element['content']['horizontalListRenderer']['items'] as List,
                 )
-              : element['title']['runs'][0]['text'].trim() == 'New Music Videos'
+              : element['title']['runs'][0]['text']
+                      .toString()
+                      .contains('Music Videos')
                   ? formatVideoItems(
                       element['content']['horizontalListRenderer']['items']
                           as List,

@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:blackhole/CustomWidgets/search_bar.dart';
 import 'package:blackhole/Screens/YouTube/youtube_playlist.dart';
 import 'package:blackhole/Screens/YouTube/youtube_search.dart';
@@ -145,11 +143,7 @@ class _YouTubeState extends State<YouTube>
                         itemCount: headList.length,
                         options: CarouselOptions(
                           height: boxSize + 20,
-                          viewportFraction: (Platform.isWindows ||
-                                  Platform.isLinux ||
-                                  Platform.isMacOS)
-                              ? 0.36
-                              : 1.0,
+                          viewportFraction: rotated ? 0.36 : 1.0,
                           autoPlay: true,
                           enlargeCenterPage: true,
                         ),
@@ -269,7 +263,7 @@ class _YouTubeState extends State<YouTube>
                                     },
                                     child: SizedBox(
                                       width: item['type'] != 'playlist'
-                                          ? boxSize * 2 - 90
+                                          ? (boxSize - 30) * (16 / 9)
                                           : boxSize - 30,
                                       child: Column(
                                         children: [

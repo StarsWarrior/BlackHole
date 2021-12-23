@@ -67,7 +67,7 @@ class _MiniPlayerState extends State<MiniPlayer> {
                                   ),
                                   overlayColor: Colors.transparent,
                                   overlayShape: const RoundSliderOverlayShape(
-                                    overlayRadius: 2.0,
+                                    overlayRadius: 6.0,
                                   ),
                                 ),
                                 child: Center(
@@ -150,7 +150,7 @@ class _MiniPlayerState extends State<MiniPlayer> {
                                           .toString()
                                           .startsWith('file:'))
                                       ? SizedBox.square(
-                                          dimension: useDense ? 40.0 : 50.0,
+                                          dimension: useDense ? 40.0 : 40.0,
                                           child: Image(
                                             fit: BoxFit.cover,
                                             image: FileImage(

@@ -47,6 +47,12 @@ class _YouTubeSearchPageState extends State<YouTubeSearchPage> {
 
   @override
   Widget build(BuildContext context) {
+    final bool rotated =
+        MediaQuery.of(context).size.height < MediaQuery.of(context).size.width;
+    double boxSize = !rotated
+        ? MediaQuery.of(context).size.width / 2
+        : MediaQuery.of(context).size.height / 2.5;
+    if (boxSize > 250) boxSize = 250;
     if (!status) {
       status = true;
       YouTubeServices()
@@ -85,9 +91,8 @@ class _YouTubeSearchPageState extends State<YouTubeSearchPage> {
                   body: (!fetched)
                       ? SizedBox(
                           child: Center(
-                            child: SizedBox(
-                              height: MediaQuery.of(context).size.width / 8,
-                              width: MediaQuery.of(context).size.width / 8,
+                            child: SizedBox.square(
+                              dimension: boxSize / 4,
                               child: const CircularProgressIndicator(),
                             ),
                           ),
@@ -122,201 +127,341 @@ class _YouTubeSearchPageState extends State<YouTubeSearchPage> {
                                     0,
                                   ),
                                   itemBuilder: (context, index) {
+                                    final Widget thumbnailWidget = Card(
+                                      elevation: 8,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(
+                                          10.0,
+                                        ),
+                                      ),
+                                      clipBehavior: Clip.antiAlias,
+                                      child: Stack(
+                                        children: [
+                                          CachedNetworkImage(
+                                            fit: BoxFit.cover,
+                                            height: !rotated
+                                                ? null
+                                                : boxSize / 1.25,
+                                            width: !rotated
+                                                ? null
+                                                : (boxSize / 1.25) * 16 / 9,
+                                            errorWidget: (context, _, __) =>
+                                                Image(
+                                              fit: BoxFit.cover,
+                                              image: NetworkImage(
+                                                searchedList[index]
+                                                    .thumbnails
+                                                    .standardResUrl,
+                                              ),
+                                              errorBuilder: (
+                                                context,
+                                                error,
+                                                stackTrace,
+                                              ) =>
+                                                  const Image(
+                                                fit: BoxFit.cover,
+                                                image: AssetImage(
+                                                  'assets/ytCover.png',
+                                                ),
+                                              ),
+                                            ),
+                                            imageUrl: searchedList[index]
+                                                .thumbnails
+                                                .maxResUrl,
+                                            placeholder: (context, url) =>
+                                                const Image(
+                                              fit: BoxFit.cover,
+                                              image: AssetImage(
+                                                'assets/ytCover.png',
+                                              ),
+                                            ),
+                                          ),
+                                          Positioned(
+                                            bottom: 0,
+                                            right: 0,
+                                            child: Card(
+                                              elevation: 0.0,
+                                              color: Colors.black54,
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                  6.0,
+                                                ),
+                                              ),
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.all(4.5),
+                                                child: Text(
+                                                  searchedList[index]
+                                                              .duration
+                                                              .toString() ==
+                                                          'null'
+                                                      ? AppLocalizations.of(
+                                                          context,
+                                                        )!
+                                                          .live
+                                                      : searchedList[index]
+                                                          .duration
+                                                          .toString()
+                                                          .split(
+                                                            '.',
+                                                          )[0]
+                                                          .replaceFirst(
+                                                            '0:0',
+                                                            '',
+                                                          ),
+                                                  style: const TextStyle(
+                                                    color: Colors.white,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    );
+
                                     return Padding(
                                       padding: const EdgeInsets.only(
                                         bottom: 10.0,
                                       ),
-                                      child: Card(
-                                        elevation: 8,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            10.0,
-                                          ),
-                                        ),
-                                        clipBehavior: Clip.antiAlias,
-                                        child: GradientContainer(
-                                          child: GestureDetector(
-                                            onTap: () async {
-                                              setState(() {
-                                                done = false;
-                                              });
-                                              final Map? response =
-                                                  await YouTubeServices()
-                                                      .formatVideo(
-                                                video: searchedList[index],
-                                                quality: Hive.box('settings')
-                                                    .get(
-                                                      'ytQuality',
-                                                      defaultValue: 'High',
-                                                    )
-                                                    .toString(),
-                                                // preferM4a: Hive.box(
-                                                //         'settings')
-                                                //     .get('preferM4a',
-                                                //         defaultValue:
-                                                //             true) as bool
-                                              );
-                                              setState(() {
-                                                done = true;
-                                              });
-                                              response == null
-                                                  ? ShowSnackBar().showSnackBar(
-                                                      context,
-                                                      AppLocalizations.of(
-                                                        context,
-                                                      )!
-                                                          .ytLiveAlert,
-                                                    )
-                                                  : Navigator.push(
-                                                      context,
-                                                      PageRouteBuilder(
-                                                        opaque: false,
-                                                        pageBuilder:
-                                                            (_, __, ___) =>
-                                                                PlayScreen(
-                                                          fromMiniplayer: false,
-                                                          songsList: [response],
-                                                          index: 0,
-                                                          offline: false,
-                                                          fromDownloads: false,
-                                                          recommend: false,
-                                                        ),
-                                                      ),
-                                                    );
-                                            },
-                                            child: Column(
-                                              children: [
-                                                Stack(
-                                                  children: [
-                                                    CachedNetworkImage(
-                                                      fit: BoxFit.cover,
-                                                      errorWidget:
-                                                          (context, _, __) =>
-                                                              Image(
-                                                        fit: BoxFit.cover,
-                                                        image: NetworkImage(
-                                                          searchedList[index]
-                                                              .thumbnails
-                                                              .standardResUrl,
-                                                        ),
-                                                      ),
-                                                      imageUrl:
-                                                          searchedList[index]
-                                                              .thumbnails
-                                                              .maxResUrl,
-                                                      placeholder:
-                                                          (context, url) =>
-                                                              const Image(
-                                                        fit: BoxFit.cover,
-                                                        image: AssetImage(
-                                                          'assets/ytCover.png',
-                                                        ),
-                                                      ),
+                                      child: GestureDetector(
+                                        onTap: () async {
+                                          setState(() {
+                                            done = false;
+                                          });
+                                          final Map? response =
+                                              await YouTubeServices()
+                                                  .formatVideo(
+                                            video: searchedList[index],
+                                            quality: Hive.box('settings')
+                                                .get(
+                                                  'ytQuality',
+                                                  defaultValue: 'High',
+                                                )
+                                                .toString(),
+                                            // preferM4a: Hive.box(
+                                            //         'settings')
+                                            //     .get('preferM4a',
+                                            //         defaultValue:
+                                            //             true) as bool
+                                          );
+                                          setState(() {
+                                            done = true;
+                                          });
+                                          response == null
+                                              ? ShowSnackBar().showSnackBar(
+                                                  context,
+                                                  AppLocalizations.of(
+                                                    context,
+                                                  )!
+                                                      .ytLiveAlert,
+                                                )
+                                              : Navigator.push(
+                                                  context,
+                                                  PageRouteBuilder(
+                                                    opaque: false,
+                                                    pageBuilder: (_, __, ___) =>
+                                                        PlayScreen(
+                                                      fromMiniplayer: false,
+                                                      songsList: [response],
+                                                      index: 0,
+                                                      offline: false,
+                                                      fromDownloads: false,
+                                                      recommend: false,
                                                     ),
-                                                    Positioned(
-                                                      bottom: 0,
-                                                      right: 0,
-                                                      child: Card(
-                                                        elevation: 0.0,
-                                                        color: Colors.black54,
-                                                        shape:
-                                                            RoundedRectangleBorder(
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(
-                                                            6.0,
-                                                          ),
-                                                        ),
-                                                        child: Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .all(4.5),
-                                                          child: Text(
+                                                  ),
+                                                );
+                                        },
+                                        child: rotated
+                                            ? Row(
+                                                children: [
+                                                  thumbnailWidget,
+                                                  SizedBox(
+                                                    width:
+                                                        MediaQuery.of(context)
+                                                                .size
+                                                                .width -
+                                                            ((boxSize / 1.25) *
+                                                                16 /
+                                                                9) -
+                                                            50,
+                                                    child: Padding(
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                        15.0,
+                                                      ),
+                                                      child: Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          Text(
                                                             searchedList[index]
-                                                                        .duration
-                                                                        .toString() ==
-                                                                    'null'
-                                                                ? AppLocalizations
-                                                                        .of(
-                                                                    context,
-                                                                  )!
-                                                                    .live
-                                                                : searchedList[
-                                                                        index]
-                                                                    .duration
-                                                                    .toString()
-                                                                    .split(
-                                                                      '.',
-                                                                    )[0]
-                                                                    .replaceFirst(
-                                                                      '0:0',
-                                                                      '',
-                                                                    ),
+                                                                .title,
+                                                            maxLines: 2,
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
                                                             style:
                                                                 const TextStyle(
-                                                              color:
-                                                                  Colors.white,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w500,
+                                                              fontSize: 22,
                                                             ),
                                                           ),
-                                                        ),
+                                                          Row(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .spaceBetween,
+                                                            children: [
+                                                              SizedBox(
+                                                                width: MediaQuery
+                                                                            .of(
+                                                                      context,
+                                                                    )
+                                                                        .size
+                                                                        .width -
+                                                                    ((boxSize /
+                                                                            1.25) *
+                                                                        16 /
+                                                                        9) -
+                                                                    150,
+                                                                child: Column(
+                                                                  crossAxisAlignment:
+                                                                      CrossAxisAlignment
+                                                                          .start,
+                                                                  children: [
+                                                                    const SizedBox(
+                                                                      height:
+                                                                          5.0,
+                                                                    ),
+                                                                    Text(
+                                                                      '${searchedList[index].author} • ${searchedList[index].engagement.viewCount} Views',
+                                                                      overflow:
+                                                                          TextOverflow
+                                                                              .ellipsis,
+                                                                      style:
+                                                                          TextStyle(
+                                                                        color: Theme
+                                                                                .of(
+                                                                          context,
+                                                                        )
+                                                                            .textTheme
+                                                                            .caption!
+                                                                            .color,
+                                                                      ),
+                                                                    ),
+                                                                    const SizedBox(
+                                                                      height:
+                                                                          10.0,
+                                                                    ),
+                                                                    Text(
+                                                                      searchedList[
+                                                                              index]
+                                                                          .description,
+                                                                      maxLines:
+                                                                          2,
+                                                                      overflow:
+                                                                          TextOverflow
+                                                                              .ellipsis,
+                                                                      style:
+                                                                          TextStyle(
+                                                                        color: Theme
+                                                                                .of(
+                                                                          context,
+                                                                        )
+                                                                            .textTheme
+                                                                            .caption!
+                                                                            .color,
+                                                                      ),
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                              YtSongTileTrailingMenu(
+                                                                data:
+                                                                    searchedList[
+                                                                        index],
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ],
                                                       ),
-                                                    )
-                                                  ],
-                                                ),
-                                                ListTile(
-                                                  dense: true,
-                                                  contentPadding:
-                                                      const EdgeInsets.only(
-                                                    left: 15.0,
-                                                  ),
-                                                  title: Text(
-                                                    searchedList[index].title,
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                    style: const TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.w500,
                                                     ),
                                                   ),
-                                                  // isThreeLine: true,
-                                                  subtitle: Text(
-                                                    searchedList[index].author,
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                    // '${searchedList[index]["channelName"]}'
-                                                  ),
-                                                  // leading: CircleAvatar(
-                                                  //   maxRadius: 20,
-                                                  //   backgroundImage: AssetImage(
-                                                  //       'assets/artist.png'),
-                                                  //   foregroundImage:
-                                                  //       CachedNetworkImageProvider(
-                                                  //           'https://yt3.ggpht.com/ytc/AKedOLS47SGZoq9qhTlM6ANNiXN5I3sUcV4_owFydPkU=s68-c-k-c0x00ffffff-no-rj'
-                                                  //           // 'https://yt3.ggpht.com/ytc/${searchedList[index].channelId.value}'
-
-                                                  //           // ["channelImage"],
-                                                  //           ),
-                                                  // ),
-                                                  trailing:
-                                                      YtSongTileTrailingMenu(
-                                                    data: searchedList[index],
+                                                ],
+                                              )
+                                            : Card(
+                                                elevation: 8,
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                    10.0,
                                                   ),
                                                 ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
+                                                clipBehavior: Clip.antiAlias,
+                                                child: GradientContainer(
+                                                  child: Column(
+                                                    children: [
+                                                      thumbnailWidget,
+                                                      ListTile(
+                                                        dense: true,
+                                                        contentPadding:
+                                                            const EdgeInsets
+                                                                .only(
+                                                          left: 15.0,
+                                                        ),
+                                                        title: Text(
+                                                          searchedList[index]
+                                                              .title,
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
+                                                          style:
+                                                              const TextStyle(
+                                                            fontWeight:
+                                                                FontWeight.w500,
+                                                          ),
+                                                        ),
+                                                        // isThreeLine: true,
+                                                        subtitle: Text(
+                                                          searchedList[index]
+                                                              .author,
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
+                                                          // '${searchedList[index]["channelName"]}'
+                                                        ),
+                                                        // leading: CircleAvatar(
+                                                        //   maxRadius: 20,
+                                                        //   backgroundImage: AssetImage(
+                                                        //       'assets/artist.png'),
+                                                        //   foregroundImage:
+                                                        //       CachedNetworkImageProvider(
+                                                        //           'https://yt3.ggpht.com/ytc/AKedOLS47SGZoq9qhTlM6ANNiXN5I3sUcV4_owFydPkU=s68-c-k-c0x00ffffff-no-rj'
+                                                        //           // 'https://yt3.ggpht.com/ytc/${searchedList[index].channelId.value}'
+
+                                                        //           // ["channelImage"],
+                                                        //           ),
+                                                        // ),
+                                                        trailing:
+                                                            YtSongTileTrailingMenu(
+                                                          data: searchedList[
+                                                              index],
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
                                       ),
                                     );
                                   },
                                 ),
                                 if (!done)
                                   Center(
-                                    child: SizedBox(
-                                      height:
-                                          MediaQuery.of(context).size.width / 2,
-                                      width:
-                                          MediaQuery.of(context).size.width / 2,
+                                    child: SizedBox.square(
+                                      dimension: boxSize,
                                       child: Card(
                                         elevation: 10,
                                         shape: RoundedRectangleBorder(
@@ -330,15 +475,8 @@ class _YouTubeSearchPageState extends State<YouTubeSearchPage> {
                                               mainAxisAlignment:
                                                   MainAxisAlignment.spaceEvenly,
                                               children: [
-                                                SizedBox(
-                                                  height: MediaQuery.of(context)
-                                                          .size
-                                                          .width /
-                                                      7,
-                                                  width: MediaQuery.of(context)
-                                                          .size
-                                                          .width /
-                                                      7,
+                                                SizedBox.square(
+                                                  dimension: boxSize / 4,
                                                   child:
                                                       CircularProgressIndicator(
                                                     valueColor:

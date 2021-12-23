@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:blackhole/CustomWidgets/add_playlist.dart';
@@ -687,7 +688,10 @@ class _PlayScreenState extends State<PlayScreen> {
                           ArtWorkWidget(
                             cardKey: cardKey,
                             mediaItem: mediaItem,
-                            width: constraints.maxHeight / 0.9,
+                            width: min(
+                              constraints.maxHeight / 0.9,
+                              constraints.maxWidth / 1.8,
+                            ),
                             audioHandler: audioHandler,
                             offline: offline,
                           ),

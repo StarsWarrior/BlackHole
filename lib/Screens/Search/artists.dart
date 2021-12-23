@@ -1,5 +1,6 @@
 import 'package:blackhole/APIs/api.dart';
 import 'package:blackhole/CustomWidgets/artist_like_button.dart';
+import 'package:blackhole/CustomWidgets/bouncy_sliver_scroll_view.dart';
 import 'package:blackhole/CustomWidgets/copy_clipboard.dart';
 import 'package:blackhole/CustomWidgets/download_button.dart';
 import 'package:blackhole/CustomWidgets/empty_screen.dart';
@@ -79,273 +80,355 @@ class _ArtistSearchPageState extends State<ArtistSearchPage> {
                           AppLocalizations.of(context)!.resultsNotFound,
                           20,
                         )
-                      : CustomScrollView(
-                          physics: const BouncingScrollPhysics(),
-                          slivers: [
-                            SliverAppBar(
-                              // backgroundColor: Colors.transparent,
-                              elevation: 0,
-                              stretch: true,
-                              pinned: true,
-                              expandedHeight:
-                                  MediaQuery.of(context).size.height * 0.4,
-                              actions: [
-                                IconButton(
-                                  icon: const Icon(Icons.share_rounded),
-                                  tooltip: AppLocalizations.of(context)!.share,
-                                  onPressed: () {
-                                    Share.share(
-                                      widget.data['perma_url'].toString(),
-                                    );
-                                  },
-                                ),
-                                ArtistLikeButton(
-                                  data: widget.data,
-                                  size: 27.0,
-                                ),
-                                if (data['Top Songs'] != null)
-                                  PlaylistPopupMenu(
-                                    data: data['Top Songs']!,
-                                    title: widget.data['title']?.toString() ??
-                                        'Songs',
-                                  ),
-                              ],
-                              flexibleSpace: FlexibleSpaceBar(
-                                title: Text(
-                                  widget.data['title']?.toString() ??
-                                      AppLocalizations.of(context)!.songs,
-                                  textAlign: TextAlign.center,
-                                ),
-                                centerTitle: true,
-                                background: ShaderMask(
-                                  shaderCallback: (rect) {
-                                    return const LinearGradient(
-                                      begin: Alignment.center,
-                                      end: Alignment.bottomCenter,
-                                      colors: [
-                                        Colors.black,
-                                        Colors.transparent
-                                      ],
-                                    ).createShader(
-                                      Rect.fromLTRB(
-                                        0,
-                                        0,
-                                        rect.width,
-                                        rect.height,
-                                      ),
-                                    );
-                                  },
-                                  blendMode: BlendMode.dstIn,
-                                  child: CachedNetworkImage(
-                                    fit: BoxFit.cover,
-                                    errorWidget: (context, _, __) =>
-                                        const Image(
-                                      fit: BoxFit.cover,
-                                      image: AssetImage('assets/artist.png'),
-                                    ),
-                                    imageUrl: widget.data['image']
-                                        .toString()
-                                        .replaceAll('http:', 'https:')
-                                        .replaceAll('50x50', '500x500')
-                                        .replaceAll('150x150', '500x500'),
-                                    placeholder: (context, url) => const Image(
-                                      fit: BoxFit.cover,
-                                      image: AssetImage('assets/artist.png'),
-                                    ),
-                                  ),
-                                ),
-                              ),
+                      : BouncyImageSliverScrollView(
+                          actions: [
+                            IconButton(
+                              icon: const Icon(Icons.share_rounded),
+                              tooltip: AppLocalizations.of(context)!.share,
+                              onPressed: () {
+                                Share.share(
+                                  widget.data['perma_url'].toString(),
+                                );
+                              },
                             ),
-                            SliverList(
-                              delegate: SliverChildListDelegate(
-                                data.entries.map(
-                                  (entry) {
-                                    return Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
+                            ArtistLikeButton(
+                              data: widget.data,
+                              size: 27.0,
+                            ),
+                            if (data['Top Songs'] != null)
+                              PlaylistPopupMenu(
+                                data: data['Top Songs']!,
+                                title:
+                                    widget.data['title']?.toString() ?? 'Songs',
+                              ),
+                          ],
+                          title: widget.data['title']?.toString() ??
+                              AppLocalizations.of(context)!.songs,
+                          placeholderImage: 'assets/artist.png',
+                          imageUrl: widget.data['image']
+                              .toString()
+                              .replaceAll('http:', 'https:')
+                              .replaceAll('50x50', '500x500')
+                              .replaceAll('150x150', '500x500'),
+                          sliverList: SliverList(
+                            delegate: SliverChildListDelegate(
+                              data.entries.map(
+                                (entry) {
+                                  return Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                          left: 25,
+                                          top: 15,
+                                        ),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              entry.key,
+                                              style: TextStyle(
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .secondary,
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.w800,
+                                              ),
+                                            ),
+                                            if (entry.key ==
+                                                'Top Songs') ...<Widget>[
+                                              const SizedBox(
+                                                height: 5,
+                                              ),
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: <Widget>[
+                                                  ChoiceChip(
+                                                    label: Text(
+                                                      AppLocalizations.of(
+                                                        context,
+                                                      )!
+                                                          .popularity,
+                                                    ),
+                                                    selectedColor:
+                                                        Theme.of(context)
+                                                            .colorScheme
+                                                            .secondary
+                                                            .withOpacity(0.2),
+                                                    labelStyle: TextStyle(
+                                                      color: category == ''
+                                                          ? Theme.of(context)
+                                                              .colorScheme
+                                                              .secondary
+                                                          : Theme.of(context)
+                                                              .textTheme
+                                                              .bodyText1!
+                                                              .color,
+                                                      fontWeight: category == ''
+                                                          ? FontWeight.w600
+                                                          : FontWeight.normal,
+                                                    ),
+                                                    selected: category == '',
+                                                    onSelected:
+                                                        (bool selected) {
+                                                      if (selected) {
+                                                        category = '';
+                                                        sortOrder = '';
+                                                        status = false;
+                                                        setState(() {});
+                                                      }
+                                                    },
+                                                  ),
+                                                  const SizedBox(
+                                                    width: 5,
+                                                  ),
+                                                  ChoiceChip(
+                                                    label: Text(
+                                                      AppLocalizations.of(
+                                                        context,
+                                                      )!
+                                                          .date,
+                                                    ),
+                                                    selectedColor:
+                                                        Theme.of(context)
+                                                            .colorScheme
+                                                            .secondary
+                                                            .withOpacity(0.2),
+                                                    labelStyle: TextStyle(
+                                                      color: category ==
+                                                              'latest'
+                                                          ? Theme.of(context)
+                                                              .colorScheme
+                                                              .secondary
+                                                          : Theme.of(context)
+                                                              .textTheme
+                                                              .bodyText1!
+                                                              .color,
+                                                      fontWeight: category ==
+                                                              'latest'
+                                                          ? FontWeight.w600
+                                                          : FontWeight.normal,
+                                                    ),
+                                                    selected:
+                                                        category == 'latest',
+                                                    onSelected:
+                                                        (bool selected) {
+                                                      if (selected) {
+                                                        category = 'latest';
+                                                        sortOrder = 'desc';
+                                                        status = false;
+                                                        setState(() {});
+                                                      }
+                                                    },
+                                                  ),
+                                                  const SizedBox(
+                                                    width: 5,
+                                                  ),
+                                                  ChoiceChip(
+                                                    label: Text(
+                                                      AppLocalizations.of(
+                                                        context,
+                                                      )!
+                                                          .alphabetical,
+                                                    ),
+                                                    selectedColor:
+                                                        Theme.of(context)
+                                                            .colorScheme
+                                                            .secondary
+                                                            .withOpacity(0.2),
+                                                    labelStyle: TextStyle(
+                                                      color: category ==
+                                                              'alphabetical'
+                                                          ? Theme.of(context)
+                                                              .colorScheme
+                                                              .secondary
+                                                          : Theme.of(context)
+                                                              .textTheme
+                                                              .bodyText1!
+                                                              .color,
+                                                      fontWeight: category ==
+                                                              'alphabetical'
+                                                          ? FontWeight.w600
+                                                          : FontWeight.normal,
+                                                    ),
+                                                    selected: category ==
+                                                        'alphabetical',
+                                                    onSelected:
+                                                        (bool selected) {
+                                                      if (selected) {
+                                                        category =
+                                                            'alphabetical';
+                                                        sortOrder = 'asc';
+                                                        status = false;
+                                                        setState(() {});
+                                                      }
+                                                    },
+                                                  ),
+                                                  const Spacer(),
+                                                  if (data['Top Songs'] != null)
+                                                    MultiDownloadButton(
+                                                      data: data['Top Songs']!,
+                                                      playlistName: widget
+                                                              .data['title']
+                                                              ?.toString() ??
+                                                          'Songs',
+                                                    ),
+                                                  const SizedBox(
+                                                    width: 5,
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ],
+                                        ),
+                                      ),
+                                      if (entry.key != 'Top Songs')
                                         Padding(
-                                          padding: const EdgeInsets.only(
-                                            left: 25,
-                                            top: 15,
+                                          padding: const EdgeInsets.fromLTRB(
+                                            5,
+                                            10,
+                                            5,
+                                            0,
                                           ),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                entry.key,
-                                                style: TextStyle(
-                                                  color: Theme.of(context)
-                                                      .colorScheme
-                                                      .secondary,
-                                                  fontSize: 18,
-                                                  fontWeight: FontWeight.w800,
+                                          child: HorizontalAlbumsList(
+                                            songsList: entry.value,
+                                            onTap: (int idx) {
+                                              Navigator.push(
+                                                context,
+                                                PageRouteBuilder(
+                                                  opaque: false,
+                                                  pageBuilder: (
+                                                    _,
+                                                    __,
+                                                    ___,
+                                                  ) =>
+                                                      entry.key ==
+                                                              'Related Artists'
+                                                          ? ArtistSearchPage(
+                                                              data: entry.value[
+                                                                  idx] as Map,
+                                                            )
+                                                          : SongsListPage(
+                                                              listItem: entry
+                                                                      .value[
+                                                                  idx] as Map,
+                                                            ),
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                        )
+                                      else
+                                        ListView.builder(
+                                          itemCount: entry.value.length,
+                                          padding: const EdgeInsets.fromLTRB(
+                                            5,
+                                            5,
+                                            5,
+                                            0,
+                                          ),
+                                          physics:
+                                              const NeverScrollableScrollPhysics(),
+                                          shrinkWrap: true,
+                                          itemBuilder: (context, index) {
+                                            return ListTile(
+                                              contentPadding:
+                                                  const EdgeInsets.only(
+                                                left: 15.0,
+                                              ),
+                                              title: Text(
+                                                '${entry.value[index]["title"]}',
+                                                overflow: TextOverflow.ellipsis,
+                                                style: const TextStyle(
+                                                  fontWeight: FontWeight.w500,
                                                 ),
                                               ),
-                                              if (entry.key ==
-                                                  'Top Songs') ...<Widget>[
-                                                const SizedBox(
-                                                  height: 5,
+                                              onLongPress: () {
+                                                copyToClipboard(
+                                                  context: context,
+                                                  text:
+                                                      '${entry.value[index]["title"]}',
+                                                );
+                                              },
+                                              subtitle: Text(
+                                                '${entry.value[index]["subtitle"]}',
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                              leading: Card(
+                                                elevation: 8,
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                    7.0,
+                                                  ),
                                                 ),
-                                                Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                  children: <Widget>[
-                                                    ChoiceChip(
-                                                      label: Text(
-                                                        AppLocalizations.of(
-                                                          context,
-                                                        )!
-                                                            .popularity,
-                                                      ),
-                                                      selectedColor:
-                                                          Theme.of(context)
-                                                              .colorScheme
-                                                              .secondary
-                                                              .withOpacity(0.2),
-                                                      labelStyle: TextStyle(
-                                                        color: category == ''
-                                                            ? Theme.of(context)
-                                                                .colorScheme
-                                                                .secondary
-                                                            : Theme.of(context)
-                                                                .textTheme
-                                                                .bodyText1!
-                                                                .color,
-                                                        fontWeight: category ==
-                                                                ''
-                                                            ? FontWeight.w600
-                                                            : FontWeight.normal,
-                                                      ),
-                                                      selected: category == '',
-                                                      onSelected:
-                                                          (bool selected) {
-                                                        if (selected) {
-                                                          category = '';
-                                                          sortOrder = '';
-                                                          status = false;
-                                                          setState(() {});
-                                                        }
-                                                      },
+                                                clipBehavior: Clip.antiAlias,
+                                                child: CachedNetworkImage(
+                                                  fit: BoxFit.cover,
+                                                  errorWidget:
+                                                      (context, _, __) => Image(
+                                                    fit: BoxFit.cover,
+                                                    image: AssetImage(
+                                                      (entry.key ==
+                                                                  'Top Songs' ||
+                                                              entry.key ==
+                                                                  'Latest Release')
+                                                          ? 'assets/cover.jpg'
+                                                          : 'assets/album.png',
                                                     ),
-                                                    const SizedBox(
-                                                      width: 5,
+                                                  ),
+                                                  imageUrl:
+                                                      '${entry.value[index]["image"].replaceAll('http:', 'https:')}',
+                                                  placeholder: (context, url) =>
+                                                      Image(
+                                                    fit: BoxFit.cover,
+                                                    image: AssetImage(
+                                                      (entry.key ==
+                                                                  'Top Songs' ||
+                                                              entry.key ==
+                                                                  'Latest Release' ||
+                                                              entry.key ==
+                                                                  'Singles')
+                                                          ? 'assets/cover.jpg'
+                                                          : 'assets/album.png',
                                                     ),
-                                                    ChoiceChip(
-                                                      label: Text(
-                                                        AppLocalizations.of(
-                                                          context,
-                                                        )!
-                                                            .date,
-                                                      ),
-                                                      selectedColor:
-                                                          Theme.of(context)
-                                                              .colorScheme
-                                                              .secondary
-                                                              .withOpacity(0.2),
-                                                      labelStyle: TextStyle(
-                                                        color: category ==
-                                                                'latest'
-                                                            ? Theme.of(context)
-                                                                .colorScheme
-                                                                .secondary
-                                                            : Theme.of(context)
-                                                                .textTheme
-                                                                .bodyText1!
-                                                                .color,
-                                                        fontWeight: category ==
-                                                                'latest'
-                                                            ? FontWeight.w600
-                                                            : FontWeight.normal,
-                                                      ),
-                                                      selected:
-                                                          category == 'latest',
-                                                      onSelected:
-                                                          (bool selected) {
-                                                        if (selected) {
-                                                          category = 'latest';
-                                                          sortOrder = 'desc';
-                                                          status = false;
-                                                          setState(() {});
-                                                        }
-                                                      },
-                                                    ),
-                                                    const SizedBox(
-                                                      width: 5,
-                                                    ),
-                                                    ChoiceChip(
-                                                      label: Text(
-                                                        AppLocalizations.of(
-                                                          context,
-                                                        )!
-                                                            .alphabetical,
-                                                      ),
-                                                      selectedColor:
-                                                          Theme.of(context)
-                                                              .colorScheme
-                                                              .secondary
-                                                              .withOpacity(0.2),
-                                                      labelStyle: TextStyle(
-                                                        color: category ==
-                                                                'alphabetical'
-                                                            ? Theme.of(context)
-                                                                .colorScheme
-                                                                .secondary
-                                                            : Theme.of(context)
-                                                                .textTheme
-                                                                .bodyText1!
-                                                                .color,
-                                                        fontWeight: category ==
-                                                                'alphabetical'
-                                                            ? FontWeight.w600
-                                                            : FontWeight.normal,
-                                                      ),
-                                                      selected: category ==
-                                                          'alphabetical',
-                                                      onSelected:
-                                                          (bool selected) {
-                                                        if (selected) {
-                                                          category =
-                                                              'alphabetical';
-                                                          sortOrder = 'asc';
-                                                          status = false;
-                                                          setState(() {});
-                                                        }
-                                                      },
-                                                    ),
-                                                    const Spacer(),
-                                                    if (data['Top Songs'] !=
-                                                        null)
-                                                      MultiDownloadButton(
-                                                        data:
-                                                            data['Top Songs']!,
-                                                        playlistName: widget
-                                                                .data['title']
-                                                                ?.toString() ??
-                                                            'Songs',
-                                                      ),
-                                                    const SizedBox(
-                                                      width: 5,
-                                                    ),
-                                                  ],
+                                                  ),
                                                 ),
-                                              ],
-                                            ],
-                                          ),
-                                        ),
-                                        if (entry.key != 'Top Songs')
-                                          Padding(
-                                            padding: const EdgeInsets.fromLTRB(
-                                              5,
-                                              10,
-                                              5,
-                                              0,
-                                            ),
-                                            child: HorizontalAlbumsList(
-                                              songsList: entry.value,
-                                              onTap: (int idx) {
+                                              ),
+                                              trailing: (entry.key ==
+                                                          'Top Songs' ||
+                                                      entry.key ==
+                                                          'Latest Release' ||
+                                                      entry.key == 'Singles')
+                                                  ? Row(
+                                                      mainAxisSize:
+                                                          MainAxisSize.min,
+                                                      children: [
+                                                        DownloadButton(
+                                                          data:
+                                                              entry.value[index]
+                                                                  as Map,
+                                                          icon: 'download',
+                                                        ),
+                                                        LikeButton(
+                                                          data:
+                                                              entry.value[index]
+                                                                  as Map,
+                                                          mediaItem: null,
+                                                        ),
+                                                        SongTileTrailingMenu(
+                                                          data:
+                                                              entry.value[index]
+                                                                  as Map,
+                                                        ),
+                                                      ],
+                                                    )
+                                                  : null,
+                                              onTap: () {
                                                 Navigator.push(
                                                   context,
                                                   PageRouteBuilder(
@@ -355,177 +438,40 @@ class _ArtistSearchPageState extends State<ArtistSearchPage> {
                                                       __,
                                                       ___,
                                                     ) =>
-                                                        entry.key ==
-                                                                'Related Artists'
-                                                            ? ArtistSearchPage(
-                                                                data: entry
-                                                                        .value[
-                                                                    idx] as Map,
-                                                              )
-                                                            : SongsListPage(
-                                                                listItem: entry
-                                                                        .value[
-                                                                    idx] as Map,
-                                                              ),
-                                                  ),
-                                                );
-                                              },
-                                            ),
-                                          )
-                                        else
-                                          ListView.builder(
-                                            itemCount: entry.value.length,
-                                            padding: const EdgeInsets.fromLTRB(
-                                              5,
-                                              5,
-                                              5,
-                                              0,
-                                            ),
-                                            physics:
-                                                const NeverScrollableScrollPhysics(),
-                                            shrinkWrap: true,
-                                            itemBuilder: (context, index) {
-                                              return ListTile(
-                                                contentPadding:
-                                                    const EdgeInsets.only(
-                                                  left: 15.0,
-                                                ),
-                                                title: Text(
-                                                  '${entry.value[index]["title"]}',
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  style: const TextStyle(
-                                                    fontWeight: FontWeight.w500,
-                                                  ),
-                                                ),
-                                                onLongPress: () {
-                                                  copyToClipboard(
-                                                    context: context,
-                                                    text:
-                                                        '${entry.value[index]["title"]}',
-                                                  );
-                                                },
-                                                subtitle: Text(
-                                                  '${entry.value[index]["subtitle"]}',
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                ),
-                                                leading: Card(
-                                                  elevation: 8,
-                                                  shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                      7.0,
-                                                    ),
-                                                  ),
-                                                  clipBehavior: Clip.antiAlias,
-                                                  child: CachedNetworkImage(
-                                                    fit: BoxFit.cover,
-                                                    errorWidget:
-                                                        (context, _, __) =>
-                                                            Image(
-                                                      fit: BoxFit.cover,
-                                                      image: AssetImage(
-                                                        (entry.key ==
-                                                                    'Top Songs' ||
-                                                                entry.key ==
-                                                                    'Latest Release')
-                                                            ? 'assets/cover.jpg'
-                                                            : 'assets/album.png',
-                                                      ),
-                                                    ),
-                                                    imageUrl:
-                                                        '${entry.value[index]["image"].replaceAll('http:', 'https:')}',
-                                                    placeholder:
-                                                        (context, url) => Image(
-                                                      fit: BoxFit.cover,
-                                                      image: AssetImage(
                                                         (entry.key ==
                                                                     'Top Songs' ||
                                                                 entry.key ==
                                                                     'Latest Release' ||
                                                                 entry.key ==
                                                                     'Singles')
-                                                            ? 'assets/cover.jpg'
-                                                            : 'assets/album.png',
-                                                      ),
-                                                    ),
+                                                            ? PlayScreen(
+                                                                songsList:
+                                                                    entry.value,
+                                                                index: index,
+                                                                offline: false,
+                                                                fromMiniplayer:
+                                                                    false,
+                                                                fromDownloads:
+                                                                    false,
+                                                                recommend: true,
+                                                              )
+                                                            : SongsListPage(
+                                                                listItem: entry
+                                                                        .value[
+                                                                    index] as Map,
+                                                              ),
                                                   ),
-                                                ),
-                                                trailing: (entry.key ==
-                                                            'Top Songs' ||
-                                                        entry.key ==
-                                                            'Latest Release' ||
-                                                        entry.key == 'Singles')
-                                                    ? Row(
-                                                        mainAxisSize:
-                                                            MainAxisSize.min,
-                                                        children: [
-                                                          DownloadButton(
-                                                            data: entry.value[
-                                                                index] as Map,
-                                                            icon: 'download',
-                                                          ),
-                                                          LikeButton(
-                                                            data: entry.value[
-                                                                index] as Map,
-                                                            mediaItem: null,
-                                                          ),
-                                                          SongTileTrailingMenu(
-                                                            data: entry.value[
-                                                                index] as Map,
-                                                          ),
-                                                        ],
-                                                      )
-                                                    : null,
-                                                onTap: () {
-                                                  Navigator.push(
-                                                    context,
-                                                    PageRouteBuilder(
-                                                      opaque: false,
-                                                      pageBuilder: (
-                                                        _,
-                                                        __,
-                                                        ___,
-                                                      ) =>
-                                                          (entry.key ==
-                                                                      'Top Songs' ||
-                                                                  entry.key ==
-                                                                      'Latest Release' ||
-                                                                  entry.key ==
-                                                                      'Singles')
-                                                              ? PlayScreen(
-                                                                  songsList:
-                                                                      entry
-                                                                          .value,
-                                                                  index: index,
-                                                                  offline:
-                                                                      false,
-                                                                  fromMiniplayer:
-                                                                      false,
-                                                                  fromDownloads:
-                                                                      false,
-                                                                  recommend:
-                                                                      true,
-                                                                )
-                                                              : SongsListPage(
-                                                                  listItem: entry
-                                                                          .value[
-                                                                      index] as Map,
-                                                                ),
-                                                    ),
-                                                  );
-                                                },
-                                              );
-                                            },
-                                          ),
-                                      ],
-                                    );
-                                  },
-                                ).toList(),
-                              ),
+                                                );
+                                              },
+                                            );
+                                          },
+                                        ),
+                                    ],
+                                  );
+                                },
+                              ).toList(),
                             ),
-                          ],
+                          ),
                         ),
             ),
           ),

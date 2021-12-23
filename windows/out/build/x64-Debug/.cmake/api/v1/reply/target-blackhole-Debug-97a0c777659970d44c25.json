@@ -1,0 +1,426 @@
+{
+	"artifacts" : 
+	[
+		{
+			"path" : "runner/blackhole.exe"
+		},
+		{
+			"path" : "runner/blackhole.pdb"
+		}
+	],
+	"backtrace" : 1,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_executable",
+			"install",
+			"target_link_libraries",
+			"add_dependencies",
+			"target_compile_options",
+			"apply_standard_settings",
+			"target_compile_definitions",
+			"add_definitions",
+			"target_include_directories",
+			"target_compile_features"
+		],
+		"files" : 
+		[
+			"runner/CMakeLists.txt",
+			"CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 4,
+				"parent" : 0
+			},
+			{
+				"file" : 1
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 68,
+				"parent" : 2
+			},
+			{
+				"command" : 2,
+				"file" : 0,
+				"line" : 16,
+				"parent" : 0
+			},
+			{
+				"command" : 3,
+				"file" : 0,
+				"line" : 18,
+				"parent" : 0
+			},
+			{
+				"command" : 5,
+				"file" : 0,
+				"line" : 14,
+				"parent" : 0
+			},
+			{
+				"command" : 4,
+				"file" : 1,
+				"line" : 35,
+				"parent" : 6
+			},
+			{
+				"command" : 4,
+				"file" : 1,
+				"line" : 36,
+				"parent" : 6
+			},
+			{
+				"command" : 6,
+				"file" : 0,
+				"line" : 15,
+				"parent" : 0
+			},
+			{
+				"command" : 7,
+				"file" : 1,
+				"line" : 30,
+				"parent" : 2
+			},
+			{
+				"command" : 6,
+				"file" : 1,
+				"line" : 38,
+				"parent" : 6
+			},
+			{
+				"command" : 6,
+				"file" : 1,
+				"line" : 37,
+				"parent" : 6
+			},
+			{
+				"command" : 8,
+				"file" : 0,
+				"line" : 17,
+				"parent" : 0
+			},
+			{
+				"command" : 9,
+				"file" : 1,
+				"line" : 34,
+				"parent" : 6
+			}
+		]
+	},
+	"compileGroups" : 
+	[
+		{
+			"compileCommandFragments" : 
+			[
+				{
+					"fragment" : "/DWIN32 /D_WINDOWS /GR /EHsc /Zi /Ob0 /Od /RTC1 -MDd"
+				},
+				{
+					"backtrace" : 7,
+					"fragment" : "/W4"
+				},
+				{
+					"backtrace" : 7,
+					"fragment" : "/WX"
+				},
+				{
+					"backtrace" : 7,
+					"fragment" : "/wd\\\"4100\\\""
+				},
+				{
+					"backtrace" : 8,
+					"fragment" : "/EHsc"
+				},
+				{
+					"fragment" : "-std:c++17"
+				}
+			],
+			"defines" : 
+			[
+				{
+					"backtrace" : 9,
+					"define" : "NOMINMAX"
+				},
+				{
+					"backtrace" : 10,
+					"define" : "UNICODE"
+				},
+				{
+					"backtrace" : 11,
+					"define" : "_DEBUG"
+				},
+				{
+					"backtrace" : 12,
+					"define" : "_HAS_EXCEPTIONS=0"
+				},
+				{
+					"backtrace" : 10,
+					"define" : "_UNICODE"
+				}
+			],
+			"includes" : 
+			[
+				{
+					"backtrace" : 13,
+					"path" : "E:/GitHub/blackhole/windows"
+				},
+				{
+					"backtrace" : 4,
+					"path" : "E:/GitHub/blackhole/windows/flutter/ephemeral"
+				},
+				{
+					"backtrace" : 4,
+					"path" : "E:/GitHub/blackhole/windows/flutter/ephemeral/cpp_client_wrapper/include"
+				},
+				{
+					"backtrace" : 0,
+					"path" : "E:/GitHub/blackhole/windows/flutter/ephemeral/.plugin_symlinks/libwinmedia/windows/include"
+				},
+				{
+					"backtrace" : 0,
+					"path" : "E:/GitHub/blackhole/windows/flutter/ephemeral/.plugin_symlinks/url_launcher_windows/windows/include"
+				}
+			],
+			"language" : "CXX",
+			"languageStandard" : 
+			{
+				"backtraces" : 
+				[
+					14
+				],
+				"standard" : "17"
+			},
+			"sourceIndexes" : 
+			[
+				0,
+				1,
+				2,
+				3,
+				4,
+				5
+			]
+		},
+		{
+			"compileCommandFragments" : 
+			[
+				{
+					"fragment" : "-DWIN32 -D_DEBUG"
+				}
+			],
+			"defines" : 
+			[
+				{
+					"backtrace" : 9,
+					"define" : "NOMINMAX"
+				},
+				{
+					"backtrace" : 10,
+					"define" : "UNICODE"
+				},
+				{
+					"backtrace" : 11,
+					"define" : "_DEBUG"
+				},
+				{
+					"backtrace" : 12,
+					"define" : "_HAS_EXCEPTIONS=0"
+				},
+				{
+					"backtrace" : 10,
+					"define" : "_UNICODE"
+				}
+			],
+			"includes" : 
+			[
+				{
+					"backtrace" : 13,
+					"path" : "E:/GitHub/blackhole/windows"
+				},
+				{
+					"backtrace" : 4,
+					"path" : "E:/GitHub/blackhole/windows/flutter/ephemeral"
+				},
+				{
+					"backtrace" : 4,
+					"path" : "E:/GitHub/blackhole/windows/flutter/ephemeral/cpp_client_wrapper/include"
+				},
+				{
+					"backtrace" : 0,
+					"path" : "E:/GitHub/blackhole/windows/flutter/ephemeral/.plugin_symlinks/libwinmedia/windows/include"
+				},
+				{
+					"backtrace" : 0,
+					"path" : "E:/GitHub/blackhole/windows/flutter/ephemeral/.plugin_symlinks/url_launcher_windows/windows/include"
+				}
+			],
+			"language" : "RC",
+			"sourceIndexes" : 
+			[
+				6
+			]
+		}
+	],
+	"dependencies" : 
+	[
+		{
+			"backtrace" : 0,
+			"id" : "url_launcher_windows_plugin::@82e8e937a0da8e6132e4"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "flutter_wrapper_app::@2bb09fbb03a373b2cb34"
+		},
+		{
+			"backtrace" : 5,
+			"id" : "flutter_assemble::@2bb09fbb03a373b2cb34"
+		},
+		{
+			"backtrace" : 0,
+			"id" : "libwinmedia_plugin::@73ce7fa31f0c3a23f323"
+		}
+	],
+	"id" : "blackhole::@056c4f61b0156d1d9b06",
+	"install" : 
+	{
+		"destinations" : 
+		[
+			{
+				"backtrace" : 3,
+				"path" : "E:/GitHub/blackhole/windows/out/install/x64-Debug"
+			}
+		],
+		"prefix" : 
+		{
+			"path" : "E:/GitHub/blackhole/windows/out/install/x64-Debug"
+		}
+	},
+	"link" : 
+	{
+		"commandFragments" : 
+		[
+			{
+				"fragment" : "/DWIN32 /D_WINDOWS /GR /EHsc /Zi /Ob0 /Od /RTC1 -MDd",
+				"role" : "flags"
+			},
+			{
+				"fragment" : "/machine:x64 /debug /INCREMENTAL /subsystem:windows",
+				"role" : "flags"
+			},
+			{
+				"backtrace" : 4,
+				"fragment" : "..\\flutter\\flutter_wrapper_app.lib",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 0,
+				"fragment" : "..\\plugins\\libwinmedia\\libwinmedia_plugin.lib",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 0,
+				"fragment" : "..\\plugins\\url_launcher_windows\\url_launcher_windows_plugin.lib",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "..\\..\\..\\..\\flutter\\ephemeral\\flutter_windows.dll.lib",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib",
+				"role" : "libraries"
+			}
+		],
+		"language" : "CXX"
+	},
+	"name" : "blackhole",
+	"nameOnDisk" : "blackhole.exe",
+	"paths" : 
+	{
+		"build" : "runner",
+		"source" : "runner"
+	},
+	"sourceGroups" : 
+	[
+		{
+			"name" : "Source Files",
+			"sourceIndexes" : 
+			[
+				0,
+				1,
+				2,
+				3,
+				4,
+				5,
+				6
+			]
+		},
+		{
+			"name" : "",
+			"sourceIndexes" : 
+			[
+				7
+			]
+		}
+	],
+	"sources" : 
+	[
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "runner/flutter_window.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "runner/main.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "runner/run_loop.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "runner/utils.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "runner/win32_window.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "flutter/generated_plugin_registrant.cc",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "runner/Runner.rc",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"path" : "runner/runner.exe.manifest",
+			"sourceGroupIndex" : 1
+		}
+	],
+	"type" : "EXECUTABLE"
+}

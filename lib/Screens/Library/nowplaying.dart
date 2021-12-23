@@ -1,11 +1,9 @@
-import 'dart:io';
-
 import 'package:audio_service/audio_service.dart';
+import 'package:blackhole/CustomWidgets/bouncy_sliver_scroll_view.dart';
 import 'package:blackhole/CustomWidgets/empty_screen.dart';
 import 'package:blackhole/CustomWidgets/gradient_containers.dart';
 import 'package:blackhole/CustomWidgets/miniplayer.dart';
 import 'package:blackhole/Screens/Player/audioplayer.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:get_it/get_it.dart';
@@ -58,94 +56,26 @@ class _NowPlayingState extends State<NowPlaying> {
                             final mediaItem = snapshot.data;
                             return mediaItem == null
                                 ? const SizedBox()
-                                : CustomScrollView(
-                                    physics: const BouncingScrollPhysics(),
-                                    slivers: [
-                                      SliverAppBar(
-                                        elevation: 0,
-                                        stretch: true,
-                                        pinned: true,
-                                        // floating: true,
-                                        expandedHeight:
-                                            MediaQuery.of(context).size.height *
-                                                0.4,
-                                        flexibleSpace: FlexibleSpaceBar(
-                                          title: Text(
-                                            AppLocalizations.of(context)!
-                                                .nowPlaying,
-                                            textAlign: TextAlign.center,
-                                          ),
-                                          centerTitle: true,
-                                          background: ShaderMask(
-                                            shaderCallback: (rect) {
-                                              return const LinearGradient(
-                                                begin: Alignment.center,
-                                                end: Alignment.bottomCenter,
-                                                colors: [
-                                                  Colors.black,
-                                                  Colors.transparent
-                                                ],
-                                              ).createShader(
-                                                Rect.fromLTRB(
-                                                  0,
-                                                  0,
-                                                  rect.width,
-                                                  rect.height,
-                                                ),
-                                              );
-                                            },
-                                            blendMode: BlendMode.dstIn,
-                                            child: mediaItem.artUri!
-                                                    .toString()
-                                                    .startsWith('file:')
-                                                ? Image(
-                                                    image: FileImage(
-                                                      File(
-                                                        mediaItem.artUri!
-                                                            .toFilePath(),
-                                                      ),
-                                                    ),
-                                                    fit: BoxFit.cover,
-                                                  )
-                                                : CachedNetworkImage(
-                                                    fit: BoxFit.cover,
-                                                    errorWidget: (
-                                                      BuildContext context,
-                                                      _,
-                                                      __,
-                                                    ) =>
-                                                        const Image(
-                                                      fit: BoxFit.cover,
-                                                      image: AssetImage(
-                                                        'assets/cover.jpg',
-                                                      ),
-                                                    ),
-                                                    placeholder: (
-                                                      BuildContext context,
-                                                      _,
-                                                    ) =>
-                                                        const Image(
-                                                      fit: BoxFit.cover,
-                                                      image: AssetImage(
-                                                        'assets/cover.jpg',
-                                                      ),
-                                                    ),
-                                                    imageUrl: mediaItem.artUri!
-                                                        .toString(),
-                                                  ),
-                                          ),
-                                        ),
+                                : BouncyImageSliverScrollView(
+                                    title: AppLocalizations.of(context)!
+                                        .nowPlaying,
+                                    localImage: mediaItem.artUri!
+                                        .toString()
+                                        .startsWith('file:'),
+                                    imageUrl: mediaItem.artUri!
+                                            .toString()
+                                            .startsWith('file:')
+                                        ? mediaItem.artUri!.toFilePath()
+                                        : mediaItem.artUri!.toString(),
+                                    sliverList: SliverList(
+                                      delegate: SliverChildListDelegate(
+                                        [
+                                          NowPlayingStream(
+                                            audioHandler: audioHandler,
+                                          )
+                                        ],
                                       ),
-                                      SliverList(
-                                        delegate: SliverChildListDelegate(
-                                          [
-                                            NowPlayingStream(
-                                              audioHandler: audioHandler,
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                    ],
+                                    ),
                                   );
                           },
                         ),
