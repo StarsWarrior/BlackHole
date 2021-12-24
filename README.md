@@ -87,13 +87,21 @@ Check it yourself :)
 Copyright © 2021 Ankit Sangwan
 
 BlackHole is free software licensed under GPL v3.0.
-You can redistribute and/or modify it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+Being Open Source doesn't mean you can just make a copy of the app and use it to earn money.
+Read the following carefully:
+
+1. You can't upload the app on PlayStore/AppStore or any other closed source app repository.
+2. You can't sell any copied/modified version of the app
+3. You can't put ads to this app
+4. You can ONLY use the source code of this app for `Open Source Project` under `GPL v3.0` or later
+     with your source code hosted on any open source platform like GitHub and with proper credits
 
 BlackHole is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
 without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 See the GNU General Public License for more details.
 ```
+
 [View License](https://github.com/Sangwan5688/BlackHole/blob/main/LICENSE)
 
 ## Building from Source
