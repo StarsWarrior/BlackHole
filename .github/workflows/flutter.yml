@@ -60,4 +60,5 @@ jobs:
         with:
           to: ${{ secrets.TELEGRAM_CHAT_ID }}
           token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          message: A new commit has been pushed to BlackHole by ${{ github.event.head_commit.author.name }}. Commit message- ${{ github.event.head_commit.message }}
+          message: |
+            A new commit has been pushed to ${{ github.event.repository.name }} by ${{ github.event.head_commit.author.name }}. Commit message: ${{ github.event.head_commit.message }}
