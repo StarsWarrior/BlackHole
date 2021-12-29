@@ -1,0 +1,23 @@
+name: Issue Notifier
+on:
+  issues:
+    types:
+      - reopened
+      - opened
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: read
+
+    steps:
+      - name: Commit on Telegram
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TELEGRAM_CHAT_ID }}
+          token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          message: |
+            New Issue (#${{ github.event.issue.number }}): ${{ github.event.issue.title }}
+
+    
