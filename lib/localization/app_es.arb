@@ -579,7 +579,7 @@
   "@downFilename": {},
   "includeExcludeFolder": "Incluir/Excluir directorios",
   "@includeExcludeFolder": {},
-  "includeExcludeFolderSub": "Incluye/Excluye los directorios seleccionados de la sección 'Mi Musica'",
+  "includeExcludeFolderSub": "Incluye/Excluye los directorios seleccionados de la sección «Mi música»",
   "@includeExcludeFolderSub": {},
   "removedFrom": "Removido de",
   "@removedFrom": {},
