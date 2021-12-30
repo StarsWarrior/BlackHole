@@ -343,7 +343,7 @@
   "@musicLangSub": {},
   "musicPlayback": "Müzik ve Oynatma",
   "@musicPlayback": {},
-  "includeExcludeFolderSub": "'Müziğim' bölümünden seçilen klasörleri dahil eder/etmez",
+  "includeExcludeFolderSub": "“Müziğim” bölümünden seçilen klasörleri dahil eder/etmez",
   "@includeExcludeFolderSub": {},
   "noLangSelected": "Müzik dili seçilmedi. Şarkıları ana ekranda görmek için bir dil seçin",
   "@noLangSelected": {},
