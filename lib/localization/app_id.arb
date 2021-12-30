@@ -611,7 +611,7 @@
   "@downFilenameSub": {},
   "includeExcludeFolder": "Sertakan/Kecualikan Folder",
   "@includeExcludeFolder": {},
-  "includeExcludeFolderSub": "Menyertakan/Mengecualikan folder yang dipilih dari Bagian 'Musik Saya'",
+  "includeExcludeFolderSub": "Menyertakan/Mengecualikan folder yang dipilih dari Bagian “Musik Saya”",
   "@includeExcludeFolderSub": {},
   "included": "Termasuk",
   "@included": {},
