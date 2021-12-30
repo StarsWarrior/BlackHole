@@ -611,7 +611,7 @@
   "@excludedDetails": {},
   "includeExcludeFolder": "Sertakan/Kecualikan Folder",
   "@includeExcludeFolder": {},
-  "includeExcludeFolderSub": "Menyertakan/Mengecualikan folder yang dipilih dari Bagian 'Musik Saya'",
+  "includeExcludeFolderSub": "Inclui/Exclui pastas selecionadas da seção «Minha música»",
   "@includeExcludeFolderSub": {},
   "included": "Termasuk",
   "@included": {},
