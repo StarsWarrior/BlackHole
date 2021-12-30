@@ -607,7 +607,7 @@
   "@excluded": {},
   "includeExcludeFolder": "Включить / исключить папки",
   "@includeExcludeFolder": {},
-  "includeExcludeFolderSub": "Включает / исключает выбранные папки из раздела \"Моя музыка\"",
+  "includeExcludeFolderSub": "Включает / исключает выбранные папки из раздела «Моя музыка»",
   "@includeExcludeFolderSub": {},
   "included": "Включено",
   "@included": {},
