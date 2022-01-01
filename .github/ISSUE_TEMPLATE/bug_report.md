@@ -22,10 +22,11 @@ A clear and concise description of what you expected to happen.
 **Screenshots**
 If applicable, add screenshots to help explain your problem.
 
-**Smartphone (please complete the following information):**
- - Device: [e.g. Pixel 4]
- - OS: [e.g. Android 11]
- - App Version [e.g. v1.5]
+**Device Details (please complete the following information):**
+ - OS: [e.g. Android, Windows, iOS, Linux]
+ - Version: [e.g. Android 12, iOS 15, Windows 11 20H2]
+ - Device: [e.g. Pixel 4, iPhone 13]
+ - App Version [e.g. v1.13.0]
 
 **App Logs**
 If possible please provide app logs here.
