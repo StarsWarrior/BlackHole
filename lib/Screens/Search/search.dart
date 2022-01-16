@@ -274,6 +274,9 @@ class _SearchPageState extends State<SearchPage> {
                                                 top: 10,
                                               ),
                                               child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
                                                 children: [
                                                   Text(
                                                     key,
@@ -286,6 +289,115 @@ class _SearchPageState extends State<SearchPage> {
                                                           FontWeight.w800,
                                                     ),
                                                   ),
+                                                  if (key != 'Top Result')
+                                                    Padding(
+                                                      padding: const EdgeInsets
+                                                          .fromLTRB(
+                                                        25,
+                                                        0,
+                                                        25,
+                                                        0,
+                                                      ),
+                                                      child: Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .end,
+                                                        children: [
+                                                          GestureDetector(
+                                                            onTap: () {
+                                                              if (key == 'Albums' ||
+                                                                  key ==
+                                                                      'Playlists' ||
+                                                                  key ==
+                                                                      'Artists') {
+                                                                Navigator.push(
+                                                                  context,
+                                                                  PageRouteBuilder(
+                                                                    opaque:
+                                                                        false,
+                                                                    pageBuilder: (
+                                                                      _,
+                                                                      __,
+                                                                      ___,
+                                                                    ) =>
+                                                                        AlbumSearchPage(
+                                                                      query: query ==
+                                                                              ''
+                                                                          ? widget
+                                                                              .query
+                                                                          : query,
+                                                                      type: key,
+                                                                    ),
+                                                                  ),
+                                                                );
+                                                              }
+                                                              if (key ==
+                                                                  'Songs') {
+                                                                Navigator.push(
+                                                                  context,
+                                                                  PageRouteBuilder(
+                                                                    opaque:
+                                                                        false,
+                                                                    pageBuilder: (
+                                                                      _,
+                                                                      __,
+                                                                      ___,
+                                                                    ) =>
+                                                                        SongsListPage(
+                                                                      listItem: {
+                                                                        'id': query ==
+                                                                                ''
+                                                                            ? widget.query
+                                                                            : query,
+                                                                        'title':
+                                                                            key,
+                                                                        'type':
+                                                                            'songs',
+                                                                      },
+                                                                    ),
+                                                                  ),
+                                                                );
+                                                              }
+                                                            },
+                                                            child: Row(
+                                                              children: [
+                                                                Text(
+                                                                  AppLocalizations
+                                                                          .of(
+                                                                    context,
+                                                                  )!
+                                                                      .viewAll,
+                                                                  style:
+                                                                      TextStyle(
+                                                                    color: Theme
+                                                                            .of(
+                                                                      context,
+                                                                    )
+                                                                        .textTheme
+                                                                        .caption!
+                                                                        .color,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w800,
+                                                                  ),
+                                                                ),
+                                                                Icon(
+                                                                  Icons
+                                                                      .chevron_right_rounded,
+                                                                  color: Theme
+                                                                          .of(
+                                                                    context,
+                                                                  )
+                                                                      .textTheme
+                                                                      .caption!
+                                                                      .color,
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
                                                 ],
                                               ),
                                             ),
@@ -487,106 +599,6 @@ class _SearchPageState extends State<SearchPage> {
                                                 );
                                               },
                                             ),
-                                            if (key != 'Top Result')
-                                              Padding(
-                                                padding:
-                                                    const EdgeInsets.fromLTRB(
-                                                  25,
-                                                  0,
-                                                  25,
-                                                  0,
-                                                ),
-                                                child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.end,
-                                                  children: [
-                                                    GestureDetector(
-                                                      onTap: () {
-                                                        if (key == 'Albums' ||
-                                                            key ==
-                                                                'Playlists' ||
-                                                            key == 'Artists') {
-                                                          Navigator.push(
-                                                            context,
-                                                            PageRouteBuilder(
-                                                              opaque: false,
-                                                              pageBuilder: (
-                                                                _,
-                                                                __,
-                                                                ___,
-                                                              ) =>
-                                                                  AlbumSearchPage(
-                                                                query: query ==
-                                                                        ''
-                                                                    ? widget
-                                                                        .query
-                                                                    : query,
-                                                                type: key,
-                                                              ),
-                                                            ),
-                                                          );
-                                                        }
-                                                        if (key == 'Songs') {
-                                                          Navigator.push(
-                                                            context,
-                                                            PageRouteBuilder(
-                                                              opaque: false,
-                                                              pageBuilder: (
-                                                                _,
-                                                                __,
-                                                                ___,
-                                                              ) =>
-                                                                  SongsListPage(
-                                                                listItem: {
-                                                                  'id': query ==
-                                                                          ''
-                                                                      ? widget
-                                                                          .query
-                                                                      : query,
-                                                                  'title': key,
-                                                                  'type':
-                                                                      'songs',
-                                                                },
-                                                              ),
-                                                            ),
-                                                          );
-                                                        }
-                                                      },
-                                                      child: Row(
-                                                        children: [
-                                                          Text(
-                                                            AppLocalizations.of(
-                                                              context,
-                                                            )!
-                                                                .viewAll,
-                                                            style: TextStyle(
-                                                              color: Theme.of(
-                                                                context,
-                                                              )
-                                                                  .textTheme
-                                                                  .caption!
-                                                                  .color,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w800,
-                                                            ),
-                                                          ),
-                                                          Icon(
-                                                            Icons
-                                                                .chevron_right_rounded,
-                                                            color: Theme.of(
-                                                              context,
-                                                            )
-                                                                .textTheme
-                                                                .caption!
-                                                                .color,
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
                                           ],
                                         );
                                       },
