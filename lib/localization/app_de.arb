@@ -616,5 +616,11 @@
   "downFilenameSub": "Lieder werden entsprechend dieses Dateinamenformates heruntergeladen",
   "@downFilenameSub": {},
   "includeExcludeFolderSub": "Ausgewählte Ordner der „Meine Musik“-Sektion werden eingeschlossen/ausgeschlossen",
-  "@includeExcludeFolderSub": {}
+  "@includeExcludeFolderSub": {},
+  "getLyricsOnline": "Suche nach Liedtexten lokaler Lieder",
+  "@getLyricsOnline": {},
+  "getLyricsOnlineSub": "Suchen Sie online, wenn keine Liedtexte für ein Offline-Lied verfügbar sind oder heruntergeladen wurden",
+  "@getLyricsOnlineSub": {},
+  "importResso": "Aus Resso importieren",
+  "@importResso": {}
 }
