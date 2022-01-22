@@ -35,7 +35,14 @@ import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
 class SongTileTrailingMenu extends StatefulWidget {
   final Map data;
-  const SongTileTrailingMenu({Key? key, required this.data}) : super(key: key);
+  final bool isPlaylist;
+  final Function(Map)? deleteLiked;
+  const SongTileTrailingMenu({
+    Key? key,
+    required this.data,
+    this.isPlaylist = false,
+    this.deleteLiked,
+  }) : super(key: key);
 
   @override
   _SongTileTrailingMenuState createState() => _SongTileTrailingMenuState();
@@ -55,6 +62,26 @@ class _SongTileTrailingMenuState extends State<SongTileTrailingMenu> {
         ),
       ),
       itemBuilder: (context) => [
+        if (widget.isPlaylist)
+          PopupMenuItem(
+            value: 6,
+            child: Row(
+              children: [
+                const Icon(
+                  Icons.delete_rounded,
+                ),
+                const SizedBox(
+                  width: 10.0,
+                ),
+                Text(
+                  AppLocalizations.of(
+                    context,
+                  )!
+                      .remove,
+                ),
+              ],
+            ),
+          ),
         PopupMenuItem(
           value: 2,
           child: Row(
@@ -168,6 +195,9 @@ class _SongTileTrailingMenuState extends State<SongTileTrailingMenu> {
             ),
           );
         }
+        if (value == 6) {
+          widget.deleteLiked!(widget.data);
+        }
         if (value == 0) {
           AddToPlaylist().addToPlaylist(context, mediaItem);
         }
@@ -269,7 +299,6 @@ class _YtSongTileTrailingMenuState extends State<YtSongTileTrailingMenu> {
           child: Row(
             children: [
               Icon(
-                // Icons.music_video_rounded,
                 Icons.video_library_rounded,
                 color: Theme.of(context).iconTheme.color,
               ),

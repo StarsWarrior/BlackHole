@@ -54,7 +54,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   lint: ^1.8.1
-  msix: ^2.7.3
+  msix: ^2.8.0
 
 flutter:
   uses-material-design: true

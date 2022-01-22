@@ -61,6 +61,7 @@ class _SearchPageState extends State<SearchPage> {
     [],
   );
   bool fetched = false;
+  bool alertShown = false;
   bool albumFetched = false;
   bool? fromHome;
   // List search = Hive.box('settings').get('search', defaultValue: [],) as List;
@@ -109,11 +110,14 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   Widget nothingFound(BuildContext context) {
-    ShowSnackBar().showSnackBar(
-      context,
-      AppLocalizations.of(context)!.useVpn,
-      duration: const Duration(seconds: 5),
-    );
+    if (!alertShown) {
+      ShowSnackBar().showSnackBar(
+        context,
+        AppLocalizations.of(context)!.useVpn,
+        duration: const Duration(seconds: 5),
+      );
+      alertShown = true;
+    }
     return emptyScreen(
       context,
       0,

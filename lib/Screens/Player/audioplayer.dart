@@ -86,6 +86,8 @@ class _PlayScreenState extends State<PlayScreen> {
       Hive.box('settings').get('enforceRepeat', defaultValue: false) as bool;
   bool useImageColor =
       Hive.box('settings').get('useImageColor', defaultValue: true) as bool;
+  bool getLyricsOnline =
+      Hive.box('settings').get('getLyricsOnline', defaultValue: true) as bool;
   bool useFullScreenGradient = Hive.box('settings')
       .get('useFullScreenGradient', defaultValue: false) as bool;
   List<MediaItem> globalQueue = [];
@@ -713,6 +715,7 @@ class _PlayScreenState extends State<PlayScreen> {
                             ),
                             audioHandler: audioHandler,
                             offline: offline,
+                            getLyricsOnline: getLyricsOnline,
                           ),
 
                           // title and controls
@@ -736,6 +739,7 @@ class _PlayScreenState extends State<PlayScreen> {
                           width: constraints.maxWidth,
                           audioHandler: audioHandler,
                           offline: offline,
+                          getLyricsOnline: getLyricsOnline,
                         ),
 
                         // title and controls
@@ -1362,6 +1366,7 @@ class ArtWorkWidget extends StatefulWidget {
   final GlobalKey<FlipCardState> cardKey;
   final MediaItem mediaItem;
   final bool offline;
+  final bool getLyricsOnline;
   final double width;
   final AudioPlayerHandler audioHandler;
 
@@ -1370,6 +1375,7 @@ class ArtWorkWidget extends StatefulWidget {
     required this.mediaItem,
     required this.width,
     this.offline = false,
+    required this.getLyricsOnline,
     required this.audioHandler,
   });
 
@@ -1400,9 +1406,23 @@ class _ArtWorkWidgetState extends State<ArtWorkWidget> {
                 Lyrics.getOffLyrics(
                   widget.mediaItem.extras!['url'].toString(),
                 ).then((value) {
-                  lyrics['lyrics'] = value;
-                  lyrics['id'] = widget.mediaItem.id;
-                  done.value = true;
+                  if (value == '' && widget.getLyricsOnline) {
+                    Lyrics.getLyrics(
+                      id: widget.mediaItem.id,
+                      saavnHas:
+                          widget.mediaItem.extras?['has_lyrics'] == 'true',
+                      title: widget.mediaItem.title,
+                      artist: widget.mediaItem.artist.toString(),
+                    ).then((value) {
+                      lyrics['lyrics'] = value;
+                      lyrics['id'] = widget.mediaItem.id;
+                      done.value = true;
+                    });
+                  } else {
+                    lyrics['lyrics'] = value;
+                    lyrics['id'] = widget.mediaItem.id;
+                    done.value = true;
+                  }
                 });
               } else {
                 Lyrics.getLyrics(
@@ -2082,6 +2102,8 @@ class NameNControls extends StatelessWidget {
                     colors: [
                       Colors.black,
                       Colors.black,
+                      Colors.black,
+                      Colors.transparent,
                       Colors.transparent,
                     ],
                   ).createShader(

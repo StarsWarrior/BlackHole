@@ -17,7 +17,6 @@
  * Copyright (c) 2021-2022, Ankit Sangwan
  */
 
-import 'package:blackhole/CustomWidgets/add_playlist.dart';
 import 'package:blackhole/CustomWidgets/collage.dart';
 import 'package:blackhole/CustomWidgets/custom_physics.dart';
 import 'package:blackhole/CustomWidgets/data_search.dart';
@@ -26,8 +25,7 @@ import 'package:blackhole/CustomWidgets/empty_screen.dart';
 import 'package:blackhole/CustomWidgets/gradient_containers.dart';
 import 'package:blackhole/CustomWidgets/miniplayer.dart';
 import 'package:blackhole/CustomWidgets/playlist_head.dart';
-import 'package:blackhole/CustomWidgets/snackbar.dart';
-import 'package:blackhole/Helpers/mediaitem_converter.dart';
+import 'package:blackhole/CustomWidgets/song_tile_trailing_menu.dart';
 import 'package:blackhole/Helpers/songs_count.dart' as songs_count;
 import 'package:blackhole/Screens/Library/show_songs.dart';
 import 'package:blackhole/Screens/Player/audioplayer.dart';
@@ -265,30 +263,32 @@ class _LikedSongsState extends State<LikedSongs>
   }
 
   void deleteLiked(Map song) {
-    likedBox!.delete(song['id']);
-    if (_albums[song['album']]!.length == 1) {
-      _sortedAlbumKeysList.remove(song['album']);
-    }
-    _albums[song['album']]!.remove(song);
+    setState(() {
+      likedBox!.delete(song['id']);
+      if (_albums[song['album']]!.length == 1) {
+        _sortedAlbumKeysList.remove(song['album']);
+      }
+      _albums[song['album']]!.remove(song);
 
-    if (_artists[song['artist']]!.length == 1) {
-      _sortedArtistKeysList.remove(song['artist']);
-    }
-    _artists[song['artist']]!.remove(song);
+      if (_artists[song['artist']]!.length == 1) {
+        _sortedArtistKeysList.remove(song['artist']);
+      }
+      _artists[song['artist']]!.remove(song);
 
-    if (_genres[song['genre']]!.length == 1) {
-      _sortedGenreKeysList.remove(song['genre']);
-    }
-    _genres[song['genre']]!.remove(song);
+      if (_genres[song['genre']]!.length == 1) {
+        _sortedGenreKeysList.remove(song['genre']);
+      }
+      _genres[song['genre']]!.remove(song);
 
-    _songs.remove(song);
-    songs_count.addSongsCount(
-      widget.playlistName,
-      _songs.length,
-      _songs.length >= 4
-          ? _songs.sublist(0, 4)
-          : _songs.sublist(0, _songs.length),
-    );
+      _songs.remove(song);
+      songs_count.addSongsCount(
+        widget.playlistName,
+        _songs.length,
+        _songs.length >= 4
+            ? _songs.sublist(0, 4)
+            : _songs.sublist(0, _songs.length),
+      );
+    });
   }
 
   @override
@@ -728,74 +728,10 @@ class _SongsTabState extends State<SongsTab>
                             data: widget.songs[index] as Map,
                             icon: 'download',
                           ),
-                          PopupMenuButton(
-                            icon: const Icon(
-                              Icons.more_vert_rounded,
-                            ),
-                            shape: const RoundedRectangleBorder(
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(15.0),
-                              ),
-                            ),
-                            itemBuilder: (context) => [
-                              PopupMenuItem(
-                                value: 0,
-                                child: Row(
-                                  children: [
-                                    const Icon(
-                                      Icons.delete_rounded,
-                                    ),
-                                    const SizedBox(
-                                      width: 10.0,
-                                    ),
-                                    Text(
-                                      AppLocalizations.of(
-                                        context,
-                                      )!
-                                          .remove,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              PopupMenuItem(
-                                value: 1,
-                                child: Row(
-                                  children: [
-                                    const Icon(
-                                      Icons.playlist_add_rounded,
-                                    ),
-                                    const SizedBox(
-                                      width: 10.0,
-                                    ),
-                                    Text(
-                                      AppLocalizations.of(
-                                        context,
-                                      )!
-                                          .addToPlaylist,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                            onSelected: (int? value) async {
-                              if (value == 1) {
-                                AddToPlaylist().addToPlaylist(
-                                  context,
-                                  MediaItemConverter.mapToMediaItem(
-                                    widget.songs[index] as Map,
-                                  ),
-                                );
-                              }
-                              if (value == 0) {
-                                ShowSnackBar().showSnackBar(
-                                  context,
-                                  '${AppLocalizations.of(context)!.removed} ${widget.songs[index]["title"]} ${AppLocalizations.of(context)!.from} ${widget.playlistName}',
-                                );
-                                setState(() {
-                                  widget.onDelete(widget.songs[index] as Map);
-                                });
-                              }
-                            },
+                          SongTileTrailingMenu(
+                            data: widget.songs[index] as Map,
+                            isPlaylist: true,
+                            deleteLiked: widget.onDelete,
                           ),
                         ],
                       ),

@@ -140,6 +140,7 @@ class _MyAppState extends State<MyApp> {
     final String lang =
         Hive.box('settings').get('lang', defaultValue: 'English') as String;
     final Map<String, String> codes = {
+      'Chinese': 'zh',
       'English': 'en',
       'French': 'fr',
       'German': 'de',
@@ -148,6 +149,7 @@ class _MyAppState extends State<MyApp> {
       'Russian': 'ru',
       'Spanish': 'es',
       'Tamil': 'ta',
+      'Turkish': 'tr',
     };
     _locale = Locale(codes[lang]!);
 
@@ -214,6 +216,7 @@ class _MyAppState extends State<MyApp> {
         GlobalCupertinoLocalizations.delegate,
       ],
       supportedLocales: const [
+        Locale('zh', ''), // Chinese
         Locale('en', ''), // English, no country code
         Locale('fr', ''), // French
         Locale('de', ''), // German
@@ -222,6 +225,7 @@ class _MyAppState extends State<MyApp> {
         Locale('ru', ''), // Russian
         Locale('es', ''), // Spanish
         Locale('ta', ''), // Tamil
+        Locale('tr', ''), // Turkish
       ],
       routes: {
         '/': (context) => initialFuntion(),

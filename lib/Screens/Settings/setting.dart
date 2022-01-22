@@ -2306,6 +2306,7 @@ class _SettingPageState extends State<SettingPage> {
                             underline: const SizedBox(),
                             onChanged: (String? newValue) {
                               final Map<String, String> codes = {
+                                'Chinese': 'zh',
                                 'English': 'en',
                                 'French': 'fr',
                                 'German': 'de',
@@ -2314,6 +2315,7 @@ class _SettingPageState extends State<SettingPage> {
                                 'Russian': 'ru',
                                 'Spanish': 'es',
                                 'Tamil': 'ta',
+                                'Turkish': 'tr',
                               };
                               if (newValue != null) {
                                 setState(
@@ -2330,6 +2332,7 @@ class _SettingPageState extends State<SettingPage> {
                               }
                             },
                             items: <String>[
+                              'Chinese',
                               'English',
                               'French',
                               'German',
@@ -2337,7 +2340,8 @@ class _SettingPageState extends State<SettingPage> {
                               'Portuguese',
                               'Russian',
                               'Spanish',
-                              'Tamil'
+                              'Tamil',
+                              'Turkish',
                             ].map<DropdownMenuItem<String>>((String value) {
                               return DropdownMenuItem<String>(
                                 value: value,
@@ -2651,6 +2655,23 @@ class _SettingPageState extends State<SettingPage> {
                                 .useDownSub,
                           ),
                           keyName: 'useDown',
+                          isThreeLine: true,
+                          defaultValue: true,
+                        ),
+                        BoxSwitchTile(
+                          title: Text(
+                            AppLocalizations.of(
+                              context,
+                            )!
+                                .getLyricsOnline,
+                          ),
+                          subtitle: Text(
+                            AppLocalizations.of(
+                              context,
+                            )!
+                                .getLyricsOnlineSub,
+                          ),
+                          keyName: 'getLyricsOnline',
                           isThreeLine: true,
                           defaultValue: true,
                         ),
