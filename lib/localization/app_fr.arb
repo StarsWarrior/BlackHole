@@ -616,5 +616,11 @@
   "downFilenameSub": "Les morceaux seront téléchargés selon le format de nom de fichier suivant",
   "@downFilenameSub": {},
   "included": "Inclus",
-  "@included": {}
+  "@included": {},
+  "getLyricsOnline": "Recherche de paroles de chansons locales",
+  "@getLyricsOnline": {},
+  "getLyricsOnlineSub": "Recherchez en ligne si les paroles ne sont pas disponibles/téléchargées pour une chanson hors ligne",
+  "@getLyricsOnlineSub": {},
+  "importResso": "Importer depuis Resso",
+  "@importResso": {}
 }
