@@ -616,5 +616,11 @@
   "welcome": "欢迎使用",
   "@welcome": {},
   "youTube": "YouTube",
-  "@youTube": {}
+  "@youTube": {},
+  "getLyricsOnline": "搜索本地歌曲的歌词",
+  "@getLyricsOnline": {},
+  "getLyricsOnlineSub": "如任何离线歌曲的歌词未下载或不可用，则在线搜索",
+  "@getLyricsOnlineSub": {},
+  "importResso": "从 Resso 导入",
+  "@importResso": {}
 }
