@@ -343,7 +343,7 @@
   "@connectingRadio": {},
   "contactUsSub": "கருத்துகள் பாராட்டப்படுகின்றன!",
   "@contactUsSub": {},
-  "createAlbumFold": "தொகுப்பு & பாச்சரப் பதிவிறக்கத்திற்கு அடைவை உருவாக்கு",
+  "createAlbumFold": "தொகுப்பு & பாச்சரப் பதிவிறக்க அடைவை உருவாக்கு",
   "@createAlbumFold": {},
   "createNewPlaylist": "புது பாச்சரத்தை உருவாக்கு",
   "@createNewPlaylist": {},
@@ -616,5 +616,9 @@
   "included": "அடங்கும்",
   "@included": {},
   "includeExcludeFolderSub": "உள்ளடக்கியது/விலக்குகிறது தேர்ந்தெடுக்கப்பட்ட கோப்புறைகள் 'என் இசை' பிரிவில் இருந்து",
-  "@includeExcludeFolderSub": {}
+  "@includeExcludeFolderSub": {},
+  "getLyricsOnline": "உள்ளூர் பாடல்களின் பாவரிகளைத் தேடு",
+  "@getLyricsOnline": {},
+  "getLyricsOnlineSub": "அணைவரி பாடலுக்கு பாவரிகள் கிடைக்க/பதிவிறக்கப்படவில்லை எனில் இணையத்தில் தேடு",
+  "@getLyricsOnlineSub": {}
 }
