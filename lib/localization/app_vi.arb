@@ -1,1 +1,8 @@
-{}
+{
+  "about": "Thông tin",
+  "@about": {},
+  "aboutLine1": "Đây là một dự án mã nguồn mở và có thể được tìm thấy trên",
+  "@aboutLine1": {},
+  "addNew": "Thêm Mới",
+  "@addNew": {}
+}
