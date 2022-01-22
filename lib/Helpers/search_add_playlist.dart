@@ -17,12 +17,15 @@
  * Copyright (c) 2021-2022, Ankit Sangwan
  */
 
+import 'dart:convert';
+
 import 'package:blackhole/APIs/api.dart';
 import 'package:blackhole/CustomWidgets/gradient_containers.dart';
 import 'package:blackhole/Helpers/playlist.dart';
 import 'package:blackhole/Services/youtube_services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:http/http.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
 // ignore: avoid_classes_with_only_static_members
@@ -51,7 +54,36 @@ class SearchAddPlaylist {
     }
   }
 
-  static Stream<Map> songsAdder(String playName, List tracks) async* {
+  static Future<Map> addRessoPlaylist(String inLink) async {
+    final String link = '$inLink&';
+    try {
+      final RegExpMatch? id = RegExp(r'.*id\=(.*?)&').firstMatch(link);
+      if (id != null) {
+        final List tracks = await getRessoSongs(playlistId: id[1]!);
+        return {
+          'title': 'Resso Playlist',
+          'count': tracks.length,
+          'tracks': tracks,
+        };
+      }
+      return {};
+    } catch (e) {
+      return {};
+    }
+  }
+
+  static Future<List> getRessoSongs({required String playlistId}) async {
+    const url = 'https://api.resso.app/resso/playlist/detail?playlist_id=';
+    final Uri link = Uri.parse(url + playlistId);
+    final Response response = await get(link);
+    if (response.statusCode != 200) {
+      return [];
+    }
+    final res = await jsonDecode(response.body);
+    return res['tracks'] as List;
+  }
+
+  static Stream<Map> ytSongsAdder(String playName, List tracks) async* {
     int _done = 0;
     for (final track in tracks) {
       String? trackName;
@@ -64,6 +96,32 @@ class SearchAddPlaylist {
       try {
         final List result =
             await SaavnAPI().fetchTopSearchResult(trackName!.split('|')[0]);
+        addMapToPlaylist(playName, result[0] as Map);
+      } catch (e) {
+        // print('Error in $_done: $e');
+      }
+    }
+  }
+
+  static Stream<Map> ressoSongsAdder(String playName, List tracks) async* {
+    int _done = 0;
+    for (final track in tracks) {
+      String? trackName;
+      String? artistName;
+      try {
+        trackName = track['name'].toString();
+        artistName = (track['artists'] as List)
+            .map((e) => e['name'])
+            .toList()
+            .join(', ');
+
+        yield {'done': ++_done, 'name': '$trackName - $artistName'};
+      } catch (e) {
+        yield {'done': ++_done, 'name': ''};
+      }
+      try {
+        final List result =
+            await SaavnAPI().fetchTopSearchResult('$trackName by $artistName');
         addMapToPlaylist(playName, result[0] as Map);
       } catch (e) {
         // print('Error in $_done: $e');

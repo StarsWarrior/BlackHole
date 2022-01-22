@@ -283,6 +283,8 @@
   "@importFile": {},
   "importPublicPlaylist": "Import Public Playlist",
   "@importPublicPlaylist": {},
+  "importResso": "Import from Resso",
+  "@importResso": {},
   "importSpotify": "Import from Spotify",
   "@importSpotify": {},
   "importSuccess": "Successfully imported",

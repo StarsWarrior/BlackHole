@@ -222,8 +222,70 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                               await SearchAddPlaylist.showProgress(
                                 data['count'] as int,
                                 context,
-                                SearchAddPlaylist.songsAdder(
+                                SearchAddPlaylist.ytSongsAdder(
                                   data['title'].toString(),
+                                  data['tracks'] as List,
+                                ),
+                              );
+                              setState(() {
+                                playlistNames = playlistNames;
+                              });
+                            } else {
+                              ShowSnackBar().showSnackBar(
+                                context,
+                                AppLocalizations.of(context)!.failedImport,
+                              );
+                            }
+                          },
+                        );
+                      },
+                    ),
+                    ListTile(
+                      title: Text(AppLocalizations.of(context)!.importResso),
+                      leading: Card(
+                        elevation: 0,
+                        color: Colors.transparent,
+                        child: SizedBox(
+                          width: 50,
+                          height: 50,
+                          child: Center(
+                            child: Icon(
+                              Icons.music_note_rounded,
+                              color: Theme.of(context).iconTheme.color,
+                            ),
+                          ),
+                        ),
+                      ),
+                      onTap: () async {
+                        await showTextInputDialog(
+                          context: context,
+                          title:
+                              AppLocalizations.of(context)!.enterPlaylistLink,
+                          initialText: '',
+                          keyboardType: TextInputType.url,
+                          onSubmitted: (value) async {
+                            final String link = value.trim();
+                            Navigator.pop(context);
+                            final Map data =
+                                await SearchAddPlaylist.addRessoPlaylist(link);
+                            if (data.isNotEmpty) {
+                              String playName = data['title'].toString();
+                              while (playlistNames.contains(playName) ||
+                                  await Hive.boxExists(value)) {
+                                // ignore: use_string_buffers
+                                playName = '$playName (1)';
+                              }
+                              playlistNames.add(playName);
+                              settingsBox.put(
+                                'playlistNames',
+                                playlistNames,
+                              );
+
+                              await SearchAddPlaylist.showProgress(
+                                data['count'] as int,
+                                context,
+                                SearchAddPlaylist.ressoSongsAdder(
+                                  playName,
                                   data['tracks'] as List,
                                 ),
                               );
