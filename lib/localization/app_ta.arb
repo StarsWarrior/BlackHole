@@ -622,5 +622,13 @@
   "getLyricsOnlineSub": "அணைவரி பாடலுக்கு பாவரிகள் கிடைக்க/பதிவிறக்கப்படவில்லை எனில் இணையத்தில் தேடு",
   "@getLyricsOnlineSub": {},
   "importResso": "ரெசோவிலிருந்து இறக்குமதிசெய்",
-  "@importResso": {}
+  "@importResso": {},
+  "ytStreamQualitySub": "உயர்தரம் கூடுதல் தரவைப் பயன்படுத்தும்",
+  "@ytStreamQualitySub": {},
+  "ytStreamQuality": "வலையொளி பாய்வு தரம்",
+  "@ytStreamQuality": {},
+  "ytDownQuality": "வலையொளி பதிவிறக்கத் தரம்",
+  "@ytDownQuality": {},
+  "ytDownQualitySub": "உயர்தரம் கூடுதல் வட்டிடம் பயன்படுத்தும்",
+  "@ytDownQualitySub": {}
 }
