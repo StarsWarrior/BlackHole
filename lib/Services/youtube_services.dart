@@ -47,56 +47,81 @@ class YouTubeServices {
       searchAuthority,
       paths['music'].toString(),
     );
-    final Response response = await get(link);
-    if (response.statusCode != 200) {
+    try {
+      final Response response = await get(link);
+      if (response.statusCode != 200) {
+        return {};
+      }
+      final String searchResults =
+          RegExp(r'(\"contents\":{.*?}),\"metadata\"', dotAll: true)
+              .firstMatch(response.body)![1]!;
+      final Map data = json.decode('{$searchResults}') as Map;
+
+      final List result = data['contents']['twoColumnBrowseResultsRenderer']
+              ['tabs'][0]['tabRenderer']['content']['sectionListRenderer']
+          ['contents'] as List;
+
+      final List headResult = data['header']['carouselHeaderRenderer']
+          ['contents'][0]['carouselItemRenderer']['carouselItems'] as List;
+
+      final List shelfRenderer = result.map((element) {
+        return element['itemSectionRenderer']['contents'][0]['shelfRenderer'];
+      }).toList();
+
+      final List finalResult = shelfRenderer.map((element) {
+        if (element['title']['runs'][0]['text'].trim() !=
+            'Highlights from Global Citizen Live') {
+          return {
+            'title': element['title']['runs'][0]['text'],
+            'playlists': element['title']['runs'][0]['text'].trim() == 'Charts'
+                ? formatChartItems(
+                    element['content']['horizontalListRenderer']['items']
+                        as List,
+                  )
+                : element['title']['runs'][0]['text']
+                        .toString()
+                        .contains('Music Videos')
+                    ? formatVideoItems(
+                        element['content']['horizontalListRenderer']['items']
+                            as List,
+                      )
+                    : formatItems(
+                        element['content']['horizontalListRenderer']['items']
+                            as List,
+                      ),
+          };
+        } else {
+          return null;
+        }
+      }).toList();
+
+      final List finalHeadResult = formatHeadItems(headResult);
+      finalResult.removeWhere((element) => element == null);
+
+      return {'body': finalResult, 'head': finalHeadResult};
+    } catch (e) {
       return {};
     }
-    final String searchResults =
-        RegExp(r'(\"contents\":{.*?}),\"metadata\"', dotAll: true)
-            .firstMatch(response.body)![1]!;
-    final Map data = json.decode('{$searchResults}') as Map;
+  }
 
-    final List result = data['contents']['twoColumnBrowseResultsRenderer']
-            ['tabs'][0]['tabRenderer']['content']['sectionListRenderer']
-        ['contents'] as List;
-
-    final List headResult = data['header']['carouselHeaderRenderer']['contents']
-        [0]['carouselItemRenderer']['carouselItems'] as List;
-
-    final List shelfRenderer = result.map((element) {
-      return element['itemSectionRenderer']['contents'][0]['shelfRenderer'];
-    }).toList();
-
-    final List finalResult = shelfRenderer.map((element) {
-      if (element['title']['runs'][0]['text'].trim() !=
-          'Highlights from Global Citizen Live') {
-        return {
-          'title': element['title']['runs'][0]['text'],
-          'playlists': element['title']['runs'][0]['text'].trim() == 'Charts'
-              ? formatChartItems(
-                  element['content']['horizontalListRenderer']['items'] as List,
-                )
-              : element['title']['runs'][0]['text']
-                      .toString()
-                      .contains('Music Videos')
-                  ? formatVideoItems(
-                      element['content']['horizontalListRenderer']['items']
-                          as List,
-                    )
-                  : formatItems(
-                      element['content']['horizontalListRenderer']['items']
-                          as List,
-                    ),
-        };
-      } else {
-        return null;
+  Future<List> getSearchSuggestions({required String query}) async {
+    const baseUrl =
+        'https://suggestqueries.google.com/complete/search?client=firefox&ds=yt&q=';
+    const headers = {
+      'User-Agent':
+          'Mozilla/5.0 (Windows NT 10.0; rv:96.0) Gecko/20100101 Firefox/96.0'
+    };
+    final Uri link = Uri.parse(baseUrl + query);
+    try {
+      final Response response = await get(link, headers: headers);
+      if (response.statusCode != 200) {
+        return [];
       }
-    }).toList();
-
-    final List finalHeadResult = formatHeadItems(headResult);
-    finalResult.removeWhere((element) => element == null);
-
-    return {'body': finalResult, 'head': finalHeadResult};
+      final List res = jsonDecode(response.body) as List;
+      return res[1] as List;
+    } catch (e) {
+      return [];
+    }
   }
 
   List formatVideoItems(List itemsList) {
@@ -235,10 +260,11 @@ class YouTubeServices {
 
   Future<Map?> formatVideo({
     required Video video,
-    String quality = 'High',
+    required String quality,
     // bool preferM4a = true,
   }) async {
     if (video.duration?.inSeconds == null) return null;
+    final List urls = await getUri(video);
     return {
       'id': video.id.value,
       'album': video.author,
@@ -249,7 +275,9 @@ class YouTubeServices {
       'secondImage': video.thumbnails.highResUrl,
       'language': 'YouTube',
       'genre': 'YouTube',
-      'url': await getUri(video, quality),
+      'url': quality == 'High' ? urls.last : urls.first,
+      'lowUrl': urls.first,
+      'highUrl': urls.last,
       'year': video.uploadDate?.year.toString(),
       '320kbps': 'false',
       'has_lyrics': 'false',
@@ -309,9 +337,8 @@ class YouTubeServices {
     return searchResults;
   }
 
-  Future<String> getUri(
+  Future<List<String>> getUri(
     Video video,
-    String quality,
     // {bool preferM4a = true}
   ) async {
     final StreamManifest manifest =
@@ -333,11 +360,9 @@ class YouTubeServices {
     //     }
     //   }
     // }
-    if (quality == 'High') {
-      final AudioOnlyStreamInfo streamInfo = sortedStreamInfo.last;
-      return streamInfo.url.toString();
-    }
-    final AudioOnlyStreamInfo streamInfo = sortedStreamInfo.first;
-    return streamInfo.url.toString();
+    return [
+      sortedStreamInfo.first.url.toString(),
+      sortedStreamInfo.last.url.toString(),
+    ];
   }
 }

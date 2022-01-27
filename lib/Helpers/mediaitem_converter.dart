@@ -36,6 +36,8 @@ class MediaItemConverter {
       'subtitle': mediaItem.extras?['subtitle'],
       'title': mediaItem.title,
       'url': mediaItem.extras!['url'].toString(),
+      'lowUrl': mediaItem.extras!['lowUrl']?.toString(),
+      'highUrl': mediaItem.extras!['highUrl']?.toString(),
       'year': mediaItem.extras?['year'].toString(),
       '320kbps': mediaItem.extras?['320kbps'],
       'quality': mediaItem.extras?['quality'],
@@ -69,6 +71,8 @@ class MediaItemConverter {
       genre: song['language'].toString(),
       extras: {
         'url': song['url'],
+        'lowUrl': song['lowUrl'],
+        'highUrl': song['highUrl'],
         'year': song['year'],
         'language': song['language'],
         '320kbps': song['320kbps'],

@@ -39,6 +39,8 @@ class Download with ChangeNotifier {
   final ValueNotifier<bool> remember = ValueNotifier<bool>(false);
   String preferredDownloadQuality = Hive.box('settings')
       .get('downloadQuality', defaultValue: '320 kbps') as String;
+  String preferredYtDownloadQuality = Hive.box('settings')
+      .get('ytDownloadQuality', defaultValue: 'High') as String;
   String downloadFormat = 'm4a';
   // Hive.box('settings').get('downloadFormat', defaultValue: 'm4a');
   bool createDownloadFolder = Hive.box('settings')
@@ -282,9 +284,7 @@ class Download with ChangeNotifier {
       final Directory? temp = await getDownloadsDirectory();
       appPath = temp!.path;
     }
-    // if (data['url'].toString().contains('google')) {
-    // filename = filename.replaceAll('.m4a', '.opus');
-    // }
+
     try {
       await File('$dlPath/$fileName')
           .create(recursive: true)
@@ -308,11 +308,26 @@ class Download with ChangeNotifier {
     }
     // debugPrint('Audio path $filepath');
     // debugPrint('Image path $filepath2');
+    String kUrl = data['url'].toString();
 
-    final String kUrl = data['url'].toString().replaceAll(
-          '_96.',
-          "_${preferredDownloadQuality.replaceAll(' kbps', '')}.",
-        );
+    if (data['url'].toString().contains('google')) {
+      // filename = filename.replaceAll('.m4a', '.opus');
+
+      kUrl = preferredYtDownloadQuality == 'High'
+          ? data['highUrl'].toString()
+          : data['lowUrl'].toString();
+      if (kUrl == 'null') {
+        kUrl = data['url'].toString();
+      }
+      log("low quality is ${data['lowUrl']}");
+      log("high quality is ${data['highUrl']}");
+    } else {
+      kUrl = kUrl.replaceAll(
+        '_96.',
+        "_${preferredDownloadQuality.replaceAll(' kbps', '')}.",
+      );
+    }
+
     final client = Client();
     final response = await client.send(Request('GET', Uri.parse(kUrl)));
     final int total = response.contentLength ?? 0;

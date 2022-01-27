@@ -17,14 +17,11 @@
  * Copyright (c) 2021-2022, Ankit Sangwan
  */
 
-import 'package:audio_service/audio_service.dart';
 import 'package:blackhole/CustomWidgets/bouncy_sliver_scroll_view.dart';
 import 'package:blackhole/CustomWidgets/copy_clipboard.dart';
 import 'package:blackhole/CustomWidgets/gradient_containers.dart';
 import 'package:blackhole/CustomWidgets/miniplayer.dart';
 import 'package:blackhole/CustomWidgets/song_tile_trailing_menu.dart';
-import 'package:blackhole/Helpers/add_mediitem_to_queue.dart';
-import 'package:blackhole/Helpers/mediaitem_converter.dart';
 import 'package:blackhole/Screens/Player/audioplayer.dart';
 import 'package:blackhole/Services/youtube_services.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -191,7 +188,7 @@ class _YouTubePlaylistState extends State<YouTubePlaylist> {
                                       quality: Hive.box('settings')
                                           .get(
                                             'ytQuality',
-                                            defaultValue: 'High',
+                                            defaultValue: 'Low',
                                           )
                                           .toString(),
                                     );
@@ -212,31 +209,31 @@ class _YouTubePlaylistState extends State<YouTubePlaylist> {
                                         ),
                                       ),
                                     );
-                                    for (var i = 0;
-                                        i < searchedList.length;
-                                        i++) {
-                                      YouTubeServices()
-                                          .formatVideo(
-                                        video: searchedList[i],
-                                        quality: Hive.box('settings')
-                                            .get(
-                                              'ytQuality',
-                                              defaultValue: 'High',
-                                            )
-                                            .toString(),
-                                      )
-                                          .then((songMap) {
-                                        final MediaItem mediaItem =
-                                            MediaItemConverter.mapToMediaItem(
-                                          songMap!,
-                                        );
-                                        addToNowPlaying(
-                                          context: context,
-                                          mediaItem: mediaItem,
-                                          showNotification: false,
-                                        );
-                                      });
-                                    }
+                                    // for (var i = 0;
+                                    //     i < searchedList.length;
+                                    //     i++) {
+                                    //   YouTubeServices()
+                                    //       .formatVideo(
+                                    //     video: searchedList[i],
+                                    //     quality: Hive.box('settings')
+                                    //         .get(
+                                    //           'ytQuality',
+                                    //           defaultValue: 'Low',
+                                    //         )
+                                    //         .toString(),
+                                    //   )
+                                    //       .then((songMap) {
+                                    //     final MediaItem mediaItem =
+                                    //         MediaItemConverter.mapToMediaItem(
+                                    //       songMap!,
+                                    //     );
+                                    //     addToNowPlaying(
+                                    //       context: context,
+                                    //       mediaItem: mediaItem,
+                                    //       showNotification: false,
+                                    //     );
+                                    //   });
+                                    // }
                                   },
                                   trailing: YtSongTileTrailingMenu(data: entry),
                                 ),

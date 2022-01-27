@@ -621,6 +621,14 @@
   "@yesReplace": {},
   "youTube": "YouTube",
   "@youTube": {},
+  "ytDownQuality": "YouTube Download Quality",
+  "@ytDownQuality": {},
+  "ytDownQualitySub": "Higher quality uses more disk space",
+  "@ytDownQualitySub": {},
   "ytLiveAlert": "Video is live. Please wait until the live stream finishes and try again.",
-  "@ytLiveAlert": {}
+  "@ytLiveAlert": {},
+  "ytStreamQuality": "YouTube Streaming Quality",
+  "@ytStreamQuality": {},
+  "ytStreamQualitySub": "Higher quality uses more data",
+  "@ytStreamQualitySub": {}
 }

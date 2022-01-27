@@ -1100,24 +1100,7 @@ class ControlButtons extends StatelessWidget {
                 : DownloadButton(
                     size: 20.0,
                     icon: 'download',
-                    data: {
-                      'id': mediaItem.id,
-                      'artist': mediaItem.artist.toString(),
-                      'album': mediaItem.album.toString(),
-                      'image': mediaItem.artUri.toString(),
-                      'duration': mediaItem.duration?.inSeconds.toString(),
-                      'title': mediaItem.title,
-                      'url': mediaItem.extras!['url'].toString(),
-                      'year': mediaItem.extras!['year'].toString(),
-                      'language': mediaItem.extras!['language'].toString(),
-                      'genre': mediaItem.genre?.toString(),
-                      '320kbps': mediaItem.extras?['320kbps'],
-                      'has_lyrics': mediaItem.extras?['has_lyrics'],
-                      'release_date': mediaItem.extras!['release_date'],
-                      'album_id': mediaItem.extras!['album_id'],
-                      'subtitle': mediaItem.extras!['subtitle'],
-                      'perma_url': mediaItem.extras!['perma_url'],
-                    },
+                    data: MediaItemConverter.mediaItemtoMap(mediaItem),
                   );
           default:
             break;
@@ -2041,29 +2024,9 @@ class NameNControls extends StatelessWidget {
                               if (!offline)
                                 DownloadButton(
                                   size: 25.0,
-                                  data: {
-                                    'id': mediaItem.id,
-                                    'artist': mediaItem.artist.toString(),
-                                    'album': mediaItem.album.toString(),
-                                    'image': mediaItem.artUri.toString(),
-                                    'duration': mediaItem.duration?.inSeconds
-                                        .toString(),
-                                    'title': mediaItem.title,
-                                    'url': mediaItem.extras!['url'].toString(),
-                                    'year':
-                                        mediaItem.extras!['year'].toString(),
-                                    'language': mediaItem.extras!['language']
-                                        .toString(),
-                                    'genre': mediaItem.genre?.toString(),
-                                    '320kbps': mediaItem.extras?['320kbps'],
-                                    'has_lyrics':
-                                        mediaItem.extras?['has_lyrics'],
-                                    'release_date':
-                                        mediaItem.extras!['release_date'],
-                                    'album_id': mediaItem.extras!['album_id'],
-                                    'subtitle': mediaItem.extras!['subtitle'],
-                                    'perma_url': mediaItem.extras!['perma_url'],
-                                  },
+                                  data: MediaItemConverter.mediaItemtoMap(
+                                    mediaItem,
+                                  ),
                                 )
                             ],
                           ),

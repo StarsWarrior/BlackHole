@@ -66,8 +66,12 @@ class _SettingPageState extends State<SettingPage> {
       .get('blacklistedHomeSections', defaultValue: []) as List;
   String streamingQuality = Hive.box('settings')
       .get('streamingQuality', defaultValue: '96 kbps') as String;
+  String ytQuality =
+      Hive.box('settings').get('ytQuality', defaultValue: 'Low') as String;
   String downloadQuality = Hive.box('settings')
       .get('downloadQuality', defaultValue: '320 kbps') as String;
+  String ytDownloadQuality = Hive.box('settings')
+      .get('ytDownloadQuality', defaultValue: 'High') as String;
   String lang =
       Hive.box('settings').get('lang', defaultValue: 'English') as String;
   String canvasColor =
@@ -1924,6 +1928,49 @@ class _SettingPageState extends State<SettingPage> {
                           ),
                           dense: true,
                         ),
+                        ListTile(
+                          title: Text(
+                            AppLocalizations.of(
+                              context,
+                            )!
+                                .ytStreamQuality,
+                          ),
+                          subtitle: Text(
+                            AppLocalizations.of(
+                              context,
+                            )!
+                                .ytStreamQualitySub,
+                          ),
+                          onTap: () {},
+                          trailing: DropdownButton(
+                            value: ytQuality,
+                            style: TextStyle(
+                              fontSize: 12,
+                              color:
+                                  Theme.of(context).textTheme.bodyText1!.color,
+                            ),
+                            underline: const SizedBox(),
+                            onChanged: (String? newValue) {
+                              if (newValue != null) {
+                                setState(
+                                  () {
+                                    ytQuality = newValue;
+                                    Hive.box('settings')
+                                        .put('ytQuality', newValue);
+                                  },
+                                );
+                              }
+                            },
+                            items: <String>['Low', 'High']
+                                .map<DropdownMenuItem<String>>((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              );
+                            }).toList(),
+                          ),
+                          dense: true,
+                        ),
                         BoxSwitchTile(
                           title: Text(
                             AppLocalizations.of(
@@ -2057,6 +2104,51 @@ class _SettingPageState extends State<SettingPage> {
                               }
                             },
                             items: <String>['96 kbps', '160 kbps', '320 kbps']
+                                .map<DropdownMenuItem<String>>((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(
+                                  value,
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                          dense: true,
+                        ),
+                        ListTile(
+                          title: Text(
+                            AppLocalizations.of(
+                              context,
+                            )!
+                                .ytDownQuality,
+                          ),
+                          subtitle: Text(
+                            AppLocalizations.of(
+                              context,
+                            )!
+                                .ytDownQualitySub,
+                          ),
+                          onTap: () {},
+                          trailing: DropdownButton(
+                            value: ytDownloadQuality,
+                            style: TextStyle(
+                              fontSize: 12,
+                              color:
+                                  Theme.of(context).textTheme.bodyText1!.color,
+                            ),
+                            underline: const SizedBox(),
+                            onChanged: (String? newValue) {
+                              if (newValue != null) {
+                                setState(
+                                  () {
+                                    ytDownloadQuality = newValue;
+                                    Hive.box('settings')
+                                        .put('ytDownloadQuality', newValue);
+                                  },
+                                );
+                              }
+                            },
+                            items: <String>['Low', 'High']
                                 .map<DropdownMenuItem<String>>((String value) {
                               return DropdownMenuItem<String>(
                                 value: value,

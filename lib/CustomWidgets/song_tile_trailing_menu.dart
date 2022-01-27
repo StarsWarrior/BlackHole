@@ -19,7 +19,7 @@
 
 import 'package:audio_service/audio_service.dart';
 import 'package:blackhole/CustomWidgets/add_playlist.dart';
-import 'package:blackhole/Helpers/add_mediitem_to_queue.dart';
+import 'package:blackhole/Helpers/add_mediaitem_to_queue.dart';
 import 'package:blackhole/Helpers/mediaitem_converter.dart';
 import 'package:blackhole/Screens/Common/song_list.dart';
 import 'package:blackhole/Screens/Search/albums.dart';
@@ -339,7 +339,7 @@ class _YtSongTileTrailingMenuState extends State<YtSongTileTrailingMenu> {
             quality: Hive.box('settings')
                 .get(
                   'ytQuality',
-                  defaultValue: 'High',
+                  defaultValue: 'Low',
                 )
                 .toString(),
           )

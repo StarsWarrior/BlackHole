@@ -256,7 +256,7 @@ class _YouTubeSearchPageState extends State<YouTubeSearchPage> {
                                             quality: Hive.box('settings')
                                                 .get(
                                                   'ytQuality',
-                                                  defaultValue: 'High',
+                                                  defaultValue: 'Low',
                                                 )
                                                 .toString(),
                                             // preferM4a: Hive.box(

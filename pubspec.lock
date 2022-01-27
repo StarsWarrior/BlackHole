@@ -243,7 +243,7 @@ packages:
       name: flutter_archive
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "4.1.0"
+    version: "4.1.1"
   flutter_blurhash:
     dependency: transitive
     description:
