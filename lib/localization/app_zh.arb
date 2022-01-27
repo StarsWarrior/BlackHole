@@ -622,5 +622,13 @@
   "getLyricsOnlineSub": "如任何离线歌曲的歌词未下载或不可用，则在线搜索",
   "@getLyricsOnlineSub": {},
   "importResso": "从 Resso 导入",
-  "@importResso": {}
+  "@importResso": {},
+  "ytDownQualitySub": "更高的画质需要更多的磁盘空间",
+  "@ytDownQualitySub": {},
+  "ytStreamQuality": "YouTube 在线播放画质",
+  "@ytStreamQuality": {},
+  "ytStreamQualitySub": "更高画质使用更多流量",
+  "@ytStreamQualitySub": {},
+  "ytDownQuality": "YouTube 下载画质",
+  "@ytDownQuality": {}
 }
