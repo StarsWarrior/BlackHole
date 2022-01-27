@@ -622,5 +622,13 @@
   "getLyricsOnlineSub": "Recherchez en ligne si les paroles ne sont pas disponibles/téléchargées pour une chanson hors ligne",
   "@getLyricsOnlineSub": {},
   "importResso": "Importer depuis Resso",
-  "@importResso": {}
+  "@importResso": {},
+  "ytStreamQuality": "Qualité du streaming sur YouTube",
+  "@ytStreamQuality": {},
+  "ytDownQuality": "Qualité de téléchargement de YouTube",
+  "@ytDownQuality": {},
+  "ytDownQualitySub": "Une qualité supérieure utilise plus d'espace disque",
+  "@ytDownQualitySub": {},
+  "ytStreamQualitySub": "Une qualité supérieure utilise plus de données",
+  "@ytStreamQualitySub": {}
 }
