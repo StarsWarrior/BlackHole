@@ -92,17 +92,23 @@ class _YouTubeSearchPageState extends State<YouTubeSearchPage> {
                 resizeToAvoidBottomInset: false,
                 backgroundColor: Colors.transparent,
                 body: SearchBar(
+                  isYt: true,
                   controller: _controller,
-                  liveSearch: liveSearch,
+                  liveSearch: true,
                   leading: IconButton(
                     icon: const Icon(Icons.arrow_back_rounded),
                     onPressed: () => Navigator.pop(context),
                   ),
                   hintText: AppLocalizations.of(context)!.searchYt,
+                  onQueryChanged: (_query) {
+                    return YouTubeServices()
+                        .getSearchSuggestions(query: _query);
+                  },
                   onSubmitted: (_query) async {
                     setState(() {
                       fetched = false;
                       query = _query;
+                      _controller.text = _query;
                       status = false;
                       searchedList = [];
                     });

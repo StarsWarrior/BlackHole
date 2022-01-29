@@ -40,10 +40,10 @@ class YouTube extends StatefulWidget {
 
 class _YouTubeState extends State<YouTube>
     with AutomaticKeepAliveClientMixin<YouTube> {
-  List ytSearch =
-      Hive.box('settings').get('ytSearch', defaultValue: []) as List;
-  bool showHistory =
-      Hive.box('settings').get('showHistory', defaultValue: true) as bool;
+  // List ytSearch =
+  // Hive.box('settings').get('ytSearch', defaultValue: []) as List;
+  // bool showHistory =
+  // Hive.box('settings').get('showHistory', defaultValue: true) as bool;
   final TextEditingController _controller = TextEditingController();
   // int _currentPage = 0;
   // final PageController _pageController = PageController(
@@ -112,8 +112,9 @@ class _YouTubeState extends State<YouTube>
       resizeToAvoidBottomInset: false,
       backgroundColor: Colors.transparent,
       body: SearchBar(
+        isYt: true,
         controller: _controller,
-        liveSearch: false,
+        liveSearch: true,
         showClose: false,
         hintText: AppLocalizations.of(context)!.searchYt,
         leading: Transform.rotate(
@@ -129,6 +130,9 @@ class _YouTubeState extends State<YouTube>
             tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
           ),
         ),
+        onQueryChanged: (_query) {
+          return YouTubeServices().getSearchSuggestions(query: _query);
+        },
         onSubmitted: (_query) {
           Navigator.push(
             context,
@@ -156,9 +160,6 @@ class _YouTubeState extends State<YouTube>
                   children: [
                     if (headList.isNotEmpty)
                       CarouselSlider.builder(
-                        // PageView.builder(
-                        // controller: _pageController,
-                        // physics: const BouncingScrollPhysics(),
                         itemCount: headList.length,
                         options: CarouselOptions(
                           height: boxSize + 20,
@@ -166,9 +167,6 @@ class _YouTubeState extends State<YouTube>
                           autoPlay: true,
                           enlargeCenterPage: true,
                         ),
-                        // onPageChanged: (int value) {
-                        // _currentPage = value;
-                        // },
                         itemBuilder: (
                           BuildContext context,
                           int index,
