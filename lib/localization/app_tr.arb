@@ -614,5 +614,19 @@
   "year": "Yıl",
   "@year": {},
   "yesReplace": "Evet ama eskisini değiştir",
-  "@yesReplace": {}
+  "@yesReplace": {},
+  "ytDownQuality": "YouTube İndirme Kalitesi",
+  "@ytDownQuality": {},
+  "ytStreamQuality": "YouTube Yayın Kalitesi",
+  "@ytStreamQuality": {},
+  "ytStreamQualitySub": "Daha yüksek kalite daha fazla veri kullanır",
+  "@ytStreamQualitySub": {},
+  "ytDownQualitySub": "Daha yüksek kalite daha fazla disk alanı kullanır",
+  "@ytDownQualitySub": {},
+  "getLyricsOnline": "Yerel şarkıların sözlerini ara",
+  "@getLyricsOnline": {},
+  "getLyricsOnlineSub": "Herhangi bir çevrimdışı şarkı için şarkı sözleri mevcut değilse/indirilmediyse çevrimiçi arama yapın",
+  "@getLyricsOnlineSub": {},
+  "importResso": "Resso'dan içe aktar",
+  "@importResso": {}
 }
