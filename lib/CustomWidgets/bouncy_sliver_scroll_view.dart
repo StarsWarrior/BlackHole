@@ -90,8 +90,14 @@ class BouncyImageSliverScrollView extends StatelessWidget {
             title: Text(
               title,
               textAlign: TextAlign.center,
+              overflow: TextOverflow.ellipsis,
             ),
             centerTitle: true,
+            titlePadding: const EdgeInsetsDirectional.only(
+              start: 72,
+              bottom: 16,
+              end: 120,
+            ),
             background: Stack(
               children: [
                 SizedBox.expand(
