@@ -277,7 +277,7 @@ class _DownloadsState extends State<Downloads>
     } catch (e) {
       ShowSnackBar().showSnackBar(
         context,
-        '${AppLocalizations.of(context)!.failedDelete}: ${audioFile.path}',
+        '${AppLocalizations.of(context)!.failedDelete}: ${audioFile.path}\nError: $e',
       );
     }
   }
@@ -759,7 +759,7 @@ Future<Map> editTags(Map song, BuildContext context) async {
               } catch (e) {
                 ShowSnackBar().showSnackBar(
                   context,
-                  AppLocalizations.of(context)!.failedTagEdit,
+                  '${AppLocalizations.of(context)!.failedTagEdit}\nError: $e',
                 );
               }
             },

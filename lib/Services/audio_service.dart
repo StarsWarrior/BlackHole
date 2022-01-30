@@ -132,10 +132,10 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
     loadStart =
         Hive.box('settings').get('loadStart', defaultValue: true) as bool;
     if (loadStart) {
-      final List recentList = await Hive.box('cache')
-          .get('recentSongs', defaultValue: [])?.toList() as List;
+      final List lastQueueList = await Hive.box('cache')
+          .get('lastQueue', defaultValue: [])?.toList() as List;
 
-      final List<MediaItem> lastQueue = recentList
+      final List<MediaItem> lastQueue = lastQueueList
           .map((e) => MediaItemConverter.mapToMediaItem(e as Map))
           .toList();
       await updateQueue(lastQueue);
@@ -331,6 +331,12 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
     Hive.box('cache').put('recentSongs', recentList);
   }
 
+  Future<void> addLastQueue(List<MediaItem> queue) async {
+    final lastQueue =
+        queue.map((item) => MediaItemConverter.mediaItemtoMap(item)).toList();
+    Hive.box('cache').put('lastQueue', lastQueue);
+  }
+
   @override
   Future<void> addQueueItem(MediaItem mediaItem) async {
     await _playlist.add(_itemToSource(mediaItem));
@@ -350,6 +356,7 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
   Future<void> updateQueue(List<MediaItem> newQueue) async {
     await _playlist.clear();
     await _playlist.addAll(_itemsToSources(newQueue));
+    addLastQueue(newQueue);
   }
 
   @override

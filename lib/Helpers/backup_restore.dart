@@ -104,7 +104,7 @@ Future<void> createBackup(
     } catch (e) {
       ShowSnackBar().showSnackBar(
         context,
-        AppLocalizations.of(context)!.failedCreateBackup,
+        '${AppLocalizations.of(context)!.failedCreateBackup}\nError: $e',
       );
     }
   } else {
@@ -151,7 +151,9 @@ Future<void> restore(
     ShowSnackBar()
         .showSnackBar(context, AppLocalizations.of(context)!.importSuccess);
   } catch (e) {
-    ShowSnackBar()
-        .showSnackBar(context, AppLocalizations.of(context)!.failedImport);
+    ShowSnackBar().showSnackBar(
+      context,
+      '${AppLocalizations.of(context)!.failedImport}\nError: $e',
+    );
   }
 }

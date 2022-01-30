@@ -86,10 +86,11 @@ class _SearchPageState extends State<SearchPage> {
 
   Future<void> fetchResults() async {
     // this fetches top 5 songs results
-    final List songResults = await SaavnAPI().fetchSongSearchResults(
+    final Map result = await SaavnAPI().fetchSongSearchResults(
       searchQuery: query == '' ? widget.query : query,
       count: 5,
     );
+    final List songResults = result['songs'] as List;
     if (songResults.isNotEmpty) searchedData['Songs'] = songResults;
     fetched = true;
     // this fetches albums, playlists, artists, etc

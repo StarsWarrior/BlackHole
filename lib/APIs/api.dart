@@ -86,7 +86,7 @@ class SaavnAPI {
       return myClient.get(url, headers: headers);
     }
     return get(url, headers: headers).onError((error, stackTrace) {
-      return Response('', 404);
+      return Response(error.toString(), 404);
     });
   }
 
@@ -184,7 +184,7 @@ class SaavnAPI {
     return List.empty();
   }
 
-  Future<List> fetchSongSearchResults({
+  Future<Map> fetchSongSearchResults({
     required String searchQuery,
     int count = 20,
     int page = 1,
@@ -197,12 +197,24 @@ class SaavnAPI {
       if (res.statusCode == 200) {
         final Map getMain = json.decode(res.body) as Map;
         final List responseList = getMain['results'] as List;
-        return await FormatResponse.formatSongsResponse(responseList, 'song');
+        return {
+          'songs':
+              await FormatResponse.formatSongsResponse(responseList, 'song'),
+          'error': '',
+        };
+      } else {
+        return {
+          'songs': List.empty(),
+          'error': res.body,
+        };
       }
     } catch (e) {
       log('Error in fetchSongSearchResults: $e');
+      return {
+        'songs': List.empty(),
+        'error': e,
+      };
     }
-    return List.empty();
   }
 
   Future<List<Map>> fetchSearchResults(String searchQuery) async {
@@ -336,15 +348,31 @@ class SaavnAPI {
     return List.empty();
   }
 
-  Future<List> fetchAlbumSongs(String albumId) async {
+  Future<Map> fetchAlbumSongs(String albumId) async {
     final String params = '${endpoints['albumDetails']}&cc=in&albumid=$albumId';
-    final res = await getResponse(params);
-    if (res.statusCode == 200) {
-      final getMain = json.decode(res.body);
-      final List responseList = getMain['list'] as List;
-      return FormatResponse.formatSongsResponse(responseList, 'album');
+    try {
+      final res = await getResponse(params);
+      if (res.statusCode == 200) {
+        final getMain = json.decode(res.body);
+        final List responseList = getMain['list'] as List;
+        return {
+          'songs':
+              await FormatResponse.formatSongsResponse(responseList, 'album'),
+          'error': '',
+        };
+      } else {
+        return {
+          'songs': List.empty(),
+          'error': res.body,
+        };
+      }
+    } catch (e) {
+      log('Error in fetchAlbumSongs: $e');
+      return {
+        'songs': List.empty(),
+        'error': e,
+      };
     }
-    return List.empty();
   }
 
   Future<Map<String, List>> fetchArtistSongs({
@@ -437,16 +465,34 @@ class SaavnAPI {
     return data;
   }
 
-  Future<List> fetchPlaylistSongs(String playlistId) async {
+  Future<Map> fetchPlaylistSongs(String playlistId) async {
     final String params =
         '${endpoints["playlistDetails"]}&cc=in&listid=$playlistId';
-    final res = await getResponse(params);
-    if (res.statusCode == 200) {
-      final getMain = json.decode(res.body);
-      final List responseList = getMain['list'] as List;
-      return FormatResponse.formatSongsResponse(responseList, 'playlist');
+    try {
+      final res = await getResponse(params);
+      if (res.statusCode == 200) {
+        final getMain = json.decode(res.body);
+        final List responseList = getMain['list'] as List;
+        return {
+          'songs': await FormatResponse.formatSongsResponse(
+            responseList,
+            'playlist',
+          ),
+          'error': '',
+        };
+      } else {
+        return {
+          'songs': List.empty(),
+          'error': res.body,
+        };
+      }
+    } catch (e) {
+      log('Error in fetchPlaylistSongs: $e');
+      return {
+        'songs': List.empty(),
+        'error': e,
+      };
     }
-    return List.empty();
   }
 
   Future<List> fetchTopSearchResult(String searchQuery) async {

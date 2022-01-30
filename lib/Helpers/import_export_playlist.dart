@@ -140,7 +140,7 @@ Future<List> importPlaylist(BuildContext context, List playlistNames) async {
   } catch (e) {
     ShowSnackBar().showSnackBar(
       context,
-      AppLocalizations.of(context)!.failedImport,
+      '${AppLocalizations.of(context)!.failedImport}\nError: $e',
     );
   }
   return playlistNames;

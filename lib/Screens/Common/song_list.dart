@@ -26,6 +26,7 @@ import 'package:blackhole/CustomWidgets/gradient_containers.dart';
 import 'package:blackhole/CustomWidgets/like_button.dart';
 import 'package:blackhole/CustomWidgets/miniplayer.dart';
 import 'package:blackhole/CustomWidgets/playlist_popupmenu.dart';
+import 'package:blackhole/CustomWidgets/snackbar.dart';
 import 'package:blackhole/CustomWidgets/song_tile_trailing_menu.dart';
 import 'package:blackhole/Screens/Player/audioplayer.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -86,10 +87,17 @@ class _SongsListPageState extends State<SongsListPage> {
         )
             .then((value) {
           setState(() {
-            songList.addAll(value);
+            songList.addAll(value['songs'] as List);
             fetched = true;
             loading = false;
           });
+          if (value['error'].toString() != '') {
+            ShowSnackBar().showSnackBar(
+              context,
+              'Error: ${value["error"]}',
+              duration: const Duration(seconds: 3),
+            );
+          }
         });
         break;
       case 'album':
@@ -97,9 +105,17 @@ class _SongsListPageState extends State<SongsListPage> {
             .fetchAlbumSongs(widget.listItem['id'].toString())
             .then((value) {
           setState(() {
-            songList = value;
+            songList = value['songs'] as List;
             fetched = true;
+            loading = false;
           });
+          if (value['error'].toString() != '') {
+            ShowSnackBar().showSnackBar(
+              context,
+              'Error: ${value["error"]}',
+              duration: const Duration(seconds: 3),
+            );
+          }
         });
         break;
       case 'playlist':
@@ -107,9 +123,17 @@ class _SongsListPageState extends State<SongsListPage> {
             .fetchPlaylistSongs(widget.listItem['id'].toString())
             .then((value) {
           setState(() {
-            songList = value;
+            songList = value['songs'] as List;
             fetched = true;
+            loading = false;
           });
+          if (value['error'].toString() != '') {
+            ShowSnackBar().showSnackBar(
+              context,
+              'Error: ${value["error"]}',
+              duration: const Duration(seconds: 3),
+            );
+          }
         });
         break;
       default:
@@ -136,15 +160,28 @@ class _SongsListPageState extends State<SongsListPage> {
                       ),
                     )
                   : songList.isEmpty
-                      ? emptyScreen(
-                          context,
-                          0,
-                          ':( ',
-                          100,
-                          AppLocalizations.of(context)!.sorry,
-                          60,
-                          AppLocalizations.of(context)!.resultsNotFound,
-                          20,
+                      ? Column(
+                          children: [
+                            AppBar(
+                              backgroundColor: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? Colors.transparent
+                                  : Theme.of(context).colorScheme.secondary,
+                              elevation: 0,
+                            ),
+                            Expanded(
+                              child: emptyScreen(
+                                context,
+                                0,
+                                ':( ',
+                                100,
+                                AppLocalizations.of(context)!.sorry,
+                                60,
+                                AppLocalizations.of(context)!.resultsNotFound,
+                                20,
+                              ),
+                            ),
+                          ],
                         )
                       : BouncyImageSliverScrollView(
                           scrollController: _scrollController,
@@ -171,7 +208,7 @@ class _SongsListPageState extends State<SongsListPage> {
                             ),
                           ],
                           title: unescape.convert(
-                            widget.listItem['title'] as String? ?? 'Songs',
+                            widget.listItem['title']?.toString() ?? 'Songs',
                           ),
                           placeholderImage: 'assets/album.png',
                           imageUrl: widget.listItem['image']

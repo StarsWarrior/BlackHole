@@ -324,7 +324,8 @@ class _AlbumDownloadButtonState extends State<AlbumDownloadButton> {
                           '${AppLocalizations.of(context)!.downingAlbum} "${widget.albumName}"',
                         );
 
-                        data = await SaavnAPI().fetchAlbumSongs(widget.albumId);
+                        data = (await SaavnAPI()
+                            .fetchAlbumSongs(widget.albumId))['songs'] as List;
                         for (final items in data) {
                           down.prepareDownload(
                             context,
