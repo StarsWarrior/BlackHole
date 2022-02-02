@@ -616,5 +616,19 @@
   "included": "Termasuk",
   "@included": {},
   "includedDetails": "Hanya lagu dari folder yang dipilih yang akan ditampilkan",
-  "@includedDetails": {}
+  "@includedDetails": {},
+  "ytStreamQualitySub": "Qualidade superior usa mais dados",
+  "@ytStreamQualitySub": {},
+  "importResso": "Importar do Resso",
+  "@importResso": {},
+  "ytDownQualitySub": "Maior qualidade necessita mais espaço no disco",
+  "@ytDownQualitySub": {},
+  "getLyricsOnlineSub": "Pesquisar online se as letras não estão disponíveis/descarregadas para qualquer música offline",
+  "@getLyricsOnlineSub": {},
+  "getLyricsOnline": "Pesquisar letras de canções locais",
+  "@getLyricsOnline": {},
+  "ytDownQuality": "Qualidade de descarregas do YouTube",
+  "@ytDownQuality": {},
+  "ytStreamQuality": "Qualidade de streaming do YouTube",
+  "@ytStreamQuality": {}
 }
