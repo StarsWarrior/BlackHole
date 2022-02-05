@@ -110,9 +110,13 @@ class Lyrics {
   }
 
   static Future<String> getOffLyrics(String path) async {
-    final Audiotagger tagger = Audiotagger();
-    final Tag? tags = await tagger.readTags(path: path);
-    return tags?.lyrics ?? '';
+    try {
+      final Audiotagger tagger = Audiotagger();
+      final Tag? tags = await tagger.readTags(path: path);
+      return tags?.lyrics ?? '';
+    } catch (e) {
+      return '';
+    }
   }
 
   static Future<String> getLyricsLink(String song, String artist) async {

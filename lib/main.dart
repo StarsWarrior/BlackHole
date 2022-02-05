@@ -144,6 +144,7 @@ class _MyAppState extends State<MyApp> {
       'English': 'en',
       'French': 'fr',
       'German': 'de',
+      'Hindi': 'hi',
       'Indonesian': 'id',
       'Portuguese': 'pt',
       'Russian': 'ru',
@@ -220,6 +221,7 @@ class _MyAppState extends State<MyApp> {
         Locale('en', ''), // English, no country code
         Locale('fr', ''), // French
         Locale('de', ''), // German
+        Locale('hi', ''), // Hindi
         Locale('id', ''), // Indonesian
         Locale('pt', ''), // Portuguese
         Locale('ru', ''), // Russian
