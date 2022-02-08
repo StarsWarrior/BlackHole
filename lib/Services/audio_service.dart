@@ -131,15 +131,6 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
         Hive.box('settings').get('autoplay', defaultValue: true) as bool;
     loadStart =
         Hive.box('settings').get('loadStart', defaultValue: true) as bool;
-    if (loadStart) {
-      final List lastQueueList = await Hive.box('cache')
-          .get('lastQueue', defaultValue: [])?.toList() as List;
-
-      final List<MediaItem> lastQueue = lastQueueList
-          .map((e) => MediaItemConverter.mapToMediaItem(e as Map))
-          .toList();
-      await updateQueue(lastQueue);
-    }
 
     mediaItem.whereType<MediaItem>().listen((item) {
       if (count != null) {
@@ -209,8 +200,29 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
         )
         .pipe(queue);
 
-    _playlist.addAll(queue.value.map(_itemToSource).toList());
-    await _player!.setAudioSource(_playlist);
+    if (loadStart) {
+      final List lastQueueList = await Hive.box('cache')
+          .get('lastQueue', defaultValue: [])?.toList() as List;
+
+      final int lastIndex =
+          await Hive.box('cache').get('lastIndex', defaultValue: 0) as int;
+
+      final int lastPos =
+          await Hive.box('cache').get('lastPos', defaultValue: 0) as int;
+
+      final List<MediaItem> lastQueue = lastQueueList
+          .map((e) => MediaItemConverter.mapToMediaItem(e as Map))
+          .toList();
+
+      await _playlist.addAll(_itemsToSources(lastQueue));
+      await _player!.setAudioSource(
+        _playlist,
+        initialIndex: lastIndex,
+        initialPosition: Duration(seconds: lastPos),
+      );
+    } else {
+      await _player!.setAudioSource(_playlist, preload: false);
+    }
   }
 
   AudioSource _itemToSource(MediaItem mediaItem) {
@@ -413,6 +425,8 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
     await playbackState.firstWhere(
       (state) => state.processingState == AudioProcessingState.idle,
     );
+    await Hive.box('cache').put('lastIndex', _player!.currentIndex);
+    await Hive.box('cache').put('lastPos', _player!.position.inSeconds);
   }
 
   @override
