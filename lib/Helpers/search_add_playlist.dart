@@ -57,7 +57,7 @@ class SearchAddPlaylist {
   static Future<Map> addRessoPlaylist(String inLink) async {
     final String link = '$inLink&';
     try {
-      final RegExpMatch? id = RegExp(r'.*id\=(.*?)&').firstMatch(link);
+      final RegExpMatch? id = RegExp(r'.*?id\=(.*)&').firstMatch(link);
       if (id != null) {
         final List tracks = await getRessoSongs(playlistId: id[1]!);
         return {
