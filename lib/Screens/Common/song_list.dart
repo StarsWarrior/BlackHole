@@ -150,14 +150,8 @@ class _SongsListPageState extends State<SongsListPage> {
             child: Scaffold(
               backgroundColor: Colors.transparent,
               body: !fetched
-                  ? SizedBox(
-                      child: Center(
-                        child: SizedBox(
-                          height: MediaQuery.of(context).size.width / 8,
-                          width: MediaQuery.of(context).size.width / 8,
-                          child: const CircularProgressIndicator(),
-                        ),
-                      ),
+                  ? const Center(
+                      child: CircularProgressIndicator(),
                     )
                   : songList.isEmpty
                       ? Column(

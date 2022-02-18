@@ -83,9 +83,8 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                       leading: Card(
                         elevation: 0,
                         color: Colors.transparent,
-                        child: SizedBox(
-                          width: 50,
-                          height: 50,
+                        child: SizedBox.square(
+                          dimension: 50,
                           child: Center(
                             child: Icon(
                               Icons.add_rounded,
@@ -125,9 +124,8 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                       leading: Card(
                         elevation: 0,
                         color: Colors.transparent,
-                        child: SizedBox(
-                          width: 50,
-                          height: 50,
+                        child: SizedBox.square(
+                          dimension: 50,
                           child: Center(
                             child: Icon(
                               MdiIcons.import,
@@ -148,9 +146,8 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                       leading: Card(
                         elevation: 0,
                         color: Colors.transparent,
-                        child: SizedBox(
-                          width: 50,
-                          height: 50,
+                        child: SizedBox.square(
+                          dimension: 50,
                           child: Center(
                             child: Icon(
                               MdiIcons.spotify,
@@ -189,9 +186,8 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                       leading: Card(
                         elevation: 0,
                         color: Colors.transparent,
-                        child: SizedBox(
-                          width: 50,
-                          height: 50,
+                        child: SizedBox.square(
+                          dimension: 50,
                           child: Center(
                             child: Icon(
                               MdiIcons.youtube,
@@ -245,9 +241,8 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                       leading: Card(
                         elevation: 0,
                         color: Colors.transparent,
-                        child: SizedBox(
-                          width: 50,
-                          height: 50,
+                        child: SizedBox.square(
+                          dimension: 50,
                           child: Center(
                             child: Icon(
                               Icons.music_note_rounded,
@@ -648,9 +643,8 @@ Future<void> fetchPlaylists(
                   leading: Card(
                     elevation: 0,
                     color: Colors.transparent,
-                    child: SizedBox(
-                      width: 50,
-                      height: 50,
+                    child: SizedBox.square(
+                      dimension: 50,
                       child: Center(
                         child: Icon(
                           Icons.add_rounded,

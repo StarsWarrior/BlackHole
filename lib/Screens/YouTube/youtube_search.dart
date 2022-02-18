@@ -114,13 +114,8 @@ class _YouTubeSearchPageState extends State<YouTubeSearchPage> {
                     });
                   },
                   body: (!fetched)
-                      ? SizedBox(
-                          child: Center(
-                            child: SizedBox.square(
-                              dimension: boxSize / 4,
-                              child: const CircularProgressIndicator(),
-                            ),
-                          ),
+                      ? const Center(
+                          child: CircularProgressIndicator(),
                         )
                       : searchedList.isEmpty
                           ? emptyScreen(
@@ -500,19 +495,15 @@ class _YouTubeSearchPageState extends State<YouTubeSearchPage> {
                                               mainAxisAlignment:
                                                   MainAxisAlignment.spaceEvenly,
                                               children: [
-                                                SizedBox.square(
-                                                  dimension: boxSize / 4,
-                                                  child:
-                                                      CircularProgressIndicator(
-                                                    valueColor:
-                                                        AlwaysStoppedAnimation<
-                                                            Color>(
-                                                      Theme.of(context)
-                                                          .colorScheme
-                                                          .secondary,
-                                                    ),
-                                                    strokeWidth: 5,
+                                                CircularProgressIndicator(
+                                                  valueColor:
+                                                      AlwaysStoppedAnimation<
+                                                          Color>(
+                                                    Theme.of(context)
+                                                        .colorScheme
+                                                        .secondary,
                                                   ),
+                                                  strokeWidth: 5,
                                                 ),
                                                 Text(
                                                   AppLocalizations.of(

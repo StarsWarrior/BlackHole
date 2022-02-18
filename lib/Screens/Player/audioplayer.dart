@@ -1272,16 +1272,14 @@ class NowPlayingStream extends StatelessWidget {
                         ),
                         clipBehavior: Clip.antiAlias,
                         child: (queue[index].artUri == null)
-                            ? const SizedBox(
-                                height: 50.0,
-                                width: 50.0,
+                            ? const SizedBox.square(
+                                dimension: 50,
                                 child: Image(
                                   image: AssetImage('assets/cover.jpg'),
                                 ),
                               )
-                            : SizedBox(
-                                height: 50.0,
-                                width: 50.0,
+                            : SizedBox.square(
+                                dimension: 50,
                                 child: queue[index]
                                         .artUri
                                         .toString()

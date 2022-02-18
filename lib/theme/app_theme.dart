@@ -41,6 +41,11 @@ class AppTheme {
               BorderSide(width: 1.5, color: currentTheme.currentColor()),
         ),
       ),
+      listTileTheme: ListTileThemeData(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(7.0),
+        ),
+      ),
       visualDensity: VisualDensity.adaptivePlatformDensity,
       appBarTheme: AppBarTheme(
         backgroundColor: currentTheme.currentColor(),
@@ -90,6 +95,11 @@ class AppTheme {
         focusedBorder: UnderlineInputBorder(
           borderSide:
               BorderSide(width: 1.5, color: currentTheme.currentColor()),
+        ),
+      ),
+      listTileTheme: ListTileThemeData(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(7.0),
         ),
       ),
       visualDensity: VisualDensity.adaptivePlatformDensity,

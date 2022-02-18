@@ -50,9 +50,8 @@ class AddToOffPlaylist {
                   leading: Card(
                     elevation: 0,
                     color: Colors.transparent,
-                    child: SizedBox(
-                      width: 50,
-                      height: 50,
+                    child: SizedBox.square(
+                      dimension: 50,
                       child: Center(
                         child: Icon(
                           Icons.add_rounded,
@@ -160,9 +159,8 @@ class AddToPlaylist {
                   leading: Card(
                     elevation: 0,
                     color: Colors.transparent,
-                    child: SizedBox(
-                      width: 50,
-                      height: 50,
+                    child: SizedBox.square(
+                      dimension: 50,
                       child: Center(
                         child: Icon(
                           Icons.add_rounded,
@@ -215,9 +213,8 @@ class AddToPlaylist {
                                   borderRadius: BorderRadius.circular(7.0),
                                 ),
                                 clipBehavior: Clip.antiAlias,
-                                child: const SizedBox(
-                                  height: 50,
-                                  width: 50,
+                                child: const SizedBox.square(
+                                  dimension: 50,
                                   child: Image(
                                     image: AssetImage(
                                       'assets/album.png',

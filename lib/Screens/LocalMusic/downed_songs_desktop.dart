@@ -361,14 +361,8 @@ class _DownloadedSongsDesktopState extends State<DownloadedSongsDesktop>
                   elevation: 0,
                 ),
                 body: !added
-                    ? SizedBox(
-                        child: Center(
-                          child: SizedBox(
-                            height: MediaQuery.of(context).size.width / 8,
-                            width: MediaQuery.of(context).size.width / 8,
-                            child: const CircularProgressIndicator(),
-                          ),
-                        ),
+                    ? const Center(
+                        child: CircularProgressIndicator(),
                       )
                     : TabBarView(
                         physics: const CustomPhysics(),

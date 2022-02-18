@@ -442,14 +442,8 @@ class _DownloadsState extends State<Downloads>
                   ],
                 ),
                 body: !added
-                    ? SizedBox(
-                        child: Center(
-                          child: SizedBox(
-                            height: MediaQuery.of(context).size.width / 8,
-                            width: MediaQuery.of(context).size.width / 8,
-                            child: const CircularProgressIndicator(),
-                          ),
-                        ),
+                    ? const Center(
+                        child: CircularProgressIndicator(),
                       )
                     : TabBarView(
                         physics: const CustomPhysics(),
@@ -859,9 +853,8 @@ class _DownSongsTabState extends State<DownSongsTab>
                           borderRadius: BorderRadius.circular(7.0),
                         ),
                         clipBehavior: Clip.antiAlias,
-                        child: SizedBox(
-                          height: 50.0,
-                          width: 50.0,
+                        child: SizedBox.square(
+                          dimension: 50,
                           child: Image(
                             fit: BoxFit.cover,
                             image: FileImage(

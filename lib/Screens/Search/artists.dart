@@ -79,14 +79,8 @@ class _ArtistSearchPageState extends State<ArtistSearchPage> {
             child: Scaffold(
               backgroundColor: Colors.transparent,
               body: !fetched
-                  ? SizedBox(
-                      child: Center(
-                        child: SizedBox(
-                          height: MediaQuery.of(context).size.width / 8,
-                          width: MediaQuery.of(context).size.width / 8,
-                          child: const CircularProgressIndicator(),
-                        ),
-                      ),
+                  ? const Center(
+                      child: CircularProgressIndicator(),
                     )
                   : data.isEmpty
                       ? emptyScreen(

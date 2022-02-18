@@ -234,14 +234,8 @@ class _SongsListState extends State<SongsList> {
                 elevation: 0,
               ),
               body: !processStatus
-                  ? SizedBox(
-                      child: Center(
-                        child: SizedBox(
-                          height: MediaQuery.of(context).size.width / 8,
-                          width: MediaQuery.of(context).size.width / 8,
-                          child: const CircularProgressIndicator(),
-                        ),
-                      ),
+                  ? const Center(
+                      child: CircularProgressIndicator(),
                     )
                   : ListView.builder(
                       physics: const BouncingScrollPhysics(),
@@ -270,9 +264,8 @@ class _SongsListState extends State<SongsList> {
                                             if (_songs[index]['image'] == null)
                                               const SizedBox()
                                             else
-                                              SizedBox(
-                                                height: 50.0,
-                                                width: 50.0,
+                                              SizedBox.square(
+                                                dimension: 50,
                                                 child: Image(
                                                   fit: BoxFit.cover,
                                                   image: FileImage(

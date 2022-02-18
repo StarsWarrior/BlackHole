@@ -83,14 +83,8 @@ class _YouTubePlaylistState extends State<YouTubePlaylist> {
               body: Stack(
                 children: [
                   if (!fetched)
-                    SizedBox(
-                      child: Center(
-                        child: SizedBox(
-                          height: MediaQuery.of(context).size.width / 8,
-                          width: MediaQuery.of(context).size.width / 8,
-                          child: const CircularProgressIndicator(),
-                        ),
-                      ),
+                    const Center(
+                      child: CircularProgressIndicator(),
                     )
                   else
                     BouncyImageSliverScrollView(
@@ -113,9 +107,8 @@ class _YouTubePlaylistState extends State<YouTubePlaylist> {
                                       ),
                                     ),
                                     clipBehavior: Clip.antiAlias,
-                                    child: SizedBox(
-                                      height: 50.0,
-                                      width: 50.0,
+                                    child: SizedBox.square(
+                                      dimension: 50,
                                       child: CachedNetworkImage(
                                         fit: BoxFit.cover,
                                         errorWidget: (context, _, __) =>
@@ -269,17 +262,11 @@ class _YouTubePlaylistState extends State<YouTubePlaylist> {
                                       textAlign: TextAlign.center,
                                     ),
                                   ),
-                                  SizedBox(
-                                    height:
-                                        MediaQuery.of(context).size.width / 8,
-                                    width:
-                                        MediaQuery.of(context).size.width / 8,
-                                    child: CircularProgressIndicator(
-                                      valueColor: AlwaysStoppedAnimation<Color>(
-                                        Theme.of(context).colorScheme.secondary,
-                                      ),
-                                      strokeWidth: 5,
+                                  CircularProgressIndicator(
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                      Theme.of(context).colorScheme.secondary,
                                     ),
+                                    strokeWidth: 5,
                                   ),
                                   Text(
                                     AppLocalizations.of(context)!

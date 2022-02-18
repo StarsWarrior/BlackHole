@@ -293,9 +293,8 @@ class DownloadsSearch extends SearchDelegate {
             borderRadius: BorderRadius.circular(7.0),
           ),
           clipBehavior: Clip.antiAlias,
-          child: SizedBox(
-            height: 50.0,
-            width: 50.0,
+          child: SizedBox.square(
+            dimension: 50,
             child: isDowns
                 ? Image(
                     fit: BoxFit.cover,
@@ -385,9 +384,8 @@ class DownloadsSearch extends SearchDelegate {
             borderRadius: BorderRadius.circular(7.0),
           ),
           clipBehavior: Clip.antiAlias,
-          child: SizedBox(
-            height: 50.0,
-            width: 50.0,
+          child: SizedBox.square(
+            dimension: 50,
             child: isDowns
                 ? Image(
                     fit: BoxFit.cover,

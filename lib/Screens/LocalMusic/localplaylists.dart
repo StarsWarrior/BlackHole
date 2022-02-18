@@ -54,9 +54,8 @@ class _LocalPlaylistsState extends State<LocalPlaylists> {
             leading: Card(
               elevation: 0,
               color: Colors.transparent,
-              child: SizedBox(
-                width: 50,
-                height: 50,
+              child: SizedBox.square(
+                dimension: 50,
                 child: Center(
                   child: Icon(
                     Icons.add_rounded,

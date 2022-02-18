@@ -17,6 +17,7 @@
  * Copyright (c) 2021-2022, Ankit Sangwan
  */
 
+import 'package:blackhole/CustomWidgets/on_hover.dart';
 import 'package:blackhole/CustomWidgets/search_bar.dart';
 import 'package:blackhole/Screens/YouTube/youtube_playlist.dart';
 import 'package:blackhole/Screens/YouTube/youtube_search.dart';
@@ -146,12 +147,8 @@ class _YouTubeState extends State<YouTube>
           _controller.text = '';
         },
         body: (searchedList.isEmpty)
-            ? Center(
-                child: SizedBox(
-                  height: boxSize / 4,
-                  width: boxSize / 4,
-                  child: const CircularProgressIndicator(),
-                ),
+            ? const Center(
+                child: CircularProgressIndicator(),
               )
             : SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),
@@ -282,10 +279,10 @@ class _YouTubeState extends State<YouTube>
                                       width: item['type'] != 'playlist'
                                           ? (boxSize - 30) * (16 / 9)
                                           : boxSize - 30,
-                                      child: Column(
-                                        children: [
-                                          Expanded(
-                                            child: Card(
+                                      child: HoverBox(
+                                        child: Column(
+                                          children: [
+                                            Card(
                                               elevation: 5,
                                               shape: RoundedRectangleBorder(
                                                 borderRadius:
@@ -322,29 +319,62 @@ class _YouTubeState extends State<YouTube>
                                                 ),
                                               ),
                                             ),
-                                          ),
-                                          Text(
-                                            '${item["title"]}',
-                                            textAlign: TextAlign.center,
-                                            softWrap: false,
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                          Text(
-                                            item['type'] != 'video'
-                                                ? '${item["count"]} Tracks | ${item["description"]}'
-                                                : '${item["count"]} | ${item["description"]}',
-                                            textAlign: TextAlign.center,
-                                            softWrap: false,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: TextStyle(
-                                              fontSize: 11,
-                                              color: Theme.of(context)
-                                                  .textTheme
-                                                  .caption!
-                                                  .color,
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                horizontal: 10.0,
+                                              ),
+                                              child: Column(
+                                                children: [
+                                                  Text(
+                                                    '${item["title"]}',
+                                                    textAlign: TextAlign.center,
+                                                    softWrap: false,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                  ),
+                                                  Text(
+                                                    item['type'] != 'video'
+                                                        ? '${item["count"]} Tracks | ${item["description"]}'
+                                                        : '${item["count"]} | ${item["description"]}',
+                                                    textAlign: TextAlign.center,
+                                                    softWrap: false,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    style: TextStyle(
+                                                      fontSize: 11,
+                                                      color: Theme.of(context)
+                                                          .textTheme
+                                                          .caption!
+                                                          .color,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
                                             ),
-                                          )
-                                        ],
+                                          ],
+                                        ),
+                                        builder: (
+                                          BuildContext context,
+                                          bool isHover,
+                                          Widget? child,
+                                        ) {
+                                          return Card(
+                                            color: isHover
+                                                ? null
+                                                : Colors.transparent,
+                                            elevation: isHover ? 5 : 0,
+                                            margin: EdgeInsets.zero,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                10.0,
+                                              ),
+                                            ),
+                                            clipBehavior: Clip.antiAlias,
+                                            child: child,
+                                          );
+                                        },
                                       ),
                                     ),
                                   );
