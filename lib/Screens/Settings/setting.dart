@@ -1295,7 +1295,40 @@ class _SettingPageState extends State<SettingPage> {
                           defaultValue: false,
                           isThreeLine: false,
                         ),
-
+                        BoxSwitchTile(
+                          title: Text(
+                            AppLocalizations.of(
+                              context,
+                            )!
+                                .useDominantAndDarkerColors,
+                          ),
+                          subtitle: Text(
+                            AppLocalizations.of(
+                              context,
+                            )!
+                                .useDominantAndDarkerColorsSub,
+                          ),
+                          keyName: 'useDominantAndDarkerColors',
+                          defaultValue: false,
+                          isThreeLine: false,
+                        ),
+                        BoxSwitchTile(
+                          title: Text(
+                            AppLocalizations.of(
+                              context,
+                            )!
+                                .useBlurForNowPlaying,
+                          ),
+                          subtitle: Text(
+                            AppLocalizations.of(
+                              context,
+                            )!
+                                .useBlurForNowPlayingSub,
+                          ),
+                          keyName: 'useBlurForNowPlaying',
+                          defaultValue: false,
+                          isThreeLine: false,
+                        ),
                         BoxSwitchTile(
                           title: Text(
                             AppLocalizations.of(

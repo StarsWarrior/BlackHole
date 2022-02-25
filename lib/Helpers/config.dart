@@ -40,7 +40,7 @@ class MyTheme with ChangeNotifier {
       Hive.box('settings').get('bottomGrad', defaultValue: 3) as int;
 
   int colorHue = Hive.box('settings').get('colorHue', defaultValue: 400) as int;
-  Color? playGradientColor;
+  List<Color?>? playGradientColor;
 
   List<List<Color>> get backOpt => _backOpt;
   List<List<Color>> get cardOpt => _cardOpt;

@@ -20,22 +20,50 @@
 import 'package:blackhole/Helpers/config.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:hive/hive.dart';
 import 'package:palette_generator/palette_generator.dart';
 
-Future<Color> getColors(ImageProvider imageProvider) async {
+Future<List<Color>> getColors(ImageProvider imageProvider) async {
+  final bool useDominantAndDarkerColors =
+      Hive.box('settings').get('useDominantAndDarkerColors') as bool;
   PaletteGenerator paletteGenerator;
   paletteGenerator = await PaletteGenerator.fromImageProvider(imageProvider);
-  Color dominantColor = paletteGenerator.dominantColor?.color ?? Colors.black;
-  if (dominantColor.computeLuminance() > 0.6) {
-    Color contrastColor =
-        paletteGenerator.darkMutedColor?.color ?? Colors.black;
-    if (dominantColor == contrastColor) {
-      contrastColor = paletteGenerator.lightMutedColor?.color ?? Colors.white;
-    }
-    if (contrastColor.computeLuminance() < 0.6) {
-      dominantColor = contrastColor;
-    }
+  final Color dominantColor =
+      paletteGenerator.dominantColor?.color ?? Colors.black;
+  Color darkMutedColor = paletteGenerator.darkMutedColor?.color ?? Colors.black;
+  final Color lightMutedColor =
+      paletteGenerator.lightMutedColor?.color ?? dominantColor;
+  if (useDominantAndDarkerColors == false) {
+    darkMutedColor = Colors.black;
   }
-  GetIt.I<MyTheme>().playGradientColor = dominantColor;
-  return dominantColor;
+  if (dominantColor.computeLuminance() < darkMutedColor.computeLuminance()) {
+    // checks if the luminance of the darkMuted color is > than the luminance of the dominant
+    GetIt.I<MyTheme>().playGradientColor = [
+      darkMutedColor,
+      dominantColor,
+    ];
+    return [
+      darkMutedColor,
+      dominantColor,
+    ];
+  } else if (dominantColor == darkMutedColor) {
+    // if the two colors are the same, it will replace dominantColor by lightMutedColor
+    GetIt.I<MyTheme>().playGradientColor = [
+      lightMutedColor,
+      darkMutedColor,
+    ];
+    return [
+      lightMutedColor,
+      darkMutedColor,
+    ];
+  } else {
+    GetIt.I<MyTheme>().playGradientColor = [
+      dominantColor,
+      darkMutedColor,
+    ];
+    return [
+      dominantColor,
+      darkMutedColor,
+    ];
+  }
 }

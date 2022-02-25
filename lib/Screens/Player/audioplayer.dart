@@ -20,6 +20,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:math';
+import 'dart:ui' as ui;
 
 import 'package:audio_service/audio_service.dart';
 import 'package:blackhole/CustomWidgets/add_playlist.dart';
@@ -90,6 +91,8 @@ class _PlayScreenState extends State<PlayScreen> {
       Hive.box('settings').get('getLyricsOnline', defaultValue: true) as bool;
   bool useFullScreenGradient = Hive.box('settings')
       .get('useFullScreenGradient', defaultValue: false) as bool;
+  bool useDominantAndDarkerColors = Hive.box('settings')
+      .get('useDominantAndDarkerColors', defaultValue: false) as bool;
   List<MediaItem> globalQueue = [];
   int globalIndex = 0;
   List response = [];
@@ -97,8 +100,8 @@ class _PlayScreenState extends State<PlayScreen> {
   bool fromDownloads = false;
   String defaultCover = '';
   final MyTheme currentTheme = GetIt.I<MyTheme>();
-  final ValueNotifier<Color?> gradientColor =
-      ValueNotifier<Color?>(GetIt.I<MyTheme>().playGradientColor);
+  final ValueNotifier<List<Color?>?> gradientColor =
+      ValueNotifier<List<Color?>?>(GetIt.I<MyTheme>().playGradientColor);
   final PanelController _panelController = PanelController();
   final AudioPlayerHandler audioHandler = GetIt.I<AudioPlayerHandler>();
   GlobalKey<FlipCardState> cardKey = GlobalKey<FlipCardState>();
@@ -292,6 +295,11 @@ class _PlayScreenState extends State<PlayScreen> {
     }
   }
 
+  void updateBackgroundColors(List<Color?> value) {
+    gradientColor.value = value;
+    return;
+  }
+
   String format(String msg) {
     return '${msg[0].toUpperCase()}${msg.substring(1)}: '.replaceAll('_', ' ');
   }
@@ -319,12 +327,12 @@ class _PlayScreenState extends State<PlayScreen> {
                       mediaItem.artUri!.toFilePath(),
                     ),
                   ),
-                ).then((value) => gradientColor.value = value)
+                ).then((value) => updateBackgroundColors(value))
               : getColors(
                   CachedNetworkImageProvider(
                     mediaItem.artUri.toString(),
                   ),
-                ).then((value) => gradientColor.value = value);
+                ).then((value) => updateBackgroundColors(value));
           return ValueListenableBuilder(
             valueListenable: gradientColor,
             child: SafeArea(
@@ -759,7 +767,8 @@ class _PlayScreenState extends State<PlayScreen> {
                 // }
               ),
             ),
-            builder: (BuildContext context, Color? value, Widget? child) {
+            builder:
+                (BuildContext context, List<Color?>? value, Widget? child) {
               return AnimatedContainer(
                 duration: const Duration(milliseconds: 600),
                 decoration: BoxDecoration(
@@ -781,11 +790,15 @@ class _PlayScreenState extends State<PlayScreen> {
                               ]
                         : Theme.of(context).brightness == Brightness.dark
                             ? [
-                                value ?? Colors.grey[900]!,
-                                currentTheme.getPlayGradient(),
+                                value?[0] ?? Colors.grey[900]!,
+                                if (!useDominantAndDarkerColors ||
+                                    !useFullScreenGradient)
+                                  Colors.black
+                                else
+                                  value?[1] ?? Colors.black
                               ]
                             : [
-                                value ?? const Color(0xfff5f9ff),
+                                value?[0] ?? const Color(0xfff5f9ff),
                                 Colors.white,
                               ],
                   ),
@@ -958,8 +971,8 @@ class ControlButtons extends StatelessWidget {
     this.audioHandler, {
     this.shuffle = false,
     this.miniplayer = false,
-    this.dominantColor,
     this.buttons = const ['Previous', 'Play/Pause', 'Next'],
+    this.dominantColor,
   });
 
   @override
@@ -987,7 +1000,7 @@ class ControlButtons extends StatelessWidget {
                   icon: const Icon(Icons.skip_previous_rounded),
                   iconSize: miniplayer ? 24.0 : 45.0,
                   tooltip: AppLocalizations.of(context)!.skipPrevious,
-                  color: Theme.of(context).iconTheme.color,
+                  color: dominantColor ?? Theme.of(context).iconTheme.color,
                   onPressed: queueState?.hasPrevious ?? true
                       ? audioHandler.skipToPrevious
                       : null,
@@ -1087,7 +1100,7 @@ class ControlButtons extends StatelessWidget {
                   icon: const Icon(Icons.skip_next_rounded),
                   iconSize: miniplayer ? 24.0 : 45.0,
                   tooltip: AppLocalizations.of(context)!.skipNext,
-                  color: Theme.of(context).iconTheme.color,
+                  color: dominantColor ?? Theme.of(context).iconTheme.color,
                   onPressed: queueState?.hasNext ?? true
                       ? audioHandler.skipToNext
                       : null,
@@ -1137,6 +1150,7 @@ class NowPlayingStream extends StatelessWidget {
       builder: (context, snapshot) {
         final queueState = snapshot.data ?? QueueState.empty;
         final queue = queueState.queue;
+
         return ReorderableListView.builder(
           header: SizedBox(
             height: head ? 50 : 0,
@@ -1755,6 +1769,8 @@ class NameNControls extends StatelessWidget {
                 : height * 0.3);
     final double nowplayingBoxHeight =
         height > 500 ? height * 0.4 : height * 0.15;
+    final bool useBlurForNowPlaying = Hive.box('settings')
+        .get('useBlurForNowPlaying', defaultValue: false) as bool;
     return SizedBox(
       width: width,
       height: height,
@@ -1969,7 +1985,9 @@ class NameNControls extends StatelessWidget {
                                 LikeButton(mediaItem: mediaItem, size: 25.0)
                             ],
                           ),
-                          ControlButtons(audioHandler),
+                          ControlButtons(
+                            audioHandler,
+                          ),
                           Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
@@ -2040,7 +2058,7 @@ class NameNControls extends StatelessWidget {
             ],
           ),
 
-          // Now playing
+          // Now playing with blur background
           SlidingUpPanel(
             minHeight: nowplayingBoxHeight,
             maxHeight: 350,
@@ -2050,37 +2068,53 @@ class NameNControls extends StatelessWidget {
             ),
             margin: const EdgeInsets.only(left: 20, right: 20),
             padding: EdgeInsets.zero,
-            color: Theme.of(context).brightness == Brightness.dark
-                ? Colors.black
-                : Colors.white,
+            color: useBlurForNowPlaying
+                ? Theme.of(context).brightness == Brightness.dark
+                    ? Colors.black.withOpacity(0.7)
+                    : Colors.white.withOpacity(0.7)
+                : Theme.of(context).brightness == Brightness.dark
+                    ? Colors.black
+                    : Colors.white,
             controller: panelController,
             panelBuilder: (ScrollController scrollController) {
-              return ShaderMask(
-                shaderCallback: (rect) {
-                  return const LinearGradient(
-                    end: Alignment.topCenter,
-                    begin: Alignment.center,
-                    colors: [
-                      Colors.black,
-                      Colors.black,
-                      Colors.black,
-                      Colors.transparent,
-                      Colors.transparent,
-                    ],
-                  ).createShader(
-                    Rect.fromLTRB(
-                      0,
-                      0,
-                      rect.width,
-                      rect.height,
+              return ClipRRect(
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(15.0),
+                  topRight: Radius.circular(15.0),
+                ),
+                child: BackdropFilter(
+                  filter: ui.ImageFilter.blur(
+                    sigmaX: 5.0,
+                    sigmaY: 5.0,
+                  ),
+                  child: ShaderMask(
+                    shaderCallback: (rect) {
+                      return const LinearGradient(
+                        end: Alignment.topCenter,
+                        begin: Alignment.center,
+                        colors: [
+                          Colors.black,
+                          Colors.black,
+                          Colors.black,
+                          Colors.transparent,
+                          Colors.transparent,
+                        ],
+                      ).createShader(
+                        Rect.fromLTRB(
+                          0,
+                          0,
+                          rect.width,
+                          rect.height,
+                        ),
+                      );
+                    },
+                    blendMode: BlendMode.dstIn,
+                    child: NowPlayingStream(
+                      head: true,
+                      audioHandler: audioHandler,
+                      scrollController: scrollController,
                     ),
-                  );
-                },
-                blendMode: BlendMode.dstIn,
-                child: NowPlayingStream(
-                  head: true,
-                  audioHandler: audioHandler,
-                  scrollController: scrollController,
+                  ),
                 ),
               );
             },
