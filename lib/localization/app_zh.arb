@@ -599,7 +599,7 @@
   "@year": {},
   "yes": "确定",
   "@yes": {},
-  "yesReplace": "替换旧文件",
+  "yesReplace": "是，但替换旧文件",
   "@yesReplace": {},
   "ytLiveAlert": "该视频为直播内容，请等待直播结束后重试",
   "@ytLiveAlert": {},
