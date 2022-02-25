@@ -414,7 +414,11 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
   Future<void> play() => _player!.play();
 
   @override
-  Future<void> pause() => _player!.pause();
+  Future<void> pause() async {
+    _player!.pause();
+    await Hive.box('cache').put('lastIndex', _player!.currentIndex);
+    await Hive.box('cache').put('lastPos', _player!.position.inSeconds);
+  }
 
   @override
   Future<void> seek(Duration position) => _player!.seek(position);

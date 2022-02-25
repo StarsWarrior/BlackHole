@@ -24,8 +24,8 @@ import 'package:hive/hive.dart';
 import 'package:palette_generator/palette_generator.dart';
 
 Future<List<Color>> getColors(ImageProvider imageProvider) async {
-  final bool useDominantAndDarkerColors =
-      Hive.box('settings').get('useDominantAndDarkerColors') as bool;
+  final bool useDominantAndDarkerColors = Hive.box('settings')
+      .get('useDominantAndDarkerColors', defaultValue: false) as bool;
   PaletteGenerator paletteGenerator;
   paletteGenerator = await PaletteGenerator.fromImageProvider(imageProvider);
   final Color dominantColor =

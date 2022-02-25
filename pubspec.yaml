@@ -10,7 +10,7 @@ environment:
   sdk: '>=2.13.0 <3.0.0'
 
 dependencies:
-  app_links: ^2.2.0
+  app_links: ^2.2.1
   audio_service: ^0.18.3
   audiotagger: ^2.2.1
   # bitsdojo_window: ^0.1.1+1 #For Desktops
@@ -32,7 +32,7 @@ dependencies:
   hive: ^2.0.5
   hive_flutter: ^1.1.0
   html_unescape: ^2.0.0
-  just_audio: ^0.9.18
+  just_audio: ^0.9.20
   just_audio_libwinmedia: ^0.0.4 # For windows and linux
   # logging: ^1.0.1
   marquee: ^2.2.0
@@ -41,7 +41,7 @@ dependencies:
   package_info_plus: ^1.3.0
   palette_generator: ^0.3.2
   path_provider: ^2.0.8
-  permission_handler: ^8.3.0
+  permission_handler: ^9.2.0
   salomon_bottom_bar: ^3.2.0
   share_plus: ^3.0.4
   sliding_up_panel: ^2.0.0+1
@@ -54,7 +54,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   lint: ^1.8.2
-  msix: ^2.8.13
+  msix: ^3.2.0
 
 flutter:
   uses-material-design: true
@@ -72,5 +72,4 @@ msix_config:
   identity_name: com.shadow.blackhole
   icons_background_color: transparent
   logo_path: assets/ic_launcher.png
-  msix_version: 1.0.0.0
   file_extension: .mp3, .m4a

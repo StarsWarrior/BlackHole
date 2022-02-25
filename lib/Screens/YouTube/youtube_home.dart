@@ -282,40 +282,44 @@ class _YouTubeState extends State<YouTube>
                                       child: HoverBox(
                                         child: Column(
                                           children: [
-                                            Card(
-                                              elevation: 5,
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(10.0),
-                                              ),
-                                              clipBehavior: Clip.antiAlias,
-                                              child: CachedNetworkImage(
-                                                fit: BoxFit.cover,
-                                                errorWidget: (context, _, __) =>
-                                                    Image(
-                                                  fit: BoxFit.cover,
-                                                  image:
-                                                      item['type'] != 'playlist'
-                                                          ? const AssetImage(
-                                                              'assets/ytCover.png',
-                                                            )
-                                                          : const AssetImage(
-                                                              'assets/cover.jpg',
-                                                            ),
+                                            Expanded(
+                                              child: Card(
+                                                elevation: 5,
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                    10.0,
+                                                  ),
                                                 ),
-                                                imageUrl:
-                                                    item['image'].toString(),
-                                                placeholder: (context, url) =>
-                                                    Image(
+                                                clipBehavior: Clip.antiAlias,
+                                                child: CachedNetworkImage(
                                                   fit: BoxFit.cover,
-                                                  image:
-                                                      item['type'] != 'playlist'
-                                                          ? const AssetImage(
-                                                              'assets/ytCover.png',
-                                                            )
-                                                          : const AssetImage(
-                                                              'assets/cover.jpg',
-                                                            ),
+                                                  errorWidget:
+                                                      (context, _, __) => Image(
+                                                    fit: BoxFit.cover,
+                                                    image: item['type'] !=
+                                                            'playlist'
+                                                        ? const AssetImage(
+                                                            'assets/ytCover.png',
+                                                          )
+                                                        : const AssetImage(
+                                                            'assets/cover.jpg',
+                                                          ),
+                                                  ),
+                                                  imageUrl:
+                                                      item['image'].toString(),
+                                                  placeholder: (context, url) =>
+                                                      Image(
+                                                    fit: BoxFit.cover,
+                                                    image: item['type'] !=
+                                                            'playlist'
+                                                        ? const AssetImage(
+                                                            'assets/ytCover.png',
+                                                          )
+                                                        : const AssetImage(
+                                                            'assets/cover.jpg',
+                                                          ),
+                                                  ),
                                                 ),
                                               ),
                                             ),
@@ -349,6 +353,9 @@ class _YouTubeState extends State<YouTube>
                                                           .color,
                                                     ),
                                                   ),
+                                                  const SizedBox(
+                                                    height: 5.0,
+                                                  )
                                                 ],
                                               ),
                                             ),
@@ -363,7 +370,7 @@ class _YouTubeState extends State<YouTube>
                                             color: isHover
                                                 ? null
                                                 : Colors.transparent,
-                                            elevation: isHover ? 5 : 0,
+                                            elevation: 0,
                                             margin: EdgeInsets.zero,
                                             shape: RoundedRectangleBorder(
                                               borderRadius:

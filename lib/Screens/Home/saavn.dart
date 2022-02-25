@@ -401,57 +401,53 @@ class _SaavnHomePageState extends State<SaavnHomePage>
                                 child: SizedBox(
                                   width: boxSize - 30,
                                   child: HoverBox(
-                                    child: SizedBox.square(
-                                      dimension: boxSize - 30,
-                                      child: Card(
-                                        elevation: 5,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            item['type'] == 'radio_station'
-                                                ? 1000.0
-                                                : 10.0,
+                                    child: Card(
+                                      elevation: 5,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(
+                                          item['type'] == 'radio_station'
+                                              ? 1000.0
+                                              : 10.0,
+                                        ),
+                                      ),
+                                      clipBehavior: Clip.antiAlias,
+                                      child: CachedNetworkImage(
+                                        fit: BoxFit.cover,
+                                        errorWidget: (context, _, __) =>
+                                            const Image(
+                                          fit: BoxFit.cover,
+                                          image: AssetImage(
+                                            'assets/cover.jpg',
                                           ),
                                         ),
-                                        clipBehavior: Clip.antiAlias,
-                                        child: CachedNetworkImage(
-                                          fit: BoxFit.cover,
-                                          errorWidget: (context, _, __) =>
-                                              const Image(
-                                            fit: BoxFit.cover,
-                                            image: AssetImage(
-                                              'assets/cover.jpg',
+                                        imageUrl: item['image']
+                                            .toString()
+                                            .replaceAll(
+                                              'http:',
+                                              'https:',
+                                            )
+                                            .replaceAll(
+                                              '50x50',
+                                              '500x500',
+                                            )
+                                            .replaceAll(
+                                              '150x150',
+                                              '500x500',
                                             ),
-                                          ),
-                                          imageUrl: item['image']
-                                              .toString()
-                                              .replaceAll(
-                                                'http:',
-                                                'https:',
-                                              )
-                                              .replaceAll(
-                                                '50x50',
-                                                '500x500',
-                                              )
-                                              .replaceAll(
-                                                '150x150',
-                                                '500x500',
-                                              ),
-                                          placeholder: (context, url) => Image(
-                                            fit: BoxFit.cover,
-                                            image:
-                                                (item['type'] == 'playlist' ||
-                                                        item['type'] == 'album')
-                                                    ? const AssetImage(
-                                                        'assets/album.png',
-                                                      )
-                                                    : item['type'] == 'artist'
-                                                        ? const AssetImage(
-                                                            'assets/artist.png',
-                                                          )
-                                                        : const AssetImage(
-                                                            'assets/cover.jpg',
-                                                          ),
-                                          ),
+                                        placeholder: (context, url) => Image(
+                                          fit: BoxFit.cover,
+                                          image: (item['type'] == 'playlist' ||
+                                                  item['type'] == 'album')
+                                              ? const AssetImage(
+                                                  'assets/album.png',
+                                                )
+                                              : item['type'] == 'artist'
+                                                  ? const AssetImage(
+                                                      'assets/artist.png',
+                                                    )
+                                                  : const AssetImage(
+                                                      'assets/cover.jpg',
+                                                    ),
                                         ),
                                       ),
                                     ),
@@ -463,7 +459,7 @@ class _SaavnHomePageState extends State<SaavnHomePage>
                                       return Card(
                                         color:
                                             isHover ? null : Colors.transparent,
-                                        elevation: isHover ? 5 : 0,
+                                        elevation: 0,
                                         margin: EdgeInsets.zero,
                                         shape: RoundedRectangleBorder(
                                           borderRadius: BorderRadius.circular(
@@ -475,7 +471,12 @@ class _SaavnHomePageState extends State<SaavnHomePage>
                                           children: [
                                             Stack(
                                               children: [
-                                                child!,
+                                                SizedBox.square(
+                                                  dimension: isHover
+                                                      ? boxSize - 25
+                                                      : boxSize - 30,
+                                                  child: child,
+                                                ),
                                                 if (isHover &&
                                                     (item['type'] == 'song' ||
                                                         item['type'] ==
@@ -513,6 +514,7 @@ class _SaavnHomePageState extends State<SaavnHomePage>
                                                             Icons
                                                                 .play_arrow_rounded,
                                                             size: 50.0,
+                                                            color: Colors.white,
                                                           ),
                                                         ),
                                                       ),

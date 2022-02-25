@@ -734,6 +734,7 @@ class _PlayScreenState extends State<PlayScreen> {
                             height: constraints.maxHeight,
                             panelController: _panelController,
                             audioHandler: audioHandler,
+                            gradientColor: gradientColor.value,
                           ),
                         ],
                       );
@@ -759,6 +760,7 @@ class _PlayScreenState extends State<PlayScreen> {
                               (constraints.maxWidth * 0.85),
                           panelController: _panelController,
                           audioHandler: audioHandler,
+                          gradientColor: gradientColor.value,
                         ),
                       ],
                     );
@@ -1136,11 +1138,13 @@ class NowPlayingStream extends StatelessWidget {
   final AudioPlayerHandler audioHandler;
   final ScrollController? scrollController;
   final bool head;
+  final double headHeight;
 
   const NowPlayingStream({
     required this.audioHandler,
     this.scrollController,
     this.head = false,
+    this.headHeight = 50,
   });
 
   @override
@@ -1153,7 +1157,7 @@ class NowPlayingStream extends StatelessWidget {
 
         return ReorderableListView.builder(
           header: SizedBox(
-            height: head ? 50 : 0,
+            height: head ? headHeight : 0,
           ),
           onReorder: (int oldIndex, int newIndex) {
             if (oldIndex < newIndex) {
@@ -1728,6 +1732,7 @@ class NameNControls extends StatelessWidget {
   final bool offline;
   final double width;
   final double height;
+  final List<Color?>? gradientColor;
   final PanelController panelController;
   final AudioPlayerHandler audioHandler;
 
@@ -1735,6 +1740,7 @@ class NameNControls extends StatelessWidget {
     required this.width,
     required this.height,
     required this.mediaItem,
+    required this.gradientColor,
     required this.audioHandler,
     required this.panelController,
     this.offline = false,
@@ -1769,8 +1775,8 @@ class NameNControls extends StatelessWidget {
                 : height * 0.3);
     final double nowplayingBoxHeight =
         height > 500 ? height * 0.4 : height * 0.15;
-    final bool useBlurForNowPlaying = Hive.box('settings')
-        .get('useBlurForNowPlaying', defaultValue: false) as bool;
+    // final bool useBlurForNowPlaying = Hive.box('settings')
+    //     .get('useBlurForNowPlaying', defaultValue: true) as bool;
     return SizedBox(
       width: width,
       height: height,
@@ -2058,7 +2064,7 @@ class NameNControls extends StatelessWidget {
             ],
           ),
 
-          // Now playing with blur background
+          // Up Next with blur background
           SlidingUpPanel(
             minHeight: nowplayingBoxHeight,
             maxHeight: 350,
@@ -2066,15 +2072,18 @@ class NameNControls extends StatelessWidget {
               topLeft: Radius.circular(15.0),
               topRight: Radius.circular(15.0),
             ),
-            margin: const EdgeInsets.only(left: 20, right: 20),
+            margin: EdgeInsets.zero,
             padding: EdgeInsets.zero,
-            color: useBlurForNowPlaying
-                ? Theme.of(context).brightness == Brightness.dark
-                    ? Colors.black.withOpacity(0.7)
-                    : Colors.white.withOpacity(0.7)
-                : Theme.of(context).brightness == Brightness.dark
-                    ? Colors.black
-                    : Colors.white,
+            boxShadow: const [],
+            color: Colors.transparent,
+            // gradientColor?[1]?.withOpacity(1.0) ??
+            //     // useBlurForNowPlaying
+            //     //     ? Theme.of(context).brightness == Brightness.dark
+            //     Colors.black.withOpacity(0.2),
+            //     : Colors.white.withOpacity(0.7)
+            // : Theme.of(context).brightness == Brightness.dark
+            //     ? Colors.black
+            //     : Colors.white,
             controller: panelController,
             panelBuilder: (ScrollController scrollController) {
               return ClipRRect(
@@ -2111,6 +2120,7 @@ class NameNControls extends StatelessWidget {
                     blendMode: BlendMode.dstIn,
                     child: NowPlayingStream(
                       head: true,
+                      headHeight: nowplayingBoxHeight,
                       audioHandler: audioHandler,
                       scrollController: scrollController,
                     ),
@@ -2136,18 +2146,40 @@ class NameNControls extends StatelessWidget {
                 }
               },
               child: Container(
-                height: 50,
-                width: width - 40.0,
+                height: nowplayingBoxHeight,
+                width: width,
                 color: Colors.transparent,
-                child: Center(
-                  child: Text(
-                    AppLocalizations.of(context)!.nowPlaying,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 18,
+                child: Column(
+                  children: [
+                    const SizedBox(
+                      height: 5,
                     ),
-                  ),
+                    Center(
+                      child: Container(
+                        width: 30,
+                        height: 5,
+                        decoration: BoxDecoration(
+                          color: Colors.grey[300],
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: Center(
+                        child: Text(
+                          AppLocalizations.of(context)!.upNext,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 18,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 5,
+                    ),
+                  ],
                 ),
               ),
             ),

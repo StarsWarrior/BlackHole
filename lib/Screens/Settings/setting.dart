@@ -1293,7 +1293,7 @@ class _SettingPageState extends State<SettingPage> {
                           ),
                           keyName: 'useFullScreenGradient',
                           defaultValue: false,
-                          isThreeLine: false,
+                          isThreeLine: true,
                         ),
                         BoxSwitchTile(
                           title: Text(
@@ -1310,25 +1310,25 @@ class _SettingPageState extends State<SettingPage> {
                           ),
                           keyName: 'useDominantAndDarkerColors',
                           defaultValue: false,
-                          isThreeLine: false,
+                          isThreeLine: true,
                         ),
-                        BoxSwitchTile(
-                          title: Text(
-                            AppLocalizations.of(
-                              context,
-                            )!
-                                .useBlurForNowPlaying,
-                          ),
-                          subtitle: Text(
-                            AppLocalizations.of(
-                              context,
-                            )!
-                                .useBlurForNowPlayingSub,
-                          ),
-                          keyName: 'useBlurForNowPlaying',
-                          defaultValue: false,
-                          isThreeLine: false,
-                        ),
+                        // BoxSwitchTile(
+                        //   title: Text(
+                        //     AppLocalizations.of(
+                        //       context,
+                        //     )!
+                        //         .useBlurForNowPlaying,
+                        //   ),
+                        //   subtitle: Text(
+                        //     AppLocalizations.of(
+                        //       context,
+                        //     )!
+                        //         .useBlurForNowPlayingSub,
+                        //   ),
+                        //   keyName: 'useBlurForNowPlaying',
+                        //   defaultValue: true,
+                        //   isThreeLine: true,
+                        // ),
                         BoxSwitchTile(
                           title: Text(
                             AppLocalizations.of(
