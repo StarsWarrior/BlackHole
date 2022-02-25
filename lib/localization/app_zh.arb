@@ -635,8 +635,10 @@
   "@useBlurForNowPlaying": {},
   "useBlurForNowPlayingSub": "低透明度模糊将被用作“正在播放”区域的背景",
   "@useBlurForNowPlayingSub": {},
-  "useDominantAndDarkerColorsSub": "主色调和暗色将被用作播放器屏背景的渐变。仅当“使用主色调” 开启时可用",
+  "useDominantAndDarkerColorsSub": "主色调和暗色将被用作播放器屏背景的渐变。仅当“使用主色调” 开启时可用（如开启“对全屏使用主色调”效果会更好）",
   "@useDominantAndDarkerColorsSub": {},
   "useDominantAndDarkerColors": "对播放屏使用主色调和深色",
-  "@useDominantAndDarkerColors": {}
+  "@useDominantAndDarkerColors": {},
+  "upNext": "播放下一首",
+  "@upNext": {}
 }
