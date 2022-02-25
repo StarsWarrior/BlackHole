@@ -473,6 +473,8 @@ class Download with ChangeNotifier {
       } else {
         download = true;
         progress = 0.0;
+        File(filepath!).delete();
+        File(filepath2).delete();
       }
     });
   }
