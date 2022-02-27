@@ -82,5 +82,15 @@
   "version": "Versione",
   "@version": {},
   "useDown": "Canzoni scaricate in streaming, se disponibili",
-  "@useDown": {}
+  "@useDown": {},
+  "bgGradSub": "Gradiente usato come sfondo ovunque",
+  "@bgGradSub": {},
+  "aboutLine2": "Se ti è piaciuto il mio lavoro\nmostra un po' di ♥ e ⭐ il repo",
+  "@aboutLine2": {},
+  "autoplay": "Riproduzione automatica",
+  "@autoplay": {},
+  "autoplaySub": "Aggiungi automaticamente le canzoni correlate alla coda",
+  "@autoplaySub": {},
+  "autoBackSub": "Backup automatico dei dati",
+  "@autoBackSub": {}
 }

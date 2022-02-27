@@ -630,5 +630,15 @@
   "ytDownQuality": "வலையொளி பதிவிறக்கத் தரம்",
   "@ytDownQuality": {},
   "ytDownQualitySub": "உயர்தரம் கூடுதல் வட்டிடம் பயன்படுத்தும்",
-  "@ytDownQualitySub": {}
+  "@ytDownQualitySub": {},
+  "upNext": "அடுத்து வருவது",
+  "@upNext": {},
+  "useDominantAndDarkerColors": "இயக்குதிரைக்கு ஆதிக்கமான இருண்ட நிறங்கள் பயன்டுத்து",
+  "@useDominantAndDarkerColors": {},
+  "useBlurForNowPlaying": "இப்போது இயங்குபவை பிரிவின் பின்புலத்திற்கு மங்கல் பயன்படுத்து",
+  "@useBlurForNowPlaying": {},
+  "useDominantAndDarkerColorsSub": "படத்திலிருந்து ஆதிக்கமான இருண்ட நிறம் இயக்குதிரை பின்புலத்திற்குச் சரிமானமாகப் பயன்படுத்தப்படும். ஆதிக்கம் இயங்கினாலே கிடைக்கும் (முழு திரைக்கும் ஆதிக்கம் பயன்படுத்து என்பது இயங்கினால் மேலான முடிவுகள்)",
+  "@useDominantAndDarkerColorsSub": {},
+  "useBlurForNowPlayingSub": "இப்போது இயங்குபவை பிரிவின் பின்புலத்திற்குக் குறைந்த ஒளிபுகாமையுள்ள மங்கல் பயன்படுத்தப்படும்",
+  "@useBlurForNowPlayingSub": {}
 }

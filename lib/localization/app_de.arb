@@ -630,5 +630,15 @@
   "ytDownQualitySub": "Höhere Qualität verbraucht mehr Speicherplatz",
   "@ytDownQualitySub": {},
   "ytStreamQualitySub": "Höhere Qualität erfordert mehr Daten",
-  "@ytStreamQualitySub": {}
+  "@ytStreamQualitySub": {},
+  "useDominantAndDarkerColors": "Dominante und dunklere Farben für den Wiedergabebildschirm verwenden",
+  "@useDominantAndDarkerColors": {},
+  "useBlurForNowPlaying": "Unschärfe für den Hintergrund des Abschnitts „Aktuelle Wiedergabe“ verwenden",
+  "@useBlurForNowPlaying": {},
+  "useBlurForNowPlayingSub": "Unschärfe mit einer geringeren Deckkraft wird als Hintergrund für den Abschnitt „Aktuelle Wiedergabe“ verwendet",
+  "@useBlurForNowPlayingSub": {},
+  "upNext": "Als nächstes",
+  "@upNext": {},
+  "useDominantAndDarkerColorsSub": "Die dominante und dunklere Farbe des Bildes wird als Farbverlauf für den Hintergrund des Wiedergabebildschirms verwendet. Nur verfügbar, wenn Dominant verwenden eingeschaltet ist (bessere Ergebnisse, wenn Dominant für den gesamten Bildschirm verwenden eingeschaltet ist)",
+  "@useDominantAndDarkerColorsSub": {}
 }

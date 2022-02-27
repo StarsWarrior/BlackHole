@@ -630,5 +630,15 @@
   "ytDownQualitySub": "Une qualité supérieure utilise plus d'espace disque",
   "@ytDownQualitySub": {},
   "ytStreamQualitySub": "Une qualité supérieure utilise plus de données",
-  "@ytStreamQualitySub": {}
+  "@ytStreamQualitySub": {},
+  "useDominantAndDarkerColorsSub": "La couleur dominante et la couleur la plus foncée de l'image seront utilisées comme dégradé de l'arrière-plan de l'écran du lecteur. Disponible uniquement si l'option Utiliser la dominante est activée (les résultats sont meilleurs si l'option Utiliser la dominante pour tout l'écran est activée)",
+  "@useDominantAndDarkerColorsSub": {},
+  "useBlurForNowPlayingSub": "Un floutage avec une opacité plus faible sera utilisé comme arrière-plan de la section À l'écoute",
+  "@useBlurForNowPlayingSub": {},
+  "useBlurForNowPlaying": "Utiliser le floutage à l'arrière-plan de la section À l'écoute",
+  "@useBlurForNowPlaying": {},
+  "useDominantAndDarkerColors": "Utiliser des couleurs dominantes et plus sombres pour l'écran de lecture",
+  "@useDominantAndDarkerColors": {},
+  "upNext": "Juste après",
+  "@upNext": {}
 }
