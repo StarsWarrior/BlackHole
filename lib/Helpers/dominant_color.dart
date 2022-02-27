@@ -20,12 +20,12 @@
 import 'package:blackhole/Helpers/config.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:hive/hive.dart';
 import 'package:palette_generator/palette_generator.dart';
 
-Future<List<Color>> getColors(ImageProvider imageProvider) async {
-  final bool useDominantAndDarkerColors = Hive.box('settings')
-      .get('useDominantAndDarkerColors', defaultValue: false) as bool;
+Future<List<Color>> getColors({
+  required ImageProvider imageProvider,
+  required bool useDominantAndDarkerColors,
+}) async {
   PaletteGenerator paletteGenerator;
   paletteGenerator = await PaletteGenerator.fromImageProvider(imageProvider);
   final Color dominantColor =

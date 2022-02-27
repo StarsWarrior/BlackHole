@@ -55,9 +55,8 @@ class SearchAddPlaylist {
   }
 
   static Future<Map> addRessoPlaylist(String inLink) async {
-    final String link = '$inLink&';
     try {
-      final RegExpMatch? id = RegExp(r'.*?id\=(.*)&').firstMatch(link);
+      final RegExpMatch? id = RegExp(r'.*?id\=(.*)&').firstMatch('$inLink&');
       if (id != null) {
         final List tracks = await getRessoSongs(playlistId: id[1]!);
         return {
@@ -65,6 +64,24 @@ class SearchAddPlaylist {
           'count': tracks.length,
           'tracks': tracks,
         };
+      } else {
+        final Request req = Request('Get', Uri.parse(inLink))
+          ..followRedirects = false;
+        final Client baseClient = Client();
+        final StreamedResponse response = await baseClient.send(req);
+        final Uri redirectUri =
+            Uri.parse(response.headers['location'].toString());
+        baseClient.close();
+        final RegExpMatch? id2 =
+            RegExp(r'.*?id\=(.*)&').firstMatch('${redirectUri.toString()}&');
+        if (id2 != null) {
+          final List tracks = await getRessoSongs(playlistId: id2[1]!);
+          return {
+            'title': 'Resso Playlist',
+            'count': tracks.length,
+            'tracks': tracks,
+          };
+        }
       }
       return {};
     } catch (e) {

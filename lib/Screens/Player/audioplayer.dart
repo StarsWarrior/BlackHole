@@ -322,16 +322,18 @@ class _PlayScreenState extends State<PlayScreen> {
           if (mediaItem == null) return const SizedBox();
           mediaItem.artUri.toString().startsWith('file')
               ? getColors(
-                  FileImage(
+                  imageProvider: FileImage(
                     File(
                       mediaItem.artUri!.toFilePath(),
                     ),
                   ),
+                  useDominantAndDarkerColors: useDominantAndDarkerColors,
                 ).then((value) => updateBackgroundColors(value))
               : getColors(
-                  CachedNetworkImageProvider(
+                  imageProvider: CachedNetworkImageProvider(
                     mediaItem.artUri.toString(),
                   ),
+                  useDominantAndDarkerColors: useDominantAndDarkerColors,
                 ).then((value) => updateBackgroundColors(value));
           return ValueListenableBuilder(
             valueListenable: gradientColor,

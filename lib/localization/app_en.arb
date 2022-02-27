@@ -581,8 +581,6 @@
   "@useDominant": {},
   "useDominantSub": "Dominant Color from Image will be used for Play Screen Background. If turned off, default background Gradient will be used",
   "@useDominantSub": {},
-  "useBlurForNowPlaying": "Use Blur to the Bakground of the Now Playing Section",
-  "@useBlurForNowPlaying": {},
   "useBlurForNowPlayingSub": "Blur with a lower Opacity will be used as the Background of the Now Playing Section",
   "@useBlurForNowPlayingSub": {},
   "useDominantAndDarkerColors": "Use Dominant and Darker Colors for Play Screen",
