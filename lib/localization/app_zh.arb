@@ -640,5 +640,7 @@
   "useDominantAndDarkerColors": "对播放屏使用主色调和深色",
   "@useDominantAndDarkerColors": {},
   "upNext": "播放下一首",
-  "@upNext": {}
+  "@upNext": {},
+  "confirmViewable": "确保播放列表可见",
+  "@confirmViewable": {}
 }
