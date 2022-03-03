@@ -640,5 +640,7 @@
   "upNext": "Als nächstes",
   "@upNext": {},
   "useDominantAndDarkerColorsSub": "Die dominante und dunklere Farbe des Bildes wird als Farbverlauf für den Hintergrund des Wiedergabebildschirms verwendet. Nur verfügbar, wenn Dominant verwenden eingeschaltet ist (bessere Ergebnisse, wenn Dominant für den gesamten Bildschirm verwenden eingeschaltet ist)",
-  "@useDominantAndDarkerColorsSub": {}
+  "@useDominantAndDarkerColorsSub": {},
+  "confirmViewable": "Stellen Sie sicher, dass die Wiedergabeliste angezeigt werden kann",
+  "@confirmViewable": {}
 }
