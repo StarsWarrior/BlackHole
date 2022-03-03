@@ -640,5 +640,7 @@
   "useDominantAndDarkerColors": "Utiliser des couleurs dominantes et plus sombres pour l'écran de lecture",
   "@useDominantAndDarkerColors": {},
   "upNext": "Juste après",
-  "@upNext": {}
+  "@upNext": {},
+  "confirmViewable": "Assurez-vous que la liste de lecture est visible",
+  "@confirmViewable": {}
 }
