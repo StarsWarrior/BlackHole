@@ -119,6 +119,8 @@
   "@clearCache": {},
   "clearCacheSub": "Deletes Cached details including Homepage, Spotify Top Charts, YouTube and Last Session Data. Usually app automatically clears them when data become large\n",
   "@clearCacheSub": {},
+  "confirmViewable": "Make sure the playlist is viewable",
+  "@confirmViewable": {},
   "connectingRadio": "Connecting to Radio…",
   "@connectingRadio": {},
   "contactUs": "Contact Us",

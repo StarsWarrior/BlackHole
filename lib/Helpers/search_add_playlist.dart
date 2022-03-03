@@ -151,72 +151,75 @@ class SearchAddPlaylist {
     BuildContext cxt,
     Stream songAdd,
   ) async {
-    await showModalBottomSheet(
-      isDismissible: false,
-      backgroundColor: Colors.transparent,
-      context: cxt,
-      builder: (BuildContext context) {
-        return StatefulBuilder(
-          builder: (BuildContext context, StateSetter setStt) {
-            return BottomGradientContainer(
-              child: SizedBox(
-                height: 300,
-                width: 300,
-                child: StreamBuilder<Object>(
-                  stream: songAdd as Stream<Object>?,
-                  builder: (ctxt, AsyncSnapshot snapshot) {
-                    final Map? data = snapshot.data as Map?;
-                    final int _done = (data ?? const {})['done'] as int? ?? 0;
-                    final String name =
-                        (data ?? const {})['name'] as String? ?? '';
-                    if (_done == _total) Navigator.pop(ctxt);
-                    return Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Center(
-                          child: Text(
-                            AppLocalizations.of(context)!.convertingSongs,
-                            style: const TextStyle(fontWeight: FontWeight.w600),
+    if (_total != 0) {
+      await showModalBottomSheet(
+        isDismissible: false,
+        backgroundColor: Colors.transparent,
+        context: cxt,
+        builder: (BuildContext context) {
+          return StatefulBuilder(
+            builder: (BuildContext context, StateSetter setStt) {
+              return BottomGradientContainer(
+                child: SizedBox(
+                  height: 300,
+                  width: 300,
+                  child: StreamBuilder<Object>(
+                    stream: songAdd as Stream<Object>?,
+                    builder: (ctxt, AsyncSnapshot snapshot) {
+                      final Map? data = snapshot.data as Map?;
+                      final int _done = (data ?? const {})['done'] as int? ?? 0;
+                      final String name =
+                          (data ?? const {})['name'] as String? ?? '';
+                      if (_done == _total) Navigator.pop(ctxt);
+                      return Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Center(
+                            child: Text(
+                              AppLocalizations.of(context)!.convertingSongs,
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.w600),
+                            ),
                           ),
-                        ),
-                        SizedBox(
-                          height: 80,
-                          width: 80,
-                          child: Stack(
-                            children: [
-                              Center(
-                                child: Text('$_done / $_total'),
-                              ),
-                              Center(
-                                child: SizedBox(
-                                  height: 77,
-                                  width: 77,
-                                  child: CircularProgressIndicator(
-                                    valueColor: AlwaysStoppedAnimation<Color>(
-                                      Theme.of(ctxt).colorScheme.secondary,
+                          SizedBox(
+                            height: 80,
+                            width: 80,
+                            child: Stack(
+                              children: [
+                                Center(
+                                  child: Text('$_done / $_total'),
+                                ),
+                                Center(
+                                  child: SizedBox(
+                                    height: 77,
+                                    width: 77,
+                                    child: CircularProgressIndicator(
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                        Theme.of(ctxt).colorScheme.secondary,
+                                      ),
+                                      value: _done / _total,
                                     ),
-                                    value: _done / _total,
                                   ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
-                        Center(
-                          child: Text(
-                            name,
-                            textAlign: TextAlign.center,
+                          Center(
+                            child: Text(
+                              name,
+                              textAlign: TextAlign.center,
+                            ),
                           ),
-                        ),
-                      ],
-                    );
-                  },
+                        ],
+                      );
+                    },
+                  ),
                 ),
-              ),
-            );
-          },
-        );
-      },
-    );
+              );
+            },
+          );
+        },
+      );
+    }
   }
 }

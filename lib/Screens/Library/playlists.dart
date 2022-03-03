@@ -209,23 +209,35 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                             final Map data =
                                 await SearchAddPlaylist.addYtPlaylist(link);
                             if (data.isNotEmpty) {
-                              playlistNames.add(data['title']);
-                              settingsBox.put(
-                                'playlistNames',
-                                playlistNames,
-                              );
+                              if (data['title'] == '' && data['count'] == 0) {
+                                ShowSnackBar().showSnackBar(
+                                  context,
+                                  '${AppLocalizations.of(context)!.failedImport}\n${AppLocalizations.of(context)!.confirmViewable}',
+                                  duration: const Duration(seconds: 3),
+                                );
+                              } else {
+                                playlistNames.add(
+                                  data['title'] == ''
+                                      ? 'Yt Playlist'
+                                      : data['title'],
+                                );
+                                settingsBox.put(
+                                  'playlistNames',
+                                  playlistNames,
+                                );
 
-                              await SearchAddPlaylist.showProgress(
-                                data['count'] as int,
-                                context,
-                                SearchAddPlaylist.ytSongsAdder(
-                                  data['title'].toString(),
-                                  data['tracks'] as List,
-                                ),
-                              );
-                              setState(() {
-                                playlistNames = playlistNames;
-                              });
+                                await SearchAddPlaylist.showProgress(
+                                  data['count'] as int,
+                                  context,
+                                  SearchAddPlaylist.ytSongsAdder(
+                                    data['title'].toString(),
+                                    data['tracks'] as List,
+                                  ),
+                                );
+                                setState(() {
+                                  playlistNames = playlistNames;
+                                });
+                              }
                             } else {
                               ShowSnackBar().showSnackBar(
                                 context,
