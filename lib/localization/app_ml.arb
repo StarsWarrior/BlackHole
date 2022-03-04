@@ -328,5 +328,15 @@
   "downFilename": "ഡൗൺലോഡ് ചെയ്യുന്നതിനുള്ള പേര് ഫോർമാറ്റ്",
   "@downFilename": {},
   "accent": "ആക്സന്റ് വർണ്ണവും നിറവും",
-  "@accent": {}
+  "@accent": {},
+  "excluded": "ഒഴിവാക്കി",
+  "@excluded": {},
+  "excludedDetails": "തിരഞ്ഞെടുത്ത ഫോൾഡറുകളിൽ നിന്നുള്ള പാട്ടുകൾ കാണിക്കില്ല",
+  "@excludedDetails": {},
+  "downFilenameSub": "ഈ ഫയൽനെയം ഫോർമാറ്റ് അനുസരിച്ച് ഗാനങ്ങൾ ഡൗൺലോഡ് ചെയ്യപ്പെടും",
+  "@downFilenameSub": {},
+  "getLyricsOnline": "ലോക്കേൽ ഗാനങ്ങളുടെ വരികൾ തിരയുക",
+  "@getLyricsOnline": {},
+  "getLyricsOnlineSub": "ഏതെങ്കിലും ഓഫ്‌ലൈൻ ഗാനത്തിന്റെ വരികൾ ലഭ്യമല്ലെങ്കിൽ/ഡൗൺലോഡ് ചെയ്‌തിട്ടുണ്ടെങ്കിൽ ഓൺലൈനിൽ തിരയുക",
+  "@getLyricsOnlineSub": {}
 }
