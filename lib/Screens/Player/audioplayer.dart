@@ -412,19 +412,21 @@ class _PlayScreenState extends State<PlayScreen> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: details.keys.map((e) {
-                                  return RichText(
-                                    text: TextSpan(
-                                      text: format(
-                                        e.toString(),
-                                      ),
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w600,
-                                        color: Theme.of(context)
-                                            .textTheme
-                                            .bodyText1!
-                                            .color,
-                                      ),
+                                  return SelectableText.rich(
+                                    TextSpan(
                                       children: <TextSpan>[
+                                        TextSpan(
+                                          text: format(
+                                            e.toString(),
+                                          ),
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w600,
+                                            color: Theme.of(context)
+                                                .textTheme
+                                                .bodyText1!
+                                                .color,
+                                          ),
+                                        ),
                                         TextSpan(
                                           text: details[e].toString(),
                                           style: const TextStyle(
@@ -433,6 +435,9 @@ class _PlayScreenState extends State<PlayScreen> {
                                         ),
                                       ],
                                     ),
+                                    showCursor: true,
+                                    cursorColor: Colors.black,
+                                    cursorRadius: const Radius.circular(5),
                                   );
                                 }).toList(),
                               ),
