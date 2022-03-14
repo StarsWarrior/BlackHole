@@ -63,7 +63,7 @@ class SongUrlHandler extends StatelessWidget {
   Widget build(BuildContext context) {
     SaavnAPI().getSongFromToken(token, type).then((value) {
       if (type == 'song') {
-        Navigator.push(
+        Navigator.pushReplacement(
           context,
           PageRouteBuilder(
             opaque: false,
@@ -79,7 +79,7 @@ class SongUrlHandler extends StatelessWidget {
         );
       }
       if (type == 'album' || type == 'playlist') {
-        Navigator.push(
+        Navigator.pushReplacement(
           context,
           PageRouteBuilder(
             opaque: false,
@@ -111,7 +111,7 @@ class OfflinePlayHandler extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     playOfflineSong(id).then((value) {
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         PageRouteBuilder(
           opaque: false,
