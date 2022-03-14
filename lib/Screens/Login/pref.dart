@@ -59,9 +59,9 @@ class _PrefScreenState extends State<PrefScreen> {
   @override
   Widget build(BuildContext context) {
     return GradientContainer(
-      child: SafeArea(
-        child: Scaffold(
-          body: Stack(
+      child: Scaffold(
+        body: SafeArea(
+          child: Stack(
             children: [
               Positioned(
                 left: MediaQuery.of(context).size.width / 1.85,

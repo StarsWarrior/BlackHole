@@ -79,10 +79,10 @@ class _AuthScreenState extends State<AuthScreen> {
   @override
   Widget build(BuildContext context) {
     return GradientContainer(
-      child: SafeArea(
-        child: Scaffold(
-          extendBodyBehindAppBar: true,
-          body: Stack(
+      child: Scaffold(
+        extendBodyBehindAppBar: true,
+        body: SafeArea(
+          child: Stack(
             children: [
               Positioned(
                 left: MediaQuery.of(context).size.width / 1.85,

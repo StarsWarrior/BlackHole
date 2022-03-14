@@ -271,56 +271,62 @@ class _SaavnHomePageState extends State<SaavnHomePage>
                                   showDialog(
                                     context: context,
                                     builder: (context) {
-                                      return AlertDialog(
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(15.0),
-                                        ),
-                                        backgroundColor: Colors.transparent,
-                                        contentPadding: EdgeInsets.zero,
-                                        content: Card(
-                                          elevation: 5,
+                                      return InteractiveViewer(
+                                        child: AlertDialog(
                                           shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(
-                                              item['type'] == 'radio_station'
-                                                  ? 1000.0
-                                                  : 15.0,
-                                            ),
+                                            borderRadius:
+                                                BorderRadius.circular(15.0),
                                           ),
-                                          clipBehavior: Clip.antiAlias,
-                                          child: CachedNetworkImage(
-                                            fit: BoxFit.cover,
-                                            errorWidget: (context, _, __) =>
-                                                const Image(
-                                              fit: BoxFit.cover,
-                                              image: AssetImage(
-                                                'assets/cover.jpg',
+                                          backgroundColor: Colors.transparent,
+                                          contentPadding: EdgeInsets.zero,
+                                          content: Card(
+                                            elevation: 5,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                item['type'] == 'radio_station'
+                                                    ? 1000.0
+                                                    : 15.0,
                                               ),
                                             ),
-                                            imageUrl: item['image']
-                                                .toString()
-                                                .replaceAll('http:', 'https:')
-                                                .replaceAll('50x50', '500x500')
-                                                .replaceAll(
-                                                  '150x150',
-                                                  '500x500',
-                                                ),
-                                            placeholder: (context, url) =>
-                                                Image(
+                                            clipBehavior: Clip.antiAlias,
+                                            child: CachedNetworkImage(
                                               fit: BoxFit.cover,
-                                              image: (item['type'] ==
-                                                          'playlist' ||
-                                                      item['type'] == 'album')
-                                                  ? const AssetImage(
-                                                      'assets/album.png',
-                                                    )
-                                                  : item['type'] == 'artist'
-                                                      ? const AssetImage(
-                                                          'assets/artist.png',
-                                                        )
-                                                      : const AssetImage(
-                                                          'assets/cover.jpg',
-                                                        ),
+                                              errorWidget: (context, _, __) =>
+                                                  const Image(
+                                                fit: BoxFit.cover,
+                                                image: AssetImage(
+                                                  'assets/cover.jpg',
+                                                ),
+                                              ),
+                                              imageUrl: item['image']
+                                                  .toString()
+                                                  .replaceAll('http:', 'https:')
+                                                  .replaceAll(
+                                                    '50x50',
+                                                    '500x500',
+                                                  )
+                                                  .replaceAll(
+                                                    '150x150',
+                                                    '500x500',
+                                                  ),
+                                              placeholder: (context, url) =>
+                                                  Image(
+                                                fit: BoxFit.cover,
+                                                image: (item['type'] ==
+                                                            'playlist' ||
+                                                        item['type'] == 'album')
+                                                    ? const AssetImage(
+                                                        'assets/album.png',
+                                                      )
+                                                    : item['type'] == 'artist'
+                                                        ? const AssetImage(
+                                                            'assets/artist.png',
+                                                          )
+                                                        : const AssetImage(
+                                                            'assets/cover.jpg',
+                                                          ),
+                                              ),
                                             ),
                                           ),
                                         ),
