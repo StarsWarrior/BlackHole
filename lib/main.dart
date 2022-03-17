@@ -141,6 +141,7 @@ class _MyAppState extends State<MyApp> {
         Hive.box('settings').get('lang', defaultValue: 'English') as String;
     final Map<String, String> codes = {
       'Chinese': 'zh',
+      'Dutch': 'nl',
       'English': 'en',
       'French': 'fr',
       'German': 'de',
@@ -218,6 +219,7 @@ class _MyAppState extends State<MyApp> {
       ],
       supportedLocales: const [
         Locale('zh', ''), // Chinese
+        Locale('nl', ''), // Dutch
         Locale('en', ''), // English, no country code
         Locale('fr', ''), // French
         Locale('de', ''), // German

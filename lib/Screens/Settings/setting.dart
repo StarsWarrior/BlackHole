@@ -2432,6 +2432,7 @@ class _SettingPageState extends State<SettingPage> {
                             onChanged: (String? newValue) {
                               final Map<String, String> codes = {
                                 'Chinese': 'zh',
+                                'Dutch': 'nl',
                                 'English': 'en',
                                 'French': 'fr',
                                 'German': 'de',
@@ -2459,6 +2460,7 @@ class _SettingPageState extends State<SettingPage> {
                             },
                             items: <String>[
                               'Chinese',
+                              'Dutch',
                               'English',
                               'French',
                               'German',
@@ -3533,7 +3535,7 @@ class _SettingPageState extends State<SettingPage> {
                           isThreeLine: true,
                           onTap: () {
                             const String upiUrl =
-                                'upi://pay?pa=8570094149@okbizaxis&pn=BlackHole&mc=5732&aid=uGICAgIDn98OpSw&tr=BCR2DN6T37O6DB3Q';
+                                'upi://pay?pa=ankit.sangwan.5688@oksbi&pn=BlackHole';
                             launch(upiUrl);
                           },
                           onLongPress: () {
@@ -3554,24 +3556,20 @@ class _SettingPageState extends State<SettingPage> {
                                   : Colors.grey[700],
                             ),
                             onPressed: () {
-                              showDialog(
+                              copyToClipboard(
                                 context: context,
-                                builder: (BuildContext context) {
-                                  return const Dialog(
-                                    elevation: 10,
-                                    backgroundColor: Colors.transparent,
-                                    child: Image(
-                                      image: AssetImage('assets/gpayQR.png'),
-                                    ),
-                                  );
-                                },
+                                text: 'ankit.sangwan.5688@oksbi',
+                                displayText: AppLocalizations.of(
+                                  context,
+                                )!
+                                    .upiCopied,
                               );
                             },
                             child: Text(
                               AppLocalizations.of(
                                 context,
                               )!
-                                  .showQr,
+                                  .copy,
                               style: const TextStyle(
                                 fontWeight: FontWeight.w500,
                               ),
