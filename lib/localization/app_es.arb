@@ -137,7 +137,7 @@
   "@displayName": {},
   "donateGpay": "Donar con GPay",
   "@donateGpay": {},
-  "donateGpaySub": "Incluso ₹1 me hace sonreír :)\nToca para donar o mantén presionado para copiar UPI ID",
+  "donateGpaySub": "Cada pequeña cantidad me hace sonreír :)\nToque para donar o pulse prolongadamente para copiar el ID de UPI",
   "@donateGpaySub": {},
   "downDone": "Descarga completada",
   "@downDone": {},
@@ -616,5 +616,7 @@
   "useVpn": "¿No está en la India? Intente usar una VPN con un servidor en la India",
   "@useVpn": {},
   "viewArtist": "Ver artista",
-  "@viewArtist": {}
+  "@viewArtist": {},
+  "confirmViewable": "Asegúrese de que la lista de reproducción es visible",
+  "@confirmViewable": {}
 }
