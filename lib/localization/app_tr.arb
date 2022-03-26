@@ -203,7 +203,7 @@
   "@downDone": {},
   "downLocation": "İndirme Konumu",
   "@downLocation": {},
-  "donateGpaySub": "₹1 bile beni gülümsetiyor :)\nBağış yapmak için dokunun veya UPI kimliğini kopyalamak için uzun basın",
+  "donateGpaySub": "Her küçük miktar beni gülümsetiyor :)\nBağış yapmak için dokunun veya UPI kimliğini kopyalamak için uzun basın",
   "@donateGpaySub": {},
   "downLyrics": "Şarkı Sözlerini İndir",
   "@downLyrics": {},
@@ -630,5 +630,15 @@
   "importResso": "Resso'dan içe aktar",
   "@importResso": {},
   "from": "form",
-  "@from": {}
+  "@from": {},
+  "upNext": "Bir sonraki",
+  "@upNext": {},
+  "confirmViewable": "Oynatma listesinin görüntülenebilir olduğundan emin olun",
+  "@confirmViewable": {},
+  "useDominantAndDarkerColors": "Oynatma Ekranı için Baskın ve Daha Koyu Renkler Kullanın",
+  "@useDominantAndDarkerColors": {},
+  "useDominantAndDarkerColorsSub": "Görüntüdeki Baskın ve Daha Koyu Renk, Oynatıcı Ekranı Arka Planının Gradyanı olarak kullanılacaktır. Yalnızca Baskın Kullanım AÇIK ise kullanılabilir (Dominantı Tüm Ekran için Kullan AÇIK ise daha iyi sonuçlar)",
+  "@useDominantAndDarkerColorsSub": {},
+  "useBlurForNowPlayingSub": "Daha düşük Opaklığa sahip Bulanıklık, Şu An Çalınan Bölümünün Arka Planı olarak kullanılacak",
+  "@useBlurForNowPlayingSub": {}
 }
