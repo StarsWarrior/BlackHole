@@ -640,5 +640,7 @@
   "ytStreamQuality": "YouTube-streamingkwaliteit",
   "@ytStreamQuality": {},
   "ytStreamQualitySub": "Hogere kwaliteit verbruikt meer mb's",
-  "@ytStreamQualitySub": {}
+  "@ytStreamQualitySub": {},
+  "autoBackLocation": "Automatische back-uplocatie",
+  "@autoBackLocation": {}
 }
