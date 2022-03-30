@@ -1647,6 +1647,20 @@ class _SettingPageState extends State<SettingPage> {
                             AppLocalizations.of(
                               context,
                             )!
+                                .showPlaylists,
+                          ),
+                          keyName: 'showPlaylist',
+                          defaultValue: true,
+                          onChanged: (val, box) {
+                            widget.callback!();
+                          },
+                        ),
+
+                        BoxSwitchTile(
+                          title: Text(
+                            AppLocalizations.of(
+                              context,
+                            )!
                                 .showLast,
                           ),
                           subtitle: Text(

@@ -26,8 +26,10 @@ class Collage extends StatelessWidget {
   final bool showGrid;
   final List imageList;
   final String placeholderImage;
+  final double borderRadius;
   const Collage({
     Key? key,
+    this.borderRadius = 7.0,
     required this.showGrid,
     required this.imageList,
     required this.placeholderImage,
@@ -37,10 +39,10 @@ class Collage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       elevation: 5,
-      margin: const EdgeInsets.symmetric(horizontal: 8.0),
+      color: Colors.black,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(
-          7.0,
+          borderRadius,
         ),
       ),
       clipBehavior: Clip.antiAlias,
@@ -49,6 +51,7 @@ class Collage extends StatelessWidget {
         child: showGrid
             ? GridView.count(
                 shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
                 crossAxisCount: imageList.length < 3 ? 1 : 2,
                 children: imageList
                     .map(

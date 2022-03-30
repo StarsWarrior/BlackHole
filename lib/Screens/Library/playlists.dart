@@ -43,18 +43,17 @@ class PlaylistScreen extends StatefulWidget {
 
 class _PlaylistScreenState extends State<PlaylistScreen> {
   Box settingsBox = Hive.box('settings');
-  List playlistNames = [];
-  Map playlistDetails = {};
+  List playlistNames =
+      Hive.box('settings').get('playlistNames')?.toList() as List? ??
+          ['Favorite Songs'];
+  Map playlistDetails =
+      Hive.box('settings').get('playlistDetails', defaultValue: {}) as Map;
   @override
   Widget build(BuildContext context) {
-    playlistNames = settingsBox.get('playlistNames')?.toList() as List? ??
-        ['Favorite Songs'];
     if (!playlistNames.contains('Favorite Songs')) {
       playlistNames.insert(0, 'Favorite Songs');
       settingsBox.put('playlistNames', playlistNames);
     }
-    playlistDetails =
-        settingsBox.get('playlistDetails', defaultValue: {}) as Map;
 
     return GradientContainer(
       child: Column(
