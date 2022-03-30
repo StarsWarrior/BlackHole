@@ -231,6 +231,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
                   bottom: TabBar(
                     isScrollable: widget.showPlaylists,
                     controller: _tcontroller,
+                    indicatorSize: TabBarIndicatorSize.label,
                     tabs: [
                       Tab(
                         text: AppLocalizations.of(context)!.songs,

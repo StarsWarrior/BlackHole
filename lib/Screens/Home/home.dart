@@ -223,17 +223,34 @@ class _HomePageState extends State<HomePage> {
             )!
                 .playlists: playlistNames,
           };
-          ExtStorageProvider.getExtStorage(dirName: 'BlackHole/Backups')
-              .then((value) {
+          final String autoBackPath = Hive.box('settings').get(
+            'autoBackPath',
+            defaultValue: '',
+          ) as String;
+          if (autoBackPath == '') {
+            ExtStorageProvider.getExtStorage(
+              dirName: 'BlackHole/Backups',
+            ).then((value) {
+              Hive.box('settings').put('autoBackPath', value);
+              createBackup(
+                context,
+                checked,
+                boxNames,
+                path: value,
+                fileName: 'BlackHole_AutoBackup',
+                showDialog: false,
+              );
+            });
+          } else {
             createBackup(
               context,
               checked,
               boxNames,
-              path: value,
+              path: autoBackPath,
               fileName: 'BlackHole_AutoBackup',
               showDialog: false,
             );
-          });
+          }
         }
       });
       if (Hive.box('settings').get('proxyIp') == null) {

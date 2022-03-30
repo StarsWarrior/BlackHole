@@ -70,6 +70,7 @@ class _TopChartsState extends State<TopCharts>
             ),
           ],
           bottom: TabBar(
+            indicatorSize: TabBarIndicatorSize.label,
             tabs: [
               Tab(
                 child: Text(

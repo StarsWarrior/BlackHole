@@ -223,6 +223,7 @@ class _DownloadedSongsDesktopState extends State<DownloadedSongsDesktop>
                   bottom: TabBar(
                     // isScrollable: true,
                     controller: _tcontroller,
+                    indicatorSize: TabBarIndicatorSize.label,
                     tabs: [
                       Tab(
                         text: AppLocalizations.of(context)!.songs,

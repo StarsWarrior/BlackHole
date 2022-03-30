@@ -204,11 +204,11 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
       final List lastQueueList = await Hive.box('cache')
           .get('lastQueue', defaultValue: [])?.toList() as List;
 
-      final int lastIndex =
-          await Hive.box('cache').get('lastIndex', defaultValue: 0) as int;
+      // final int lastIndex =
+      //     await Hive.box('cache').get('lastIndex', defaultValue: 0) as int;
 
-      final int lastPos =
-          await Hive.box('cache').get('lastPos', defaultValue: 0) as int;
+      // final int lastPos =
+      //     await Hive.box('cache').get('lastPos', defaultValue: 0) as int;
 
       final List<MediaItem> lastQueue = lastQueueList
           .map((e) => MediaItemConverter.mapToMediaItem(e as Map))
@@ -217,8 +217,10 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
       await _playlist.addAll(_itemsToSources(lastQueue));
       await _player!.setAudioSource(
         _playlist,
-        initialIndex: lastIndex,
-        initialPosition: Duration(seconds: lastPos),
+        // commented out due to some bug in audio_service which causes app to freeze
+
+        // initialIndex: lastIndex,
+        // initialPosition: Duration(seconds: lastPos),
       );
     } else {
       await _player!.setAudioSource(_playlist, preload: false);
@@ -416,8 +418,8 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
   @override
   Future<void> pause() async {
     _player!.pause();
-    await Hive.box('cache').put('lastIndex', _player!.currentIndex);
-    await Hive.box('cache').put('lastPos', _player!.position.inSeconds);
+    // await Hive.box('cache').put('lastIndex', _player!.currentIndex);
+    // await Hive.box('cache').put('lastPos', _player!.position.inSeconds);
   }
 
   @override
@@ -429,8 +431,8 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
     await playbackState.firstWhere(
       (state) => state.processingState == AudioProcessingState.idle,
     );
-    await Hive.box('cache').put('lastIndex', _player!.currentIndex);
-    await Hive.box('cache').put('lastPos', _player!.position.inSeconds);
+    // await Hive.box('cache').put('lastIndex', _player!.currentIndex);
+    // await Hive.box('cache').put('lastPos', _player!.position.inSeconds);
   }
 
   @override

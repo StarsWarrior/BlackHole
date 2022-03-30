@@ -302,6 +302,7 @@ class _DownloadsState extends State<Downloads>
                   elevation: 0,
                   bottom: TabBar(
                     controller: _tcontroller,
+                    indicatorSize: TabBarIndicatorSize.label,
                     tabs: [
                       Tab(
                         text: AppLocalizations.of(context)!.songs,

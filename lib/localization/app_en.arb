@@ -49,6 +49,8 @@
   "@artists": {},
   "autoBack": "Auto Backup",
   "@autoBack": {},
+  "autoBackLocation": "Auto Backup Location",
+  "@autoBackLocation": {},
   "autoBackSub": "Automatically backup data",
   "@autoBackSub": {},
   "autoplay": "Autoplay",

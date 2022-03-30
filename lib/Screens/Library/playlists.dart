@@ -162,8 +162,11 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                           SpotifyApi().requestAuthorization(),
                         );
 
-                        AppLinks(
-                          onAppLink: (Uri uri, String link) async {
+                        AppLinks().uriLinkStream.listen(
+                          (
+                            Uri uri,
+                          ) async {
+                            final link = uri.toString();
                             closeWebView();
                             if (link.contains('code=')) {
                               code = link.split('code=')[1];

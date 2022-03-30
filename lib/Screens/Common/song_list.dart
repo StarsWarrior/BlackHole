@@ -218,144 +218,168 @@ class _SongsListPageState extends State<SongsListPage> {
                               ),
                           sliverList: SliverList(
                             delegate: SliverChildListDelegate([
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  GestureDetector(
-                                    onTap: () {
-                                      Navigator.push(
-                                        context,
-                                        PageRouteBuilder(
-                                          opaque: false,
-                                          pageBuilder: (_, __, ___) =>
-                                              PlayScreen(
-                                            songsList: songList,
-                                            index: 0,
-                                            offline: false,
-                                            fromDownloads: false,
-                                            fromMiniplayer: false,
-                                            recommend: true,
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 20.0,
+                                ),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    Expanded(
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            PageRouteBuilder(
+                                              opaque: false,
+                                              pageBuilder: (_, __, ___) =>
+                                                  PlayScreen(
+                                                songsList: songList,
+                                                index: 0,
+                                                offline: false,
+                                                fromDownloads: false,
+                                                fromMiniplayer: false,
+                                                recommend: true,
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                        child: Container(
+                                          margin: const EdgeInsets.only(
+                                            top: 10,
+                                            bottom: 10,
                                           ),
-                                        ),
-                                      );
-                                    },
-                                    child: Container(
-                                      margin: const EdgeInsets.only(
-                                        top: 20,
-                                        bottom: 5,
-                                      ),
-                                      height: 45.0,
-                                      width: 120,
-                                      decoration: BoxDecoration(
-                                        borderRadius:
-                                            BorderRadius.circular(100.0),
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .secondary,
-                                        boxShadow: const [
-                                          BoxShadow(
-                                            color: Colors.black26,
-                                            blurRadius: 5.0,
-                                            offset: Offset(0.0, 3.0),
-                                          )
-                                        ],
-                                      ),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Icon(
-                                            Icons.play_arrow_rounded,
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(100.0),
                                             color: Theme.of(context)
-                                                        .colorScheme
-                                                        .secondary ==
-                                                    Colors.white
-                                                ? Colors.black
-                                                : Colors.white,
+                                                .colorScheme
+                                                .secondary,
+                                            // color: Colors.white,
+                                            boxShadow: const [
+                                              BoxShadow(
+                                                color: Colors.black26,
+                                                blurRadius: 5.0,
+                                                offset: Offset(0.0, 3.0),
+                                              )
+                                            ],
                                           ),
-                                          const SizedBox(width: 5.0),
-                                          Text(
-                                            AppLocalizations.of(context)!.play,
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 18.0,
-                                              color: Theme.of(context)
-                                                          .colorScheme
-                                                          .secondary ==
-                                                      Colors.white
-                                                  ? Colors.black
-                                                  : Colors.white,
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 25.0,
+                                              vertical: 10.0,
                                             ),
-                                            textAlign: TextAlign.center,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                  GestureDetector(
-                                    onTap: () {
-                                      final List tempList = List.from(songList);
-                                      tempList.shuffle();
-                                      Navigator.push(
-                                        context,
-                                        PageRouteBuilder(
-                                          opaque: false,
-                                          pageBuilder: (_, __, ___) =>
-                                              PlayScreen(
-                                            songsList: tempList,
-                                            index: 0,
-                                            offline: false,
-                                            fromDownloads: false,
-                                            fromMiniplayer: false,
-                                            recommend: true,
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Icon(
+                                                  Icons.play_arrow_rounded,
+                                                  color: Theme.of(context)
+                                                              .colorScheme
+                                                              .secondary ==
+                                                          Colors.white
+                                                      ? Colors.black
+                                                      : Colors.white,
+                                                  size: 26.0,
+                                                ),
+                                                const SizedBox(width: 5.0),
+                                                Text(
+                                                  AppLocalizations.of(context)!
+                                                      .play,
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 18.0,
+                                                    color: Theme.of(context)
+                                                                .colorScheme
+                                                                .secondary ==
+                                                            Colors.white
+                                                        ? Colors.black
+                                                        : Colors.white,
+                                                  ),
+                                                  textAlign: TextAlign.center,
+                                                ),
+                                              ],
+                                            ),
                                           ),
                                         ),
-                                      );
-                                    },
-                                    child: Container(
-                                      margin: const EdgeInsets.only(
-                                        top: 20,
-                                        bottom: 5,
-                                      ),
-                                      height: 45.0,
-                                      width: 130,
-                                      decoration: BoxDecoration(
-                                        borderRadius:
-                                            BorderRadius.circular(100.0),
-                                        color: Colors.white,
-                                        boxShadow: const [
-                                          BoxShadow(
-                                            color: Colors.black26,
-                                            blurRadius: 5.0,
-                                            offset: Offset(0.0, 3.0),
-                                          )
-                                        ],
-                                      ),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          const Icon(
-                                            Icons.shuffle_rounded,
-                                            color: Colors.black,
-                                          ),
-                                          const SizedBox(width: 5.0),
-                                          Text(
-                                            AppLocalizations.of(context)!
-                                                .shuffle,
-                                            style: const TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 18.0,
-                                              color: Colors.black,
-                                            ),
-                                            textAlign: TextAlign.center,
-                                          ),
-                                        ],
                                       ),
                                     ),
-                                  ),
-                                ],
+                                    const SizedBox(width: 20),
+                                    Expanded(
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          final List tempList =
+                                              List.from(songList);
+                                          tempList.shuffle();
+                                          Navigator.push(
+                                            context,
+                                            PageRouteBuilder(
+                                              opaque: false,
+                                              pageBuilder: (_, __, ___) =>
+                                                  PlayScreen(
+                                                songsList: tempList,
+                                                index: 0,
+                                                offline: false,
+                                                fromDownloads: false,
+                                                fromMiniplayer: false,
+                                                recommend: true,
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                        child: Container(
+                                          margin: const EdgeInsets.only(
+                                            top: 10,
+                                            bottom: 10,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(100.0),
+                                            border:
+                                                Border.all(color: Colors.white),
+                                            boxShadow: const [
+                                              BoxShadow(
+                                                color: Colors.black26,
+                                                blurRadius: 5.0,
+                                                offset: Offset(0.0, 3.0),
+                                              )
+                                            ],
+                                          ),
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 25.0,
+                                              vertical: 10.0,
+                                            ),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                const Icon(
+                                                  Icons.shuffle_rounded,
+                                                  color: Colors.white,
+                                                  size: 24.0,
+                                                ),
+                                                const SizedBox(width: 5.0),
+                                                Text(
+                                                  AppLocalizations.of(context)!
+                                                      .shuffle,
+                                                  style: const TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 18.0,
+                                                    color: Colors.white,
+                                                  ),
+                                                  textAlign: TextAlign.center,
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                               ...songList.map((entry) {
                                 return ListTile(

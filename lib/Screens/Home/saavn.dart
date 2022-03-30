@@ -572,10 +572,8 @@ class _SaavnHomePageState extends State<SaavnHomePage>
                                                       },
                                                     ),
                                                   ),
-                                                if (isHover &&
-                                                    (item['type'] == 'song' ||
-                                                        item['duration'] !=
-                                                            null))
+                                                if (item['type'] == 'song' ||
+                                                    item['duration'] != null)
                                                   Align(
                                                     alignment:
                                                         Alignment.topRight,
@@ -583,13 +581,14 @@ class _SaavnHomePageState extends State<SaavnHomePage>
                                                       mainAxisSize:
                                                           MainAxisSize.min,
                                                       children: [
-                                                        LikeButton(
-                                                          mediaItem:
-                                                              MediaItemConverter
-                                                                  .mapToMediaItem(
-                                                            item,
+                                                        if (isHover)
+                                                          LikeButton(
+                                                            mediaItem:
+                                                                MediaItemConverter
+                                                                    .mapToMediaItem(
+                                                              item,
+                                                            ),
                                                           ),
-                                                        ),
                                                         SongTileTrailingMenu(
                                                           data: item,
                                                         ),

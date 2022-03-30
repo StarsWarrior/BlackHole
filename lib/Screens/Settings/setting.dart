@@ -57,6 +57,10 @@ class _SettingPageState extends State<SettingPage> {
   final MyTheme currentTheme = GetIt.I<MyTheme>();
   String downloadPath = Hive.box('settings')
       .get('downloadPath', defaultValue: '/storage/emulated/0/Music') as String;
+  String autoBackPath = Hive.box('settings').get(
+    'autoBackPath',
+    defaultValue: '/storage/emulated/0/BlackHole/Backups',
+  ) as String;
   final ValueNotifier<bool> includeOrExclude = ValueNotifier<bool>(
     Hive.box('settings').get('includeOrExclude', defaultValue: false) as bool,
   );
@@ -3355,6 +3359,66 @@ class _SettingPageState extends State<SettingPage> {
                           ),
                           keyName: 'autoBackup',
                           defaultValue: false,
+                        ),
+                        ListTile(
+                          title: Text(
+                            AppLocalizations.of(
+                              context,
+                            )!
+                                .autoBackLocation,
+                          ),
+                          subtitle: Text(autoBackPath),
+                          trailing: TextButton(
+                            style: TextButton.styleFrom(
+                              primary: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? Colors.white
+                                  : Colors.grey[700],
+                            ),
+                            onPressed: () async {
+                              autoBackPath =
+                                  await ExtStorageProvider.getExtStorage(
+                                        dirName: 'BlackHole/Backups',
+                                      ) ??
+                                      '/storage/emulated/0/BlackHole/Backups';
+                              Hive.box('settings')
+                                  .put('autoBackPath', autoBackPath);
+                              setState(
+                                () {},
+                              );
+                            },
+                            child: Text(
+                              AppLocalizations.of(
+                                context,
+                              )!
+                                  .reset,
+                            ),
+                          ),
+                          onTap: () async {
+                            final String temp = await Picker.selectFolder(
+                              context: context,
+                              message: AppLocalizations.of(
+                                context,
+                              )!
+                                  .selectBackLocation,
+                            );
+                            if (temp.trim() != '') {
+                              autoBackPath = temp;
+                              Hive.box('settings').put('autoBackPath', temp);
+                              setState(
+                                () {},
+                              );
+                            } else {
+                              ShowSnackBar().showSnackBar(
+                                context,
+                                AppLocalizations.of(
+                                  context,
+                                )!
+                                    .noFolderSelected,
+                              );
+                            }
+                          },
+                          dense: true,
                         ),
                       ],
                     ),

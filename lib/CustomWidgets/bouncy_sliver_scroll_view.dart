@@ -31,7 +31,7 @@ class BouncyImageSliverScrollView extends StatelessWidget {
   final String? imageUrl;
   final bool localImage;
   final String placeholderImage;
-  const BouncyImageSliverScrollView({
+  BouncyImageSliverScrollView({
     Key? key,
     this.scrollController,
     this.shrinkWrap = false,
@@ -42,6 +42,8 @@ class BouncyImageSliverScrollView extends StatelessWidget {
     this.imageUrl,
     this.actions,
   }) : super(key: key);
+
+  final ValueNotifier<double> _opacity = ValueNotifier<double>(1.0);
 
   @override
   Widget build(BuildContext context) {
@@ -73,6 +75,8 @@ class BouncyImageSliverScrollView extends StatelessWidget {
               );
     final bool rotated =
         MediaQuery.of(context).size.height < MediaQuery.of(context).size.width;
+    final double expandedHeight = MediaQuery.of(context).size.height * 0.4;
+
     return CustomScrollView(
       controller: scrollController,
       shrinkWrap: shrinkWrap,
@@ -82,65 +86,82 @@ class BouncyImageSliverScrollView extends StatelessWidget {
           elevation: 0,
           stretch: true,
           pinned: true,
+          centerTitle: true,
           // floating: true,
           // backgroundColor: Colors.transparent,
-          expandedHeight: MediaQuery.of(context).size.height * 0.4,
+          expandedHeight: expandedHeight,
           actions: actions,
-          flexibleSpace: FlexibleSpaceBar(
-            title: Text(
+          title: Opacity(
+            opacity: 1 - _opacity.value,
+            child: Text(
               title,
-              textAlign: TextAlign.center,
-              overflow: TextOverflow.ellipsis,
             ),
-            centerTitle: true,
-            titlePadding: const EdgeInsetsDirectional.only(
-              start: 72,
-              bottom: 16,
-              end: 120,
-            ),
-            background: Stack(
-              children: [
-                SizedBox.expand(
-                  child: ShaderMask(
-                    shaderCallback: (rect) {
-                      return const LinearGradient(
-                        begin: Alignment.center,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          Colors.black,
-                          Colors.transparent,
-                        ],
-                      ).createShader(
-                        Rect.fromLTRB(
-                          0,
-                          0,
-                          rect.width,
-                          rect.height,
-                        ),
-                      );
-                    },
-                    blendMode: BlendMode.dstIn,
-                    child: image,
+          ),
+
+          flexibleSpace: LayoutBuilder(
+            builder: (BuildContext context, BoxConstraints constraints) {
+              double top = constraints.biggest.height;
+              if (top > expandedHeight) {
+                top = expandedHeight;
+              }
+
+              _opacity.value = (top - 80) / (expandedHeight - 80);
+
+              return FlexibleSpaceBar(
+                title: Opacity(
+                  opacity: _opacity.value,
+                  child: Text(
+                    title,
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                if (rotated)
-                  Align(
-                    alignment: const Alignment(-0.85, 0.5),
-                    child: Card(
-                      elevation: 5,
-                      color: Colors.transparent,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(7.0),
-                      ),
-                      clipBehavior: Clip.antiAlias,
-                      child: SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.3,
+                centerTitle: true,
+                background: Stack(
+                  children: [
+                    SizedBox.expand(
+                      child: ShaderMask(
+                        shaderCallback: (rect) {
+                          return const LinearGradient(
+                            begin: Alignment.center,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Colors.black,
+                              Colors.transparent,
+                            ],
+                          ).createShader(
+                            Rect.fromLTRB(
+                              0,
+                              0,
+                              rect.width,
+                              rect.height,
+                            ),
+                          );
+                        },
+                        blendMode: BlendMode.dstIn,
                         child: image,
                       ),
                     ),
-                  ),
-              ],
-            ),
+                    if (rotated)
+                      Align(
+                        alignment: const Alignment(-0.85, 0.5),
+                        child: Card(
+                          elevation: 5,
+                          color: Colors.transparent,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(7.0),
+                          ),
+                          clipBehavior: Clip.antiAlias,
+                          child: SizedBox(
+                            height: MediaQuery.of(context).size.height * 0.3,
+                            child: image,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              );
+            },
           ),
         ),
         sliverList,
