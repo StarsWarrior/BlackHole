@@ -2450,6 +2450,7 @@ class _SettingPageState extends State<SettingPage> {
                             onChanged: (String? newValue) {
                               final Map<String, String> codes = {
                                 'Chinese': 'zh',
+                                'Czech': 'cs',
                                 'Dutch': 'nl',
                                 'English': 'en',
                                 'French': 'fr',
@@ -2478,6 +2479,7 @@ class _SettingPageState extends State<SettingPage> {
                             },
                             items: <String>[
                               'Chinese',
+                              'Czech',
                               'Dutch',
                               'English',
                               'French',
