@@ -640,5 +640,7 @@
   "useDominantAndDarkerColorsSub": "Görüntüdeki Baskın ve Daha Koyu Renk, Oynatıcı Ekranı Arka Planının Gradyanı olarak kullanılacaktır. Yalnızca Baskın Kullanım AÇIK ise kullanılabilir (Dominantı Tüm Ekran için Kullan AÇIK ise daha iyi sonuçlar)",
   "@useDominantAndDarkerColorsSub": {},
   "useBlurForNowPlayingSub": "Daha düşük Opaklığa sahip Bulanıklık, Şu An Çalınan Bölümünün Arka Planı olarak kullanılacak",
-  "@useBlurForNowPlayingSub": {}
+  "@useBlurForNowPlayingSub": {},
+  "autoBackLocation": "Otomatik Yedekleme Konumu",
+  "@autoBackLocation": {}
 }
