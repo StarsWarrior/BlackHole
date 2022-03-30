@@ -642,5 +642,9 @@
   "ytStreamQualitySub": "Hogere kwaliteit verbruikt meer mb's",
   "@ytStreamQualitySub": {},
   "autoBackLocation": "Automatische back-uplocatie",
-  "@autoBackLocation": {}
+  "@autoBackLocation": {},
+  "yourPlaylists": "Mijn afspeellijsten",
+  "@yourPlaylists": {},
+  "showPlaylists": "Afspeellijsten tonen op startscherm",
+  "@showPlaylists": {}
 }
