@@ -155,7 +155,7 @@
   "@darkMode": {},
   "date": "Date",
   "@date": {},
-  "dateAdded": "Date ajoutée",
+  "dateAdded": "Date d'ajout",
   "@dateAdded": {},
   "dec": "Décroissant",
   "@dec": {},
@@ -611,7 +611,7 @@
   "@includeExcludeFolderSub": {},
   "includedDetails": "Seuls les morceaux des dossiers sélectionnés seront affichés",
   "@includedDetails": {},
-  "downFilename": "Télécharger le format du nom",
+  "downFilename": "Format du nom de téléchargement",
   "@downFilename": {},
   "downFilenameSub": "Les morceaux seront téléchargés selon le format de nom de fichier suivant",
   "@downFilenameSub": {},
@@ -642,5 +642,11 @@
   "upNext": "Juste après",
   "@upNext": {},
   "confirmViewable": "Assurez-vous que la liste de lecture est visible",
-  "@confirmViewable": {}
+  "@confirmViewable": {},
+  "autoBackLocation": "Emplacement de la sauvegarde automatique",
+  "@autoBackLocation": {},
+  "showPlaylists": "Afficher les listes de lecture sur l'écran d'accueil",
+  "@showPlaylists": {},
+  "yourPlaylists": "Vos listes de lecture",
+  "@yourPlaylists": {}
 }
