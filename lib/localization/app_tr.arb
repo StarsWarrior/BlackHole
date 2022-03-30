@@ -133,7 +133,7 @@
   "@clearCacheSub": {},
   "connectingRadio": "Radyoya bağlanılıyor…",
   "@connectingRadio": {},
-  "createAlbumFold": "Albüm & Oynatma Listesi indirmesi için bir klasör oluşturun",
+  "createAlbumFold": "Albüm & Çalma Listesi indirmesi için bir klasör oluşturun",
   "@createAlbumFold": {},
   "createAlbumFoldSub": "Albüm veya Çalma Listesi indirildiğinde şarkılar için ortak klasör oluşturur",
   "@createAlbumFoldSub": {},
@@ -633,7 +633,7 @@
   "@from": {},
   "upNext": "Bir sonraki",
   "@upNext": {},
-  "confirmViewable": "Oynatma listesinin görüntülenebilir olduğundan emin olun",
+  "confirmViewable": "Çalma listesinin görüntülenebilir olduğundan emin olun",
   "@confirmViewable": {},
   "useDominantAndDarkerColors": "Oynatma Ekranı için Baskın ve Daha Koyu Renkler Kullanın",
   "@useDominantAndDarkerColors": {},
@@ -642,5 +642,9 @@
   "useBlurForNowPlayingSub": "Daha düşük Opaklığa sahip Bulanıklık, Şu An Çalınan Bölümünün Arka Planı olarak kullanılacak",
   "@useBlurForNowPlayingSub": {},
   "autoBackLocation": "Otomatik Yedekleme Konumu",
-  "@autoBackLocation": {}
+  "@autoBackLocation": {},
+  "yourPlaylists": "Çalma Listeleriniz",
+  "@yourPlaylists": {},
+  "showPlaylists": "Ana ekranda çalma listelerini göster",
+  "@showPlaylists": {}
 }
