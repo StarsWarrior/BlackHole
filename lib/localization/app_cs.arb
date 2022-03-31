@@ -640,5 +640,11 @@
   "willPlayNext": "bude přehráváno jako další",
   "@willPlayNext": {},
   "upNext": "Další",
-  "@upNext": {}
+  "@upNext": {},
+  "autoBackLocation": "Umístění automatické zálohy",
+  "@autoBackLocation": {},
+  "yourPlaylists": "Vaše playlisty",
+  "@yourPlaylists": {},
+  "showPlaylists": "Zobrazit playlisty na domovské obrazovce",
+  "@showPlaylists": {}
 }
