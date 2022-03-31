@@ -642,5 +642,11 @@
   "upNext": "播放下一首",
   "@upNext": {},
   "confirmViewable": "确保播放列表可见",
-  "@confirmViewable": {}
+  "@confirmViewable": {},
+  "autoBackLocation": "自动备份位置",
+  "@autoBackLocation": {},
+  "yourPlaylists": "你的播放列表",
+  "@yourPlaylists": {},
+  "showPlaylists": "在主屏幕上显示播放列表",
+  "@showPlaylists": {}
 }
