@@ -457,7 +457,7 @@
   "@dec": {},
   "disclaimerText": "வேறெதையும்விட உம் தனியுரிமையை மதிக்கிறோம். இங்குள்ளிடு உம் பெயர் மட்டுமே பதிவாகும்.",
   "@disclaimerText": {},
-  "donateGpaySub": "₹1கூட எனக்குச் சிரிப்பூட்டும் :)\nகொடையளிக்க தட்டு அ UPI IDஐ நகலெடுக்க நீண்டழுத்து",
+  "donateGpaySub": "ஒவ்வொரு சிறிய தொகை கூட எனக்குச் சிரிப்பூட்டும் :)\nகொடையளிக்க தட்டு அ UPI IDஐ நகலெடுக்க நீண்டழுத்து",
   "@donateGpaySub": {},
   "enableGesture": "கலைவேலைப்பாட்டுச் சைகைகளை இயக்கு",
   "@enableGesture": {},
@@ -642,5 +642,11 @@
   "useBlurForNowPlayingSub": "இப்போது இயங்குபவை பிரிவின் பின்புலத்திற்குக் குறைந்த ஒளிபுகாமையுள்ள மங்கல் பயன்படுத்தப்படும்",
   "@useBlurForNowPlayingSub": {},
   "confirmViewable": "பாச்சரம் காணக்கூடியதா என உறுதிபடுத்து",
-  "@confirmViewable": {}
+  "@confirmViewable": {},
+  "autoBackLocation": "தானியங்கு காப்புநகலிடம்",
+  "@autoBackLocation": {},
+  "yourPlaylists": "உமது பாச்சரங்கள்",
+  "@yourPlaylists": {},
+  "showPlaylists": "முகப்புத்திரையில் பாச்சரங்கள் காட்டு",
+  "@showPlaylists": {}
 }
