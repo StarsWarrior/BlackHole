@@ -1,1 +1,20 @@
-{}
+{
+  "addNew": "Шинээр нэмэх",
+  "@addNew": {},
+  "addToQueue": "Дараалалд нэмэх",
+  "@addToQueue": {},
+  "addedToQueue": "Дараалалд нэмлээ",
+  "@addedToQueue": {},
+  "addedToFav": "Таалагдсан жагсаалтад нэмэгдлээ",
+  "@addedToFav": {},
+  "aboutLine2": "Хэрэв миний бүтээл таньд таалагдсан бол\n♥ болон ⭐ дараарай",
+  "@aboutLine2": {},
+  "addToPlaylist": "Жагсаалтад нэмэх",
+  "@addToPlaylist": {},
+  "addedBy": "Нэмсэн",
+  "@addedBy": {},
+  "addedToPlaylists": "Толуулах жагсаалтад нэмлээ",
+  "@addedToPlaylists": {},
+  "adjustSpeed": "Хурд тохируулах",
+  "@adjustSpeed": {}
+}
