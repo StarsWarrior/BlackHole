@@ -152,15 +152,11 @@ class _YouTubePlaylistState extends State<YouTubePlaylist> {
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            entry.author,
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                        ],
+                                      Expanded(
+                                        child: Text(
+                                          entry.author,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
                                       ),
                                       Text(
                                         entry.duration
