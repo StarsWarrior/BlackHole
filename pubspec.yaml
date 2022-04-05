@@ -4,7 +4,7 @@ description: An Open Source Music Player App.
 # Prevent accidental publishing to pub.dev.
 publish_to: "none"
 
-version: 1.13.3+26
+version: 1.14.0+28
 
 environment:
   sdk: ">=2.13.0 <3.0.0"
@@ -24,7 +24,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_archive: ^4.1.1
-  flutter_displaymode: ^0.3.2
+  flutter_displaymode: ^0.4.0
   # flutter_downloader: ^1.7.1
   flutter_localizations:
     sdk: flutter

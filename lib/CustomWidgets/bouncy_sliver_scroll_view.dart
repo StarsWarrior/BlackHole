@@ -18,6 +18,7 @@
  */
 
 import 'dart:io';
+import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -109,7 +110,7 @@ class BouncyImageSliverScrollView extends StatelessWidget {
 
               return FlexibleSpaceBar(
                 title: Opacity(
-                  opacity: _opacity.value,
+                  opacity: max(0, _opacity.value),
                   child: Text(
                     title,
                     textAlign: TextAlign.center,

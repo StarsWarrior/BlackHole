@@ -1468,8 +1468,8 @@ class _ArtWorkWidgetState extends State<ArtWorkWidget> {
                     child: SingleChildScrollView(
                       physics: const BouncingScrollPhysics(),
                       padding: const EdgeInsets.symmetric(
-                        vertical: 55,
-                        horizontal: 10,
+                        vertical: 60,
+                        horizontal: 20,
                       ),
                       child: ValueListenableBuilder(
                         valueListenable: done,
@@ -1496,6 +1496,9 @@ class _ArtWorkWidgetState extends State<ArtWorkWidget> {
                                   : SelectableText(
                                       lyrics['lyrics'].toString(),
                                       textAlign: TextAlign.center,
+                                      style: const TextStyle(
+                                        fontSize: 16.0,
+                                      ),
                                     )
                               : child!;
                         },

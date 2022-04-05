@@ -300,6 +300,7 @@ class _SongsListPageState extends State<SongsListPage> {
                                                   ),
                                                   textAlign: TextAlign.center,
                                                 ),
+                                                const SizedBox(width: 10.0),
                                               ],
                                             ),
                                           ),
