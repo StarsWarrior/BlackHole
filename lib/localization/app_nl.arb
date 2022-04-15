@@ -646,5 +646,13 @@
   "yourPlaylists": "Mijn afspeellijsten",
   "@yourPlaylists": {},
   "showPlaylists": "Afspeellijsten tonen op startscherm",
-  "@showPlaylists": {}
+  "@showPlaylists": {},
+  "playerScreenBackground": "Achtergrond van afspeelscherm",
+  "@playerScreenBackground": {},
+  "playerScreenBackgroundSub": "De gekozen achtergrond wordt gebruikt op het afspeelscherm",
+  "@playerScreenBackgroundSub": {},
+  "resetOnSkip": "Nummer herhalen in plaats van vorige nummer afspelen",
+  "@resetOnSkip": {},
+  "resetOnSkipSub": "Herhaal het huidige nummer in plaats van het vorige nummer af te spelen",
+  "@resetOnSkipSub": {}
 }
