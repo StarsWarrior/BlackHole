@@ -648,5 +648,15 @@
   "showPlaylists": "Afficher les listes de lecture sur l'écran d'accueil",
   "@showPlaylists": {},
   "yourPlaylists": "Vos listes de lecture",
-  "@yourPlaylists": {}
+  "@yourPlaylists": {},
+  "playerScreenBackground": "Arrière-plan de l'écran du lecteur",
+  "@playerScreenBackground": {},
+  "importJioSaavn": "Importer de JioSaavn",
+  "@importJioSaavn": {},
+  "playerScreenBackgroundSub": "L'arrière-plan sélectionné sera affiché dans l'écran du lecteur",
+  "@playerScreenBackgroundSub": {},
+  "resetOnSkip": "Rejouer quand on passe au précédent",
+  "@resetOnSkip": {},
+  "resetOnSkipSub": "Rejouer depuis le début au lieu de passer à la chanson précédente",
+  "@resetOnSkipSub": {}
 }
