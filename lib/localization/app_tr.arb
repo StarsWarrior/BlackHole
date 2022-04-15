@@ -646,5 +646,13 @@
   "yourPlaylists": "Çalma Listeleriniz",
   "@yourPlaylists": {},
   "showPlaylists": "Ana ekranda çalma listelerini göster",
-  "@showPlaylists": {}
+  "@showPlaylists": {},
+  "resetOnSkip": "Öncekine Atlada Tekrar Oynat",
+  "@resetOnSkip": {},
+  "resetOnSkipSub": "Önceki şarkıya atlamak yerine baştan tekrar oynat",
+  "@resetOnSkipSub": {},
+  "playerScreenBackground": "Oynatıcı Ekranı Arka Planı",
+  "@playerScreenBackground": {},
+  "playerScreenBackgroundSub": "Seçilen arka plan oynatıcı ekranında gösterilecektir",
+  "@playerScreenBackgroundSub": {}
 }
