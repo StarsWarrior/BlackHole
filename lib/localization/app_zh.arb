@@ -209,7 +209,7 @@
   "@play": {},
   "miniButtons": "音乐通知界面按钮",
   "@miniButtons": {},
-  "playNext": "下一首播放",
+  "playNext": "播放下一首",
   "@playNext": {},
   "playlistShareText": "看看我的播放列表吧！",
   "@playlistShareText": {},
@@ -648,5 +648,13 @@
   "yourPlaylists": "你的播放列表",
   "@yourPlaylists": {},
   "showPlaylists": "在主屏幕上显示播放列表",
-  "@showPlaylists": {}
+  "@showPlaylists": {},
+  "playerScreenBackgroundSub": "所选背景将显示在播放器屏幕中",
+  "@playerScreenBackgroundSub": {},
+  "resetOnSkipSub": "从头开始重播，而不是跳到上一首歌曲",
+  "@resetOnSkipSub": {},
+  "resetOnSkip": "跳过上一首时重新播放",
+  "@resetOnSkip": {},
+  "playerScreenBackground": "播放器屏幕背景",
+  "@playerScreenBackground": {}
 }
