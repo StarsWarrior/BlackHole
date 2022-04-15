@@ -30,6 +30,7 @@ import 'package:blackhole/Helpers/countrycodes.dart';
 import 'package:blackhole/Helpers/picker.dart';
 import 'package:blackhole/Helpers/supabase.dart';
 import 'package:blackhole/Screens/Home/saavn.dart' as home_screen;
+import 'package:blackhole/Screens/Settings/player_gradient.dart';
 import 'package:blackhole/Screens/Top Charts/top.dart' as top_screen;
 import 'package:blackhole/Services/ext_storage_provider.dart';
 import 'package:blackhole/main.dart';
@@ -1265,57 +1266,32 @@ class _SettingPageState extends State<SettingPage> {
                             ),
                           ),
                         ),
-                        BoxSwitchTile(
+                        ListTile(
                           title: Text(
                             AppLocalizations.of(
                               context,
                             )!
-                                .useDominant,
+                                .playerScreenBackground,
                           ),
                           subtitle: Text(
                             AppLocalizations.of(
                               context,
                             )!
-                                .useDominantSub,
+                                .playerScreenBackgroundSub,
                           ),
-                          keyName: 'useImageColor',
-                          defaultValue: true,
-                          isThreeLine: false,
+                          dense: true,
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              PageRouteBuilder(
+                                opaque: false,
+                                pageBuilder: (_, __, ___) =>
+                                    const PlayerGradientSelection(),
+                              ),
+                            );
+                          },
                         ),
-                        BoxSwitchTile(
-                          title: Text(
-                            AppLocalizations.of(
-                              context,
-                            )!
-                                .useDominantFullScreen,
-                          ),
-                          subtitle: Text(
-                            AppLocalizations.of(
-                              context,
-                            )!
-                                .useDominantFullScreenSub,
-                          ),
-                          keyName: 'useFullScreenGradient',
-                          defaultValue: false,
-                          isThreeLine: true,
-                        ),
-                        BoxSwitchTile(
-                          title: Text(
-                            AppLocalizations.of(
-                              context,
-                            )!
-                                .useDominantAndDarkerColors,
-                          ),
-                          subtitle: Text(
-                            AppLocalizations.of(
-                              context,
-                            )!
-                                .useDominantAndDarkerColorsSub,
-                          ),
-                          keyName: 'useDominantAndDarkerColors',
-                          defaultValue: false,
-                          isThreeLine: true,
-                        ),
+
                         // BoxSwitchTile(
                         //   title: Text(
                         //     AppLocalizations.of(
@@ -2037,6 +2013,22 @@ class _SettingPageState extends State<SettingPage> {
                           ),
                           keyName: 'loadStart',
                           defaultValue: true,
+                        ),
+                        BoxSwitchTile(
+                          title: Text(
+                            AppLocalizations.of(
+                              context,
+                            )!
+                                .resetOnSkip,
+                          ),
+                          subtitle: Text(
+                            AppLocalizations.of(
+                              context,
+                            )!
+                                .resetOnSkipSub,
+                          ),
+                          keyName: 'resetOnSkip',
+                          defaultValue: false,
                         ),
                         BoxSwitchTile(
                           title: Text(
@@ -3981,16 +3973,20 @@ class SpotifyCountry {
               return ListTileTheme(
                 selectedColor: Theme.of(context).colorScheme.secondary,
                 child: ListTile(
-                  contentPadding: const EdgeInsets.only(
-                    left: 25.0,
-                    right: 25.0,
-                  ),
                   title: Text(
                     countries[idx],
                   ),
-                  trailing: region == countries[idx]
-                      ? const Icon(Icons.check_rounded)
-                      : const SizedBox(),
+                  leading: Radio(
+                    value: countries[idx],
+                    groupValue: region,
+                    onChanged: (value) {
+                      top_screen.items = [];
+                      region = countries[idx];
+                      top_screen.fetched = false;
+                      Hive.box('settings').put('region', region);
+                      Navigator.pop(context);
+                    },
+                  ),
                   selected: region == countries[idx],
                   onTap: () {
                     top_screen.items = [];

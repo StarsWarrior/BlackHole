@@ -85,14 +85,12 @@ class _PlayScreenState extends State<PlayScreen> {
       Hive.box('settings').get('repeatMode', defaultValue: 'None').toString();
   final bool enforceRepeat =
       Hive.box('settings').get('enforceRepeat', defaultValue: false) as bool;
-  final bool useImageColor =
-      Hive.box('settings').get('useImageColor', defaultValue: true) as bool;
+  final String gradientType = Hive.box('settings')
+      .get('gradientType', defaultValue: 'halfDark')
+      .toString();
   final bool getLyricsOnline =
       Hive.box('settings').get('getLyricsOnline', defaultValue: true) as bool;
-  final bool useFullScreenGradient = Hive.box('settings')
-      .get('useFullScreenGradient', defaultValue: false) as bool;
-  final bool useDominantAndDarkerColors = Hive.box('settings')
-      .get('useDominantAndDarkerColors', defaultValue: false) as bool;
+
   List<MediaItem> globalQueue = [];
   int globalIndex = 0;
   List response = [];
@@ -327,13 +325,15 @@ class _PlayScreenState extends State<PlayScreen> {
                       mediaItem.artUri!.toFilePath(),
                     ),
                   ),
-                  useDominantAndDarkerColors: useDominantAndDarkerColors,
+                  useDominantAndDarkerColors:
+                      gradientType == 'halfLight' || gradientType == 'full',
                 ).then((value) => updateBackgroundColors(value))
               : getColors(
                   imageProvider: CachedNetworkImageProvider(
                     mediaItem.artUri.toString(),
                   ),
-                  useDominantAndDarkerColors: useDominantAndDarkerColors,
+                  useDominantAndDarkerColors:
+                      gradientType == 'halfLight' || gradientType == 'full',
                 ).then((value) => updateBackgroundColors(value));
           return ValueListenableBuilder(
             valueListenable: gradientColor,
@@ -382,7 +382,7 @@ class _PlayScreenState extends State<PlayScreen> {
                       onSelected: (int? value) {
                         if (value == 10) {
                           final Map details =
-                              MediaItemConverter.mediaItemtoMap(mediaItem);
+                              MediaItemConverter.mediaItemToMap(mediaItem);
                           details['duration'] =
                               '${int.parse(details["duration"].toString()) ~/ 60}:${int.parse(details["duration"].toString()) % 60}';
                           // style: Theme.of(context).textTheme.caption,
@@ -780,15 +780,15 @@ class _PlayScreenState extends State<PlayScreen> {
                 duration: const Duration(milliseconds: 600),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    begin: !useImageColor
+                    begin: gradientType == 'simple'
                         ? Alignment.topLeft
                         : Alignment.topCenter,
-                    end: !useImageColor
+                    end: gradientType == 'simple'
                         ? Alignment.bottomRight
-                        : !useFullScreenGradient
-                            ? Alignment.center
-                            : Alignment.bottomCenter,
-                    colors: !useImageColor
+                        : gradientType == 'full'
+                            ? Alignment.bottomCenter
+                            : Alignment.center,
+                    colors: gradientType == 'simple'
                         ? Theme.of(context).brightness == Brightness.dark
                             ? currentTheme.getBackGradient()
                             : [
@@ -798,8 +798,8 @@ class _PlayScreenState extends State<PlayScreen> {
                         : Theme.of(context).brightness == Brightness.dark
                             ? [
                                 value?[0] ?? Colors.grey[900]!,
-                                if (!useDominantAndDarkerColors ||
-                                    !useFullScreenGradient)
+                                if (gradientType != 'halfLight' ||
+                                    gradientType != 'full')
                                   Colors.black
                                 else
                                   value?[1] ?? Colors.black
@@ -1120,7 +1120,7 @@ class ControlButtons extends StatelessWidget {
                 : DownloadButton(
                     size: 20.0,
                     icon: 'download',
-                    data: MediaItemConverter.mediaItemtoMap(mediaItem),
+                    data: MediaItemConverter.mediaItemToMap(mediaItem),
                   );
           default:
             break;
@@ -2054,7 +2054,7 @@ class NameNControls extends StatelessWidget {
                               if (!offline)
                                 DownloadButton(
                                   size: 25.0,
-                                  data: MediaItemConverter.mediaItemtoMap(
+                                  data: MediaItemConverter.mediaItemToMap(
                                     mediaItem,
                                   ),
                                 )

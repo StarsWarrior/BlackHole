@@ -26,6 +26,7 @@ import 'package:blackhole/CustomWidgets/miniplayer.dart';
 import 'package:blackhole/CustomWidgets/snackbar.dart';
 import 'package:blackhole/CustomWidgets/textinput_dialog.dart';
 import 'package:blackhole/Helpers/backup_restore.dart';
+import 'package:blackhole/Helpers/downloads_checker.dart';
 import 'package:blackhole/Helpers/supabase.dart';
 import 'package:blackhole/Screens/Home/saavn.dart';
 import 'package:blackhole/Screens/Library/library.dart';
@@ -259,6 +260,7 @@ class _HomePageState extends State<HomePage> {
       if (Hive.box('settings').get('proxyPort') == null) {
         Hive.box('settings').put('proxyPort', 8080);
       }
+      downloadChecker();
       return const SizedBox();
     } else {
       return const SizedBox();

@@ -21,7 +21,7 @@ import 'package:audio_service/audio_service.dart';
 
 // ignore: avoid_classes_with_only_static_members
 class MediaItemConverter {
-  static Map mediaItemtoMap(MediaItem mediaItem) {
+  static Map mediaItemToMap(MediaItem mediaItem) {
     return {
       'id': mediaItem.id,
       'album': mediaItem.album.toString(),

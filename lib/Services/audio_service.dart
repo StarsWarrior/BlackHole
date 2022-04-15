@@ -43,6 +43,7 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
 
   late AudioPlayer? _player;
   late String preferredQuality;
+  late bool resetOnSkip;
   // late bool cacheSong;
   final _equalizer = AndroidEqualizer();
 
@@ -125,6 +126,8 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
     preferredQuality = Hive.box('settings')
         .get('streamingQuality', defaultValue: '96 kbps')
         .toString();
+    resetOnSkip =
+        Hive.box('settings').get('resetOnSkip', defaultValue: false) as bool;
     // cacheSong =
     //     Hive.box('settings').get('cacheSong', defaultValue: false) as bool;
     recommend =
@@ -332,7 +335,7 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
     List recentList = await Hive.box('cache')
         .get('recentSongs', defaultValue: [])?.toList() as List;
 
-    final Map item = MediaItemConverter.mediaItemtoMap(mediaitem);
+    final Map item = MediaItemConverter.mediaItemToMap(mediaitem);
     recentList.insert(0, item);
 
     final jsonList = recentList.map((item) => jsonEncode(item)).toList();
@@ -347,7 +350,7 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
 
   Future<void> addLastQueue(List<MediaItem> queue) async {
     final lastQueue =
-        queue.map((item) => MediaItemConverter.mediaItemtoMap(item)).toList();
+        queue.map((item) => MediaItemConverter.mediaItemToMap(item)).toList();
     Hive.box('cache').put('lastQueue', lastQueue);
   }
 
@@ -399,7 +402,19 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
   Future<void> skipToNext() => _player!.seekToNext();
 
   @override
-  Future<void> skipToPrevious() => _player!.seekToPrevious();
+  Future<void> skipToPrevious() async {
+    resetOnSkip =
+        Hive.box('settings').get('resetOnSkip', defaultValue: false) as bool;
+    if (resetOnSkip) {
+      if ((_player?.position.inSeconds ?? 5) <= 5) {
+        _player!.seekToPrevious();
+      } else {
+        _player!.seek(Duration.zero);
+      }
+    } else {
+      _player!.seekToPrevious();
+    }
+  }
 
   @override
   Future<void> skipToQueueItem(int index) async {

@@ -118,6 +118,7 @@ class OfflineCollage extends StatelessWidget {
         child: showGrid
             ? GridView.count(
                 shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
                 crossAxisCount: imageList.length < 3 ? 1 : 2,
                 children: imageList.map((image) {
                   return image == null

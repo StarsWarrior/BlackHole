@@ -97,35 +97,44 @@ class _DownloadsState extends State<Downloads>
 
   void setArtistAlbum() {
     for (final element in _songs) {
-      if (_albums.containsKey(element['album'])) {
-        final List<Map> tempAlbum = _albums[element['album']]!;
-        tempAlbum.add(element as Map);
-        _albums.addEntries([MapEntry(element['album'].toString(), tempAlbum)]);
-      } else {
-        _albums.addEntries([
-          MapEntry(element['album'].toString(), [element as Map])
-        ]);
-      }
+      try {
+        if (_albums.containsKey(element['album'])) {
+          final List<Map> tempAlbum = _albums[element['album']]!;
+          tempAlbum.add(element as Map);
+          _albums
+              .addEntries([MapEntry(element['album'].toString(), tempAlbum)]);
+        } else {
+          _albums.addEntries([
+            MapEntry(element['album'].toString(), [element as Map])
+          ]);
+        }
 
-      if (_artists.containsKey(element['artist'])) {
-        final List<Map> tempArtist = _artists[element['artist']]!;
-        tempArtist.add(element);
-        _artists
-            .addEntries([MapEntry(element['artist'].toString(), tempArtist)]);
-      } else {
-        _artists.addEntries([
-          MapEntry(element['artist'].toString(), [element])
-        ]);
-      }
+        if (_artists.containsKey(element['artist'])) {
+          final List<Map> tempArtist = _artists[element['artist']]!;
+          tempArtist.add(element);
+          _artists
+              .addEntries([MapEntry(element['artist'].toString(), tempArtist)]);
+        } else {
+          _artists.addEntries([
+            MapEntry(element['artist'].toString(), [element])
+          ]);
+        }
 
-      if (_genres.containsKey(element['genre'])) {
-        final List<Map> tempGenre = _genres[element['genre']]!;
-        tempGenre.add(element);
-        _genres.addEntries([MapEntry(element['genre'].toString(), tempGenre)]);
-      } else {
-        _genres.addEntries([
-          MapEntry(element['genre'].toString(), [element])
-        ]);
+        if (_genres.containsKey(element['genre'])) {
+          final List<Map> tempGenre = _genres[element['genre']]!;
+          tempGenre.add(element);
+          _genres
+              .addEntries([MapEntry(element['genre'].toString(), tempGenre)]);
+        } else {
+          _genres.addEntries([
+            MapEntry(element['genre'].toString(), [element])
+          ]);
+        }
+      } catch (e) {
+        // ShowSnackBar().showSnackBar(
+        //   context,
+        //   'Error: $e',
+        // );
       }
     }
 
@@ -199,49 +208,59 @@ class _DownloadsState extends State<Downloads>
   }
 
   void sortAlbums() {
-    if (albumSortValue == 0) {
-      _sortedAlbumKeysList.sort(
-        (a, b) =>
-            a.toString().toUpperCase().compareTo(b.toString().toUpperCase()),
-      );
-      _sortedArtistKeysList.sort(
-        (a, b) =>
-            a.toString().toUpperCase().compareTo(b.toString().toUpperCase()),
-      );
-      _sortedGenreKeysList.sort(
-        (a, b) =>
-            a.toString().toUpperCase().compareTo(b.toString().toUpperCase()),
-      );
-    }
-    if (albumSortValue == 1) {
-      _sortedAlbumKeysList.sort(
-        (b, a) =>
-            a.toString().toUpperCase().compareTo(b.toString().toUpperCase()),
-      );
-      _sortedArtistKeysList.sort(
-        (b, a) =>
-            a.toString().toUpperCase().compareTo(b.toString().toUpperCase()),
-      );
-      _sortedGenreKeysList.sort(
-        (b, a) =>
-            a.toString().toUpperCase().compareTo(b.toString().toUpperCase()),
-      );
-    }
-    if (albumSortValue == 2) {
-      _sortedAlbumKeysList
-          .sort((b, a) => _albums[a]!.length.compareTo(_albums[b]!.length));
-      _sortedArtistKeysList
-          .sort((b, a) => _artists[a]!.length.compareTo(_artists[b]!.length));
-      _sortedGenreKeysList
-          .sort((b, a) => _genres[a]!.length.compareTo(_genres[b]!.length));
-    }
-    if (albumSortValue == 3) {
-      _sortedAlbumKeysList
-          .sort((a, b) => _albums[a]!.length.compareTo(_albums[b]!.length));
-      _sortedArtistKeysList
-          .sort((a, b) => _artists[a]!.length.compareTo(_artists[b]!.length));
-      _sortedGenreKeysList
-          .sort((a, b) => _genres[a]!.length.compareTo(_genres[b]!.length));
+    switch (albumSortValue) {
+      case 0:
+        _sortedAlbumKeysList.sort(
+          (a, b) =>
+              a.toString().toUpperCase().compareTo(b.toString().toUpperCase()),
+        );
+        _sortedArtistKeysList.sort(
+          (a, b) =>
+              a.toString().toUpperCase().compareTo(b.toString().toUpperCase()),
+        );
+        _sortedGenreKeysList.sort(
+          (a, b) =>
+              a.toString().toUpperCase().compareTo(b.toString().toUpperCase()),
+        );
+        break;
+      case 1:
+        _sortedAlbumKeysList.sort(
+          (b, a) =>
+              a.toString().toUpperCase().compareTo(b.toString().toUpperCase()),
+        );
+        _sortedArtistKeysList.sort(
+          (b, a) =>
+              a.toString().toUpperCase().compareTo(b.toString().toUpperCase()),
+        );
+        _sortedGenreKeysList.sort(
+          (b, a) =>
+              a.toString().toUpperCase().compareTo(b.toString().toUpperCase()),
+        );
+        break;
+      case 2:
+        _sortedAlbumKeysList
+            .sort((b, a) => _albums[a]!.length.compareTo(_albums[b]!.length));
+        _sortedArtistKeysList
+            .sort((b, a) => _artists[a]!.length.compareTo(_artists[b]!.length));
+        _sortedGenreKeysList
+            .sort((b, a) => _genres[a]!.length.compareTo(_genres[b]!.length));
+        break;
+      case 3:
+        _sortedAlbumKeysList
+            .sort((a, b) => _albums[a]!.length.compareTo(_albums[b]!.length));
+        _sortedArtistKeysList
+            .sort((a, b) => _artists[a]!.length.compareTo(_artists[b]!.length));
+        _sortedGenreKeysList
+            .sort((a, b) => _genres[a]!.length.compareTo(_genres[b]!.length));
+        break;
+      default:
+        _sortedAlbumKeysList
+            .sort((b, a) => _albums[a]!.length.compareTo(_albums[b]!.length));
+        _sortedArtistKeysList
+            .sort((b, a) => _artists[a]!.length.compareTo(_artists[b]!.length));
+        _sortedGenreKeysList
+            .sort((b, a) => _genres[a]!.length.compareTo(_genres[b]!.length));
+        break;
     }
   }
 

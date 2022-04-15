@@ -9,6 +9,7 @@
             android:launchMode="singleTask"
             android:theme="@style/LaunchTheme"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
+            android:exported="true"
             android:hardwareAccelerated="true"
             android:windowSoftInputMode="adjustResize">
             <!-- Specifies an Android theme to apply to this Activity as soon as
@@ -115,13 +116,17 @@
             android:name="flutterEmbedding"
             android:value="2" />
             
-      <service android:name="com.ryanheise.audioservice.AudioService">
+      <service
+          android:name="com.ryanheise.audioservice.AudioService"
+          android:exported="true">
         <intent-filter>
           <action android:name="android.media.browse.MediaBrowserService" />
         </intent-filter>
       </service>
 
-      <receiver android:name="com.ryanheise.audioservice.MediaButtonReceiver" >
+      <receiver
+          android:name="com.ryanheise.audioservice.MediaButtonReceiver"
+          android:exported="true">
         <intent-filter>
           <action android:name="android.intent.action.MEDIA_BUTTON" />
         </intent-filter>
