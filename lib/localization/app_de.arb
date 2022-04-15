@@ -648,5 +648,15 @@
   "showPlaylists": "Wiedergabelisten auf dem Startbildschirm anzeigen",
   "@showPlaylists": {},
   "yourPlaylists": "Deine Wiedergabelisten",
-  "@yourPlaylists": {}
+  "@yourPlaylists": {},
+  "resetOnSkip": "Wiederholung, wenn man zum vorherigen Lied springt",
+  "@resetOnSkip": {},
+  "resetOnSkipSub": "Wiederholung von Anfang an, anstatt zum vorherigen Lied zu springen",
+  "@resetOnSkipSub": {},
+  "importJioSaavn": "Von JioSaavn importieren",
+  "@importJioSaavn": {},
+  "playerScreenBackground": "Player-Bildschirmhintergrund",
+  "@playerScreenBackground": {},
+  "playerScreenBackgroundSub": "Der ausgewählte Hintergrund wird im Player-Bildschirm angezeigt",
+  "@playerScreenBackgroundSub": {}
 }
