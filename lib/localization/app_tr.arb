@@ -247,7 +247,7 @@
   "@importSpotify": {},
   "homeGreet": "Merhaba,",
   "@homeGreet": {},
-  "importFile": "Dosyadan içeri aktar",
+  "importFile": "Dosyadan içe aktar",
   "@importFile": {},
   "importPublicPlaylist": "Herkese açık çalma listesini içe aktar",
   "@importPublicPlaylist": {},
@@ -654,5 +654,7 @@
   "playerScreenBackground": "Oynatıcı Ekranı Arka Planı",
   "@playerScreenBackground": {},
   "playerScreenBackgroundSub": "Seçilen arka plan oynatıcı ekranında gösterilecektir",
-  "@playerScreenBackgroundSub": {}
+  "@playerScreenBackgroundSub": {},
+  "importJioSaavn": "JioSaavn'dan içe aktar",
+  "@importJioSaavn": {}
 }
