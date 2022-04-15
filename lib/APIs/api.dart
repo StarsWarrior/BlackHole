@@ -104,22 +104,58 @@ class SaavnAPI {
     return result;
   }
 
-  Future<Map> getSongFromToken(String token, String type) async {
-    final String params = "token=$token&type=$type&${endpoints['fromToken']}";
-    try {
-      final res = await getResponse(params);
-      if (res.statusCode == 200) {
-        final Map getMain = json.decode(res.body) as Map;
-        if (type == 'album' || type == 'playlist') return getMain;
-        final List responseList = getMain['songs'] as List;
-        return {
-          'songs': await FormatResponse.formatSongsResponse(responseList, type)
-        };
+  Future<Map> getSongFromToken(
+    String token,
+    String type, {
+    int n = 10,
+    int p = 1,
+  }) async {
+    if (n == -1) {
+      final String params =
+          "token=$token&type=$type&n=5&p=$p&${endpoints['fromToken']}";
+      try {
+        final res = await getResponse(params);
+        if (res.statusCode == 200) {
+          final Map getMain = json.decode(res.body) as Map;
+          final String count = getMain['list_count'].toString();
+          final String params2 =
+              "token=$token&type=$type&n=$count&p=$p&${endpoints['fromToken']}";
+          final res2 = await getResponse(params2);
+          if (res2.statusCode == 200) {
+            final Map getMain2 = json.decode(res2.body) as Map;
+            if (type == 'album' || type == 'playlist') return getMain2;
+            final List responseList = getMain2['songs'] as List;
+            return {
+              'songs':
+                  await FormatResponse.formatSongsResponse(responseList, type),
+              'title': getMain2['title'],
+            };
+          }
+        }
+      } catch (e) {
+        log('Error in getSongFromToken: $e');
       }
-    } catch (e) {
-      log('Error in getSongFromToken: $e');
+      return {'songs': List.empty()};
+    } else {
+      final String params =
+          "token=$token&type=$type&n=$n&p=$p&${endpoints['fromToken']}";
+      try {
+        final res = await getResponse(params);
+        if (res.statusCode == 200) {
+          final Map getMain = json.decode(res.body) as Map;
+          if (type == 'album' || type == 'playlist') return getMain;
+          final List responseList = getMain['songs'] as List;
+          return {
+            'songs':
+                await FormatResponse.formatSongsResponse(responseList, type),
+            'title': getMain['title'],
+          };
+        }
+      } catch (e) {
+        log('Error in getSongFromToken: $e');
+      }
+      return {'songs': List.empty()};
     }
-    return {'songs': List.empty()};
   }
 
   Future<List> getReco(String pid) async {

@@ -285,6 +285,8 @@
   "@homeGreet": {},
   "importFile": "Import from File",
   "@importFile": {},
+  "importJioSaavn": "Import from JioSaavn",
+  "@importJioSaavn": {},
   "importPublicPlaylist": "Import Public Playlist",
   "@importPublicPlaylist": {},
   "importResso": "Import from Resso",

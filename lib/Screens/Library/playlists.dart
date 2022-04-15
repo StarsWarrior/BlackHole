@@ -311,6 +311,53 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                         );
                       },
                     ),
+                    ListTile(
+                      title: Text(AppLocalizations.of(context)!.importJioSaavn),
+                      leading: Card(
+                        elevation: 0,
+                        color: Colors.transparent,
+                        child: SizedBox.square(
+                          dimension: 50,
+                          child: Center(
+                            child: Icon(
+                              Icons.music_note_rounded,
+                              color: Theme.of(context).iconTheme.color,
+                            ),
+                          ),
+                        ),
+                      ),
+                      onTap: () async {
+                        await showTextInputDialog(
+                          context: context,
+                          title:
+                              AppLocalizations.of(context)!.enterPlaylistLink,
+                          initialText: '',
+                          keyboardType: TextInputType.url,
+                          onSubmitted: (value) async {
+                            final String link = value.trim();
+                            Navigator.pop(context);
+                            final Map data =
+                                await SearchAddPlaylist.addJioSaavnPlaylist(
+                              link,
+                            );
+
+                            if (data.isNotEmpty) {
+                              final String playName = data['title'].toString();
+                              addPlaylist(playName, data['tracks'] as List);
+                              playlistNames.add(playName);
+                              setState(() {
+                                playlistNames = playlistNames;
+                              });
+                            } else {
+                              ShowSnackBar().showSnackBar(
+                                context,
+                                AppLocalizations.of(context)!.failedImport,
+                              );
+                            }
+                          },
+                        );
+                      },
+                    ),
                     if (playlistNames.isEmpty)
                       const SizedBox()
                     else

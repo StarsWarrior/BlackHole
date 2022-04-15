@@ -100,6 +100,24 @@ class SearchAddPlaylist {
     return res['tracks'] as List;
   }
 
+  static Future<Map> addJioSaavnPlaylist(String inLink) async {
+    try {
+      final String id = inLink.split('/').last;
+      if (id != '') {
+        final Map data =
+            await SaavnAPI().getSongFromToken(id, 'playlist', n: -1);
+        return {
+          'title': data['title'],
+          'count': data['list'].length,
+          'tracks': data['list'],
+        };
+      }
+      return {};
+    } catch (e) {
+      return {};
+    }
+  }
+
   static Stream<Map> ytSongsAdder(String playName, List tracks) async* {
     int _done = 0;
     for (final track in tracks) {
