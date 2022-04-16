@@ -646,5 +646,15 @@
   "yourPlaylists": "Vaše playlisty",
   "@yourPlaylists": {},
   "showPlaylists": "Zobrazit playlisty na domovské obrazovce",
-  "@showPlaylists": {}
+  "@showPlaylists": {},
+  "resetOnSkip": "Znovu přehrát při přeskočení zpět",
+  "@resetOnSkip": {},
+  "resetOnSkipSub": "Znovu přehrát od začátku místo přeskočení na předchozí skladbu",
+  "@resetOnSkipSub": {},
+  "importJioSaavn": "Importovat z JioSaavn",
+  "@importJioSaavn": {},
+  "playerScreenBackground": "Pozadí obrazovky přehrávání",
+  "@playerScreenBackground": {},
+  "playerScreenBackgroundSub": "Vybrané pozadí bude zobrazeno v obrazovce přehrávání",
+  "@playerScreenBackgroundSub": {}
 }
