@@ -654,5 +654,7 @@
   "resetOnSkip": "Nummer herhalen in plaats van vorige nummer afspelen",
   "@resetOnSkip": {},
   "resetOnSkipSub": "Herhaal het huidige nummer in plaats van het vorige nummer af te spelen",
-  "@resetOnSkipSub": {}
+  "@resetOnSkipSub": {},
+  "importJioSaavn": "Importeren uit JioSaavn",
+  "@importJioSaavn": {}
 }
