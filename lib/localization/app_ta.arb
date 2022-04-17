@@ -648,5 +648,15 @@
   "yourPlaylists": "உமது பாச்சரங்கள்",
   "@yourPlaylists": {},
   "showPlaylists": "முகப்புத்திரையில் பாச்சரங்கள் காட்டு",
-  "@showPlaylists": {}
+  "@showPlaylists": {},
+  "playerScreenBackgroundSub": "தேர்ந்தெடுத்த பின்புலம் இயக்குதிரையில் காட்டப்படும்",
+  "@playerScreenBackgroundSub": {},
+  "playerScreenBackground": "இயக்குதிரை பின்புலம்",
+  "@playerScreenBackground": {},
+  "importJioSaavn": "JioSaavnஇலிருந்து இறக்குமதிசெய்",
+  "@importJioSaavn": {},
+  "resetOnSkip": "முந்தையதைக் கெந்தும்போது மீண்டுமியக்கு",
+  "@resetOnSkip": {},
+  "resetOnSkipSub": "முந்தைய பாடலுக்குக் கெந்துவதற்குப் பதிலாக மீண்டுமியக்கு",
+  "@resetOnSkipSub": {}
 }
