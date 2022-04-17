@@ -7,7 +7,7 @@
   "@aboutLine1": {},
   "aboutLine2": "Se você gostou do meu trabalho\ndemonstre algum ♥ e ⭐ o repositório",
   "@aboutLine2": {},
-  "accent": "Cor de destaque & Matriz",
+  "accent": "Cor de destaque & Matiz",
   "@accent": {},
   "addNew": "Adicionar novo",
   "@addNew": {},
@@ -646,5 +646,15 @@
   "yourPlaylists": "Suas Playlists",
   "@yourPlaylists": {},
   "upNext": "A Seguir",
-  "@upNext": {}
+  "@upNext": {},
+  "playerScreenBackgroundSub": "O fundo selecionado será exibido na tela de reprodução",
+  "@playerScreenBackgroundSub": {},
+  "playerScreenBackground": "Fundo da tela de reprodução",
+  "@playerScreenBackground": {},
+  "importJioSaavn": "Importar de JioSaavn",
+  "@importJioSaavn": {},
+  "resetOnSkip": "Repetir ao pular anterior",
+  "@resetOnSkip": {},
+  "resetOnSkipSub": "Reproduzir desde o início ao invés de pular para a música anterior",
+  "@resetOnSkipSub": {}
 }
