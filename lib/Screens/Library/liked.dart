@@ -653,7 +653,6 @@ class _SongsTabState extends State<SongsTab>
                 songsList: widget.songs,
                 offline: false,
                 fromDownloads: false,
-                recommend: false,
               ),
               Expanded(
                 child: ListView.builder(

@@ -44,10 +44,12 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
   late AudioPlayer? _player;
   late String preferredQuality;
   late bool resetOnSkip;
+  // late String? stationId = '';
+  // late List<String> stationNames = [];
+  // late String stationType = 'entity';
   // late bool cacheSong;
   final _equalizer = AndroidEqualizer();
 
-  int? index;
   Box downloadsBox = Hive.box('downloads');
 
   final BehaviorSubject<List<MediaItem>> _recentSubject =
@@ -150,8 +152,13 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
         _recentSubject.add([item]);
 
         if (recommend && item.extras!['autoplay'] as bool) {
-          Future.delayed(const Duration(seconds: 5), () async {
+          Future.delayed(const Duration(seconds: 1), () async {
             final List value = await SaavnAPI().getReco(item.id);
+
+            // final int index = queue.value.indexOf(item);
+            // final int queueLength = await queue.length;
+            // final List value = await SaavnAPI().getRadioSongs(
+            //     stationId: stationId!, count: queueLength - index - 20);
 
             for (int i = 0; i < value.length; i++) {
               final element = MediaItemConverter.mapToMediaItem(
@@ -374,6 +381,25 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
     await _playlist.clear();
     await _playlist.addAll(_itemsToSources(newQueue));
     addLastQueue(newQueue);
+    // stationId = '';
+    // stationNames = newQueue.map((e) => e.id).toList();
+    // SaavnAPI()
+    //     .createRadio(names: stationNames, stationType: stationType)
+    //     .then((value) async {
+    //   stationId = value;
+    //   final List songsList = await SaavnAPI()
+    //       .getRadioSongs(stationId: stationId!, count: 20 - newQueue.length);
+
+    //   for (int i = 0; i < songsList.length; i++) {
+    //     final element = MediaItemConverter.mapToMediaItem(
+    //       songsList[i] as Map,
+    //       addedByAutoplay: true,
+    //     );
+    //     if (!queue.value.contains(element)) {
+    //       addQueueItem(element);
+    //     }
+    //   }
+    // });
   }
 
   @override

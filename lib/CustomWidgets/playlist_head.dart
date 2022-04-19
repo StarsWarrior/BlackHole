@@ -25,12 +25,10 @@ class PlaylistHead extends StatelessWidget {
   final List songsList;
   final bool offline;
   final bool fromDownloads;
-  final bool recommend;
   const PlaylistHead({
     Key? key,
     required this.songsList,
     required this.fromDownloads,
-    required this.recommend,
     required this.offline,
   }) : super(key: key);
   @override
@@ -65,7 +63,7 @@ class PlaylistHead extends StatelessWidget {
                     offline: offline,
                     fromMiniplayer: false,
                     fromDownloads: fromDownloads,
-                    recommend: recommend,
+                    recommend: false,
                   ),
                 ),
               );
@@ -87,7 +85,7 @@ class PlaylistHead extends StatelessWidget {
                     offline: offline,
                     fromMiniplayer: false,
                     fromDownloads: fromDownloads,
-                    recommend: recommend,
+                    recommend: false,
                   ),
                 ),
               );

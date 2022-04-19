@@ -325,15 +325,17 @@ class _PlayScreenState extends State<PlayScreen> {
                       mediaItem.artUri!.toFilePath(),
                     ),
                   ),
-                  useDominantAndDarkerColors:
-                      gradientType == 'halfLight' || gradientType == 'full',
+                  // useDominantAndDarkerColors: gradientType == 'halfLight' ||
+                  //     gradientType == 'fullLight' ||
+                  //     gradientType == 'fullMix',
                 ).then((value) => updateBackgroundColors(value))
               : getColors(
                   imageProvider: CachedNetworkImageProvider(
                     mediaItem.artUri.toString(),
                   ),
-                  useDominantAndDarkerColors:
-                      gradientType == 'halfLight' || gradientType == 'full',
+                  // useDominantAndDarkerColors: gradientType == 'halfLight' ||
+                  //     gradientType == 'fullLight' ||
+                  //     gradientType == 'fullMix',
                 ).then((value) => updateBackgroundColors(value));
           return ValueListenableBuilder(
             valueListenable: gradientColor,
@@ -785,9 +787,10 @@ class _PlayScreenState extends State<PlayScreen> {
                         : Alignment.topCenter,
                     end: gradientType == 'simple'
                         ? Alignment.bottomRight
-                        : gradientType == 'full'
-                            ? Alignment.bottomCenter
-                            : Alignment.center,
+                        : (gradientType == 'halfLight' ||
+                                gradientType == 'halfDark')
+                            ? Alignment.center
+                            : Alignment.bottomCenter,
                     colors: gradientType == 'simple'
                         ? Theme.of(context).brightness == Brightness.dark
                             ? currentTheme.getBackGradient()
@@ -797,12 +800,15 @@ class _PlayScreenState extends State<PlayScreen> {
                               ]
                         : Theme.of(context).brightness == Brightness.dark
                             ? [
-                                value?[0] ?? Colors.grey[900]!,
-                                if (gradientType != 'halfLight' ||
-                                    gradientType != 'full')
-                                  Colors.black
+                                if (gradientType == 'halfDark' ||
+                                    gradientType == 'fullDark')
+                                  value?[1] ?? Colors.grey[900]!
                                 else
+                                  value?[0] ?? Colors.grey[900]!,
+                                if (gradientType == 'fullMix')
                                   value?[1] ?? Colors.black
+                                else
+                                  Colors.black
                               ]
                             : [
                                 value?[0] ?? const Color(0xfff5f9ff),

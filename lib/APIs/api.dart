@@ -168,18 +168,23 @@ class SaavnAPI {
     return List.empty();
   }
 
-  Future<String?> createRadio(
-    String name,
-    String language,
-    String stationType,
-  ) async {
+  Future<String?> createRadio({
+    required List<String> names,
+    required String stationType,
+    String? language,
+  }) async {
     String? params;
     if (stationType == 'featured') {
-      params = "name=$name&language=$language&${endpoints['featuredRadio']}";
+      params =
+          "name=${names[0]}&language=$language&${endpoints['featuredRadio']}";
     }
     if (stationType == 'artist') {
       params =
-          "name=$name&query=$name&language=$language&${endpoints['artistRadio']}";
+          "name=${names[0]}&query=${names[0]}&language=$language&${endpoints['artistRadio']}";
+    }
+    if (stationType == 'entity') {
+      params =
+          'entity_id=${names.map((e) => '"$e"').toList()}&entity_type=queue&${endpoints["entityRadio"]}';
     }
 
     final res = await getResponse(params!);
@@ -190,17 +195,24 @@ class SaavnAPI {
     return null;
   }
 
-  Future<List> getRadioSongs(String stationId, {int count = 20}) async {
-    final String params =
-        "stationid=$stationId&k=$count&${endpoints['radioSongs']}";
-    final res = await getResponse(params);
-    if (res.statusCode == 200) {
-      final Map getMain = json.decode(res.body) as Map;
-      final List responseList = [];
-      for (int i = 0; i < count; i++) {
-        responseList.add(getMain[i.toString()]['song']);
+  Future<List> getRadioSongs({
+    required String stationId,
+    int count = 20,
+    int next = 1,
+  }) async {
+    if (count > 0) {
+      final String params =
+          "stationid=$stationId&k=$count&next=$next&${endpoints['radioSongs']}";
+      final res = await getResponse(params);
+      if (res.statusCode == 200) {
+        final Map getMain = json.decode(res.body) as Map;
+        final List responseList = [];
+        for (int i = 0; i < count; i++) {
+          responseList.add(getMain[i.toString()]['song']);
+        }
+        return FormatResponse.formatSongsResponse(responseList, 'song');
       }
-      return FormatResponse.formatSongsResponse(responseList, 'song');
+      return [];
     }
     return [];
   }

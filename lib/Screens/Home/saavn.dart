@@ -546,21 +546,27 @@ class _SaavnHomePageState extends State<SaavnHomePage>
                                     );
                                     SaavnAPI()
                                         .createRadio(
-                                      item['more_info']['featured_station_type']
+                                      names: item['more_info']
+                                                      ['featured_station_type']
                                                   .toString() ==
                                               'artist'
-                                          ? item['more_info']['query']
-                                              .toString()
-                                          : item['id'].toString(),
-                                      item['more_info']['language']
+                                          ? [
+                                              item['more_info']['query']
+                                                  .toString()
+                                            ]
+                                          : [item['id'].toString()],
+                                      language: item['more_info']['language']
                                               ?.toString() ??
                                           'hindi',
-                                      item['more_info']['featured_station_type']
+                                      stationType: item['more_info']
+                                              ['featured_station_type']
                                           .toString(),
                                     )
                                         .then((value) {
                                       if (value != null) {
-                                        SaavnAPI().getRadioSongs(value).then(
+                                        SaavnAPI()
+                                            .getRadioSongs(stationId: value)
+                                            .then(
                                               (value) => Navigator.push(
                                                 context,
                                                 PageRouteBuilder(

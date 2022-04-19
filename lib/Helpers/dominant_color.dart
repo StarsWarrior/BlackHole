@@ -24,18 +24,15 @@ import 'package:palette_generator/palette_generator.dart';
 
 Future<List<Color>> getColors({
   required ImageProvider imageProvider,
-  required bool useDominantAndDarkerColors,
 }) async {
   PaletteGenerator paletteGenerator;
   paletteGenerator = await PaletteGenerator.fromImageProvider(imageProvider);
   final Color dominantColor =
       paletteGenerator.dominantColor?.color ?? Colors.black;
-  Color darkMutedColor = paletteGenerator.darkMutedColor?.color ?? Colors.black;
+  final Color darkMutedColor =
+      paletteGenerator.darkMutedColor?.color ?? Colors.black;
   final Color lightMutedColor =
       paletteGenerator.lightMutedColor?.color ?? dominantColor;
-  if (useDominantAndDarkerColors == false) {
-    darkMutedColor = Colors.black;
-  }
   if (dominantColor.computeLuminance() < darkMutedColor.computeLuminance()) {
     // checks if the luminance of the darkMuted color is > than the luminance of the dominant
     GetIt.I<MyTheme>().playGradientColor = [

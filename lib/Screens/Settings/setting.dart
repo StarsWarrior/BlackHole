@@ -2454,6 +2454,7 @@ class _SettingPageState extends State<SettingPage> {
                                 'Spanish': 'es',
                                 'Tamil': 'ta',
                                 'Turkish': 'tr',
+                                'Ukrainian': 'uk',
                               };
                               if (newValue != null) {
                                 setState(
@@ -2483,6 +2484,7 @@ class _SettingPageState extends State<SettingPage> {
                               'Spanish',
                               'Tamil',
                               'Turkish',
+                              'Ukrainian',
                             ].map<DropdownMenuItem<String>>((String value) {
                               return DropdownMenuItem<String>(
                                 value: value,

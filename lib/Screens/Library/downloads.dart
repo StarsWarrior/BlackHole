@@ -856,7 +856,6 @@ class _DownSongsTabState extends State<DownSongsTab>
                 songsList: widget.songs,
                 offline: true,
                 fromDownloads: true,
-                recommend: false,
               ),
               Expanded(
                 child: ListView.builder(

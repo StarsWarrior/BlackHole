@@ -1,3 +1,22 @@
+/*
+ *  This file is part of BlackHole (https://github.com/Sangwan5688/BlackHole).
+ * 
+ * BlackHole is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * BlackHole is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with BlackHole.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ * Copyright (c) 2021-2022, Ankit Sangwan
+ */
+
 import 'package:blackhole/Helpers/config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -13,7 +32,14 @@ class PlayerGradientSelection extends StatefulWidget {
 }
 
 class _PlayerGradientSelectionState extends State<PlayerGradientSelection> {
-  final List<String> types = ['simple', 'halfDark', 'halfLight', 'full'];
+  final List<String> types = [
+    'simple',
+    'halfLight',
+    'halfDark',
+    'fullLight',
+    'fullDark',
+    'fullMix'
+  ];
   final List<Color?> gradientColor = [Colors.lightGreen, Colors.teal];
   final MyTheme currentTheme = GetIt.I<MyTheme>();
   String gradientType = Hive.box('settings')
@@ -34,7 +60,10 @@ class _PlayerGradientSelectionState extends State<PlayerGradientSelection> {
       body: SafeArea(
         child: GridView.count(
           shrinkWrap: true,
-          crossAxisCount: 4,
+          crossAxisCount: MediaQuery.of(context).size.width >
+                  MediaQuery.of(context).size.height
+              ? 6
+              : 3,
           physics: const BouncingScrollPhysics(),
           childAspectRatio: 0.6,
           children: types
@@ -68,9 +97,10 @@ class _PlayerGradientSelectionState extends State<PlayerGradientSelection> {
                                     : Alignment.topCenter,
                                 end: type == 'simple'
                                     ? Alignment.bottomRight
-                                    : type == 'full'
-                                        ? Alignment.bottomCenter
-                                        : Alignment.center,
+                                    : (type == 'halfLight' ||
+                                            type == 'halfDark')
+                                        ? Alignment.center
+                                        : Alignment.bottomCenter,
                                 colors: type == 'simple'
                                     ? Theme.of(context).brightness ==
                                             Brightness.dark
@@ -82,17 +112,17 @@ class _PlayerGradientSelectionState extends State<PlayerGradientSelection> {
                                     : Theme.of(context).brightness ==
                                             Brightness.dark
                                         ? [
-                                            if (type == 'halfDark')
+                                            if (type == 'halfDark' ||
+                                                type == 'fullDark')
                                               gradientColor[1] ??
                                                   Colors.grey[900]!
                                             else
                                               gradientColor[0] ??
                                                   Colors.grey[900]!,
-                                            if (type == 'halfLight' ||
-                                                type == 'halfDark')
-                                              Colors.black
-                                            else
+                                            if (type == 'fullMix')
                                               gradientColor[1] ?? Colors.black
+                                            else
+                                              Colors.black
                                           ]
                                         : [
                                             gradientColor[0] ??
