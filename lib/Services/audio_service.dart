@@ -196,6 +196,9 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
     _player!.shuffleModeEnabledStream
         .listen((enabled) => _broadcastState(_player!.playbackEvent));
 
+    _player!.loopModeStream
+        .listen((event) => _broadcastState(_player!.playbackEvent));
+
     _player!.processingStateStream.listen((state) {
       if (state == ProcessingState.completed) {
         stop();

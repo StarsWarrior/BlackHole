@@ -2042,12 +2042,12 @@ class NameNControls extends StatelessWidget {
                                     icon: icons[index],
                                     tooltip:
                                         'Repeat ${texts[(index + 1) % texts.length]}',
-                                    onPressed: () {
-                                      Hive.box('settings').put(
+                                    onPressed: () async {
+                                      await Hive.box('settings').put(
                                         'repeatMode',
                                         texts[(index + 1) % texts.length],
                                       );
-                                      audioHandler.setRepeatMode(
+                                      await audioHandler.setRepeatMode(
                                         cycleModes[
                                             (cycleModes.indexOf(repeatMode) +
                                                     1) %
