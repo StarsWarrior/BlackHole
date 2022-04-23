@@ -85,11 +85,19 @@ Future<void> sharePlaylist(
 
 Future<List> importPlaylist(BuildContext context, List playlistNames) async {
   try {
-    final String temp = await Picker.selectFile(
-      context: context,
-      ext: ['json'],
-      message: AppLocalizations.of(context)!.selectJsonImport,
-    );
+    String temp = '';
+    try {
+      temp = await Picker.selectFile(
+        context: context,
+        ext: ['json'],
+        message: AppLocalizations.of(context)!.selectJsonImport,
+      );
+    } catch (e) {
+      temp = await Picker.selectFile(
+        context: context,
+        message: AppLocalizations.of(context)!.selectJsonImport,
+      );
+    }
     if (temp == '') {
       ShowSnackBar().showSnackBar(
         context,
