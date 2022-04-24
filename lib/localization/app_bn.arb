@@ -52,5 +52,21 @@
   "autoBackSub": "নিজে থেকেই তথ্য ব্যাকআপ",
   "@autoBackSub": {},
   "autoplay": "স্বয়ংক্রিয় চালু",
-  "@autoplay": {}
+  "@autoplay": {},
+  "back": "পূর্বাবস্থায়",
+  "@back": {},
+  "backNRest": "ব্যাকআপ এবং পুনরুদ্ধার",
+  "@backNRest": {},
+  "backupSuccess": "অটো ব্যাকআপের অবস্থান",
+  "@backupSuccess": {},
+  "cantAddToQueue": "অনলাইন গানটি অফলিনে যোগ করতে পারবেন না",
+  "@cantAddToQueue": {},
+  "cancel": "বাতিল",
+  "@cancel": {},
+  "buyCoffee": "দান করুন",
+  "@buyCoffee": {},
+  "cacheSong": "অস্থায়ী গান",
+  "@cacheSong": {},
+  "cache": "অস্থায়ী স্মৃতি",
+  "@cache": {}
 }
