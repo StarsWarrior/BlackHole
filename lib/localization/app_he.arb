@@ -462,5 +462,17 @@
   "viewArtist": "הצגת אומן",
   "@viewArtist": {},
   "loadLastSub": "לטעון את ההפעלה האחרונה אוטומטית עם פתיחת היישומון",
-  "@loadLastSub": {}
+  "@loadLastSub": {},
+  "checkUpdateSub": "אם הורדת את BlackHole מכל חנות אפליקציות כגון 'F-Droid', 'IzzyOnDroid', וכו' אשר מספקות אופציית עדכון, תשמור על זה כבוי! אחרת, אם הורדת את זה מ'GitHub' או מכל מקור אחר אשר אינו מספק עדכונים אוטומטיים הדלק את זה! על מנת שיתקבלו התראות עדכון\n",
+  "@checkUpdateSub": {},
+  "inc": "מתגבר",
+  "@inc": {},
+  "lastAdded": "הוסף לאחרונה",
+  "@lastAdded": {},
+  "lastModified": "שונה לאחרונה",
+  "@lastModified": {},
+  "restore": "שחזור",
+  "@restore": {},
+  "resultsNotFound": "תוצאות לא נמצאו",
+  "@resultsNotFound": {}
 }
