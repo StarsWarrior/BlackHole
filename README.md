@@ -35,6 +35,7 @@ An Open-Source Music Player App for all your needs!
 - [Spanish :es:](/README.ES.md)
 - [Russian :ru:](/README.RU.md)
 - [French :fr:](/README.FR.md)
+- [Portuguese :brazil:](/README.PT.md)
 
 [Translate App on Weblate](https://hosted.weblate.org/projects/blackhole/translations/)
 
