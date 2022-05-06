@@ -124,7 +124,11 @@ class _AboutScreenState extends State<AboutScreen> {
                       ),
                       TextButton(
                         onPressed: () {
-                          launch('https://github.com/Sangwan5688/BlackHole');
+                          launchUrl(
+                            Uri.parse(
+                              'https://github.com/Sangwan5688/BlackHole',
+                            ),
+                          );
                         },
                         child: SizedBox(
                           width: MediaQuery.of(context).size.width / 4,
@@ -154,7 +158,11 @@ class _AboutScreenState extends State<AboutScreen> {
                         primary: Colors.transparent,
                       ),
                       onPressed: () {
-                        launch('https://www.buymeacoffee.com/ankitsangwan');
+                        launchUrl(
+                          Uri.parse(
+                            'https://www.buymeacoffee.com/ankitsangwan',
+                          ),
+                        );
                       },
                       child: SizedBox(
                         width: MediaQuery.of(context).size.width / 2,
@@ -177,7 +185,7 @@ class _AboutScreenState extends State<AboutScreen> {
                       onPressed: () {
                         const String upiUrl =
                             'upi://pay?pa=ankit.sangwan.5688@oksbi&pn=BlackHole&mc=5732&aid=uGICAgIDn98OpSw&tr=BCR2DN6T37O6DB3Q';
-                        launch(upiUrl);
+                        launchUrl(Uri.parse(upiUrl));
                       },
                       onLongPress: () {
                         copyToClipboard(

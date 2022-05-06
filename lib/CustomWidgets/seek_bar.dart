@@ -132,15 +132,15 @@ class _SeekBarState extends State<SeekBar> {
         //     ),
         //   ),
         Positioned(
-          right: 13.0,
-          bottom: widget.height / 15,
+          right: 25.0,
+          top: widget.height / 30,
           child: StreamBuilder<double>(
             stream: widget.audioHandler.speed,
             builder: (context, snapshot) {
               final String speedValue =
                   '${snapshot.data?.toStringAsFixed(1) ?? 1.0}x';
-              return IconButton(
-                icon: Text(
+              return GestureDetector(
+                child: Text(
                   speedValue,
                   style: TextStyle(
                     fontWeight: FontWeight.w500,
@@ -149,7 +149,7 @@ class _SeekBarState extends State<SeekBar> {
                         : null,
                   ),
                 ),
-                onPressed: () {
+                onTap: () {
                   showSliderDialog(
                     context: context,
                     title: AppLocalizations.of(context)!.adjustSpeed,

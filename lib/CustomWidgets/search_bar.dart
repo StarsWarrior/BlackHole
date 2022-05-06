@@ -108,10 +108,23 @@ class _SearchBarState extends State<SearchBar> {
                       fillColor: Theme.of(context).colorScheme.secondary,
                       prefixIcon: widget.leading,
                       suffixIcon: widget.showClose
-                          ? IconButton(
-                              icon: const Icon(Icons.close_rounded),
-                              onPressed: () {
-                                widget.controller.text = '';
+                          ? ValueListenableBuilder(
+                              valueListenable: hide,
+                              builder: (
+                                BuildContext context,
+                                bool hidden,
+                                Widget? child,
+                              ) {
+                                return Visibility(
+                                  visible: !hidden,
+                                  child: IconButton(
+                                    icon: const Icon(Icons.close_rounded),
+                                    onPressed: () {
+                                      widget.controller.text = '';
+                                      suggestionsList.value = [];
+                                    },
+                                  ),
+                                );
                               },
                             )
                           : null,

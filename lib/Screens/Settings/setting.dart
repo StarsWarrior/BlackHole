@@ -3519,15 +3519,23 @@ class _SettingPageState extends State<SettingPage> {
                                       onPressed: () {
                                         Navigator.pop(context);
                                         if (abis!.contains('arm64-v8a')) {
-                                          launch(value['arm64-v8a'] as String);
+                                          launchUrl(
+                                            Uri.parse(
+                                              value['arm64-v8a'] as String,
+                                            ),
+                                          );
                                         } else {
                                           if (abis.contains('armeabi-v7a')) {
-                                            launch(
-                                              value['armeabi-v7a'] as String,
+                                            launchUrl(
+                                              Uri.parse(
+                                                value['armeabi-v7a'] as String,
+                                              ),
                                             );
                                           } else {
-                                            launch(
-                                              value['universal'] as String,
+                                            launchUrl(
+                                              Uri.parse(
+                                                value['universal'] as String,
+                                              ),
                                             );
                                           }
                                         }
@@ -3589,7 +3597,11 @@ class _SettingPageState extends State<SettingPage> {
                           ),
                           dense: true,
                           onTap: () {
-                            launch('https://www.buymeacoffee.com/ankitsangwan');
+                            launchUrl(
+                              Uri.parse(
+                                'https://www.buymeacoffee.com/ankitsangwan',
+                              ),
+                            );
                           },
                         ),
                         ListTile(
@@ -3610,7 +3622,7 @@ class _SettingPageState extends State<SettingPage> {
                           onTap: () {
                             const String upiUrl =
                                 'upi://pay?pa=ankit.sangwan.5688@oksbi&pn=BlackHole';
-                            launch(upiUrl);
+                            launchUrl(Uri.parse(upiUrl));
                           },
                           onLongPress: () {
                             copyToClipboard(
@@ -3689,8 +3701,10 @@ class _SettingPageState extends State<SettingPage> {
                                                   .gmail,
                                               onPressed: () {
                                                 Navigator.pop(context);
-                                                launch(
-                                                  'https://mail.google.com/mail/?extsrc=mailto&url=mailto%3A%3Fto%3Dblackholeyoucantescape%40gmail.com%26subject%3DRegarding%2520Mobile%2520App',
+                                                launchUrl(
+                                                  Uri.parse(
+                                                    'https://mail.google.com/mail/?extsrc=mailto&url=mailto%3A%3Fto%3Dblackholeyoucantescape%40gmail.com%26subject%3DRegarding%2520Mobile%2520App',
+                                                  ),
                                                 );
                                               },
                                             ),
@@ -3716,8 +3730,10 @@ class _SettingPageState extends State<SettingPage> {
                                                   .tg,
                                               onPressed: () {
                                                 Navigator.pop(context);
-                                                launch(
-                                                  'https://t.me/joinchat/fHDC1AWnOhw0ZmI9',
+                                                launchUrl(
+                                                  Uri.parse(
+                                                    'https://t.me/joinchat/fHDC1AWnOhw0ZmI9',
+                                                  ),
                                                 );
                                               },
                                             ),
@@ -3743,8 +3759,10 @@ class _SettingPageState extends State<SettingPage> {
                                                   .insta,
                                               onPressed: () {
                                                 Navigator.pop(context);
-                                                launch(
-                                                  'https://instagram.com/sangwan5688',
+                                                launchUrl(
+                                                  Uri.parse(
+                                                    'https://instagram.com/sangwan5688',
+                                                  ),
                                                 );
                                               },
                                             ),
@@ -3802,8 +3820,10 @@ class _SettingPageState extends State<SettingPage> {
                                                   .tgGp,
                                               onPressed: () {
                                                 Navigator.pop(context);
-                                                launch(
-                                                  'https://t.me/joinchat/fHDC1AWnOhw0ZmI9',
+                                                launchUrl(
+                                                  Uri.parse(
+                                                    'https://t.me/joinchat/fHDC1AWnOhw0ZmI9',
+                                                  ),
                                                 );
                                               },
                                             ),
@@ -3829,8 +3849,10 @@ class _SettingPageState extends State<SettingPage> {
                                                   .tgCh,
                                               onPressed: () {
                                                 Navigator.pop(context);
-                                                launch(
-                                                  'https://t.me/blackhole_official',
+                                                launchUrl(
+                                                  Uri.parse(
+                                                    'https://t.me/blackhole_official',
+                                                  ),
                                                 );
                                               },
                                             ),

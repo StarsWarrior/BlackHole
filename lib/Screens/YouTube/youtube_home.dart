@@ -24,6 +24,7 @@ import 'package:blackhole/Screens/YouTube/youtube_search.dart';
 import 'package:blackhole/Services/youtube_services.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:hive/hive.dart';
@@ -103,8 +104,8 @@ class _YouTubeState extends State<YouTube>
   @override
   Widget build(BuildContext cntxt) {
     super.build(context);
-    final bool rotated =
-        MediaQuery.of(context).size.height < MediaQuery.of(context).size.width;
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final bool rotated = MediaQuery.of(context).size.height < screenWidth;
     double boxSize = !rotated
         ? MediaQuery.of(context).size.width / 2
         : MediaQuery.of(context).size.height / 2.5;
@@ -116,21 +117,26 @@ class _YouTubeState extends State<YouTube>
         isYt: true,
         controller: _controller,
         liveSearch: true,
-        showClose: false,
         hintText: AppLocalizations.of(context)!.searchYt,
-        leading: Transform.rotate(
-          angle: 22 / 7 * 2,
-          child: IconButton(
-            icon: const Icon(
-              Icons.horizontal_split_rounded,
-            ),
-            // color: Theme.of(context).iconTheme.color,
-            onPressed: () {
-              Scaffold.of(context).openDrawer();
-            },
-            tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
-          ),
-        ),
+        leading: (rotated && screenWidth < 1050)
+            ? Icon(
+                CupertinoIcons.search,
+                color: Theme.of(context).colorScheme.secondary,
+              )
+            : Transform.rotate(
+                angle: 22 / 7 * 2,
+                child: IconButton(
+                  icon: const Icon(
+                    Icons.horizontal_split_rounded,
+                  ),
+                  // color: Theme.of(context).iconTheme.color,
+                  onPressed: () {
+                    Scaffold.of(context).openDrawer();
+                  },
+                  tooltip:
+                      MaterialLocalizations.of(context).openAppDrawerTooltip,
+                ),
+              ),
         onQueryChanged: (_query) {
           return YouTubeServices().getSearchSuggestions(query: _query);
         },

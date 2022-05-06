@@ -26,6 +26,7 @@ import 'package:blackhole/CustomWidgets/like_button.dart';
 import 'package:blackhole/CustomWidgets/on_hover.dart';
 import 'package:blackhole/CustomWidgets/snackbar.dart';
 import 'package:blackhole/CustomWidgets/song_tile_trailing_menu.dart';
+import 'package:blackhole/Helpers/extensions.dart';
 import 'package:blackhole/Helpers/format.dart';
 import 'package:blackhole/Helpers/mediaitem_converter.dart';
 import 'package:blackhole/Screens/Common/song_list.dart';
@@ -87,28 +88,26 @@ class _SaavnHomePageState extends State<SaavnHomePage>
 
   String getSubTitle(Map item) {
     final type = item['type'];
-    if (type == 'charts') {
-      return '';
-    } else if (type == 'playlist' || type == 'radio_station') {
-      return formatString(item['subtitle']?.toString());
-    } else if (type == 'song') {
-      return formatString(item['artist']?.toString());
-    } else {
-      final artists = item['more_info']?['artistMap']?['artists']
-          .map((artist) => artist['name'])
-          .toList();
-      return formatString(artists?.join(', ')?.toString());
+    switch (type) {
+      case 'charts':
+        return '';
+      case 'radio_station':
+        return 'Radio • ${item['subtitle']?.toString().unescape()}';
+      case 'playlist':
+        return 'Playlist • ${item['subtitle']?.toString().unescape() ?? 'JioSaavn'}';
+      case 'song':
+        return 'Single • ${item['artist']?.toString().unescape()}';
+      case 'album':
+        final artists = item['more_info']?['artistMap']?['artists']
+            .map((artist) => artist['name'])
+            .toList();
+        return 'Album  • ${artists?.join(', ')?.toString().unescape()}';
+      default:
+        final artists = item['more_info']?['artistMap']?['artists']
+            .map((artist) => artist['name'])
+            .toList();
+        return artists?.join(', ')?.toString().unescape() ?? '';
     }
-  }
-
-  String formatString(String? text) {
-    return text == null
-        ? ''
-        : text
-            .replaceAll('&amp;', '&')
-            .replaceAll('&#039;', "'")
-            .replaceAll('&quot;', '"')
-            .trim();
   }
 
   @override
@@ -428,9 +427,10 @@ class _SaavnHomePageState extends State<SaavnHomePage>
                         Padding(
                           padding: const EdgeInsets.fromLTRB(15, 10, 0, 5),
                           child: Text(
-                            formatString(
-                              data['modules'][lists[idx]]?['title']?.toString(),
-                            ),
+                            data['modules'][lists[idx]]?['title']
+                                    ?.toString()
+                                    .unescape() ??
+                                '',
                             style: TextStyle(
                               color: Theme.of(context).colorScheme.secondary,
                               fontSize: 18,
@@ -474,63 +474,79 @@ class _SaavnHomePageState extends State<SaavnHomePage>
                                     context: context,
                                     builder: (context) {
                                       return InteractiveViewer(
-                                        child: AlertDialog(
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(15.0),
-                                          ),
-                                          backgroundColor: Colors.transparent,
-                                          contentPadding: EdgeInsets.zero,
-                                          content: Card(
-                                            elevation: 5,
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(
-                                                item['type'] == 'radio_station'
-                                                    ? 1000.0
-                                                    : 15.0,
-                                              ),
+                                        child: Stack(
+                                          children: [
+                                            GestureDetector(
+                                              onTap: () =>
+                                                  Navigator.pop(context),
                                             ),
-                                            clipBehavior: Clip.antiAlias,
-                                            child: CachedNetworkImage(
-                                              fit: BoxFit.cover,
-                                              errorWidget: (context, _, __) =>
-                                                  const Image(
-                                                fit: BoxFit.cover,
-                                                image: AssetImage(
-                                                  'assets/cover.jpg',
+                                            AlertDialog(
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(15.0),
+                                              ),
+                                              backgroundColor:
+                                                  Colors.transparent,
+                                              contentPadding: EdgeInsets.zero,
+                                              content: Card(
+                                                elevation: 5,
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                    item['type'] ==
+                                                            'radio_station'
+                                                        ? 1000.0
+                                                        : 15.0,
+                                                  ),
+                                                ),
+                                                clipBehavior: Clip.antiAlias,
+                                                child: CachedNetworkImage(
+                                                  fit: BoxFit.cover,
+                                                  errorWidget:
+                                                      (context, _, __) =>
+                                                          const Image(
+                                                    fit: BoxFit.cover,
+                                                    image: AssetImage(
+                                                      'assets/cover.jpg',
+                                                    ),
+                                                  ),
+                                                  imageUrl: item['image']
+                                                      .toString()
+                                                      .replaceAll(
+                                                        'http:',
+                                                        'https:',
+                                                      )
+                                                      .replaceAll(
+                                                        '50x50',
+                                                        '500x500',
+                                                      )
+                                                      .replaceAll(
+                                                        '150x150',
+                                                        '500x500',
+                                                      ),
+                                                  placeholder: (context, url) =>
+                                                      Image(
+                                                    fit: BoxFit.cover,
+                                                    image: (item['type'] ==
+                                                                'playlist' ||
+                                                            item['type'] ==
+                                                                'album')
+                                                        ? const AssetImage(
+                                                            'assets/album.png',
+                                                          )
+                                                        : item['type'] ==
+                                                                'artist'
+                                                            ? const AssetImage(
+                                                                'assets/artist.png',
+                                                              )
+                                                            : const AssetImage(
+                                                                'assets/cover.jpg',
+                                                              ),
+                                                  ),
                                                 ),
                                               ),
-                                              imageUrl: item['image']
-                                                  .toString()
-                                                  .replaceAll('http:', 'https:')
-                                                  .replaceAll(
-                                                    '50x50',
-                                                    '500x500',
-                                                  )
-                                                  .replaceAll(
-                                                    '150x150',
-                                                    '500x500',
-                                                  ),
-                                              placeholder: (context, url) =>
-                                                  Image(
-                                                fit: BoxFit.cover,
-                                                image: (item['type'] ==
-                                                            'playlist' ||
-                                                        item['type'] == 'album')
-                                                    ? const AssetImage(
-                                                        'assets/album.png',
-                                                      )
-                                                    : item['type'] == 'artist'
-                                                        ? const AssetImage(
-                                                            'assets/artist.png',
-                                                          )
-                                                        : const AssetImage(
-                                                            'assets/cover.jpg',
-                                                          ),
-                                              ),
                                             ),
-                                          ),
+                                          ],
                                         ),
                                       );
                                     },
@@ -813,9 +829,10 @@ class _SaavnHomePageState extends State<SaavnHomePage>
                                               child: Column(
                                                 children: [
                                                   Text(
-                                                    formatString(
-                                                      item['title']?.toString(),
-                                                    ),
+                                                    item['title']
+                                                            ?.toString()
+                                                            .unescape() ??
+                                                        '',
                                                     textAlign: TextAlign.center,
                                                     softWrap: false,
                                                     overflow:

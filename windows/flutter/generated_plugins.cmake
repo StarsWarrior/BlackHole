@@ -3,6 +3,7 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
+  app_links_windows
   libwinmedia
   permission_handler_windows
   url_launcher_windows

@@ -53,6 +53,8 @@ class _TopChartsState extends State<TopCharts>
   @override
   Widget build(BuildContext cntxt) {
     super.build(context);
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final bool rotated = MediaQuery.of(context).size.height < screenWidth;
     return DefaultTabController(
       length: 2,
       child: Scaffold(
@@ -100,23 +102,27 @@ class _TopChartsState extends State<TopCharts>
           centerTitle: true,
           backgroundColor: Colors.transparent,
           elevation: 0,
-          leading: Builder(
-            builder: (BuildContext context) {
-              return Transform.rotate(
-                angle: 22 / 7 * 2,
-                child: IconButton(
-                  color: Theme.of(context).iconTheme.color,
-                  icon: const Icon(
-                    Icons.horizontal_split_rounded,
-                  ),
-                  onPressed: () {
-                    Scaffold.of(cntxt).openDrawer();
+          automaticallyImplyLeading: false,
+          leading: (rotated && screenWidth < 1050)
+              ? null
+              : Builder(
+                  builder: (BuildContext context) {
+                    return Transform.rotate(
+                      angle: 22 / 7 * 2,
+                      child: IconButton(
+                        color: Theme.of(context).iconTheme.color,
+                        icon: const Icon(
+                          Icons.horizontal_split_rounded,
+                        ),
+                        onPressed: () {
+                          Scaffold.of(cntxt).openDrawer();
+                        },
+                        tooltip: MaterialLocalizations.of(cntxt)
+                            .openAppDrawerTooltip,
+                      ),
+                    );
                   },
-                  tooltip: MaterialLocalizations.of(cntxt).openAppDrawerTooltip,
                 ),
-              );
-            },
-          ),
         ),
         body: NotificationListener(
           onNotification: (overscroll) {

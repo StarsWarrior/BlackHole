@@ -22,6 +22,7 @@ import 'dart:developer';
 import 'dart:typed_data';
 
 import 'package:blackhole/APIs/api.dart';
+import 'package:blackhole/Helpers/extensions.dart';
 import 'package:dart_des/dart_des.dart';
 import 'package:hive/hive.dart';
 
@@ -36,18 +37,6 @@ class FormatResponse {
     final String decoded =
         utf8.decode(decrypted).replaceAll(RegExp(r'\.mp4.*'), '.mp4');
     return decoded.replaceAll('http:', 'https:');
-  }
-
-  static String capitalize(String msg) {
-    return '${msg[0].toUpperCase()}${msg.substring(1)}';
-  }
-
-  static String formatString(String text) {
-    return text
-        .replaceAll('&amp;', '&')
-        .replaceAll('&#039;', "'")
-        .replaceAll('&quot;', '"')
-        .trim();
   }
 
   static Future<List> formatSongsResponse(
@@ -119,20 +108,20 @@ class FormatResponse {
       return {
         'id': response['id'],
         'type': response['type'],
-        'album': formatString(response['more_info']['album'].toString()),
+        'album': response['more_info']['album'].toString().unescape(),
         'year': response['year'],
         'duration': response['more_info']['duration'],
-        'language': capitalize(response['language'].toString()),
-        'genre': capitalize(response['language'].toString()),
+        'language': response['language'].toString().capitalize(),
+        'genre': response['language'].toString().capitalize(),
         '320kbps': response['more_info']['320kbps'],
         'has_lyrics': response['more_info']['has_lyrics'],
         'lyrics_snippet':
-            formatString(response['more_info']['lyrics_snippet'].toString()),
+            response['more_info']['lyrics_snippet'].toString().unescape(),
         'release_date': response['more_info']['release_date'],
         'album_id': response['more_info']['album_id'],
-        'subtitle': formatString(response['subtitle'].toString()),
-        'title': formatString(response['title'].toString()),
-        'artist': formatString(artistNames.join(', ')),
+        'subtitle': response['subtitle'].toString().unescape(),
+        'title': response['title'].toString().unescape(),
+        'artist': artistNames.join(', ').unescape(),
         'album_artist': response['more_info'] == null
             ? response['music']
             : response['more_info']['music'],
@@ -183,25 +172,26 @@ class FormatResponse {
       return {
         'id': response['id'],
         'type': response['type'],
-        'album': formatString(response['album'].toString()),
+        'album': response['album'].toString().unescape(),
         // .split('(')
         // .first
         'year': response['year'],
         'duration': response['duration'],
-        'language': capitalize(response['language'].toString()),
-        'genre': capitalize(response['language'].toString()),
+        'language': response['language'].toString().capitalize(),
+        'genre': response['language'].toString().capitalize(),
         '320kbps': response['320kbps'],
         'has_lyrics': response['has_lyrics'],
-        'lyrics_snippet': formatString(response['lyrics_snippet'].toString()),
+        'lyrics_snippet': response['lyrics_snippet'].toString().unescape(),
         'release_date': response['release_date'],
         'album_id': response['album_id'],
-        'subtitle': formatString(
-          '${response["primary_artists"].toString().trim()} - ${response["album"].toString().trim()}',
-        ),
-        'title': formatString(response['song'].toString()),
+        'subtitle':
+            '${response["primary_artists"].toString().trim()} - ${response["album"].toString().trim()}'
+                .unescape(),
+
+        'title': response['song'].toString().unescape(),
         // .split('(')
         // .first
-        'artist': formatString(artistNames.join(', ')),
+        'artist': artistNames.join(', ').unescape(),
         'album_artist': response['more_info'] == null
             ? response['music']
             : response['more_info']['music'],
@@ -253,23 +243,19 @@ class FormatResponse {
       return {
         'id': response['id'],
         'type': response['type'],
-        'album': formatString(response['title'].toString()),
+        'album': response['title'].toString().unescape(),
         'year': response['more_info']?['year'] ?? response['year'],
-        'language': capitalize(
-          response['more_info']?['language'] == null
-              ? response['language'].toString()
-              : response['more_info']['language'].toString(),
-        ),
-        'genre': capitalize(
-          response['more_info']?['language'] == null
-              ? response['language'].toString()
-              : response['more_info']['language'].toString(),
-        ),
+        'language': response['more_info']?['language'] == null
+            ? response['language'].toString().capitalize()
+            : response['more_info']['language'].toString().capitalize(),
+        'genre': response['more_info']?['language'] == null
+            ? response['language'].toString().capitalize()
+            : response['more_info']['language'].toString().capitalize(),
         'album_id': response['id'],
         'subtitle': response['description'] == null
-            ? formatString(response['subtitle'].toString())
-            : formatString(response['description'].toString()),
-        'title': formatString(response['title'].toString()),
+            ? response['subtitle'].toString().unescape()
+            : response['description'].toString().unescape(),
+        'title': response['title'].toString().unescape(),
         'artist': response['music'] == null
             ? (response['more_info']?['music']) == null
                 ? (response['more_info']?['artistMap']?['primary_artists'] ==
@@ -278,13 +264,12 @@ class FormatResponse {
                                 as List)
                             .isEmpty)
                     ? ''
-                    : formatString(
-                        response['more_info']['artistMap']['primary_artists'][0]
-                                ['name']
-                            .toString(),
-                      )
-                : formatString(response['more_info']['music'].toString())
-            : formatString(response['music'].toString()),
+                    : response['more_info']['artistMap']['primary_artists'][0]
+                            ['name']
+                        .toString()
+                        .unescape()
+                : response['more_info']['music'].toString().unescape()
+            : response['music'].toString().unescape(),
         'album_artist': response['more_info'] == null
             ? response['music']
             : response['more_info']['music'],
@@ -310,23 +295,19 @@ class FormatResponse {
       return {
         'id': response['id'],
         'type': response['type'],
-        'album': formatString(response['title'].toString()),
-        'language': capitalize(
-          response['language'] == null
-              ? response['more_info']['language'].toString()
-              : response['language'].toString(),
-        ),
-        'genre': capitalize(
-          response['language'] == null
-              ? response['more_info']['language'].toString()
-              : response['language'].toString(),
-        ),
+        'album': response['title'].toString().unescape(),
+        'language': response['language'] == null
+            ? response['more_info']['language'].toString().capitalize()
+            : response['language'].toString().capitalize(),
+        'genre': response['language'] == null
+            ? response['more_info']['language'].toString().capitalize()
+            : response['language'].toString().capitalize(),
         'playlistId': response['id'],
         'subtitle': response['description'] == null
-            ? formatString(response['subtitle'].toString())
-            : formatString(response['description'].toString()),
-        'title': formatString(response['title'].toString()),
-        'artist': formatString(response['extra'].toString()),
+            ? response['subtitle'].toString().unescape()
+            : response['description'].toString().unescape(),
+        'title': response['title'].toString().unescape(),
+        'artist': response['extra'].toString().unescape(),
         'album_artist': response['more_info'] == null
             ? response['music']
             : response['more_info']['music'],
@@ -349,24 +330,24 @@ class FormatResponse {
         'id': response['id'],
         'type': response['type'],
         'album': response['title'] == null
-            ? formatString(response['name'].toString())
-            : formatString(response['title'].toString()),
-        'language': capitalize(response['language'].toString()),
-        'genre': capitalize(response['language'].toString()),
+            ? response['name'].toString().unescape()
+            : response['title'].toString().unescape(),
+        'language': response['language'].toString().capitalize(),
+        'genre': response['language'].toString().capitalize(),
         'artistId': response['id'],
         'artistToken': response['url'] == null
             ? response['perma_url'].toString().split('/').last
             : response['url'].toString().split('/').last,
         'subtitle': response['description'] == null
-            ? capitalize(response['role'].toString())
-            : formatString(response['description'].toString()),
+            ? response['role'].toString().capitalize()
+            : response['description'].toString().unescape(),
         'title': response['title'] == null
-            ? formatString(response['name'].toString())
-            : formatString(response['title'].toString()),
+            ? response['name'].toString().unescape()
+            : response['title'].toString().unescape(),
         // .split('(')
         // .first
         'perma_url': response['url'].toString(),
-        'artist': formatString(response['title'].toString()),
+        'artist': response['title'].toString().unescape(),
         'album_artist': response['more_info'] == null
             ? response['music']
             : response['more_info']['music'],
@@ -430,18 +411,18 @@ class FormatResponse {
       return {
         'id': response['id'],
         'type': response['type'],
-        'album': formatString(response['title'].toString()),
+        'album': response['title'].toString().unescape(),
         // .split('(')
         // .first
         'year': response['year'],
-        'language': capitalize(response['language'].toString()),
-        'genre': capitalize(response['language'].toString()),
+        'language': response['language'].toString().capitalize(),
+        'genre': response['language'].toString().capitalize(),
         'album_id': response['id'],
-        'subtitle': formatString(response['subtitle'].toString()),
-        'title': formatString(response['title'].toString()),
+        'subtitle': response['subtitle'].toString().unescape(),
+        'title': response['title'].toString().unescape(),
         // .split('(')
         // .first
-        'artist': formatString(artistNames.join(', ')),
+        'artist': artistNames.join(', ').unescape(),
         'album_artist': response['more_info'] == null
             ? response['music']
             : response['more_info']['music'],
@@ -475,9 +456,9 @@ class FormatResponse {
       return {
         'id': response['id'],
         'type': response['type'],
-        'artist': formatString(response['name'].toString()),
-        'title': formatString(response['name'].toString()),
-        'subtitle': capitalize(response['dominantType'].toString()),
+        'artist': response['name'].toString().unescape(),
+        'title': response['name'].toString().unescape(),
+        'subtitle': response['dominantType'].toString().capitalize(),
         'image': response['image_url']
             .toString()
             .replaceAll('150x150', '500x500')
@@ -496,11 +477,11 @@ class FormatResponse {
       return {
         'id': response['id'],
         'type': response['type'],
-        'album': formatString(response['title'].toString()),
+        'album': response['title'].toString().unescape(),
         'subtitle': response['description'] == null
-            ? formatString(response['subtitle'].toString())
-            : formatString(response['description'].toString()),
-        'title': formatString(response['title'].toString()),
+            ? response['subtitle'].toString().unescape()
+            : response['description'].toString().unescape(),
+        'title': response['title'].toString().unescape(),
         'image': response['image']
             .toString()
             .replaceAll('150x150', '500x500')

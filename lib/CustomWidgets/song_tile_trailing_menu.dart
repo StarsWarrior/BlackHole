@@ -358,7 +358,7 @@ class _YtSongTileTrailingMenuState extends State<YtSongTileTrailingMenu> {
           });
         }
         if (value == 4) {
-          launch(widget.data.url);
+          launchUrl(Uri.parse(widget.data.url));
         }
         if (value == 5) {
           Share.share(widget.data.url);

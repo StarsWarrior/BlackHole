@@ -10,7 +10,7 @@ environment:
   sdk: ">=2.13.0 <3.0.0"
 
 dependencies:
-  app_links: ^3.0.1
+  app_links: ^3.2.0
   audio_service: ^0.18.4
   audiotagger: ^2.2.1
   # bitsdojo_window: ^0.1.1+1 #For Desktops
@@ -54,7 +54,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   lint: ^1.8.2
-  msix: ^3.4.1
+  msix: ^3.5.1
 
 flutter:
   uses-material-design: true

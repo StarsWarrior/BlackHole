@@ -157,8 +157,10 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                       ),
                       onTap: () {
                         String code;
-                        launch(
-                          SpotifyApi().requestAuthorization(),
+                        launchUrl(
+                          Uri.parse(
+                            SpotifyApi().requestAuthorization(),
+                          ),
                         );
 
                         AppLinks().uriLinkStream.listen(
@@ -166,7 +168,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                             Uri uri,
                           ) async {
                             final link = uri.toString();
-                            closeWebView();
+                            closeInAppWebView();
                             if (link.contains('code=')) {
                               code = link.split('code=')[1];
                               await fetchPlaylists(

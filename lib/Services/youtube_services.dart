@@ -23,12 +23,16 @@ import 'package:http/http.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
 class YouTubeServices {
-  String searchAuthority = 'www.youtube.com';
-  Map paths = {
+  static const String searchAuthority = 'www.youtube.com';
+  static const Map paths = {
     'search': '/results',
     'channel': '/channel',
     'music': '/music',
     'playlist': '/playlist'
+  };
+  static const Map<String, String> headers = {
+    'User-Agent':
+        'Mozilla/5.0 (Windows NT 10.0; rv:96.0) Gecko/20100101 Firefox/96.0'
   };
   final YoutubeExplode yt = YoutubeExplode();
 
@@ -106,19 +110,16 @@ class YouTubeServices {
 
   Future<List> getSearchSuggestions({required String query}) async {
     const baseUrl =
-        'https://suggestqueries.google.com/complete/search?client=firefox&ds=yt&q=';
-    const headers = {
-      'User-Agent':
-          'Mozilla/5.0 (Windows NT 10.0; rv:96.0) Gecko/20100101 Firefox/96.0'
-    };
+        // 'https://suggestqueries.google.com/complete/search?client=firefox&ds=yt&q=';
+        'https://invidious.snopyta.org/api/v1/search/suggestions?q=';
     final Uri link = Uri.parse(baseUrl + query);
     try {
       final Response response = await get(link, headers: headers);
       if (response.statusCode != 200) {
         return [];
       }
-      final List res = jsonDecode(response.body) as List;
-      return res[1] as List;
+      final Map res = jsonDecode(response.body) as Map;
+      return res['suggestions'] as List;
     } catch (e) {
       return [];
     }
@@ -286,6 +287,49 @@ class YouTubeServices {
       'subtitle': video.author,
       'perma_url': video.url,
     };
+    // For invidous
+    // if (video['liveNow'] == true) return null;
+    // try {
+    //   final Uri link = Uri.https(
+    //     'invidious.snopyta.org',
+    //     'api/v1/videos/${video["videoId"]}',
+    //   );
+    //   final Response response = await get(link, headers: headers);
+    //   if (response.statusCode != 200) {
+    //     return {};
+    //   }
+    //   final jsonData = jsonDecode(response.body) as Map;
+    //   final urls = (jsonData['adaptiveFormats'] as List)
+    //       .where((e) => e['container'] == 'm4a');
+
+    //   return {
+    //     'id': jsonData['videoId'],
+    //     'album': jsonData['author'],
+    //     'duration': jsonData['lengthSeconds'],
+    //     'title': jsonData['title'],
+    //     'artist': jsonData['author'],
+    //     'image': jsonData['videoThumbnails'][0]['url'],
+    //     'secondImage': jsonData['videoThumbnails'][2]?['url'],
+    //     'language': 'YouTube',
+    //     'genre': 'YouTube',
+    //     'url':
+    //         'https://yewtu.be/latest_version?id=${video["videoId"]}&itag=${quality == "High" ? 140 : 139}&local=true&listen=1',
+    //     'lowUrl':
+    //         'https://yewtu.be/latest_version?id=09cZRYupO4s&itag=139&local=true&listen=1',
+    //     'highUrl':
+    //         'https://yewtu.be/latest_version?id=09cZRYupO4s&itag=140&local=true&listen=1',
+    //     'year': jsonData['published'].toString().yearFromEpoch,
+    //     '320kbps': 'false',
+    //     'has_lyrics': 'false',
+    //     'release_date': jsonData['published'].toString().dateFromEpoch,
+    //     'album_id': jsonData['authorId'].toString(),
+    //     'artist_id': jsonData['authorId'].toString(),
+    //     'subtitle': jsonData['author'],
+    //     'perma_url': 'https://youtube.com/watch?v=${jsonData["videoId"]}',
+    //   };
+    // } catch (e) {
+    //   return {};
+    // }
   }
 
   Future<List<Video>> fetchSearchResults(String query) async {
@@ -335,6 +379,18 @@ class YouTubeServices {
     //   };
     // }).toList();
     return searchResults;
+    // For invidous
+    // try {
+    //   final Uri link =
+    //       Uri.https('invidious.snopyta.org', 'api/v1/search', {'q': query});
+    //   final Response response = await get(link, headers: headers);
+    //   if (response.statusCode != 200) {
+    //     return [];
+    //   }
+    //   return jsonDecode(response.body) as List;
+    // } catch (e) {
+    //   return [];
+    // }
   }
 
   Future<List<String>> getUri(

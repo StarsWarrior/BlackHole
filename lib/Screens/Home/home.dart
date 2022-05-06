@@ -27,6 +27,7 @@ import 'package:blackhole/CustomWidgets/snackbar.dart';
 import 'package:blackhole/CustomWidgets/textinput_dialog.dart';
 import 'package:blackhole/Helpers/backup_restore.dart';
 import 'package:blackhole/Helpers/downloads_checker.dart';
+import 'package:blackhole/Helpers/extensions.dart';
 import 'package:blackhole/Helpers/supabase.dart';
 import 'package:blackhole/Screens/Home/saavn.dart';
 import 'package:blackhole/Screens/Library/library.dart';
@@ -62,10 +63,6 @@ class _HomePageState extends State<HomePage> {
   bool autoBackup =
       Hive.box('settings').get('autoBackup', defaultValue: false) as bool;
   DateTime? backButtonPressTime;
-
-  String capitalize(String msg) {
-    return '${msg[0].toUpperCase()}${msg.substring(1)}';
-  }
 
   void callback() {
     setState(() {});
@@ -173,12 +170,12 @@ class _HomePageState extends State<HomePage> {
                   onPressed: () {
                     Navigator.pop(context);
                     if (abis!.contains('arm64-v8a')) {
-                      launch(value['arm64-v8a'] as String);
+                      launchUrl(Uri.parse(value['arm64-v8a'] as String));
                     } else {
                       if (abis.contains('armeabi-v7a')) {
-                        launch(value['armeabi-v7a'] as String);
+                        launchUrl(Uri.parse(value['armeabi-v7a'] as String));
                       } else {
-                        launch(value['universal'] as String);
+                        launchUrl(Uri.parse(value['universal'] as String));
                       }
                     }
                   },
@@ -284,6 +281,8 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final bool rotated = MediaQuery.of(context).size.height < screenWidth;
     return GradientContainer(
       child: Scaffold(
         resizeToAvoidBottomInset: false,
@@ -476,325 +475,436 @@ class _HomePageState extends State<HomePage> {
         body: WillPopScope(
           onWillPop: () => handleWillPop(context),
           child: SafeArea(
-            child: Column(
+            child: Row(
               children: [
-                Expanded(
-                  child: PageView(
-                    physics: const CustomPhysics(),
-                    onPageChanged: (indx) {
-                      _selectedIndex.value = indx;
+                if (rotated)
+                  ValueListenableBuilder(
+                    valueListenable: _selectedIndex,
+                    builder:
+                        (BuildContext context, int indexValue, Widget? child) {
+                      return NavigationRail(
+                        minWidth: 56.0,
+                        groupAlignment: 0.0,
+                        backgroundColor:
+                            // Colors.transparent,
+                            Theme.of(context).cardColor,
+                        selectedIndex: indexValue,
+                        onDestinationSelected: (int index) {
+                          _onItemTapped(index);
+                        },
+                        labelType: screenWidth > 1050
+                            ? NavigationRailLabelType.selected
+                            : NavigationRailLabelType.none,
+                        selectedLabelTextStyle: TextStyle(
+                          color: Theme.of(context).colorScheme.secondary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        unselectedLabelTextStyle: TextStyle(
+                          color: Theme.of(context).iconTheme.color,
+                        ),
+                        selectedIconTheme: Theme.of(context).iconTheme.copyWith(
+                              color: Theme.of(context).colorScheme.secondary,
+                            ),
+                        unselectedIconTheme: Theme.of(context).iconTheme,
+                        useIndicator: screenWidth < 1050,
+                        leading: screenWidth > 1050
+                            ? null
+                            : Builder(
+                                builder: (context) => Transform.rotate(
+                                  angle: 22 / 7 * 2,
+                                  child: IconButton(
+                                    icon: const Icon(
+                                      Icons.horizontal_split_rounded,
+                                    ),
+                                    // color: Theme.of(context).iconTheme.color,
+                                    onPressed: () {
+                                      Scaffold.of(context).openDrawer();
+                                    },
+                                    tooltip: MaterialLocalizations.of(context)
+                                        .openAppDrawerTooltip,
+                                  ),
+                                ),
+                              ),
+                        destinations: [
+                          NavigationRailDestination(
+                            icon: const Icon(Icons.home_rounded),
+                            label: Text(AppLocalizations.of(context)!.home),
+                          ),
+                          NavigationRailDestination(
+                            icon: const Icon(Icons.trending_up_rounded),
+                            label: Text(
+                              AppLocalizations.of(context)!.spotifyCharts,
+                            ),
+                          ),
+                          NavigationRailDestination(
+                            icon: const Icon(MdiIcons.youtube),
+                            label: Text(AppLocalizations.of(context)!.youTube),
+                          ),
+                          NavigationRailDestination(
+                            icon: const Icon(Icons.my_library_music_rounded),
+                            label: Text(AppLocalizations.of(context)!.library),
+                          ),
+                        ],
+                      );
                     },
-                    controller: _pageController,
+                  ),
+                Expanded(
+                  child: Column(
                     children: [
-                      Stack(
-                        children: [
-                          checkVersion(),
-                          NestedScrollView(
-                            physics: const BouncingScrollPhysics(),
-                            controller: _scrollController,
-                            headerSliverBuilder:
-                                (BuildContext context, bool innerBoxScrolled) {
-                              return <Widget>[
-                                SliverAppBar(
-                                  expandedHeight: 135,
-                                  backgroundColor: Colors.transparent,
-                                  elevation: 0,
-                                  // pinned: true,
-                                  toolbarHeight: 65,
-                                  // floating: true,
-                                  automaticallyImplyLeading: false,
-                                  flexibleSpace: LayoutBuilder(
-                                    builder: (
-                                      BuildContext context,
-                                      BoxConstraints constraints,
-                                    ) {
-                                      return FlexibleSpaceBar(
-                                        // collapseMode: CollapseMode.parallax,
-                                        background: GestureDetector(
-                                          onTap: () async {
-                                            await showTextInputDialog(
-                                              context: context,
-                                              title: 'Name',
-                                              initialText: name,
-                                              keyboardType: TextInputType.name,
-                                              onSubmitted: (value) {
-                                                Hive.box('settings').put(
-                                                  'name',
-                                                  value.trim(),
-                                                );
-                                                name = value.trim();
-                                                Navigator.pop(context);
-                                                updateUserDetails(
-                                                  'name',
-                                                  value.trim(),
-                                                );
-                                              },
-                                            );
-                                            setState(() {});
-                                          },
-                                          child: Column(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: <Widget>[
-                                              const SizedBox(
-                                                height: 60,
-                                              ),
-                                              Row(
-                                                children: [
-                                                  Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                      left: 15.0,
+                      Expanded(
+                        child: PageView(
+                          physics: const CustomPhysics(),
+                          onPageChanged: (indx) {
+                            _selectedIndex.value = indx;
+                          },
+                          controller: _pageController,
+                          children: [
+                            Stack(
+                              children: [
+                                checkVersion(),
+                                NestedScrollView(
+                                  physics: const BouncingScrollPhysics(),
+                                  controller: _scrollController,
+                                  headerSliverBuilder: (
+                                    BuildContext context,
+                                    bool innerBoxScrolled,
+                                  ) {
+                                    return <Widget>[
+                                      SliverAppBar(
+                                        expandedHeight: 135,
+                                        backgroundColor: Colors.transparent,
+                                        elevation: 0,
+                                        // pinned: true,
+                                        toolbarHeight: 65,
+                                        // floating: true,
+                                        automaticallyImplyLeading: false,
+                                        flexibleSpace: LayoutBuilder(
+                                          builder: (
+                                            BuildContext context,
+                                            BoxConstraints constraints,
+                                          ) {
+                                            return FlexibleSpaceBar(
+                                              // collapseMode: CollapseMode.parallax,
+                                              background: GestureDetector(
+                                                onTap: () async {
+                                                  await showTextInputDialog(
+                                                    context: context,
+                                                    title: 'Name',
+                                                    initialText: name,
+                                                    keyboardType:
+                                                        TextInputType.name,
+                                                    onSubmitted: (value) {
+                                                      Hive.box('settings').put(
+                                                        'name',
+                                                        value.trim(),
+                                                      );
+                                                      name = value.trim();
+                                                      Navigator.pop(context);
+                                                      updateUserDetails(
+                                                        'name',
+                                                        value.trim(),
+                                                      );
+                                                    },
+                                                  );
+                                                  setState(() {});
+                                                },
+                                                child: Column(
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  children: <Widget>[
+                                                    const SizedBox(
+                                                      height: 60,
                                                     ),
-                                                    child: Text(
-                                                      AppLocalizations.of(
-                                                        context,
-                                                      )!
-                                                          .homeGreet,
-                                                      style: TextStyle(
-                                                        letterSpacing: 2,
-                                                        color: Theme.of(context)
-                                                            .colorScheme
-                                                            .secondary,
-                                                        fontSize: 30,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              Padding(
-                                                padding: const EdgeInsets.only(
-                                                  left: 15.0,
-                                                ),
-                                                child: Row(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.end,
-                                                  children: [
-                                                    ValueListenableBuilder(
-                                                      valueListenable:
-                                                          Hive.box('settings')
-                                                              .listenable(),
-                                                      builder: (
-                                                        BuildContext context,
-                                                        Box box,
-                                                        Widget? child,
-                                                      ) {
-                                                        return Text(
-                                                          (box.get('name') ==
-                                                                      null ||
-                                                                  box.get('name') ==
-                                                                      '')
-                                                              ? 'Guest'
-                                                              : capitalize(
-                                                                  box
-                                                                      .get(
-                                                                        'name',
-                                                                      )
-                                                                      .split(
-                                                                        ' ',
-                                                                      )[0]
-                                                                      .toString(),
-                                                                ),
-                                                          style:
-                                                              const TextStyle(
-                                                            letterSpacing: 2,
-                                                            fontSize: 20,
-                                                            fontWeight:
-                                                                FontWeight.w500,
+                                                    Row(
+                                                      children: [
+                                                        Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .only(
+                                                            left: 15.0,
                                                           ),
-                                                        );
-                                                      },
+                                                          child: Text(
+                                                            AppLocalizations.of(
+                                                              context,
+                                                            )!
+                                                                .homeGreet,
+                                                            style: TextStyle(
+                                                              letterSpacing: 2,
+                                                              color: Theme.of(
+                                                                context,
+                                                              )
+                                                                  .colorScheme
+                                                                  .secondary,
+                                                              fontSize: 30,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    Padding(
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                        left: 15.0,
+                                                      ),
+                                                      child: Row(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .end,
+                                                        children: [
+                                                          ValueListenableBuilder(
+                                                            valueListenable:
+                                                                Hive.box(
+                                                              'settings',
+                                                            ).listenable(),
+                                                            builder: (
+                                                              BuildContext
+                                                                  context,
+                                                              Box box,
+                                                              Widget? child,
+                                                            ) {
+                                                              return Text(
+                                                                (box.get('name') ==
+                                                                            null ||
+                                                                        box.get('name') ==
+                                                                            '')
+                                                                    ? 'Guest'
+                                                                    : box
+                                                                        .get(
+                                                                          'name',
+                                                                        )
+                                                                        .split(
+                                                                          ' ',
+                                                                        )[0]
+                                                                        .toString()
+                                                                        .capitalize(),
+                                                                style:
+                                                                    const TextStyle(
+                                                                  letterSpacing:
+                                                                      2,
+                                                                  fontSize: 20,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w500,
+                                                                ),
+                                                              );
+                                                            },
+                                                          ),
+                                                        ],
+                                                      ),
                                                     ),
                                                   ],
                                                 ),
                                               ),
-                                            ],
+                                            );
+                                          },
+                                        ),
+                                      ),
+                                      SliverAppBar(
+                                        automaticallyImplyLeading: false,
+                                        pinned: true,
+                                        backgroundColor: Colors.transparent,
+                                        elevation: 0,
+                                        stretch: true,
+                                        toolbarHeight: 65,
+                                        title: Align(
+                                          alignment: Alignment.centerRight,
+                                          child: AnimatedBuilder(
+                                            animation: _scrollController,
+                                            builder: (context, child) {
+                                              return GestureDetector(
+                                                child: AnimatedContainer(
+                                                  width: (!_scrollController
+                                                              .hasClients ||
+                                                          _scrollController
+                                                                  // ignore: invalid_use_of_protected_member
+                                                                  .positions
+                                                                  .length >
+                                                              1)
+                                                      ? MediaQuery.of(context)
+                                                          .size
+                                                          .width
+                                                      : max(
+                                                          MediaQuery.of(context)
+                                                                  .size
+                                                                  .width -
+                                                              _scrollController
+                                                                  .offset
+                                                                  .roundToDouble(),
+                                                          MediaQuery.of(context)
+                                                                  .size
+                                                                  .width -
+                                                              75,
+                                                        ),
+                                                  height: 52.0,
+                                                  duration: const Duration(
+                                                    milliseconds: 150,
+                                                  ),
+                                                  padding:
+                                                      const EdgeInsets.all(2.0),
+                                                  // margin: EdgeInsets.zero,
+                                                  decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                      10.0,
+                                                    ),
+                                                    color: Theme.of(context)
+                                                        .cardColor,
+                                                    boxShadow: const [
+                                                      BoxShadow(
+                                                        color: Colors.black26,
+                                                        blurRadius: 5.0,
+                                                        offset:
+                                                            Offset(1.5, 1.5),
+                                                        // shadow direction: bottom right
+                                                      )
+                                                    ],
+                                                  ),
+                                                  child: Row(
+                                                    children: [
+                                                      const SizedBox(
+                                                        width: 10.0,
+                                                      ),
+                                                      Icon(
+                                                        CupertinoIcons.search,
+                                                        color: Theme.of(context)
+                                                            .colorScheme
+                                                            .secondary,
+                                                      ),
+                                                      const SizedBox(
+                                                        width: 10.0,
+                                                      ),
+                                                      Text(
+                                                        AppLocalizations.of(
+                                                          context,
+                                                        )!
+                                                            .searchText,
+                                                        style: TextStyle(
+                                                          fontSize: 16.0,
+                                                          color:
+                                                              Theme.of(context)
+                                                                  .textTheme
+                                                                  .caption!
+                                                                  .color,
+                                                          fontWeight:
+                                                              FontWeight.normal,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                                onTap: () => Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        const SearchPage(
+                                                      query: '',
+                                                      fromHome: true,
+                                                      autofocus: true,
+                                                    ),
+                                                  ),
+                                                ),
+                                              );
+                                            },
                                           ),
                                         ),
-                                      );
-                                    },
-                                  ),
+                                      ),
+                                    ];
+                                  },
+                                  body: SaavnHomePage(),
                                 ),
-                                SliverAppBar(
-                                  automaticallyImplyLeading: false,
-                                  pinned: true,
-                                  backgroundColor: Colors.transparent,
-                                  elevation: 0,
-                                  stretch: true,
-                                  toolbarHeight: 65,
-                                  title: Align(
-                                    alignment: Alignment.centerRight,
-                                    child: AnimatedBuilder(
-                                      animation: _scrollController,
-                                      builder: (context, child) {
-                                        return GestureDetector(
-                                          child: AnimatedContainer(
-                                            width: (!_scrollController
-                                                        .hasClients ||
-                                                    _scrollController
-                                                            // ignore: invalid_use_of_protected_member
-                                                            .positions
-                                                            .length >
-                                                        1)
-                                                ? MediaQuery.of(context)
-                                                    .size
-                                                    .width
-                                                : max(
-                                                    MediaQuery.of(context)
-                                                            .size
-                                                            .width -
-                                                        _scrollController.offset
-                                                            .roundToDouble(),
-                                                    MediaQuery.of(context)
-                                                            .size
-                                                            .width -
-                                                        75,
-                                                  ),
-                                            height: 52.0,
-                                            duration: const Duration(
-                                              milliseconds: 150,
-                                            ),
-                                            padding: const EdgeInsets.all(2.0),
-                                            // margin: EdgeInsets.zero,
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(10.0),
-                                              color:
-                                                  Theme.of(context).cardColor,
-                                              boxShadow: const [
-                                                BoxShadow(
-                                                  color: Colors.black26,
-                                                  blurRadius: 5.0,
-                                                  offset: Offset(1.5, 1.5),
-                                                  // shadow direction: bottom right
-                                                )
-                                              ],
-                                            ),
-                                            child: Row(
-                                              children: [
-                                                const SizedBox(width: 10.0),
-                                                Icon(
-                                                  CupertinoIcons.search,
-                                                  color: Theme.of(context)
-                                                      .colorScheme
-                                                      .secondary,
-                                                ),
-                                                const SizedBox(width: 10.0),
-                                                Text(
-                                                  AppLocalizations.of(
-                                                    context,
-                                                  )!
-                                                      .searchText,
-                                                  style: TextStyle(
-                                                    fontSize: 16.0,
-                                                    color: Theme.of(context)
-                                                        .textTheme
-                                                        .caption!
-                                                        .color,
-                                                    fontWeight:
-                                                        FontWeight.normal,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
+                                if (!rotated || screenWidth > 1050)
+                                  Builder(
+                                    builder: (context) => Padding(
+                                      padding: const EdgeInsets.only(
+                                        top: 8.0,
+                                        left: 4.0,
+                                      ),
+                                      child: Transform.rotate(
+                                        angle: 22 / 7 * 2,
+                                        child: IconButton(
+                                          icon: const Icon(
+                                            Icons.horizontal_split_rounded,
                                           ),
-                                          onTap: () => Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  const SearchPage(
-                                                query: '',
-                                                fromHome: true,
-                                                autofocus: true,
-                                              ),
-                                            ),
-                                          ),
-                                        );
-                                      },
+                                          // color: Theme.of(context).iconTheme.color,
+                                          onPressed: () {
+                                            Scaffold.of(context).openDrawer();
+                                          },
+                                          tooltip:
+                                              MaterialLocalizations.of(context)
+                                                  .openAppDrawerTooltip,
+                                        ),
+                                      ),
                                     ),
                                   ),
-                                ),
-                              ];
-                            },
-                            body: SaavnHomePage(),
-                          ),
-                          Builder(
-                            builder: (context) => Padding(
-                              padding:
-                                  const EdgeInsets.only(top: 8.0, left: 4.0),
-                              child: Transform.rotate(
-                                angle: 22 / 7 * 2,
-                                child: IconButton(
-                                  icon: const Icon(
-                                    Icons.horizontal_split_rounded,
-                                  ),
-                                  // color: Theme.of(context).iconTheme.color,
-                                  onPressed: () {
-                                    Scaffold.of(context).openDrawer();
-                                  },
-                                  tooltip: MaterialLocalizations.of(context)
-                                      .openAppDrawerTooltip,
-                                ),
-                              ),
+                              ],
                             ),
-                          ),
-                        ],
+                            TopCharts(
+                              pageController: _pageController,
+                            ),
+                            const YouTube(),
+                            const LibraryPage(),
+                          ],
+                        ),
                       ),
-                      TopCharts(
-                        pageController: _pageController,
-                      ),
-                      const YouTube(),
-                      const LibraryPage(),
+                      const MiniPlayer()
                     ],
                   ),
                 ),
-                const MiniPlayer()
               ],
             ),
           ),
         ),
-        bottomNavigationBar: SafeArea(
-          child: ValueListenableBuilder(
-            valueListenable: _selectedIndex,
-            builder: (BuildContext context, int indexValue, Widget? child) {
-              return AnimatedContainer(
-                duration: const Duration(milliseconds: 100),
-                height: 60,
-                child: SalomonBottomBar(
-                  currentIndex: indexValue,
-                  onTap: (index) {
-                    _onItemTapped(index);
+        bottomNavigationBar: rotated
+            ? null
+            : SafeArea(
+                child: ValueListenableBuilder(
+                  valueListenable: _selectedIndex,
+                  builder:
+                      (BuildContext context, int indexValue, Widget? child) {
+                    return AnimatedContainer(
+                      duration: const Duration(milliseconds: 100),
+                      height: 60,
+                      child: SalomonBottomBar(
+                        currentIndex: indexValue,
+                        onTap: (index) {
+                          _onItemTapped(index);
+                        },
+                        items: [
+                          SalomonBottomBarItem(
+                            icon: const Icon(Icons.home_rounded),
+                            title: Text(AppLocalizations.of(context)!.home),
+                            selectedColor:
+                                Theme.of(context).colorScheme.secondary,
+                          ),
+                          SalomonBottomBarItem(
+                            icon: const Icon(Icons.trending_up_rounded),
+                            title: Text(
+                              AppLocalizations.of(context)!.spotifyCharts,
+                            ),
+                            selectedColor:
+                                Theme.of(context).colorScheme.secondary,
+                          ),
+                          SalomonBottomBarItem(
+                            icon: const Icon(MdiIcons.youtube),
+                            title: Text(AppLocalizations.of(context)!.youTube),
+                            selectedColor:
+                                Theme.of(context).colorScheme.secondary,
+                          ),
+                          SalomonBottomBarItem(
+                            icon: const Icon(Icons.my_library_music_rounded),
+                            title: Text(AppLocalizations.of(context)!.library),
+                            selectedColor:
+                                Theme.of(context).colorScheme.secondary,
+                          ),
+                        ],
+                      ),
+                    );
                   },
-                  items: [
-                    /// Home
-                    SalomonBottomBarItem(
-                      icon: const Icon(Icons.home_rounded),
-                      title: Text(AppLocalizations.of(context)!.home),
-                      selectedColor: Theme.of(context).colorScheme.secondary,
-                    ),
-
-                    SalomonBottomBarItem(
-                      icon: const Icon(Icons.trending_up_rounded),
-                      title: Text(AppLocalizations.of(context)!.spotifyCharts),
-                      selectedColor: Theme.of(context).colorScheme.secondary,
-                    ),
-                    SalomonBottomBarItem(
-                      icon: const Icon(MdiIcons.youtube),
-                      title: Text(AppLocalizations.of(context)!.youTube),
-                      selectedColor: Theme.of(context).colorScheme.secondary,
-                    ),
-                    SalomonBottomBarItem(
-                      icon: const Icon(Icons.my_library_music_rounded),
-                      title: Text(AppLocalizations.of(context)!.library),
-                      selectedColor: Theme.of(context).colorScheme.secondary,
-                    ),
-                  ],
                 ),
-              );
-            },
-          ),
-        ),
+              ),
       ),
     );
   }

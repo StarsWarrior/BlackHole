@@ -471,10 +471,12 @@ class _PlayScreenState extends State<PlayScreen> {
                           );
                         }
                         if (value == 3) {
-                          launch(
-                            mediaItem.genre == 'YouTube'
-                                ? 'https://youtube.com/watch?v=${mediaItem.id}'
-                                : 'https://www.youtube.com/results?search_query=${mediaItem.title} by ${mediaItem.artist}',
+                          launchUrl(
+                            Uri.parse(
+                              mediaItem.genre == 'YouTube'
+                                  ? 'https://youtube.com/watch?v=${mediaItem.id}'
+                                  : 'https://www.youtube.com/results?search_query=${mediaItem.title} by ${mediaItem.artist}',
+                            ),
                           );
                         }
                         if (value == 1) {
@@ -1610,6 +1612,7 @@ class _ArtWorkWidgetState extends State<ArtWorkWidget> {
                         }
                       },
                 child: Stack(
+                  alignment: Alignment.center,
                   children: [
                     Card(
                       elevation: 10.0,
@@ -1620,8 +1623,7 @@ class _ArtWorkWidgetState extends State<ArtWorkWidget> {
                       child:
                           widget.mediaItem.artUri.toString().startsWith('file')
                               ? Image(
-                                  fit: BoxFit.cover,
-                                  height: widget.width * 0.85,
+                                  fit: BoxFit.contain,
                                   width: widget.width * 0.85,
                                   gaplessPlayback: true,
                                   image: FileImage(
@@ -1631,7 +1633,7 @@ class _ArtWorkWidgetState extends State<ArtWorkWidget> {
                                   ),
                                 )
                               : CachedNetworkImage(
-                                  fit: BoxFit.cover,
+                                  fit: BoxFit.contain,
                                   errorWidget: (BuildContext context, _, __) =>
                                       const Image(
                                     fit: BoxFit.cover,
@@ -1643,7 +1645,7 @@ class _ArtWorkWidgetState extends State<ArtWorkWidget> {
                                     image: AssetImage('assets/cover.jpg'),
                                   ),
                                   imageUrl: widget.mediaItem.artUri.toString(),
-                                  height: widget.width * 0.85,
+                                  width: widget.width * 0.85,
                                 ),
                     ),
                     ValueListenableBuilder(

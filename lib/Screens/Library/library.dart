@@ -36,6 +36,8 @@ class LibraryPage extends StatefulWidget {
 class _LibraryPageState extends State<LibraryPage> {
   @override
   Widget build(BuildContext context) {
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final bool rotated = MediaQuery.of(context).size.height < screenWidth;
     return ListView(
       physics: const BouncingScrollPhysics(),
       children: [
@@ -49,24 +51,27 @@ class _LibraryPageState extends State<LibraryPage> {
           centerTitle: true,
           backgroundColor: Colors.transparent,
           elevation: 0,
-          leading: Builder(
-            builder: (BuildContext context) {
-              return Transform.rotate(
-                angle: 22 / 7 * 2,
-                child: IconButton(
-                  color: Theme.of(context).iconTheme.color,
-                  icon: const Icon(
-                    Icons.horizontal_split_rounded,
-                  ),
-                  onPressed: () {
-                    Scaffold.of(context).openDrawer();
+          automaticallyImplyLeading: false,
+          leading: (rotated && screenWidth < 1050)
+              ? null
+              : Builder(
+                  builder: (BuildContext context) {
+                    return Transform.rotate(
+                      angle: 22 / 7 * 2,
+                      child: IconButton(
+                        color: Theme.of(context).iconTheme.color,
+                        icon: const Icon(
+                          Icons.horizontal_split_rounded,
+                        ),
+                        onPressed: () {
+                          Scaffold.of(context).openDrawer();
+                        },
+                        tooltip: MaterialLocalizations.of(context)
+                            .openAppDrawerTooltip,
+                      ),
+                    );
                   },
-                  tooltip:
-                      MaterialLocalizations.of(context).openAppDrawerTooltip,
                 ),
-              );
-            },
-          ),
         ),
         LibraryTile(
           title: AppLocalizations.of(context)!.nowPlaying,
