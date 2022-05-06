@@ -630,5 +630,17 @@
   "ytDownQualitySub": "उच्च गुणवत्ता अधिक डिस्क स्थान का उपयोग करती है",
   "@ytDownQualitySub": {},
   "ytStreamQuality": "यूट्यूब स्ट्रीमिंग गुणवत्ता",
-  "@ytStreamQuality": {}
+  "@ytStreamQuality": {},
+  "importJioSaavn": "जिओ सावन से आयात करे",
+  "@importJioSaavn": {},
+  "playerScreenBackground": "प्लेयर स्क्रीन पृष्ठभूमि",
+  "@playerScreenBackground": {},
+  "playerScreenBackgroundSub": "चयनित पृष्ठभूमि प्लेयर स्क्रीन में दिखाई जाएगी",
+  "@playerScreenBackgroundSub": {},
+  "resetOnSkipSub": "पिछले गाने को स्किप करने के बजाय शुरू से फिर से चलाएं",
+  "@resetOnSkipSub": {},
+  "showPlaylists": "होम स्क्रीन पर प्लेलिस्ट दिखाएं",
+  "@showPlaylists": {},
+  "upNext": "अगला",
+  "@upNext": {}
 }
