@@ -39,6 +39,8 @@ class _MiniPlayerState extends State<MiniPlayer> {
 
   @override
   Widget build(BuildContext context) {
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final bool rotated = MediaQuery.of(context).size.height < screenWidth;
     return StreamBuilder<PlaybackState>(
       stream: audioHandler.playbackState,
       builder: (context, snapshot) {
@@ -121,9 +123,10 @@ class _MiniPlayerState extends State<MiniPlayer> {
                   ),
                   builder: (BuildContext context, Box box1, Widget? child) {
                     final bool useDense = box1.get(
-                      'useDenseMini',
-                      defaultValue: false,
-                    ) as bool;
+                          'useDenseMini',
+                          defaultValue: false,
+                        ) as bool ||
+                        rotated;
                     final List preferredMiniButtons = Hive.box('settings').get(
                       'preferredMiniButtons',
                       defaultValue: ['Previous', 'Play/Pause', 'Next'],
@@ -180,7 +183,7 @@ class _MiniPlayerState extends State<MiniPlayer> {
                                             .toString()
                                             .startsWith('file:'))
                                         ? SizedBox.square(
-                                            dimension: useDense ? 40.0 : 40.0,
+                                            dimension: useDense ? 40.0 : 50.0,
                                             child: Image(
                                               fit: BoxFit.cover,
                                               image: FileImage(

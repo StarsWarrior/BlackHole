@@ -17,31 +17,48 @@
  * Copyright (c) 2021-2022, Ankit Sangwan
  */
 
-import 'dart:io';
+import 'package:blackhole/Helpers/route_handler.dart';
+import 'package:flutter/material.dart';
 
-import 'package:flutter/services.dart';
-
-// ignore: avoid_classes_with_only_static_members
-class NativeMethod {
-  static const MethodChannel sharedTextChannel =
-      MethodChannel('com.shadow.blackhole/sharedTextChannel');
-  static const MethodChannel registermediaChannel =
-      MethodChannel('com.shadow.blackhole/registerMedia');
-  static const MethodChannel intentChannel =
-      MethodChannel('com.shadow.blackhole/intentChannel');
-
-  static Future<void> handleIntent() async {
-    // final _intent = await sharedTextChannel.invokeMethod('getSharedText');
-    // if (_intent != null) {
-    //   print('IntentHandler: Result: $_intent');
-    // } else {
-    //   print('intent is null');
-    // }
-  }
-
-  static Future<void> handleAudioIntent(String audioPath) async {
-    if (await File(audioPath).exists()) {
-      intentChannel.invokeMethod('openAudio', {'audioPath': audioPath});
+Future<void> handleSharedText(String sharedText, BuildContext context) async {
+  // print(sharedText);
+  // TODO: ADD SUPPORT FOR ALL SAAVN, YOUTUBE AND SPOTIFY LINKS
+  if (sharedText.contains('saavn')) {
+    final RegExpMatch? songResult =
+        RegExp(r'.*saavn.com.*?\/(song)\/.*?\/(.*)').firstMatch('$sharedText?');
+    if (songResult != null) {
+      // print('Its a song');
+      Navigator.push(
+        context,
+        PageRouteBuilder(
+          opaque: false,
+          pageBuilder: (_, __, ___) => SaavnUrlHandler(
+            token: songResult[2]!,
+            type: songResult[1]!,
+          ),
+        ),
+      );
+    } else {
+      final RegExpMatch? playlistResult =
+          RegExp(r'.*saavn.com\/?s?\/(featured|playlist|album)\/.*\/(.*_)?[?/]')
+              .firstMatch('$sharedText?');
+      if (playlistResult != null) {
+        // print('Its a ${playlistResult[1]} with id: ${splaylistResult[2]!}');
+        Navigator.push(
+          context,
+          PageRouteBuilder(
+            opaque: false,
+            pageBuilder: (_, __, ___) => SaavnUrlHandler(
+              token: playlistResult[2]!,
+              type: playlistResult[1]!,
+            ),
+          ),
+        );
+      }
     }
+  } else if (sharedText.contains('spotify')) {
+    // print('it is a spotify link');
+  } else if (sharedText.contains('youtube')) {
+    // print('it is a youtube link');
   }
 }
