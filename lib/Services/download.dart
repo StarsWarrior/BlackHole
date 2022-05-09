@@ -168,88 +168,94 @@ class Download with ChangeNotifier {
                         bool rememberValue,
                         Widget? child,
                       ) {
-                        return Row(
-                          children: [
-                            Checkbox(
-                              activeColor:
-                                  Theme.of(context).colorScheme.secondary,
-                              value: rememberValue,
-                              onChanged: (bool? value) {
-                                remember.value = value ?? false;
-                              },
-                            ),
-                            Text(
-                              AppLocalizations.of(context)!.rememberChoice,
-                            ),
-                          ],
+                        return SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            children: [
+                              Checkbox(
+                                activeColor:
+                                    Theme.of(context).colorScheme.secondary,
+                                value: rememberValue,
+                                onChanged: (bool? value) {
+                                  remember.value = value ?? false;
+                                },
+                              ),
+                              Text(
+                                AppLocalizations.of(context)!.rememberChoice,
+                              ),
+                            ],
+                          ),
                         );
                       },
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        TextButton(
-                          style: TextButton.styleFrom(
-                            primary:
-                                Theme.of(context).brightness == Brightness.dark
-                                    ? Colors.white
-                                    : Colors.grey[700],
-                          ),
-                          onPressed: () {
-                            lastDownloadId = data['id'].toString();
-                            Navigator.pop(context);
-                            rememberOption = 0;
-                          },
-                          child: Text(
-                            AppLocalizations.of(context)!.no,
-                            style: const TextStyle(color: Colors.white),
-                          ),
-                        ),
-                        TextButton(
-                          style: TextButton.styleFrom(
-                            primary:
-                                Theme.of(context).brightness == Brightness.dark
-                                    ? Colors.white
-                                    : Colors.grey[700],
-                          ),
-                          onPressed: () async {
-                            Navigator.pop(context);
-                            Hive.box('downloads').delete(data['id']);
-                            downloadSong(context, dlPath, filename, data);
-                            rememberOption = 1;
-                          },
-                          child: Text(AppLocalizations.of(context)!.yesReplace),
-                        ),
-                        const SizedBox(width: 5.0),
-                        TextButton(
-                          style: TextButton.styleFrom(
-                            primary: Colors.white,
-                            backgroundColor:
-                                Theme.of(context).colorScheme.secondary,
-                          ),
-                          onPressed: () async {
-                            Navigator.pop(context);
-                            while (await File('$dlPath/$filename').exists()) {
-                              filename =
-                                  filename.replaceAll('.m4a', ' (1).m4a');
-                            }
-                            rememberOption = 2;
-                            downloadSong(context, dlPath, filename, data);
-                          },
-                          child: Text(
-                            AppLocalizations.of(context)!.yes,
-                            style: TextStyle(
-                              color: Theme.of(context).colorScheme.secondary ==
-                                      Colors.white
-                                  ? Colors.black
-                                  : null,
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          TextButton(
+                            style: TextButton.styleFrom(
+                              primary: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? Colors.white
+                                  : Colors.grey[700],
+                            ),
+                            onPressed: () {
+                              lastDownloadId = data['id'].toString();
+                              Navigator.pop(context);
+                              rememberOption = 0;
+                            },
+                            child: Text(
+                              AppLocalizations.of(context)!.no,
+                              style: const TextStyle(color: Colors.white),
                             ),
                           ),
-                        ),
-                        const SizedBox(
-                          width: 5,
-                        ),
-                      ],
+                          TextButton(
+                            style: TextButton.styleFrom(
+                              primary: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? Colors.white
+                                  : Colors.grey[700],
+                            ),
+                            onPressed: () async {
+                              Navigator.pop(context);
+                              Hive.box('downloads').delete(data['id']);
+                              downloadSong(context, dlPath, filename, data);
+                              rememberOption = 1;
+                            },
+                            child:
+                                Text(AppLocalizations.of(context)!.yesReplace),
+                          ),
+                          const SizedBox(width: 5.0),
+                          TextButton(
+                            style: TextButton.styleFrom(
+                              primary: Colors.white,
+                              backgroundColor:
+                                  Theme.of(context).colorScheme.secondary,
+                            ),
+                            onPressed: () async {
+                              Navigator.pop(context);
+                              while (await File('$dlPath/$filename').exists()) {
+                                filename =
+                                    filename.replaceAll('.m4a', ' (1).m4a');
+                              }
+                              rememberOption = 2;
+                              downloadSong(context, dlPath, filename, data);
+                            },
+                            child: Text(
+                              AppLocalizations.of(context)!.yes,
+                              style: TextStyle(
+                                color:
+                                    Theme.of(context).colorScheme.secondary ==
+                                            Colors.white
+                                        ? Colors.black
+                                        : null,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(),
+                        ],
+                      ),
                     ),
                   ],
                 ),
