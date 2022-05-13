@@ -21,7 +21,6 @@ import 'package:blackhole/APIs/api.dart';
 import 'package:blackhole/CustomWidgets/bouncy_sliver_scroll_view.dart';
 import 'package:blackhole/CustomWidgets/copy_clipboard.dart';
 import 'package:blackhole/CustomWidgets/download_button.dart';
-import 'package:blackhole/CustomWidgets/empty_screen.dart';
 import 'package:blackhole/CustomWidgets/gradient_containers.dart';
 import 'package:blackhole/CustomWidgets/like_button.dart';
 import 'package:blackhole/CustomWidgets/miniplayer.dart';
@@ -153,319 +152,325 @@ class _SongsListPageState extends State<SongsListPage> {
                   ? const Center(
                       child: CircularProgressIndicator(),
                     )
-                  : songList.isEmpty
-                      ? Column(
-                          children: [
-                            AppBar(
-                              backgroundColor: Theme.of(context).brightness ==
-                                      Brightness.dark
-                                  ? Colors.transparent
-                                  : Theme.of(context).colorScheme.secondary,
-                              elevation: 0,
+                  // : songList.isEmpty
+                  //     ? Column(
+                  //         children: [
+                  //           AppBar(
+                  //             backgroundColor: Theme.of(context).brightness ==
+                  //                     Brightness.dark
+                  //                 ? Colors.transparent
+                  //                 : Theme.of(context).colorScheme.secondary,
+                  //             elevation: 0,
+                  //           ),
+                  //           Expanded(
+                  //             child: emptyScreen(
+                  //               context,
+                  //               0,
+                  //               ':( ',
+                  //               100,
+                  //               AppLocalizations.of(context)!.sorry,
+                  //               60,
+                  //               AppLocalizations.of(context)!.resultsNotFound,
+                  //               20,
+                  //             ),
+                  //           ),
+                  //         ],
+                  //       )
+                  : BouncyImageSliverScrollView(
+                      scrollController: _scrollController,
+                      actions: [
+                        MultiDownloadButton(
+                          data: songList,
+                          playlistName:
+                              widget.listItem['title']?.toString() ?? 'Songs',
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.share_rounded),
+                          tooltip: AppLocalizations.of(context)!.share,
+                          onPressed: () {
+                            Share.share(
+                              widget.listItem['perma_url'].toString(),
+                            );
+                          },
+                        ),
+                        PlaylistPopupMenu(
+                          data: songList,
+                          title:
+                              widget.listItem['title']?.toString() ?? 'Songs',
+                        ),
+                      ],
+                      title: unescape.convert(
+                        widget.listItem['title']?.toString() ?? 'Songs',
+                      ),
+                      placeholderImage: 'assets/album.png',
+                      imageUrl: widget.listItem['image']
+                          ?.toString()
+                          .replaceAll('http:', 'https:')
+                          .replaceAll(
+                            '50x50',
+                            '500x500',
+                          )
+                          .replaceAll(
+                            '150x150',
+                            '500x500',
+                          ),
+                      sliverList: SliverList(
+                        delegate: SliverChildListDelegate([
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 20.0,
                             ),
-                            Expanded(
-                              child: emptyScreen(
-                                context,
-                                0,
-                                ':( ',
-                                100,
-                                AppLocalizations.of(context)!.sorry,
-                                60,
-                                AppLocalizations.of(context)!.resultsNotFound,
-                                20,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Expanded(
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        PageRouteBuilder(
+                                          opaque: false,
+                                          pageBuilder: (_, __, ___) =>
+                                              PlayScreen(
+                                            songsList: songList,
+                                            index: 0,
+                                            offline: false,
+                                            fromDownloads: false,
+                                            fromMiniplayer: false,
+                                            recommend: true,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                    child: Container(
+                                      margin: const EdgeInsets.only(
+                                        top: 10,
+                                        bottom: 10,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(100.0),
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .secondary,
+                                        // color: Colors.white,
+                                        boxShadow: const [
+                                          BoxShadow(
+                                            color: Colors.black26,
+                                            blurRadius: 5.0,
+                                            offset: Offset(0.0, 3.0),
+                                          )
+                                        ],
+                                      ),
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 25.0,
+                                          vertical: 10.0,
+                                        ),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Icon(
+                                              Icons.play_arrow_rounded,
+                                              color: Theme.of(context)
+                                                          .colorScheme
+                                                          .secondary ==
+                                                      Colors.white
+                                                  ? Colors.black
+                                                  : Colors.white,
+                                              size: 26.0,
+                                            ),
+                                            const SizedBox(width: 5.0),
+                                            Text(
+                                              AppLocalizations.of(context)!
+                                                  .play,
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 18.0,
+                                                color: Theme.of(context)
+                                                            .colorScheme
+                                                            .secondary ==
+                                                        Colors.white
+                                                    ? Colors.black
+                                                    : Colors.white,
+                                              ),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                            const SizedBox(width: 10.0),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 20),
+                                Expanded(
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      final List tempList = List.from(songList);
+                                      tempList.shuffle();
+                                      Navigator.push(
+                                        context,
+                                        PageRouteBuilder(
+                                          opaque: false,
+                                          pageBuilder: (_, __, ___) =>
+                                              PlayScreen(
+                                            songsList: tempList,
+                                            index: 0,
+                                            offline: false,
+                                            fromDownloads: false,
+                                            fromMiniplayer: false,
+                                            recommend: true,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                    child: Container(
+                                      margin: const EdgeInsets.only(
+                                        top: 10,
+                                        bottom: 10,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(100.0),
+                                        border: Border.all(
+                                          color: Theme.of(context).brightness ==
+                                                  Brightness.dark
+                                              ? Colors.white
+                                              : Colors.black,
+                                        ),
+                                        // boxShadow: const [
+                                        //   BoxShadow(
+                                        //     color: Colors.black26,
+                                        //     blurRadius: 5.0,
+                                        //     offset: Offset(0.0, 3.0),
+                                        //   )
+                                        // ],
+                                      ),
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 25.0,
+                                          vertical: 10.0,
+                                        ),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Icon(
+                                              Icons.shuffle_rounded,
+                                              color: Theme.of(context)
+                                                          .brightness ==
+                                                      Brightness.dark
+                                                  ? Colors.white
+                                                  : Colors.black,
+                                              size: 24.0,
+                                            ),
+                                            const SizedBox(width: 5.0),
+                                            Text(
+                                              AppLocalizations.of(context)!
+                                                  .shuffle,
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 18.0,
+                                                color: Theme.of(context)
+                                                            .brightness ==
+                                                        Brightness.dark
+                                                    ? Colors.white
+                                                    : Colors.black,
+                                              ),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          ...songList.map((entry) {
+                            return ListTile(
+                              contentPadding: const EdgeInsets.only(left: 15.0),
+                              title: Text(
+                                '${entry["title"]}',
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                ),
                               ),
-                            ),
-                          ],
-                        )
-                      : BouncyImageSliverScrollView(
-                          scrollController: _scrollController,
-                          actions: [
-                            MultiDownloadButton(
-                              data: songList,
-                              playlistName:
-                                  widget.listItem['title']?.toString() ??
-                                      'Songs',
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.share_rounded),
-                              tooltip: AppLocalizations.of(context)!.share,
-                              onPressed: () {
-                                Share.share(
-                                  widget.listItem['perma_url'].toString(),
+                              onLongPress: () {
+                                copyToClipboard(
+                                  context: context,
+                                  text: '${entry["title"]}',
                                 );
                               },
-                            ),
-                            PlaylistPopupMenu(
-                              data: songList,
-                              title: widget.listItem['title']?.toString() ??
-                                  'Songs',
-                            ),
-                          ],
-                          title: unescape.convert(
-                            widget.listItem['title']?.toString() ?? 'Songs',
-                          ),
-                          placeholderImage: 'assets/album.png',
-                          imageUrl: widget.listItem['image']
-                              ?.toString()
-                              .replaceAll('http:', 'https:')
-                              .replaceAll(
-                                '50x50',
-                                '500x500',
-                              )
-                              .replaceAll(
-                                '150x150',
-                                '500x500',
+                              subtitle: Text(
+                                '${entry["subtitle"]}',
+                                overflow: TextOverflow.ellipsis,
                               ),
-                          sliverList: SliverList(
-                            delegate: SliverChildListDelegate([
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 20.0,
+                              leading: Card(
+                                elevation: 8,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(7.0),
                                 ),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    Expanded(
-                                      child: GestureDetector(
-                                        onTap: () {
-                                          Navigator.push(
-                                            context,
-                                            PageRouteBuilder(
-                                              opaque: false,
-                                              pageBuilder: (_, __, ___) =>
-                                                  PlayScreen(
-                                                songsList: songList,
-                                                index: 0,
-                                                offline: false,
-                                                fromDownloads: false,
-                                                fromMiniplayer: false,
-                                                recommend: true,
-                                              ),
-                                            ),
-                                          );
-                                        },
-                                        child: Container(
-                                          margin: const EdgeInsets.only(
-                                            top: 10,
-                                            bottom: 10,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(100.0),
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .secondary,
-                                            // color: Colors.white,
-                                            boxShadow: const [
-                                              BoxShadow(
-                                                color: Colors.black26,
-                                                blurRadius: 5.0,
-                                                offset: Offset(0.0, 3.0),
-                                              )
-                                            ],
-                                          ),
-                                          child: Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 25.0,
-                                              vertical: 10.0,
-                                            ),
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                Icon(
-                                                  Icons.play_arrow_rounded,
-                                                  color: Theme.of(context)
-                                                              .colorScheme
-                                                              .secondary ==
-                                                          Colors.white
-                                                      ? Colors.black
-                                                      : Colors.white,
-                                                  size: 26.0,
-                                                ),
-                                                const SizedBox(width: 5.0),
-                                                Text(
-                                                  AppLocalizations.of(context)!
-                                                      .play,
-                                                  style: TextStyle(
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 18.0,
-                                                    color: Theme.of(context)
-                                                                .colorScheme
-                                                                .secondary ==
-                                                            Colors.white
-                                                        ? Colors.black
-                                                        : Colors.white,
-                                                  ),
-                                                  textAlign: TextAlign.center,
-                                                ),
-                                                const SizedBox(width: 10.0),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      ),
+                                clipBehavior: Clip.antiAlias,
+                                child: CachedNetworkImage(
+                                  fit: BoxFit.cover,
+                                  errorWidget: (context, _, __) => const Image(
+                                    fit: BoxFit.cover,
+                                    image: AssetImage(
+                                      'assets/cover.jpg',
                                     ),
-                                    const SizedBox(width: 20),
-                                    Expanded(
-                                      child: GestureDetector(
-                                        onTap: () {
-                                          final List tempList =
-                                              List.from(songList);
-                                          tempList.shuffle();
-                                          Navigator.push(
-                                            context,
-                                            PageRouteBuilder(
-                                              opaque: false,
-                                              pageBuilder: (_, __, ___) =>
-                                                  PlayScreen(
-                                                songsList: tempList,
-                                                index: 0,
-                                                offline: false,
-                                                fromDownloads: false,
-                                                fromMiniplayer: false,
-                                                recommend: true,
-                                              ),
-                                            ),
-                                          );
-                                        },
-                                        child: Container(
-                                          margin: const EdgeInsets.only(
-                                            top: 10,
-                                            bottom: 10,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(100.0),
-                                            border:
-                                                Border.all(color: Colors.white),
-                                            boxShadow: const [
-                                              BoxShadow(
-                                                color: Colors.black26,
-                                                blurRadius: 5.0,
-                                                offset: Offset(0.0, 3.0),
-                                              )
-                                            ],
-                                          ),
-                                          child: Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 25.0,
-                                              vertical: 10.0,
-                                            ),
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                const Icon(
-                                                  Icons.shuffle_rounded,
-                                                  color: Colors.white,
-                                                  size: 24.0,
-                                                ),
-                                                const SizedBox(width: 5.0),
-                                                Text(
-                                                  AppLocalizations.of(context)!
-                                                      .shuffle,
-                                                  style: const TextStyle(
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 18.0,
-                                                    color: Colors.white,
-                                                  ),
-                                                  textAlign: TextAlign.center,
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      ),
+                                  ),
+                                  imageUrl:
+                                      '${entry["image"].replaceAll('http:', 'https:')}',
+                                  placeholder: (context, url) => const Image(
+                                    fit: BoxFit.cover,
+                                    image: AssetImage(
+                                      'assets/cover.jpg',
                                     ),
-                                  ],
+                                  ),
                                 ),
                               ),
-                              ...songList.map((entry) {
-                                return ListTile(
-                                  contentPadding:
-                                      const EdgeInsets.only(left: 15.0),
-                                  title: Text(
-                                    '${entry["title"]}',
-                                    overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.w500,
+                              trailing: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  DownloadButton(
+                                    data: entry as Map,
+                                    icon: 'download',
+                                  ),
+                                  LikeButton(
+                                    mediaItem: null,
+                                    data: entry,
+                                  ),
+                                  SongTileTrailingMenu(data: entry),
+                                ],
+                              ),
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  PageRouteBuilder(
+                                    opaque: false,
+                                    pageBuilder: (_, __, ___) => PlayScreen(
+                                      songsList: songList,
+                                      index: songList.indexWhere(
+                                        (element) => element == entry,
+                                      ),
+                                      offline: false,
+                                      fromDownloads: false,
+                                      fromMiniplayer: false,
+                                      recommend: true,
                                     ),
                                   ),
-                                  onLongPress: () {
-                                    copyToClipboard(
-                                      context: context,
-                                      text: '${entry["title"]}',
-                                    );
-                                  },
-                                  subtitle: Text(
-                                    '${entry["subtitle"]}',
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  leading: Card(
-                                    elevation: 8,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(7.0),
-                                    ),
-                                    clipBehavior: Clip.antiAlias,
-                                    child: CachedNetworkImage(
-                                      fit: BoxFit.cover,
-                                      errorWidget: (context, _, __) =>
-                                          const Image(
-                                        fit: BoxFit.cover,
-                                        image: AssetImage(
-                                          'assets/cover.jpg',
-                                        ),
-                                      ),
-                                      imageUrl:
-                                          '${entry["image"].replaceAll('http:', 'https:')}',
-                                      placeholder: (context, url) =>
-                                          const Image(
-                                        fit: BoxFit.cover,
-                                        image: AssetImage(
-                                          'assets/cover.jpg',
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  trailing: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      DownloadButton(
-                                        data: entry as Map,
-                                        icon: 'download',
-                                      ),
-                                      LikeButton(
-                                        mediaItem: null,
-                                        data: entry,
-                                      ),
-                                      SongTileTrailingMenu(data: entry),
-                                    ],
-                                  ),
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      PageRouteBuilder(
-                                        opaque: false,
-                                        pageBuilder: (_, __, ___) => PlayScreen(
-                                          songsList: songList,
-                                          index: songList.indexWhere(
-                                            (element) => element == entry,
-                                          ),
-                                          offline: false,
-                                          fromDownloads: false,
-                                          fromMiniplayer: false,
-                                          recommend: true,
-                                        ),
-                                      ),
-                                    );
-                                  },
                                 );
-                              }).toList()
-                            ]),
-                          ),
-                        ),
+                              },
+                            );
+                          }).toList()
+                        ]),
+                      ),
+                    ),
             ),
           ),
           const MiniPlayer(),

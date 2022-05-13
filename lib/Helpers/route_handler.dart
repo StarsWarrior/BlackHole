@@ -24,44 +24,51 @@ import 'package:blackhole/Screens/Player/audioplayer.dart';
 import 'package:flutter/material.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 
+// ignore: avoid_classes_with_only_static_members
 class HandleRoute {
-  Route? handleRoute(String? url) {
-    final RegExpMatch? songResult =
-        RegExp(r'.*saavn.com.*?\/(song)\/.*?\/(.*)').firstMatch('$url?');
-    if (songResult != null) {
-      return PageRouteBuilder(
-        opaque: false,
-        pageBuilder: (_, __, ___) => SaavnUrlHandler(
-          token: songResult[2]!,
-          type: songResult[1]!,
-        ),
-      );
-    } else {
-      final RegExpMatch? playlistResult =
-          RegExp(r'.*saavn.com\/?s?\/(featured|playlist|album)\/.*\/(.*_)?[?/]')
-              .firstMatch('$url?');
-      if (playlistResult != null) {
+  static Route? handleRoute(String? url) {
+    if (url == null) return null;
+    if (url.contains('saavn')) {
+      final RegExpMatch? songResult =
+          RegExp(r'.*saavn.com.*?\/(song)\/.*?\/(.*)').firstMatch('$url?');
+      if (songResult != null) {
         return PageRouteBuilder(
           opaque: false,
           pageBuilder: (_, __, ___) => SaavnUrlHandler(
-            token: playlistResult[2]!,
-            type: playlistResult[1]!,
+            token: songResult[2]!,
+            type: songResult[1]!,
           ),
         );
       } else {
-        final RegExpMatch? fileResult =
-            RegExp(r'\/[0-9]+\/([0-9]+)\/').firstMatch('$url/');
-        if (fileResult != null) {
+        final RegExpMatch? playlistResult = RegExp(
+          r'.*saavn.com\/?s?\/(featured|playlist|album)\/.*\/(.*_)?[?/]',
+        ).firstMatch('$url?');
+        if (playlistResult != null) {
           return PageRouteBuilder(
             opaque: false,
-            pageBuilder: (_, __, ___) => OfflinePlayHandler(
-              id: fileResult[1]!,
+            pageBuilder: (_, __, ___) => SaavnUrlHandler(
+              token: playlistResult[2]!,
+              type: playlistResult[1]!,
             ),
           );
         }
       }
+    } else if (url.contains('spotify')) {
+      // print('it is a spotify link');
+    } else if (url.contains('youtube')) {
+      // print('it is a youtube link');
+    } else {
+      final RegExpMatch? fileResult =
+          RegExp(r'\/[0-9]+\/([0-9]+)\/').firstMatch('$url/');
+      if (fileResult != null) {
+        return PageRouteBuilder(
+          opaque: false,
+          pageBuilder: (_, __, ___) => OfflinePlayHandler(
+            id: fileResult[1]!,
+          ),
+        );
+      }
     }
-
     return null;
   }
 }

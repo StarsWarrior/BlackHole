@@ -603,6 +603,32 @@ class _LikedSongsState extends State<LikedSongs>
                           ),
                         ],
                       ),
+                floatingActionButton: FloatingActionButton(
+                  backgroundColor: Theme.of(context).cardColor,
+                  onPressed: () {
+                    if (_songs.isNotEmpty) {
+                      final tempList = _songs.toList();
+                      tempList.shuffle();
+                      Navigator.of(context).push(
+                        PageRouteBuilder(
+                          opaque: false,
+                          pageBuilder: (_, __, ___) => PlayScreen(
+                            songsList: tempList,
+                            index: 0,
+                            offline: false,
+                            fromMiniplayer: false,
+                            fromDownloads: false,
+                            recommend: false,
+                          ),
+                        ),
+                      );
+                    }
+                  },
+                  child: Icon(
+                    Icons.shuffle_rounded,
+                    color: Theme.of(context).iconTheme.color,
+                  ),
+                ),
               ),
             ),
           ),

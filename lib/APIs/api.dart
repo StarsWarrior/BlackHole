@@ -520,12 +520,18 @@ class SaavnAPI {
       final res = await getResponse(params);
       if (res.statusCode == 200) {
         final getMain = json.decode(res.body);
-        final List responseList = getMain['list'] as List;
+        if (getMain['list'] != '') {
+          final List responseList = getMain['list'] as List;
+          return {
+            'songs': await FormatResponse.formatSongsResponse(
+              responseList,
+              'playlist',
+            ),
+            'error': '',
+          };
+        }
         return {
-          'songs': await FormatResponse.formatSongsResponse(
-            responseList,
-            'playlist',
-          ),
+          'songs': List.empty(),
           'error': '',
         };
       } else {

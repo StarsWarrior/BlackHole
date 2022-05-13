@@ -186,6 +186,9 @@ class _MultiDownloadButtonState extends State<MultiDownloadButton> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.data.isEmpty) {
+      return const SizedBox();
+    }
     return SizedBox(
       width: 50,
       height: 50,
@@ -207,7 +210,6 @@ class _MultiDownloadButtonState extends State<MultiDownloadButton> {
                         Icons.download_rounded,
                       ),
                       iconSize: 25.0,
-                      color: Theme.of(context).iconTheme.color,
                       tooltip: AppLocalizations.of(context)!.down,
                       onPressed: () async {
                         for (final items in widget.data) {

@@ -135,6 +135,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   Locale _locale = const Locale('en', '');
   late StreamSubscription _intentDataStreamSubscription;
+  final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
   @override
   void dispose() {
@@ -173,7 +174,7 @@ class _MyAppState extends State<MyApp> {
     // For sharing or opening urls/text coming from outside the app while the app is in the memory
     _intentDataStreamSubscription = ReceiveSharingIntent.getTextStream().listen(
       (String value) {
-        handleSharedText(value, context);
+        handleSharedText(value, navigatorKey);
       },
       onError: (err) {
         // print("ERROR in getTextStream: $err");
@@ -183,7 +184,7 @@ class _MyAppState extends State<MyApp> {
     // For sharing or opening urls/text coming from outside the app while the app is closed
     ReceiveSharingIntent.getInitialText().then(
       (String? value) {
-        if (value != null) handleSharedText(value, context);
+        if (value != null) handleSharedText(value, navigatorKey);
       },
     );
   }
@@ -268,8 +269,9 @@ class _MyAppState extends State<MyApp> {
         '/recent': (context) => RecentlyPlayed(),
         '/downloads': (context) => const Downloads(),
       },
+      navigatorKey: navigatorKey,
       onGenerateRoute: (RouteSettings settings) {
-        return HandleRoute().handleRoute(settings.name);
+        return HandleRoute.handleRoute(settings.name);
       },
     );
   }
