@@ -164,6 +164,7 @@ class _MyAppState extends State<MyApp> {
       'Tamil': 'ta',
       'Turkish': 'tr',
       'Ukrainian': 'uk',
+      'Urdu': 'ur',
     };
     _locale = Locale(codes[lang]!);
 
@@ -258,6 +259,7 @@ class _MyAppState extends State<MyApp> {
         Locale('ta', ''), // Tamil
         Locale('tr', ''), // Turkish
         Locale('uk', ''), // Ukrainian
+        Locale('ur', ''), // Urdu
       ],
       routes: {
         '/': (context) => initialFuntion(),
