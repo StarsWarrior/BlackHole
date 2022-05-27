@@ -658,5 +658,7 @@
   "resetOnSkip": "முந்தையதைக் கெந்தும்போது மீண்டுமியக்கு",
   "@resetOnSkip": {},
   "resetOnSkipSub": "முந்தைய பாடலுக்குக் கெந்துவதற்குப் பதிலாக மீண்டுமியக்கு",
-  "@resetOnSkipSub": {}
+  "@resetOnSkipSub": {},
+  "topCharts": "உச்ச தரவரிசை",
+  "@topCharts": {}
 }
