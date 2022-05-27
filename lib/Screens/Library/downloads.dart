@@ -34,6 +34,7 @@ import 'package:blackhole/Screens/Player/audioplayer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:hive/hive.dart';
 // import 'package:path_provider/path_provider.dart';
@@ -64,10 +65,20 @@ class _DownloadsState extends State<Downloads>
       Hive.box('settings').get('orderValue', defaultValue: 1) as int;
   int albumSortValue =
       Hive.box('settings').get('albumSortValue', defaultValue: 2) as int;
+  final ScrollController _scrollController = ScrollController();
+  final ValueNotifier<bool> _showShuffle = ValueNotifier<bool>(true);
 
   @override
   void initState() {
     _tcontroller = TabController(length: 4, vsync: this);
+    _scrollController.addListener(() {
+      if (_scrollController.position.userScrollDirection ==
+          ScrollDirection.reverse) {
+        _showShuffle.value = false;
+      } else {
+        _showShuffle.value = true;
+      }
+    });
     // _tcontroller!.addListener(changeTitle);
     // if (tempPath == null) {
     //   getTemporaryDirectory().then((value) {
@@ -82,6 +93,7 @@ class _DownloadsState extends State<Downloads>
   void dispose() {
     super.dispose();
     _tcontroller!.dispose();
+    _scrollController.dispose();
   }
 
   // void changeTitle() {
@@ -474,6 +486,7 @@ class _DownloadsState extends State<Downloads>
                               deleteSong(item);
                             },
                             songs: _songs,
+                            scrollController: _scrollController,
                           ),
                           AlbumsTab(
                             albums: _albums,
@@ -496,6 +509,79 @@ class _DownloadsState extends State<Downloads>
                           ),
                         ],
                       ),
+                floatingActionButton: Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).cardColor,
+                    borderRadius: BorderRadius.circular(100.0),
+                  ),
+                  child: GestureDetector(
+                    onTap: () {
+                      if (_songs.isNotEmpty) {
+                        final tempList = _songs.toList();
+                        tempList.shuffle();
+                        Navigator.of(context).push(
+                          PageRouteBuilder(
+                            opaque: false,
+                            pageBuilder: (_, __, ___) => PlayScreen(
+                              songsList: tempList,
+                              index: 0,
+                              offline: true,
+                              fromMiniplayer: false,
+                              fromDownloads: true,
+                              recommend: false,
+                            ),
+                          ),
+                        );
+                      }
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: AnimatedSize(
+                        duration: const Duration(milliseconds: 200),
+                        child: ValueListenableBuilder<bool>(
+                          valueListenable: _showShuffle,
+                          builder: (
+                            BuildContext context,
+                            bool _showFullShuffle,
+                            Widget? child,
+                          ) {
+                            return Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.shuffle_rounded,
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? Colors.white
+                                      : Colors.black,
+                                  size: 24.0,
+                                ),
+                                if (_showFullShuffle)
+                                  const SizedBox(width: 5.0),
+                                if (_showFullShuffle)
+                                  Text(
+                                    AppLocalizations.of(context)!.shuffle,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18.0,
+                                      color: Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? Colors.white
+                                          : Colors.black,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                if (_showFullShuffle)
+                                  const SizedBox(width: 2.5),
+                              ],
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
               ),
             ),
           ),
@@ -799,10 +885,12 @@ Future<Map> editTags(Map song, BuildContext context) async {
 class DownSongsTab extends StatefulWidget {
   final List songs;
   final Function(Map item) onDelete;
+  final ScrollController scrollController;
   const DownSongsTab({
     Key? key,
     required this.songs,
     required this.onDelete,
+    required this.scrollController,
   }) : super(key: key);
 
   @override
@@ -859,6 +947,7 @@ class _DownSongsTabState extends State<DownSongsTab>
               ),
               Expanded(
                 child: ListView.builder(
+                  controller: widget.scrollController,
                   physics: const BouncingScrollPhysics(),
                   padding: const EdgeInsets.only(bottom: 10),
                   shrinkWrap: true,

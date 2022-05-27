@@ -32,6 +32,7 @@ import 'package:blackhole/Screens/Player/audioplayer.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:hive/hive.dart';
 // import 'package:path_provider/path_provider.dart';
@@ -64,6 +65,8 @@ class _LikedSongsState extends State<LikedSongs>
       Hive.box('settings').get('orderValue', defaultValue: 1) as int;
   int albumSortValue =
       Hive.box('settings').get('albumSortValue', defaultValue: 2) as int;
+  final ScrollController _scrollController = ScrollController();
+  final ValueNotifier<bool> _showShuffle = ValueNotifier<bool>(true);
 
   Future<void> main() async {
     WidgetsFlutterBinding.ensureInitialized();
@@ -72,6 +75,14 @@ class _LikedSongsState extends State<LikedSongs>
   @override
   void initState() {
     _tcontroller = TabController(length: 4, vsync: this);
+    _scrollController.addListener(() {
+      if (_scrollController.position.userScrollDirection ==
+          ScrollDirection.reverse) {
+        _showShuffle.value = false;
+      } else {
+        _showShuffle.value = true;
+      }
+    });
     // if (tempPath == null) {
     //   getTemporaryDirectory().then((value) {
     //     Hive.box('settings').put('tempDirPath', value.path);
@@ -86,6 +97,7 @@ class _LikedSongsState extends State<LikedSongs>
   void dispose() {
     super.dispose();
     _tcontroller!.dispose();
+    _scrollController.dispose();
   }
 
   // void changeTitle() {
@@ -456,114 +468,6 @@ class _LikedSongsState extends State<LikedSongs>
                               .toList(),
                         );
                         return menuList;
-                        //       : (context) => [
-                        //             PopupMenuItem(
-                        //               value: 0,
-                        //               child: Row(
-                        //                 children: [
-                        //                   if (albumSortValue == 0)
-                        //                     Icon(
-                        //                       Icons.check_rounded,
-                        //                       color: Theme.of(context).brightness ==
-                        //                               Brightness.dark
-                        //                           ? Colors.white
-                        //                           : Colors.grey[700],
-                        //                     )
-                        //                   else
-                        //                     const SizedBox(),
-                        //                   const SizedBox(width: 10),
-                        //                   Text(
-                        //                     AppLocalizations.of(context)!.az,
-                        //                   ),
-                        //                 ],
-                        //               ),
-                        //             ),
-                        //             PopupMenuItem(
-                        //               value: 1,
-                        //               child: Row(
-                        //                 children: [
-                        //                   if (albumSortValue == 1)
-                        //                     Icon(
-                        //                       Icons.check_rounded,
-                        //                       color: Theme.of(context).brightness ==
-                        //                               Brightness.dark
-                        //                           ? Colors.white
-                        //                           : Colors.grey[700],
-                        //                     )
-                        //                   else
-                        //                     const SizedBox(),
-                        //                   const SizedBox(width: 10),
-                        //                   Text(
-                        //                     AppLocalizations.of(context)!.za,
-                        //                   ),
-                        //                 ],
-                        //               ),
-                        //             ),
-                        //             PopupMenuItem(
-                        //               value: 2,
-                        //               child: Row(
-                        //                 children: [
-                        //                   if (albumSortValue == 2)
-                        //                     Icon(
-                        //                       Icons.check_rounded,
-                        //                       color: Theme.of(context).brightness ==
-                        //                               Brightness.dark
-                        //                           ? Colors.white
-                        //                           : Colors.grey[700],
-                        //                     )
-                        //                   else
-                        //                     const SizedBox(),
-                        //                   const SizedBox(width: 10),
-                        //                   Text(
-                        //                     AppLocalizations.of(context)!.tenToOne,
-                        //                   ),
-                        //                 ],
-                        //               ),
-                        //             ),
-                        //             PopupMenuItem(
-                        //               value: 3,
-                        //               child: Row(
-                        //                 children: [
-                        //                   if (albumSortValue == 3)
-                        //                     Icon(
-                        //                       Icons.check_rounded,
-                        //                       color: Theme.of(context).brightness ==
-                        //                               Brightness.dark
-                        //                           ? Colors.white
-                        //                           : Colors.grey[700],
-                        //                     )
-                        //                   else
-                        //                     const SizedBox(),
-                        //                   const SizedBox(width: 10),
-                        //                   Text(
-                        //                     AppLocalizations.of(context)!.oneToTen,
-                        //                   ),
-                        //                 ],
-                        //               ),
-                        //             ),
-                        //             PopupMenuItem(
-                        //               value: 4,
-                        //               child: Row(
-                        //                 children: [
-                        //                   if (albumSortValue == 4)
-                        //                     Icon(
-                        //                       Icons.shuffle_rounded,
-                        //                       color: Theme.of(context).brightness ==
-                        //                               Brightness.dark
-                        //                           ? Colors.white
-                        //                           : Colors.grey[700],
-                        //                     )
-                        //                   else
-                        //                     const SizedBox(),
-                        //                   const SizedBox(width: 10),
-                        //                   Text(
-                        //                     AppLocalizations.of(context)!.shuffle,
-                        //                   ),
-                        //                 ],
-                        //               ),
-                        //             ),
-                        //           ],
-                        // ),
                       },
                     ),
                   ],
@@ -582,6 +486,7 @@ class _LikedSongsState extends State<LikedSongs>
                               deleteLiked(item);
                             },
                             playlistName: widget.playlistName,
+                            scrollController: _scrollController,
                           ),
                           AlbumsTab(
                             albums: _albums,
@@ -603,30 +508,77 @@ class _LikedSongsState extends State<LikedSongs>
                           ),
                         ],
                       ),
-                floatingActionButton: FloatingActionButton(
-                  backgroundColor: Theme.of(context).cardColor,
-                  onPressed: () {
-                    if (_songs.isNotEmpty) {
-                      final tempList = _songs.toList();
-                      tempList.shuffle();
-                      Navigator.of(context).push(
-                        PageRouteBuilder(
-                          opaque: false,
-                          pageBuilder: (_, __, ___) => PlayScreen(
-                            songsList: tempList,
-                            index: 0,
-                            offline: false,
-                            fromMiniplayer: false,
-                            fromDownloads: false,
-                            recommend: false,
+                floatingActionButton: Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).cardColor,
+                    borderRadius: BorderRadius.circular(100.0),
+                  ),
+                  child: GestureDetector(
+                    onTap: () {
+                      if (_songs.isNotEmpty) {
+                        final tempList = _songs.toList();
+                        tempList.shuffle();
+                        Navigator.of(context).push(
+                          PageRouteBuilder(
+                            opaque: false,
+                            pageBuilder: (_, __, ___) => PlayScreen(
+                              songsList: tempList,
+                              index: 0,
+                              offline: false,
+                              fromMiniplayer: false,
+                              fromDownloads: false,
+                              recommend: false,
+                            ),
                           ),
+                        );
+                      }
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: AnimatedSize(
+                        duration: const Duration(milliseconds: 200),
+                        child: ValueListenableBuilder<bool>(
+                          valueListenable: _showShuffle,
+                          builder: (
+                            BuildContext context,
+                            bool _showFullShuffle,
+                            Widget? child,
+                          ) {
+                            return Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.shuffle_rounded,
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? Colors.white
+                                      : Colors.black,
+                                  size: 24.0,
+                                ),
+                                if (_showFullShuffle)
+                                  const SizedBox(width: 5.0),
+                                if (_showFullShuffle)
+                                  Text(
+                                    AppLocalizations.of(context)!.shuffle,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18.0,
+                                      color: Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? Colors.white
+                                          : Colors.black,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                if (_showFullShuffle)
+                                  const SizedBox(width: 2.5),
+                              ],
+                            );
+                          },
                         ),
-                      );
-                    }
-                  },
-                  child: Icon(
-                    Icons.shuffle_rounded,
-                    color: Theme.of(context).iconTheme.color,
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -643,11 +595,13 @@ class SongsTab extends StatefulWidget {
   final List songs;
   final String playlistName;
   final Function(Map item) onDelete;
+  final ScrollController scrollController;
   const SongsTab({
     Key? key,
     required this.songs,
     required this.onDelete,
     required this.playlistName,
+    required this.scrollController,
   }) : super(key: key);
 
   @override
@@ -682,6 +636,7 @@ class _SongsTabState extends State<SongsTab>
               ),
               Expanded(
                 child: ListView.builder(
+                  controller: widget.scrollController,
                   physics: const BouncingScrollPhysics(),
                   padding: const EdgeInsets.only(bottom: 10),
                   shrinkWrap: true,

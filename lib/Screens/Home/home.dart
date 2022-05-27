@@ -483,7 +483,7 @@ class _HomePageState extends State<HomePage> {
                     builder:
                         (BuildContext context, int indexValue, Widget? child) {
                       return NavigationRail(
-                        minWidth: 56.0,
+                        minWidth: 70.0,
                         groupAlignment: 0.0,
                         backgroundColor:
                             // Colors.transparent,
@@ -507,6 +507,10 @@ class _HomePageState extends State<HomePage> {
                             ),
                         unselectedIconTheme: Theme.of(context).iconTheme,
                         useIndicator: screenWidth < 1050,
+                        indicatorColor: Theme.of(context)
+                            .colorScheme
+                            .secondary
+                            .withOpacity(0.2),
                         leading: screenWidth > 1050
                             ? null
                             : Builder(
@@ -533,7 +537,7 @@ class _HomePageState extends State<HomePage> {
                           NavigationRailDestination(
                             icon: const Icon(Icons.trending_up_rounded),
                             label: Text(
-                              AppLocalizations.of(context)!.spotifyCharts,
+                              AppLocalizations.of(context)!.topCharts,
                             ),
                           ),
                           NavigationRailDestination(
@@ -882,7 +886,7 @@ class _HomePageState extends State<HomePage> {
                           SalomonBottomBarItem(
                             icon: const Icon(Icons.trending_up_rounded),
                             title: Text(
-                              AppLocalizations.of(context)!.spotifyCharts,
+                              AppLocalizations.of(context)!.topCharts,
                             ),
                             selectedColor:
                                 Theme.of(context).colorScheme.secondary,

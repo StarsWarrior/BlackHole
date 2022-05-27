@@ -54,9 +54,23 @@ class HandleRoute {
         }
       }
     } else if (url.contains('spotify')) {
+      // TODO: Add support for spotify links
       // print('it is a spotify link');
     } else if (url.contains('youtube')) {
-      // print('it is a youtube link');
+      // TODO: Add support for youtube links
+      // print('it is an youtube link');
+      final RegExpMatch? videoId =
+          RegExp(r'.*\.com\/watch\?v=(.*)\?').firstMatch('$url?');
+      if (videoId != null) {
+        // TODO: Extract audio data and play audio
+        // return PageRouteBuilder(
+        //   opaque: false,
+        //   pageBuilder: (_, __, ___) => YtUrlHandler(
+        //     id: songResult[1]!,
+        //     type: song,
+        //   ),
+        // );
+      }
     } else {
       final RegExpMatch? fileResult =
           RegExp(r'\/[0-9]+\/([0-9]+)\/').firstMatch('$url/');

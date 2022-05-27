@@ -17,6 +17,7 @@
  * Copyright (c) 2021-2022, Ankit Sangwan
  */
 
+import 'dart:developer';
 import 'dart:io';
 
 // import 'package:blackhole/CustomWidgets/add_playlist.dart';
@@ -100,23 +101,27 @@ class _DownloadedSongsDesktopState extends State<DownloadedSongsDesktop>
     final RegExp avoid = RegExp(r'[\.\\\*\:\"\?#/;\|]');
     for (final path in includedExcludedPaths) {
       final dir = Directory(path.toString());
-      final files = dir.listSync(recursive: true);
-      for (final file in files) {
-        if (file.path.endsWith('.mp3') || file.path.endsWith('.m4a')) {
-          _songs.add({
-            'id': file.path.replaceAll(avoid, '').replaceAll('  ', ' '),
-            'title':
-                (file.path.split('\\').last.split('.')..removeLast()).join(),
-            'artist': 'Unknown',
-            'album': 'Unknown',
-            'image': '',
-            'year': '',
-            'subtitle': file.path.split('\\').last,
-            'quality': '',
-            'genre': 'Unknown',
-            'path': file.path,
-          });
+      try {
+        final files = dir.listSync(recursive: true);
+        for (final file in files) {
+          if (file.path.endsWith('.mp3') || file.path.endsWith('.m4a')) {
+            _songs.add({
+              'id': file.path.replaceAll(avoid, '').replaceAll('  ', ' '),
+              'title':
+                  (file.path.split('\\').last.split('.')..removeLast()).join(),
+              'artist': 'Unknown',
+              'album': 'Unknown',
+              'image': '',
+              'year': '',
+              'subtitle': file.path.split('\\').last,
+              'quality': '',
+              'genre': 'Unknown',
+              'path': file.path,
+            });
+          }
         }
+      } catch (e) {
+        log('Failed to listSync "$path"');
       }
     }
   }
