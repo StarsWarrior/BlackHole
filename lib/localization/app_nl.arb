@@ -656,5 +656,7 @@
   "resetOnSkipSub": "Herhaal het huidige nummer in plaats van het vorige nummer af te spelen",
   "@resetOnSkipSub": {},
   "importJioSaavn": "Importeren uit JioSaavn",
-  "@importJioSaavn": {}
+  "@importJioSaavn": {},
+  "topCharts": "Hitlijsten",
+  "@topCharts": {}
 }
