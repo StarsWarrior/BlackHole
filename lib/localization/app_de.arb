@@ -658,5 +658,7 @@
   "playerScreenBackground": "Player-Bildschirmhintergrund",
   "@playerScreenBackground": {},
   "playerScreenBackgroundSub": "Der ausgewählte Hintergrund wird im Player-Bildschirm angezeigt",
-  "@playerScreenBackgroundSub": {}
+  "@playerScreenBackgroundSub": {},
+  "topCharts": "Top-Charts",
+  "@topCharts": {}
 }
