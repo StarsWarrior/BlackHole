@@ -658,5 +658,7 @@
   "resetOnSkip": "Rejouer quand on passe au précédent",
   "@resetOnSkip": {},
   "resetOnSkipSub": "Rejouer depuis le début au lieu de passer à la chanson précédente",
-  "@resetOnSkipSub": {}
+  "@resetOnSkipSub": {},
+  "topCharts": "Meilleurs classements",
+  "@topCharts": {}
 }
