@@ -582,23 +582,24 @@ class _SaavnHomePageState extends State<SaavnHomePage>
                                       if (value != null) {
                                         SaavnAPI()
                                             .getRadioSongs(stationId: value)
-                                            .then(
-                                              (value) => Navigator.push(
-                                                context,
-                                                PageRouteBuilder(
-                                                  opaque: false,
-                                                  pageBuilder: (_, __, ___) =>
-                                                      PlayScreen(
-                                                    songsList: value,
-                                                    index: 0,
-                                                    offline: false,
-                                                    fromDownloads: false,
-                                                    fromMiniplayer: false,
-                                                    recommend: true,
-                                                  ),
-                                                ),
+                                            .then((value) {
+                                          value.shuffle();
+                                          Navigator.push(
+                                            context,
+                                            PageRouteBuilder(
+                                              opaque: false,
+                                              pageBuilder: (_, __, ___) =>
+                                                  PlayScreen(
+                                                songsList: value,
+                                                index: 0,
+                                                offline: false,
+                                                fromDownloads: false,
+                                                fromMiniplayer: false,
+                                                recommend: true,
                                               ),
-                                            );
+                                            ),
+                                          );
+                                        });
                                       }
                                     });
                                   } else {

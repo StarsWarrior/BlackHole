@@ -405,6 +405,8 @@
   "@playerScreenBackgroundSub": {},
   "playNext": "Play Next",
   "@playNext": {},
+  "playRadio": "Play Radio",
+  "@playRadio": {},
   "playSomething": "Go and Play Something",
   "@playSomething": {},
   "playing": "Playing",

@@ -153,20 +153,26 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
 
         if (recommend && item.extras!['autoplay'] as bool) {
           Future.delayed(const Duration(seconds: 1), () async {
-            final List value = await SaavnAPI().getReco(item.id);
+            final List<MediaItem> _queue = queue.value;
+            final int index = _queue.indexOf(item);
+            final int queueLength = _queue.length;
+            if (queueLength - index > 2) {
+              await Future.delayed(const Duration(seconds: 10), () {});
+            }
+            if (item == mediaItem.value) {
+              final List value = await SaavnAPI().getReco(item.id);
+              value.shuffle();
+              // final List value = await SaavnAPI().getRadioSongs(
+              //     stationId: stationId!, count: queueLength - index - 20);
 
-            // final int index = queue.value.indexOf(item);
-            // final int queueLength = await queue.length;
-            // final List value = await SaavnAPI().getRadioSongs(
-            //     stationId: stationId!, count: queueLength - index - 20);
-
-            for (int i = 0; i < value.length; i++) {
-              final element = MediaItemConverter.mapToMediaItem(
-                value[i] as Map,
-                addedByAutoplay: true,
-              );
-              if (!queue.value.contains(element)) {
-                addQueueItem(element);
+              for (int i = 0; i < value.length; i++) {
+                final element = MediaItemConverter.mapToMediaItem(
+                  value[i] as Map,
+                  addedByAutoplay: true,
+                );
+                if (!_queue.contains(element)) {
+                  addQueueItem(element);
+                }
               }
             }
           });

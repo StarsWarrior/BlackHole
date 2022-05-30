@@ -137,8 +137,8 @@ class _SearchBarState extends State<SearchBar> {
                     onChanged: (val) {
                       if (widget.liveSearch) {
                         tempQuery = val;
+                        hide.value = false;
                         if (widget.isYt) {
-                          hide.value = false;
                           Future.delayed(
                             const Duration(
                               milliseconds: 400,

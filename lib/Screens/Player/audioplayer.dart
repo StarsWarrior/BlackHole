@@ -356,9 +356,10 @@ class _PlayScreenState extends State<PlayScreen> {
                   ),
                   actions: [
                     IconButton(
-                      icon: Image.asset(
-                        'assets/lyrics.png',
-                      ),
+                      icon: const Icon(Icons.lyrics_rounded),
+                      //     Image.asset(
+                      //   'assets/lyrics.png',
+                      // ),
                       tooltip: AppLocalizations.of(context)!.lyrics,
                       onPressed: () => cardKey.currentState!.toggleCard(),
                     ),

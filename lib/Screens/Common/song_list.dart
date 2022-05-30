@@ -264,7 +264,6 @@ class _SongsListPageState extends State<SongsListPage> {
                                       ),
                                       child: Padding(
                                         padding: const EdgeInsets.symmetric(
-                                          horizontal: 25.0,
                                           vertical: 10.0,
                                         ),
                                         child: Row(
@@ -350,7 +349,6 @@ class _SongsListPageState extends State<SongsListPage> {
                                       ),
                                       child: Padding(
                                         padding: const EdgeInsets.symmetric(
-                                          horizontal: 25.0,
                                           vertical: 10.0,
                                         ),
                                         child: Row(
