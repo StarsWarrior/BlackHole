@@ -642,5 +642,7 @@
   "clearCacheSub": "מוחק פרטים שמורים כולל עמוד הבית, המצעדים המובילים של Spotify,‏ YouTube ונתוני ההפעלה האחרונה. בדרך כלל היישומון מפנה את הנתונים האלו כשהם מתנפחים\n",
   "@clearCacheSub": {},
   "topCharts": "מצעדים מובילים",
-  "@topCharts": {}
+  "@topCharts": {},
+  "playRadio": "השמעת רדיו",
+  "@playRadio": {}
 }
