@@ -232,15 +232,18 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
       final List<MediaItem> lastQueue = lastQueueList
           .map((e) => MediaItemConverter.mapToMediaItem(e as Map))
           .toList();
+      if (lastQueue.isEmpty) {
+        await _player!.setAudioSource(_playlist, preload: false);
+      } else {
+        await _playlist.addAll(_itemsToSources(lastQueue));
+        await _player!.setAudioSource(
+          _playlist,
+          // commented out due to some bug in audio_service which causes app to freeze
 
-      await _playlist.addAll(_itemsToSources(lastQueue));
-      await _player!.setAudioSource(
-        _playlist,
-        // commented out due to some bug in audio_service which causes app to freeze
-
-        // initialIndex: lastIndex,
-        // initialPosition: Duration(seconds: lastPos),
-      );
+          // initialIndex: lastIndex,
+          // initialPosition: Duration(seconds: lastPos),
+        );
+      }
     } else {
       await _player!.setAudioSource(_playlist, preload: false);
     }
