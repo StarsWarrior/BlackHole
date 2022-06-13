@@ -660,5 +660,7 @@
   "resetOnSkipSub": "Rejouer depuis le début au lieu de passer à la chanson précédente",
   "@resetOnSkipSub": {},
   "topCharts": "Meilleurs classements",
-  "@topCharts": {}
+  "@topCharts": {},
+  "playRadio": "Écouter la radio",
+  "@playRadio": {}
 }

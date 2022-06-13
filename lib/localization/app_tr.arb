@@ -658,5 +658,7 @@
   "importJioSaavn": "JioSaavn'dan içe aktar",
   "@importJioSaavn": {},
   "topCharts": "En İyiler",
-  "@topCharts": {}
+  "@topCharts": {},
+  "playRadio": "Radyo çal",
+  "@playRadio": {}
 }

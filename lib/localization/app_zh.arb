@@ -658,5 +658,9 @@
   "playerScreenBackground": "播放器屏幕背景",
   "@playerScreenBackground": {},
   "importJioSaavn": "从 JioSaavn 导入",
-  "@importJioSaavn": {}
+  "@importJioSaavn": {},
+  "topCharts": "排行榜",
+  "@topCharts": {},
+  "playRadio": "播放电台",
+  "@playRadio": {}
 }

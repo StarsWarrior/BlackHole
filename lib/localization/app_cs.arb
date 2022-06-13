@@ -658,5 +658,7 @@
   "playerScreenBackgroundSub": "Vybrané pozadí bude zobrazeno v obrazovce přehrávání",
   "@playerScreenBackgroundSub": {},
   "topCharts": "Nejlepší žebříčky",
-  "@topCharts": {}
+  "@topCharts": {},
+  "playRadio": "Přehrát rádio",
+  "@playRadio": {}
 }

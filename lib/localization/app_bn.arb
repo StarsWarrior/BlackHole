@@ -68,5 +68,13 @@
   "cacheSong": "অস্থায়ী গান",
   "@cacheSong": {},
   "cache": "অস্থায়ী স্মৃতি",
-  "@cache": {}
+  "@cache": {},
+  "autoplaySub": "একই ধরনের গান স্বয়ংক্রিয়ভাবে সারিতে যোগ করুন",
+  "@autoplaySub": {},
+  "bgGradSub": "সর্বত্র একই গ্রেডিয়েন্ট ব্যাকগ্রাউন্ড ব্যবহার",
+  "@bgGradSub": {},
+  "autoBackLocation": "স্বয়ংক্রিয় ব্যাকআপের স্থান",
+  "@autoBackLocation": {},
+  "bgGrad": "ব্যাকগ্রাউন্ড গ্রেডিয়েন্ট",
+  "@bgGrad": {}
 }
