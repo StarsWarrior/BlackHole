@@ -660,5 +660,9 @@
   "topCharts": "En İyiler",
   "@topCharts": {},
   "playRadio": "Radyo çal",
-  "@playRadio": {}
+  "@playRadio": {},
+  "importPlaylist": "Çalma Listesini İçe Aktar",
+  "@importPlaylist": {},
+  "mergePlaylists": "Çalma Listelerini Birleştir",
+  "@mergePlaylists": {}
 }
