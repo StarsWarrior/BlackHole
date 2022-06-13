@@ -63,12 +63,6 @@ class ImportPlaylist extends StatelessWidget {
               body: ListView.builder(
                 shrinkWrap: true,
                 physics: const BouncingScrollPhysics(),
-                padding: const EdgeInsets.fromLTRB(
-                  0,
-                  30,
-                  0,
-                  10,
-                ),
                 itemCount: 5,
                 itemBuilder: (cntxt, index) {
                   return ListTile(
