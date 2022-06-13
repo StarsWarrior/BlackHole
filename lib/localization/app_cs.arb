@@ -660,5 +660,9 @@
   "topCharts": "Nejlepší žebříčky",
   "@topCharts": {},
   "playRadio": "Přehrát rádio",
-  "@playRadio": {}
+  "@playRadio": {},
+  "mergePlaylists": "Sloučit playlisty",
+  "@mergePlaylists": {},
+  "importPlaylist": "Importovat playlist",
+  "@importPlaylist": {}
 }
