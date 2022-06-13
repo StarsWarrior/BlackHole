@@ -660,5 +660,9 @@
   "topCharts": "Hitlijsten",
   "@topCharts": {},
   "playRadio": "Beluisteren",
-  "@playRadio": {}
+  "@playRadio": {},
+  "importPlaylist": "Afspeellijst importeren",
+  "@importPlaylist": {},
+  "mergePlaylists": "Afspeellijsten samenvoegen",
+  "@mergePlaylists": {}
 }
