@@ -644,5 +644,9 @@
   "topCharts": "מצעדים מובילים",
   "@topCharts": {},
   "playRadio": "השמעת רדיו",
-  "@playRadio": {}
+  "@playRadio": {},
+  "importPlaylist": "ייבוא רשימת נגינה",
+  "@importPlaylist": {},
+  "mergePlaylists": "מיזוג רשימות נגינה",
+  "@mergePlaylists": {}
 }
