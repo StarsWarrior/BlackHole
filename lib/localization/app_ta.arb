@@ -662,5 +662,9 @@
   "topCharts": "உச்ச தரவரிசை",
   "@topCharts": {},
   "playRadio": "வானொலியை இயக்கு",
-  "@playRadio": {}
+  "@playRadio": {},
+  "importPlaylist": "பாச்சரத்தை இறக்குமதிசெய்",
+  "@importPlaylist": {},
+  "mergePlaylists": "பாச்சரங்களை இணை",
+  "@mergePlaylists": {}
 }
