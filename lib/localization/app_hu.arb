@@ -359,7 +359,7 @@
   "@downloadSomething": {},
   "downLyricsSub": "Dalszövegek letöltése a dallal együtt, ha rendelkezésre állnak",
   "@downLyricsSub": {},
-  "equalizer": "Equalizer",
+  "equalizer": "Kiegyenlítő",
   "@equalizer": {},
   "library": "Könyvtár",
   "@library": {},
@@ -648,5 +648,9 @@
   "useDenseMiniSub": "A minilejátszó magassága csökken",
   "@useDenseMiniSub": {},
   "useDenseMini": "Sűrített minilejátszó használata",
-  "@useDenseMini": {}
+  "@useDenseMini": {},
+  "importPlaylist": "Lejátszási lista importálása",
+  "@importPlaylist": {},
+  "mergePlaylists": "Lejátszási listák egyesítése",
+  "@mergePlaylists": {}
 }
