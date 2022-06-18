@@ -656,5 +656,11 @@
   "resetOnSkip": "Repetir ao pular anterior",
   "@resetOnSkip": {},
   "resetOnSkipSub": "Reproduzir desde o início ao invés de pular para a música anterior",
-  "@resetOnSkipSub": {}
+  "@resetOnSkipSub": {},
+  "importPlaylist": "Importar Playlist",
+  "@importPlaylist": {},
+  "mergePlaylists": "Mesclar Playlist",
+  "@mergePlaylists": {},
+  "playRadio": "Tocar Rádio",
+  "@playRadio": {}
 }
