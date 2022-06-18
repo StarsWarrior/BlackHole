@@ -618,5 +618,17 @@
   "viewArtist": "Ver artista",
   "@viewArtist": {},
   "confirmViewable": "Asegúrese de que la lista de reproducción es visible",
-  "@confirmViewable": {}
+  "@confirmViewable": {},
+  "playerScreenBackgroundSub": "El fondo seleccionado se mostrará en la pantalla del reproductor",
+  "@playerScreenBackgroundSub": {},
+  "importPlaylist": "Importar lista de reproducción",
+  "@importPlaylist": {},
+  "importResso": "Importar desde Resso",
+  "@importResso": {},
+  "mergePlaylists": "Combinar listas de reproducción",
+  "@mergePlaylists": {},
+  "playerScreenBackground": "Fondo de la pantalla del reproductor",
+  "@playerScreenBackground": {},
+  "playRadio": "Reproducir radio",
+  "@playRadio": {}
 }
