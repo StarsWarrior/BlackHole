@@ -652,5 +652,9 @@
   "importSuccess": "Importato con successo",
   "@importSuccess": {},
   "supportEq": "Supporta l'equalizzatore",
-  "@supportEq": {}
+  "@supportEq": {},
+  "importPlaylist": "Importa una playlist",
+  "@importPlaylist": {},
+  "mergePlaylists": "Unisci le playlist",
+  "@mergePlaylists": {}
 }
