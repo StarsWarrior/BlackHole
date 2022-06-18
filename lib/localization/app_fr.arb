@@ -663,7 +663,7 @@
   "@topCharts": {},
   "playRadio": "Écouter la radio",
   "@playRadio": {},
-  "importPlaylist": "Importer la liste de lecture",
+  "importPlaylist": "Importer une liste de lecture",
   "@importPlaylist": {},
   "mergePlaylists": "Fusionner les listes de lectures",
   "@mergePlaylists": {}
