@@ -2298,6 +2298,9 @@ class _SettingPageState extends State<SettingPage> {
                                     ),
                                     children: [
                                       CheckboxListTile(
+                                        activeColor: Theme.of(context)
+                                            .colorScheme
+                                            .secondary,
                                         title: Text(
                                           '${AppLocalizations.of(context)!.title} - ${AppLocalizations.of(context)!.artist}',
                                         ),
@@ -2312,6 +2315,9 @@ class _SettingPageState extends State<SettingPage> {
                                         },
                                       ),
                                       CheckboxListTile(
+                                        activeColor: Theme.of(context)
+                                            .colorScheme
+                                            .secondary,
                                         title: Text(
                                           '${AppLocalizations.of(context)!.artist} - ${AppLocalizations.of(context)!.title}',
                                         ),
@@ -2321,6 +2327,23 @@ class _SettingPageState extends State<SettingPage> {
                                           if (val ?? false) {
                                             downFilename = 1;
                                             settingsBox.put('downFilename', 1);
+                                            Navigator.pop(context);
+                                          }
+                                        },
+                                      ),
+                                      CheckboxListTile(
+                                        activeColor: Theme.of(context)
+                                            .colorScheme
+                                            .secondary,
+                                        title: Text(
+                                          AppLocalizations.of(context)!.title,
+                                        ),
+                                        value: downFilename == 2,
+                                        selected: downFilename == 2,
+                                        onChanged: (val) {
+                                          if (val ?? false) {
+                                            downFilename = 2;
+                                            settingsBox.put('downFilename', 2);
                                             Navigator.pop(context);
                                           }
                                         },
