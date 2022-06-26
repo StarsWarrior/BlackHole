@@ -111,7 +111,7 @@
   "@checkingUpdate": {},
   "checkUpdate": "Auto check for Updates",
   "@checkUpdate": {},
-  "checkUpdateSub": "If you downloaded BlackHole from any app repository like 'F-Droid', 'IzzyOnDroid', etc which provide update options, keep this OFF. Whereas, If you downloaded it from 'GitHub' or any other source which doesn't provide auto updates then turn this ON, so as to recieve update alerts\n",
+  "checkUpdateSub": "If you downloaded BlackHole from any app repository like 'F-Droid', 'IzzyOnDroid', etc which provide update options, keep this OFF. Whereas, If you downloaded it from 'GitHub' or any other source which doesn't provide auto updates then turn this ON, so as to receive update alerts\n",
   "@checkUpdateSub": {},
   "clear": "Clear",
   "@clear": {},
