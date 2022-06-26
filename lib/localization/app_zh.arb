@@ -283,7 +283,7 @@
   "@cacheSongSub": {},
   "cardColorSub": "搜索栏、提示框和卡片的颜色",
   "@cardColorSub": {},
-  "checkUpdateSub": "如果您是从第三方应用商店例如 'F-Droid' 或 'IzzyOnDroid' 等地方下载本应用，由于签名问题请关闭此选项。如果您是从 Github 或其他无法更新的渠道下载本应用，请打开本开关，确保可以正常接受更新\n",
+  "checkUpdateSub": "如果你是从 'F-Droid' 、 'IzzyOnDroid' 等提供自动更新的第三方存储库下载的本应用，可关闭本开关。如果是从 Github 或不提供自动更新的任何其他来源下载的本应用，请打开本开关，确保可以接受更新提醒\n",
   "@checkUpdateSub": {},
   "createBack": "创建备份",
   "@createBack": {},
