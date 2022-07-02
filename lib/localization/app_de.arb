@@ -666,5 +666,9 @@
   "importPlaylist": "Wiedergabeliste importieren",
   "@importPlaylist": {},
   "mergePlaylists": "Playlists zusammenführen",
-  "@mergePlaylists": {}
+  "@mergePlaylists": {},
+  "top": "Oben",
+  "@top": {},
+  "viral": "Viral",
+  "@viral": {}
 }
