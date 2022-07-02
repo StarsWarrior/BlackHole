@@ -664,5 +664,9 @@
   "importPlaylist": "Afspeellijst importeren",
   "@importPlaylist": {},
   "mergePlaylists": "Afspeellijsten samenvoegen",
-  "@mergePlaylists": {}
+  "@mergePlaylists": {},
+  "top": "Top",
+  "@top": {},
+  "viral": "Viral",
+  "@viral": {}
 }
