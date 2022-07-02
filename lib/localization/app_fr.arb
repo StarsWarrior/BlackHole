@@ -666,5 +666,9 @@
   "importPlaylist": "Importer une liste de lecture",
   "@importPlaylist": {},
   "mergePlaylists": "Fusionner les listes de lectures",
-  "@mergePlaylists": {}
+  "@mergePlaylists": {},
+  "top": "Haut",
+  "@top": {},
+  "viral": "Viral",
+  "@viral": {}
 }
