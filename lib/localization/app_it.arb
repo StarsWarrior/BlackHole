@@ -656,5 +656,9 @@
   "importPlaylist": "Importa una playlist",
   "@importPlaylist": {},
   "mergePlaylists": "Unisci le playlist",
-  "@mergePlaylists": {}
+  "@mergePlaylists": {},
+  "top": "In alto",
+  "@top": {},
+  "viral": "Virale",
+  "@viral": {}
 }
