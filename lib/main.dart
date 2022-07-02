@@ -200,7 +200,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   Widget initialFuntion() {
-    return Hive.box('settings').get('userId') == null
+    return Hive.box('settings').get('userId') != null
         ? HomePage()
         : AuthScreen();
   }
