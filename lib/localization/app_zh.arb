@@ -662,5 +662,9 @@
   "topCharts": "排行榜",
   "@topCharts": {},
   "playRadio": "播放电台",
-  "@playRadio": {}
+  "@playRadio": {},
+  "importPlaylist": "导入播放列表",
+  "@importPlaylist": {},
+  "mergePlaylists": "合并播放列表",
+  "@mergePlaylists": {}
 }
