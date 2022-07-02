@@ -1,5 +1,6 @@
 # Uncomment this line to define a global platform for your project
 # platform :ios, '9.0'
+# platform :osx, '10.12.2' # Requirement for audio_service macOS
 
 # CocoaPods analytics sends network stats synchronously affecting flutter build latency.
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'

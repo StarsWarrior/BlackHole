@@ -354,110 +354,110 @@ class _PrefScreenState extends State<PrefScreen> {
                                 const SizedBox(
                                   height: 30.0,
                                 ),
-                                ListTile(
-                                  title: Text(
-                                    AppLocalizations.of(context)!.countryQue,
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  trailing: Container(
-                                    padding: const EdgeInsets.only(
-                                      top: 5,
-                                      bottom: 5,
-                                      left: 10,
-                                      right: 10,
-                                    ),
-                                    height: 57.0,
-                                    width: 150,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(10.0),
-                                      color: Colors.grey[900],
-                                      boxShadow: const [
-                                        BoxShadow(
-                                          color: Colors.black26,
-                                          blurRadius: 5.0,
-                                          offset: Offset(0.0, 3.0),
-                                        )
-                                      ],
-                                    ),
-                                    child: Center(
-                                      child: Text(
-                                        region,
-                                        textAlign: TextAlign.end,
-                                      ),
-                                    ),
-                                  ),
-                                  dense: true,
-                                  onTap: () {
-                                    showModalBottomSheet(
-                                      isDismissible: true,
-                                      backgroundColor: Colors.transparent,
-                                      context: context,
-                                      builder: (BuildContext context) {
-                                        const Map<String, String> codes =
-                                            CountryCodes.countryCodes;
-                                        final List<String> countries =
-                                            codes.keys.toList();
-                                        return BottomGradientContainer(
-                                          borderRadius:
-                                              BorderRadius.circular(20.0),
-                                          child: ListView.builder(
-                                            physics:
-                                                const BouncingScrollPhysics(),
-                                            shrinkWrap: true,
-                                            padding: const EdgeInsets.fromLTRB(
-                                              0,
-                                              10,
-                                              0,
-                                              10,
-                                            ),
-                                            itemCount: countries.length,
-                                            itemBuilder: (context, idx) {
-                                              return ListTileTheme(
-                                                selectedColor: Theme.of(context)
-                                                    .colorScheme
-                                                    .secondary,
-                                                child: ListTile(
-                                                  contentPadding:
-                                                      const EdgeInsets.only(
-                                                    left: 25.0,
-                                                    right: 25.0,
-                                                  ),
-                                                  title: Text(
-                                                    countries[idx],
-                                                  ),
-                                                  trailing: region ==
-                                                          countries[idx]
-                                                      ? const Icon(
-                                                          Icons.check_rounded,
-                                                        )
-                                                      : const SizedBox(),
-                                                  selected:
-                                                      region == countries[idx],
-                                                  onTap: () {
-                                                    region = countries[idx];
-                                                    Hive.box('settings').put(
-                                                      'region',
-                                                      region,
-                                                    );
-                                                    Navigator.pop(
-                                                      context,
-                                                    );
-                                                    setState(() {});
-                                                  },
-                                                ),
-                                              );
-                                            },
-                                          ),
-                                        );
-                                      },
-                                    );
-                                  },
-                                ),
-                                const SizedBox(
-                                  height: 30.0,
-                                ),
+                                // ListTile(
+                                //   title: Text(
+                                //     AppLocalizations.of(context)!.countryQue,
+                                //     style: const TextStyle(
+                                //       fontWeight: FontWeight.bold,
+                                //     ),
+                                //   ),
+                                //   trailing: Container(
+                                //     padding: const EdgeInsets.only(
+                                //       top: 5,
+                                //       bottom: 5,
+                                //       left: 10,
+                                //       right: 10,
+                                //     ),
+                                //     height: 57.0,
+                                //     width: 150,
+                                //     decoration: BoxDecoration(
+                                //       borderRadius: BorderRadius.circular(10.0),
+                                //       color: Colors.grey[900],
+                                //       boxShadow: const [
+                                //         BoxShadow(
+                                //           color: Colors.black26,
+                                //           blurRadius: 5.0,
+                                //           offset: Offset(0.0, 3.0),
+                                //         )
+                                //       ],
+                                //     ),
+                                //     child: Center(
+                                //       child: Text(
+                                //         region,
+                                //         textAlign: TextAlign.end,
+                                //       ),
+                                //     ),
+                                //   ),
+                                //   dense: true,
+                                //   onTap: () {
+                                //     showModalBottomSheet(
+                                //       isDismissible: true,
+                                //       backgroundColor: Colors.transparent,
+                                //       context: context,
+                                //       builder: (BuildContext context) {
+                                //         const Map<String, String> codes =
+                                //             CountryCodes.countryCodes;
+                                //         final List<String> countries =
+                                //             codes.keys.toList();
+                                //         return BottomGradientContainer(
+                                //           borderRadius:
+                                //               BorderRadius.circular(20.0),
+                                //           child: ListView.builder(
+                                //             physics:
+                                //                 const BouncingScrollPhysics(),
+                                //             shrinkWrap: true,
+                                //             padding: const EdgeInsets.fromLTRB(
+                                //               0,
+                                //               10,
+                                //               0,
+                                //               10,
+                                //             ),
+                                //             itemCount: countries.length,
+                                //             itemBuilder: (context, idx) {
+                                //               return ListTileTheme(
+                                //                 selectedColor: Theme.of(context)
+                                //                     .colorScheme
+                                //                     .secondary,
+                                //                 child: ListTile(
+                                //                   contentPadding:
+                                //                       const EdgeInsets.only(
+                                //                     left: 25.0,
+                                //                     right: 25.0,
+                                //                   ),
+                                //                   title: Text(
+                                //                     countries[idx],
+                                //                   ),
+                                //                   trailing: region ==
+                                //                           countries[idx]
+                                //                       ? const Icon(
+                                //                           Icons.check_rounded,
+                                //                         )
+                                //                       : const SizedBox(),
+                                //                   selected:
+                                //                       region == countries[idx],
+                                //                   onTap: () {
+                                //                     region = countries[idx];
+                                //                     Hive.box('settings').put(
+                                //                       'region',
+                                //                       region,
+                                //                     );
+                                //                     Navigator.pop(
+                                //                       context,
+                                //                     );
+                                //                     setState(() {});
+                                //                   },
+                                //                 ),
+                                //               );
+                                //             },
+                                //           ),
+                                //         );
+                                //       },
+                                //     );
+                                //   },
+                                // ),
+                                // const SizedBox(
+                                //   height: 30.0,
+                                // ),
                                 GestureDetector(
                                   onTap: () {
                                     Navigator.popAndPushNamed(context, '/');
