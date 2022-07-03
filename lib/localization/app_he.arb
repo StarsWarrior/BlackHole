@@ -648,5 +648,9 @@
   "importPlaylist": "ייבוא רשימת נגינה",
   "@importPlaylist": {},
   "mergePlaylists": "מיזוג רשימות נגינה",
-  "@mergePlaylists": {}
+  "@mergePlaylists": {},
+  "viral": "ויראלי",
+  "@viral": {},
+  "top": "עליון",
+  "@top": {}
 }
