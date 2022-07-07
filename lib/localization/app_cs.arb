@@ -664,5 +664,9 @@
   "mergePlaylists": "Sloučit playlisty",
   "@mergePlaylists": {},
   "importPlaylist": "Importovat playlist",
-  "@importPlaylist": {}
+  "@importPlaylist": {},
+  "top": "Nejlepší",
+  "@top": {},
+  "viral": "Virální",
+  "@viral": {}
 }
