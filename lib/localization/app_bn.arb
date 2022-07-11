@@ -76,5 +76,17 @@
   "autoBackLocation": "স্বয়ংক্রিয় ব্যাকআপের স্থান",
   "@autoBackLocation": {},
   "bgGrad": "ব্যাকগ্রাউন্ড গ্রেডিয়েন্ট",
-  "@bgGrad": {}
+  "@bgGrad": {},
+  "cacheSongSub": "পরবর্তীকালে চালানো গানগুলো অস্থায়ীভাবে রাখা হবে। মোবাইলের মেমোরী ব্যবহৃত হবে",
+  "@cacheSongSub": {},
+  "blacklistedHomeSections": "প্রথমপাতার অপ্রিয় শ্রেণীগুলি",
+  "@blacklistedHomeSections": {},
+  "canvasColor": "ক্যানভাসের রং",
+  "@canvasColor": {},
+  "blacklistedHomeSectionsSub": "এই শ্রেণীর গানগুলি আপনি সামনের পাতায় দেখতে পাবেননা",
+  "@blacklistedHomeSectionsSub": {},
+  "bottomGrad": "নীচের পাতার রং",
+  "@bottomGrad": {},
+  "bottomGradSub": "নীচের পাতাগুলোয় ব্যবহৃত রং",
+  "@bottomGradSub": {}
 }
