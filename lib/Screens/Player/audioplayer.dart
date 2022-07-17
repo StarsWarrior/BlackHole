@@ -478,6 +478,7 @@ class _PlayScreenState extends State<PlayScreen> {
                                   ? 'https://youtube.com/watch?v=${mediaItem.id}'
                                   : 'https://www.youtube.com/results?search_query=${mediaItem.title} by ${mediaItem.artist}',
                             ),
+                            mode: LaunchMode.externalApplication,
                           );
                         }
                         if (value == 1) {

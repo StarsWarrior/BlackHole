@@ -170,12 +170,21 @@ class _HomePageState extends State<HomePage> {
                   onPressed: () {
                     Navigator.pop(context);
                     if (abis!.contains('arm64-v8a')) {
-                      launchUrl(Uri.parse(value['arm64-v8a'] as String));
+                      launchUrl(
+                        Uri.parse(value['arm64-v8a'] as String),
+                        mode: LaunchMode.externalApplication,
+                      );
                     } else {
                       if (abis.contains('armeabi-v7a')) {
-                        launchUrl(Uri.parse(value['armeabi-v7a'] as String));
+                        launchUrl(
+                          Uri.parse(value['armeabi-v7a'] as String),
+                          mode: LaunchMode.externalApplication,
+                        );
                       } else {
-                        launchUrl(Uri.parse(value['universal'] as String));
+                        launchUrl(
+                          Uri.parse(value['universal'] as String),
+                          mode: LaunchMode.externalApplication,
+                        );
                       }
                     }
                   },

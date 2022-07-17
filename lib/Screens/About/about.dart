@@ -128,6 +128,7 @@ class _AboutScreenState extends State<AboutScreen> {
                             Uri.parse(
                               'https://github.com/Sangwan5688/BlackHole',
                             ),
+                            mode: LaunchMode.externalApplication,
                           );
                         },
                         child: SizedBox(
@@ -162,6 +163,7 @@ class _AboutScreenState extends State<AboutScreen> {
                           Uri.parse(
                             'https://www.buymeacoffee.com/ankitsangwan',
                           ),
+                          mode: LaunchMode.externalApplication,
                         );
                       },
                       child: SizedBox(
@@ -185,7 +187,10 @@ class _AboutScreenState extends State<AboutScreen> {
                       onPressed: () {
                         const String upiUrl =
                             'upi://pay?pa=ankit.sangwan.5688@oksbi&pn=BlackHole&mc=5732&aid=uGICAgIDn98OpSw&tr=BCR2DN6T37O6DB3Q';
-                        launchUrl(Uri.parse(upiUrl));
+                        launchUrl(
+                          Uri.parse(upiUrl),
+                          mode: LaunchMode.externalApplication,
+                        );
                       },
                       onLongPress: () {
                         copyToClipboard(

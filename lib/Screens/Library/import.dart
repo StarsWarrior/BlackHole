@@ -156,6 +156,7 @@ void importSpotify(BuildContext context, List playlistNames, Box settingsBox) {
     Uri.parse(
       SpotifyApi().requestAuthorization(),
     ),
+    mode: LaunchMode.externalApplication,
   );
 
   AppLinks(

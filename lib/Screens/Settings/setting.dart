@@ -3556,6 +3556,8 @@ class _SettingPageState extends State<SettingPage> {
                                             Uri.parse(
                                               value['arm64-v8a'] as String,
                                             ),
+                                            mode:
+                                                LaunchMode.externalApplication,
                                           );
                                         } else {
                                           if (abis.contains('armeabi-v7a')) {
@@ -3563,12 +3565,16 @@ class _SettingPageState extends State<SettingPage> {
                                               Uri.parse(
                                                 value['armeabi-v7a'] as String,
                                               ),
+                                              mode: LaunchMode
+                                                  .externalApplication,
                                             );
                                           } else {
                                             launchUrl(
                                               Uri.parse(
                                                 value['universal'] as String,
                                               ),
+                                              mode: LaunchMode
+                                                  .externalApplication,
                                             );
                                           }
                                         }
@@ -3634,6 +3640,7 @@ class _SettingPageState extends State<SettingPage> {
                               Uri.parse(
                                 'https://www.buymeacoffee.com/ankitsangwan',
                               ),
+                              mode: LaunchMode.externalApplication,
                             );
                           },
                         ),
@@ -3655,7 +3662,10 @@ class _SettingPageState extends State<SettingPage> {
                           onTap: () {
                             const String upiUrl =
                                 'upi://pay?pa=ankit.sangwan.5688@oksbi&pn=BlackHole';
-                            launchUrl(Uri.parse(upiUrl));
+                            launchUrl(
+                              Uri.parse(upiUrl),
+                              mode: LaunchMode.externalApplication,
+                            );
                           },
                           onLongPress: () {
                             copyToClipboard(
@@ -3738,6 +3748,8 @@ class _SettingPageState extends State<SettingPage> {
                                                   Uri.parse(
                                                     'https://mail.google.com/mail/?extsrc=mailto&url=mailto%3A%3Fto%3Dblackholeyoucantescape%40gmail.com%26subject%3DRegarding%2520Mobile%2520App',
                                                   ),
+                                                  mode: LaunchMode
+                                                      .externalApplication,
                                                 );
                                               },
                                             ),
@@ -3767,6 +3779,8 @@ class _SettingPageState extends State<SettingPage> {
                                                   Uri.parse(
                                                     'https://t.me/joinchat/fHDC1AWnOhw0ZmI9',
                                                   ),
+                                                  mode: LaunchMode
+                                                      .externalApplication,
                                                 );
                                               },
                                             ),
@@ -3796,6 +3810,8 @@ class _SettingPageState extends State<SettingPage> {
                                                   Uri.parse(
                                                     'https://instagram.com/sangwan5688',
                                                   ),
+                                                  mode: LaunchMode
+                                                      .externalApplication,
                                                 );
                                               },
                                             ),
@@ -3857,6 +3873,8 @@ class _SettingPageState extends State<SettingPage> {
                                                   Uri.parse(
                                                     'https://t.me/joinchat/fHDC1AWnOhw0ZmI9',
                                                   ),
+                                                  mode: LaunchMode
+                                                      .externalApplication,
                                                 );
                                               },
                                             ),
@@ -3886,6 +3904,8 @@ class _SettingPageState extends State<SettingPage> {
                                                   Uri.parse(
                                                     'https://t.me/blackhole_official',
                                                   ),
+                                                  mode: LaunchMode
+                                                      .externalApplication,
                                                 );
                                               },
                                             ),
