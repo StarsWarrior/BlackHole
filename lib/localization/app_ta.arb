@@ -666,5 +666,9 @@
   "importPlaylist": "பாச்சரத்தை இறக்குமதிசெய்",
   "@importPlaylist": {},
   "mergePlaylists": "பாச்சரங்களை இணை",
-  "@mergePlaylists": {}
+  "@mergePlaylists": {},
+  "viral": "அதிபரவும்",
+  "@viral": {},
+  "top": "உச்ச",
+  "@top": {}
 }
