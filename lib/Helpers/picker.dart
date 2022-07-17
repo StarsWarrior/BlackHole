@@ -39,7 +39,6 @@ class Picker {
     String? message,
   }) async {
     final FilePickerResult? result = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
       allowedExtensions: ext,
       dialogTitle: message,
     );

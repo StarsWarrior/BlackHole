@@ -136,6 +136,7 @@ class _ArtistSearchPageState extends State<ArtistSearchPage> {
                                         MainAxisAlignment.spaceEvenly,
                                     children: [
                                       Expanded(
+                                        flex: 5,
                                         child: GestureDetector(
                                           onTap: () {
                                             ShowSnackBar().showSnackBar(
@@ -254,6 +255,7 @@ class _ArtistSearchPageState extends State<ArtistSearchPage> {
                                       ),
                                       const SizedBox(width: 20),
                                       Expanded(
+                                        flex: 3,
                                         child: GestureDetector(
                                           onTap: () {
                                             Navigator.push(
@@ -308,7 +310,7 @@ class _ArtistSearchPageState extends State<ArtistSearchPage> {
                                                   ),
                                                   const SizedBox(width: 5.0),
                                                   Text(
-                                                    'Top Songs',
+                                                    'Top',
                                                     style: TextStyle(
                                                       fontWeight:
                                                           FontWeight.bold,
