@@ -4,21 +4,21 @@ description: An Open Source Music Player App.
 # Prevent accidental publishing to pub.dev.
 publish_to: "none"
 
-version: 1.15.0+31
+version: 1.15.1+32
 
 environment:
   sdk: ">=2.13.0 <3.0.0"
 
 dependencies:
   app_links: 2.2.2
-  audio_service: ^0.18.5
+  audio_service: ^0.18.7
   audiotagger: ^2.2.1
   # bitsdojo_window: ^0.1.1+1 #For Desktops
   cached_network_image: ^3.2.1
   carousel_slider: ^4.0.0
   cupertino_icons: ^1.0.5
   dart_des: ^1.0.2
-  device_info_plus: ^3.2.4
+  device_info_plus: ^4.0.0
   file_picker: ^4.6.1
   flip_card: ^0.6.0
   flutter:
@@ -29,10 +29,10 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   get_it: ^7.2.0
-  hive: ^2.2.2
+  hive: ^2.2.3
   hive_flutter: ^1.1.0
   html_unescape: ^2.0.0
-  just_audio: ^0.9.24
+  just_audio: ^0.9.28
   just_audio_libwinmedia: ^0.0.4 # For windows and linux
   # logging: ^1.0.1
   marquee: ^2.2.3
@@ -44,7 +44,7 @@ dependencies:
   permission_handler: ^9.2.0
   receive_sharing_intent: ^1.4.5
   salomon_bottom_bar: ^3.3.1
-  share_plus: ^4.0.8
+  share_plus: ^4.0.10
   sliding_up_panel: ^2.0.0+1
   supabase: ^0.2.15
   url_launcher: ^6.1.5
