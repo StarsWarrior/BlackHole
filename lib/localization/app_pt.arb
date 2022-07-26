@@ -662,5 +662,9 @@
   "mergePlaylists": "Mesclar Playlist",
   "@mergePlaylists": {},
   "playRadio": "Tocar Rádio",
-  "@playRadio": {}
+  "@playRadio": {},
+  "top": "Topo",
+  "@top": {},
+  "viral": "Viral",
+  "@viral": {}
 }
