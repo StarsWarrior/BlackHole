@@ -631,7 +631,7 @@ Future<Map> editTags(Map song, BuildContext context) async {
                   onTap: () async {
                     final String filePath = await Picker.selectFile(
                       context: context,
-                      ext: ['png', 'jpg', 'jpeg'],
+                      // ext: ['png', 'jpg', 'jpeg'],
                       message: 'Pick Image',
                     );
                     if (filePath != '') {

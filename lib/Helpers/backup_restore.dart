@@ -120,7 +120,7 @@ Future<void> restore(
 ) async {
   final String savePath = await Picker.selectFile(
     context: context,
-    ext: ['zip'],
+    // ext: ['zip'],
     message: AppLocalizations.of(context)!.selectBackFile,
   );
   final File zipFile = File(savePath);

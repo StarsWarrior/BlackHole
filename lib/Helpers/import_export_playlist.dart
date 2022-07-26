@@ -89,7 +89,7 @@ Future<List> importPlaylist(BuildContext context, List playlistNames) async {
     try {
       temp = await Picker.selectFile(
         context: context,
-        ext: ['json'],
+        // ext: ['json'],
         message: AppLocalizations.of(context)!.selectJsonImport,
       );
     } catch (e) {

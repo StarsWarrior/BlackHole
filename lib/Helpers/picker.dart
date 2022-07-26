@@ -35,11 +35,11 @@ class Picker {
 
   static Future<String> selectFile({
     required BuildContext context,
-    List<String>? ext,
+    // List<String>? ext,
     String? message,
   }) async {
     final FilePickerResult? result = await FilePicker.platform.pickFiles(
-      allowedExtensions: ext,
+      // allowedExtensions: ext,
       dialogTitle: message,
     );
 
