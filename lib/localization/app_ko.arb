@@ -1,1 +1,14 @@
-{}
+{
+  "addNew": "새로 추가하기",
+  "@addNew": {},
+  "addToPlaylist": "플레이리스트에 추가하기",
+  "@addToPlaylist": {},
+  "appTitle": "BlackHole",
+  "@appTitle": {},
+  "albumArtist": "앨범 아티스트",
+  "@albumArtist": {},
+  "backNRest": "백업 & 복원",
+  "@backNRest": {},
+  "album": "앨범",
+  "@album": {}
+}
