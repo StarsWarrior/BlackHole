@@ -41,12 +41,12 @@ class DownloadedSongs extends StatefulWidget {
   final int? playlistId;
   final bool showPlaylists;
   const DownloadedSongs({
-    Key? key,
+    super.key,
     this.cachedSongs,
     this.title,
     this.playlistId,
     this.showPlaylists = false,
-  }) : super(key: key);
+  });
   @override
   _DownloadedSongsState createState() => _DownloadedSongsState();
 }
@@ -110,9 +110,9 @@ class _DownloadedSongsState extends State<DownloadedSongs>
     _tcontroller!.dispose();
   }
 
-  bool checkIncludedOrExcluded(SongModel _song) {
+  bool checkIncludedOrExcluded(SongModel song) {
     for (final path in includedExcludedPaths) {
-      if (_song.data.contains(path.toString())) return true;
+      if (song.data.contains(path.toString())) return true;
     }
     return false;
   }
@@ -656,12 +656,12 @@ class SongsTab extends StatefulWidget {
   final String? playlistName;
   final String tempPath;
   const SongsTab({
-    Key? key,
+    super.key,
     required this.songs,
     required this.tempPath,
     this.playlistId,
     this.playlistName,
-  }) : super(key: key);
+  });
 
   @override
   State<SongsTab> createState() => _SongsTabState();
@@ -1275,11 +1275,11 @@ class AlbumsTab extends StatefulWidget {
   final List<String> albumsList;
   final String tempPath;
   const AlbumsTab({
-    Key? key,
+    super.key,
     required this.albums,
     required this.albumsList,
     required this.tempPath,
-  }) : super(key: key);
+  });
 
   @override
   State<AlbumsTab> createState() => _AlbumsTabState();

@@ -62,44 +62,44 @@ class Lyrics {
     required String title,
     required String artist,
   }) async {
-    const String _url =
+    const String url =
         'https://www.google.com/search?client=safari&rls=en&ie=UTF-8&oe=UTF-8&q=';
-    const String _delimiter1 =
+    const String delimiter1 =
         '</div></div></div></div><div class="hwc"><div class="BNeawe tAd8D AP7Wnd"><div><div class="BNeawe tAd8D AP7Wnd">';
-    const String _delimiter2 =
+    const String delimiter2 =
         '</div></div></div></div></div><div><span class="hwc"><div class="BNeawe uEec3 AP7Wnd">';
     String lyrics = '';
     try {
       lyrics = (await get(
-        Uri.parse(Uri.encodeFull('$_url$title by $artist lyrics')),
+        Uri.parse(Uri.encodeFull('$url$title by $artist lyrics')),
       ))
           .body;
-      lyrics = lyrics.split(_delimiter1).last;
-      lyrics = lyrics.split(_delimiter2).first;
+      lyrics = lyrics.split(delimiter1).last;
+      lyrics = lyrics.split(delimiter2).first;
       if (lyrics.contains('<meta charset="UTF-8">')) throw Error();
     } catch (_) {
       try {
         lyrics = (await get(
           Uri.parse(
-            Uri.encodeFull('$_url$title by $artist song lyrics'),
+            Uri.encodeFull('$url$title by $artist song lyrics'),
           ),
         ))
             .body;
-        lyrics = lyrics.split(_delimiter1).last;
-        lyrics = lyrics.split(_delimiter2).first;
+        lyrics = lyrics.split(delimiter1).last;
+        lyrics = lyrics.split(delimiter2).first;
         if (lyrics.contains('<meta charset="UTF-8">')) throw Error();
       } catch (_) {
         try {
           lyrics = (await get(
             Uri.parse(
               Uri.encodeFull(
-                '$_url${title.split("-").first} by $artist lyrics',
+                '$url${title.split("-").first} by $artist lyrics',
               ),
             ),
           ))
               .body;
-          lyrics = lyrics.split(_delimiter1).last;
-          lyrics = lyrics.split(_delimiter2).first;
+          lyrics = lyrics.split(delimiter1).last;
+          lyrics = lyrics.split(delimiter2).first;
           if (lyrics.contains('<meta charset="UTF-8">')) throw Error();
         } catch (_) {
           lyrics = '';

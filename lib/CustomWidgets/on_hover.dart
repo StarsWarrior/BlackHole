@@ -23,10 +23,10 @@ class HoverBox extends StatefulWidget {
   final Widget? child;
   final Widget Function(BuildContext, bool, Widget?) builder;
   const HoverBox({
-    Key? key,
+    super.key,
     required this.child,
     required this.builder,
-  }) : super(key: key);
+  });
 
   @override
   _HoverBox createState() => _HoverBox();

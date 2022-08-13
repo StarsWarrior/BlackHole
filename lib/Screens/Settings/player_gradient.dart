@@ -24,7 +24,7 @@ import 'package:get_it/get_it.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 class PlayerGradientSelection extends StatefulWidget {
-  const PlayerGradientSelection({Key? key}) : super(key: key);
+  const PlayerGradientSelection({super.key});
 
   @override
   State<PlayerGradientSelection> createState() =>
@@ -89,7 +89,7 @@ class _PlayerGradientSelectionState extends State<PlayerGradientSelection> {
                             ),
                           ),
                           clipBehavior: Clip.antiAlias,
-                          child: Container(
+                          child: DecoratedBox(
                             decoration: BoxDecoration(
                               gradient: LinearGradient(
                                 begin: type == 'simple'

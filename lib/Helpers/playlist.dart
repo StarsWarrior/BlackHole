@@ -40,14 +40,12 @@ Future<void> removeLiked(String key) async {
 Future<void> addMapToPlaylist(String name, Map info) async {
   if (name != 'Favorite Songs') await Hive.openBox(name);
   final Box playlistBox = Hive.box(name);
-  final List _songs = playlistBox.values.toList();
+  final List songs = playlistBox.values.toList();
   info.addEntries([MapEntry('dateAdded', DateTime.now().toString())]);
   songs_count.addSongsCount(
     name,
     playlistBox.values.length + 1,
-    _songs.length >= 4
-        ? _songs.sublist(0, 4)
-        : _songs.sublist(0, _songs.length),
+    songs.length >= 4 ? songs.sublist(0, 4) : songs.sublist(0, songs.length),
   );
   playlistBox.put(info['id'].toString(), info);
 }
@@ -57,13 +55,11 @@ Future<void> addItemToPlaylist(String name, MediaItem mediaItem) async {
   final Box playlistBox = Hive.box(name);
   final Map info = MediaItemConverter.mediaItemToMap(mediaItem);
   info.addEntries([MapEntry('dateAdded', DateTime.now().toString())]);
-  final List _songs = playlistBox.values.toList();
+  final List songs = playlistBox.values.toList();
   songs_count.addSongsCount(
     name,
     playlistBox.values.length + 1,
-    _songs.length >= 4
-        ? _songs.sublist(0, 4)
-        : _songs.sublist(0, _songs.length),
+    songs.length >= 4 ? songs.sublist(0, 4) : songs.sublist(0, songs.length),
   );
   playlistBox.put(mediaItem.id, info);
 }

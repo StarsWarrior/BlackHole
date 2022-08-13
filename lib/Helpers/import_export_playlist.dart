@@ -47,11 +47,11 @@ Future<void> exportPlaylist(
   }
   await Hive.openBox(playlistName);
   final Box playlistBox = Hive.box(playlistName);
-  final Map _songsMap = playlistBox.toMap();
-  final String _songs = json.encode(_songsMap);
+  final Map songsMap = playlistBox.toMap();
+  final String songs = json.encode(songsMap);
   final File file =
       await File('$dirPath/$showName.json').create(recursive: true);
-  await file.writeAsString(_songs);
+  await file.writeAsString(songs);
   ShowSnackBar().showSnackBar(
     context,
     '${AppLocalizations.of(context)!.exported} "$showName"',
@@ -68,10 +68,10 @@ Future<void> sharePlaylist(
 
   await Hive.openBox(playlistName);
   final Box playlistBox = Hive.box(playlistName);
-  final Map _songsMap = playlistBox.toMap();
-  final String _songs = json.encode(_songsMap);
+  final Map songsMap = playlistBox.toMap();
+  final String songs = json.encode(songsMap);
   final File file = await File('$temp/$showName.json').create(recursive: true);
-  await file.writeAsString(_songs);
+  await file.writeAsString(songs);
 
   await Share.shareFiles(
     [file.path],
@@ -116,8 +116,8 @@ Future<List> importPlaylist(BuildContext context, List playlistNames) async {
 
     final File file = File(temp);
     final String finString = await file.readAsString();
-    final Map _songsMap = json.decode(finString) as Map;
-    final List _songs = _songsMap.values.toList();
+    final Map songsMap = json.decode(finString) as Map;
+    final List songs = songsMap.values.toList();
     // playlistBox.put(mediaItem.id.toString(), info);
     // Hive.box(play)
 
@@ -131,14 +131,12 @@ Future<List> importPlaylist(BuildContext context, List playlistNames) async {
 
     await Hive.openBox(playlistName);
     final Box playlistBox = Hive.box(playlistName);
-    await playlistBox.putAll(_songsMap);
+    await playlistBox.putAll(songsMap);
 
     addSongsCount(
       playlistName,
-      _songs.length,
-      _songs.length >= 4
-          ? _songs.sublist(0, 4)
-          : _songs.sublist(0, _songs.length),
+      songs.length,
+      songs.length >= 4 ? songs.sublist(0, 4) : songs.sublist(0, songs.length),
     );
     ShowSnackBar().showSnackBar(
       context,

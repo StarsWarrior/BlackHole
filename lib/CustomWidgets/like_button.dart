@@ -29,12 +29,12 @@ class LikeButton extends StatefulWidget {
   final Map? data;
   final bool showSnack;
   const LikeButton({
-    Key? key,
+    super.key,
     required this.mediaItem,
     this.size,
     this.data,
     this.showSnack = false,
-  }) : super(key: key);
+  });
 
   @override
   _LikeButtonState createState() => _LikeButtonState();

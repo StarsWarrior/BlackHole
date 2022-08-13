@@ -119,14 +119,14 @@ class SearchAddPlaylist {
   }
 
   static Stream<Map> ytSongsAdder(String playName, List tracks) async* {
-    int _done = 0;
+    int done = 0;
     for (final track in tracks) {
       String? trackName;
       try {
         trackName = (track as Video).title;
-        yield {'done': ++_done, 'name': trackName};
+        yield {'done': ++done, 'name': trackName};
       } catch (e) {
-        yield {'done': ++_done, 'name': ''};
+        yield {'done': ++done, 'name': ''};
       }
       try {
         final List result =
@@ -139,7 +139,7 @@ class SearchAddPlaylist {
   }
 
   static Stream<Map> ressoSongsAdder(String playName, List tracks) async* {
-    int _done = 0;
+    int done = 0;
     for (final track in tracks) {
       String? trackName;
       String? artistName;
@@ -150,9 +150,9 @@ class SearchAddPlaylist {
             .toList()
             .join(', ');
 
-        yield {'done': ++_done, 'name': '$trackName - $artistName'};
+        yield {'done': ++done, 'name': '$trackName - $artistName'};
       } catch (e) {
-        yield {'done': ++_done, 'name': ''};
+        yield {'done': ++done, 'name': ''};
       }
       try {
         final List result =
@@ -165,11 +165,11 @@ class SearchAddPlaylist {
   }
 
   static Future<void> showProgress(
-    int _total,
+    int total,
     BuildContext cxt,
     Stream songAdd,
   ) async {
-    if (_total != 0) {
+    if (total != 0) {
       await showModalBottomSheet(
         isDismissible: false,
         backgroundColor: Colors.transparent,
@@ -185,10 +185,10 @@ class SearchAddPlaylist {
                     stream: songAdd as Stream<Object>?,
                     builder: (ctxt, AsyncSnapshot snapshot) {
                       final Map? data = snapshot.data as Map?;
-                      final int _done = (data ?? const {})['done'] as int? ?? 0;
+                      final int done = (data ?? const {})['done'] as int? ?? 0;
                       final String name =
                           (data ?? const {})['name'] as String? ?? '';
-                      if (_done == _total) Navigator.pop(ctxt);
+                      if (done == total) Navigator.pop(ctxt);
                       return Column(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
@@ -205,7 +205,7 @@ class SearchAddPlaylist {
                             child: Stack(
                               children: [
                                 Center(
-                                  child: Text('$_done / $_total'),
+                                  child: Text('$done / $total'),
                                 ),
                                 Center(
                                   child: SizedBox(
@@ -215,7 +215,7 @@ class SearchAddPlaylist {
                                       valueColor: AlwaysStoppedAnimation<Color>(
                                         Theme.of(ctxt).colorScheme.secondary,
                                       ),
-                                      value: _done / _total,
+                                      value: done / total,
                                     ),
                                   ),
                                 ),

@@ -40,8 +40,15 @@ import 'package:hive/hive.dart';
 class LikedSongs extends StatefulWidget {
   final String playlistName;
   final String? showName;
-  const LikedSongs({Key? key, required this.playlistName, this.showName})
-      : super(key: key);
+  final bool fromPlaylist;
+  final List? songs;
+  const LikedSongs({
+    super.key,
+    required this.playlistName,
+    this.showName,
+    this.fromPlaylist = false,
+    this.songs,
+  });
   @override
   _LikedSongsState createState() => _LikedSongsState();
 }
@@ -108,14 +115,18 @@ class _LikedSongsState extends State<LikedSongs>
 
   void getLiked() {
     likedBox = Hive.box(widget.playlistName);
-    _songs = likedBox?.values.toList() ?? [];
-    songs_count.addSongsCount(
-      widget.playlistName,
-      _songs.length,
-      _songs.length >= 4
-          ? _songs.sublist(0, 4)
-          : _songs.sublist(0, _songs.length),
-    );
+    if (widget.fromPlaylist) {
+      _songs = widget.songs!;
+    } else {
+      _songs = likedBox?.values.toList() ?? [];
+      songs_count.addSongsCount(
+        widget.playlistName,
+        _songs.length,
+        _songs.length >= 4
+            ? _songs.sublist(0, 4)
+            : _songs.sublist(0, _songs.length),
+      );
+    }
     setArtistAlbum();
   }
 
@@ -492,23 +503,26 @@ class _LikedSongsState extends State<LikedSongs>
                             albums: _albums,
                             type: 'album',
                             offline: false,
+                            playlistName: widget.playlistName,
                             sortedAlbumKeysList: _sortedAlbumKeysList,
                           ),
                           AlbumsTab(
                             albums: _artists,
                             type: 'artist',
                             offline: false,
+                            playlistName: widget.playlistName,
                             sortedAlbumKeysList: _sortedArtistKeysList,
                           ),
                           AlbumsTab(
                             albums: _genres,
                             type: 'genre',
                             offline: false,
+                            playlistName: widget.playlistName,
                             sortedAlbumKeysList: _sortedGenreKeysList,
                           ),
                         ],
                       ),
-                floatingActionButton: Container(
+                floatingActionButton: DecoratedBox(
                   decoration: BoxDecoration(
                     color: Theme.of(context).cardColor,
                     borderRadius: BorderRadius.circular(100.0),
@@ -541,7 +555,7 @@ class _LikedSongsState extends State<LikedSongs>
                           valueListenable: _showShuffle,
                           builder: (
                             BuildContext context,
-                            bool _showFullShuffle,
+                            bool showFullShuffle,
                             Widget? child,
                           ) {
                             return Row(
@@ -556,9 +570,8 @@ class _LikedSongsState extends State<LikedSongs>
                                       : Colors.black,
                                   size: 24.0,
                                 ),
-                                if (_showFullShuffle)
-                                  const SizedBox(width: 5.0),
-                                if (_showFullShuffle)
+                                if (showFullShuffle) const SizedBox(width: 5.0),
+                                if (showFullShuffle)
                                   Text(
                                     AppLocalizations.of(context)!.shuffle,
                                     style: TextStyle(
@@ -571,8 +584,7 @@ class _LikedSongsState extends State<LikedSongs>
                                     ),
                                     textAlign: TextAlign.center,
                                   ),
-                                if (_showFullShuffle)
-                                  const SizedBox(width: 2.5),
+                                if (showFullShuffle) const SizedBox(width: 2.5),
                               ],
                             );
                           },
@@ -597,12 +609,12 @@ class SongsTab extends StatefulWidget {
   final Function(Map item) onDelete;
   final ScrollController scrollController;
   const SongsTab({
-    Key? key,
+    super.key,
     required this.songs,
     required this.onDelete,
     required this.playlistName,
     required this.scrollController,
-  }) : super(key: key);
+  });
 
   @override
   State<SongsTab> createState() => _SongsTabState();
@@ -724,14 +736,16 @@ class AlbumsTab extends StatefulWidget {
   // final String? tempPath;
   final String type;
   final bool offline;
+  final String? playlistName;
   const AlbumsTab({
-    Key? key,
+    super.key,
     required this.albums,
     required this.offline,
     required this.sortedAlbumKeysList,
     required this.type,
+    this.playlistName,
     // this.tempPath,
-  }) : super(key: key);
+  });
 
   @override
   State<AlbumsTab> createState() => _AlbumsTabState();
@@ -804,10 +818,20 @@ class _AlbumsTabState extends State<AlbumsTab>
                   Navigator.of(context).push(
                     PageRouteBuilder(
                       opaque: false,
-                      pageBuilder: (_, __, ___) => SongsList(
-                        data: widget.albums[widget.sortedAlbumKeysList[index]]!,
-                        offline: widget.offline,
-                      ),
+                      pageBuilder: (_, __, ___) => widget.offline
+                          ? SongsList(
+                              data: widget
+                                  .albums[widget.sortedAlbumKeysList[index]]!,
+                              offline: widget.offline,
+                            )
+                          : LikedSongs(
+                              playlistName: widget.playlistName!,
+                              fromPlaylist: true,
+                              showName:
+                                  widget.sortedAlbumKeysList[index].toString(),
+                              songs: widget
+                                  .albums[widget.sortedAlbumKeysList[index]],
+                            ),
                     ),
                   );
                 },

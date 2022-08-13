@@ -101,7 +101,12 @@ class _SaavnHomePageState extends State<SaavnHomePage>
         final artists = item['more_info']?['artistMap']?['artists']
             .map((artist) => artist['name'])
             .toList();
-        return 'Album  • ${artists?.join(', ')?.toString().unescape()}';
+        if (artists != null) {
+          return 'Album • ${artists?.join(', ')?.toString().unescape()}';
+        } else if (item['subtitle'] != null && item['subtitle'] != '') {
+          return 'Album • ${item['subtitle']?.toString().unescape()}';
+        }
+        return 'Album';
       default:
         final artists = item['more_info']?['artistMap']?['artists']
             .map((artist) => artist['name'])
@@ -730,7 +735,7 @@ class _SaavnHomePageState extends State<SaavnHomePage>
                                                         ),
                                                       ),
                                                       child: Center(
-                                                        child: Container(
+                                                        child: DecoratedBox(
                                                           decoration:
                                                               BoxDecoration(
                                                             color:

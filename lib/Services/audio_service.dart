@@ -153,9 +153,9 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
 
         if (recommend && item.extras!['autoplay'] as bool) {
           Future.delayed(const Duration(seconds: 1), () async {
-            final List<MediaItem> _queue = queue.value;
-            final int index = _queue.indexOf(item);
-            final int queueLength = _queue.length;
+            final List<MediaItem> mediaQueue = queue.value;
+            final int index = mediaQueue.indexOf(item);
+            final int queueLength = mediaQueue.length;
             if (queueLength - index > 2) {
               await Future.delayed(const Duration(seconds: 10), () {});
             }
@@ -170,7 +170,7 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
                   value[i] as Map,
                   addedByAutoplay: true,
                 );
-                if (!_queue.contains(element)) {
+                if (!mediaQueue.contains(element)) {
                   addQueueItem(element);
                 }
               }
@@ -250,13 +250,13 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
   }
 
   AudioSource _itemToSource(MediaItem mediaItem) {
-    AudioSource _audioSource;
+    AudioSource audioSource;
     if (mediaItem.artUri.toString().startsWith('file:')) {
-      _audioSource =
+      audioSource =
           AudioSource.uri(Uri.file(mediaItem.extras!['url'].toString()));
     } else {
       if (downloadsBox.containsKey(mediaItem.id) && useDown) {
-        _audioSource = AudioSource.uri(
+        audioSource = AudioSource.uri(
           Uri.file(
             (downloadsBox.get(mediaItem.id) as Map)['path'].toString(),
           ),
@@ -272,7 +272,7 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
         //     ),
         //   );
         // } else {
-        _audioSource = AudioSource.uri(
+        audioSource = AudioSource.uri(
           Uri.parse(
             mediaItem.extras!['url'].toString().replaceAll(
                   '_96.',
@@ -284,8 +284,8 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
       }
     }
 
-    _mediaItemExpando[_audioSource] = mediaItem;
-    return _audioSource;
+    _mediaItemExpando[audioSource] = mediaItem;
+    return audioSource;
   }
 
   List<AudioSource> _itemsToSources(List<MediaItem> mediaItems) {
@@ -339,12 +339,12 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
     final bool withPipeline =
         Hive.box('settings').get('supportEq', defaultValue: false) as bool;
     if (withPipeline && Platform.isAndroid) {
-      final AudioPipeline _pipeline = AudioPipeline(
+      final AudioPipeline pipeline = AudioPipeline(
         androidAudioEffects: [
           _equalizer,
         ],
       );
-      _player = AudioPlayer(audioPipeline: _pipeline);
+      _player = AudioPlayer(audioPipeline: pipeline);
     } else {
       _player = AudioPlayer();
     }

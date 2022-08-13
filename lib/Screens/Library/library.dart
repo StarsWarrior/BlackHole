@@ -27,7 +27,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class LibraryPage extends StatefulWidget {
-  const LibraryPage({Key? key}) : super(key: key);
+  const LibraryPage({super.key});
 
   @override
   _LibraryPageState createState() => _LibraryPageState();
@@ -140,11 +140,11 @@ class _LibraryPageState extends State<LibraryPage> {
 
 class LibraryTile extends StatelessWidget {
   const LibraryTile({
-    Key? key,
+    super.key,
     required this.icon,
     required this.title,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   final String title;
   final IconData icon;

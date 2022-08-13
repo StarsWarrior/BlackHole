@@ -23,8 +23,8 @@ import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 Future<void> downloadChecker() async {
-  final List _songs = Hive.box('downloads').values.toList();
-  final List<String> keys = await compute(checkPaths, _songs);
+  final List songs = Hive.box('downloads').values.toList();
+  final List<String> keys = await compute(checkPaths, songs);
   await Hive.box('downloads').deleteAll(keys);
 }
 

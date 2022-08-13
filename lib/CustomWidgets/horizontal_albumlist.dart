@@ -28,10 +28,10 @@ class HorizontalAlbumsList extends StatelessWidget {
   final List songsList;
   final Function(int) onTap;
   const HorizontalAlbumsList({
-    Key? key,
+    super.key,
     required this.songsList,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   String formatString(String? text) {
     return text == null
@@ -220,7 +220,7 @@ class HorizontalAlbumsList extends StatelessWidget {
                                     ),
                                   ),
                                   child: Center(
-                                    child: Container(
+                                    child: DecoratedBox(
                                       decoration: BoxDecoration(
                                         color: Colors.black87,
                                         borderRadius:

@@ -33,7 +33,7 @@ class BouncyImageSliverScrollView extends StatelessWidget {
   final bool localImage;
   final String placeholderImage;
   BouncyImageSliverScrollView({
-    Key? key,
+    super.key,
     this.scrollController,
     this.shrinkWrap = false,
     required this.sliverList,
@@ -42,7 +42,7 @@ class BouncyImageSliverScrollView extends StatelessWidget {
     this.localImage = false,
     this.imageUrl,
     this.actions,
-  }) : super(key: key);
+  });
 
   final ValueNotifier<double> _opacity = ValueNotifier<double>(1.0);
 

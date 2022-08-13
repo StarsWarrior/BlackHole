@@ -284,7 +284,7 @@ class Download with ChangeNotifier {
     String? filepath;
     late String filepath2;
     String? appPath;
-    final List<int> _bytes = [];
+    final List<int> bytes = [];
     String lyrics;
     final artname = fileName.replaceAll('.m4a', '.jpg');
     if (!Platform.isWindows) {
@@ -344,7 +344,7 @@ class Download with ChangeNotifier {
     int recieved = 0;
     response.stream.asBroadcastStream();
     response.stream.listen((value) {
-      _bytes.addAll(value);
+      bytes.addAll(value);
       try {
         recieved += value.length;
         progress = recieved / total;
@@ -358,7 +358,7 @@ class Download with ChangeNotifier {
     }).onDone(() async {
       if (download) {
         final file = File(filepath!);
-        await file.writeAsBytes(_bytes);
+        await file.writeAsBytes(bytes);
 
         final client = HttpClient();
         final HttpClientRequest request2 =

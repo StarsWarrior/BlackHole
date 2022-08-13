@@ -325,9 +325,9 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                                                       await Hive.openBox(
                                                     playlistName,
                                                   );
-                                                  final Map _songsMap =
+                                                  final Map songsMap =
                                                       playlistBox.toMap();
-                                                  finalMap.addAll(_songsMap);
+                                                  finalMap.addAll(songsMap);
                                                   await playlistDetails
                                                       .remove(playlistName);
                                                   playlistNames
@@ -507,7 +507,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                                     showDialog(
                                       context: context,
                                       builder: (BuildContext context) {
-                                        final _controller =
+                                        final controller =
                                             TextEditingController(
                                           text: showName,
                                         );
@@ -538,7 +538,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                                                 autofocus: true,
                                                 textAlignVertical:
                                                     TextAlignVertical.bottom,
-                                                controller: _controller,
+                                                controller: controller,
                                                 onSubmitted: (value) async {
                                                   Navigator.pop(context);
                                                   playlistDetails[name] == null
@@ -590,14 +590,14 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                                                 playlistDetails[name] == null
                                                     ? playlistDetails.addAll({
                                                         name: {
-                                                          'name': _controller
+                                                          'name': controller
                                                               .text
                                                               .trim()
                                                         }
                                                       })
                                                     : playlistDetails[name]
                                                         .addAll({
-                                                        'name': _controller.text
+                                                        'name': controller.text
                                                             .trim()
                                                       });
 

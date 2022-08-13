@@ -122,7 +122,7 @@ class _SettingPageState extends State<SettingPage> {
       .get('preferredLanguage', defaultValue: ['Hindi'])?.toList() as List;
   List preferredMiniButtons = Hive.box('settings').get(
     'preferredMiniButtons',
-    defaultValue: ['Previous', 'Play/Pause', 'Next'],
+    defaultValue: ['Like', 'Play/Pause', 'Next'],
   )?.toList() as List;
 
   @override
@@ -1511,7 +1511,7 @@ class _SettingPageState extends State<SettingPage> {
                           ),
                           dense: true,
                           onTap: () {
-                            final GlobalKey<AnimatedListState> _listKey =
+                            final GlobalKey<AnimatedListState> listKey =
                                 GlobalKey<AnimatedListState>();
                             showModalBottomSheet(
                               isDismissible: true,
@@ -1531,7 +1531,7 @@ class _SettingPageState extends State<SettingPage> {
                                       0,
                                       10,
                                     ),
-                                    key: _listKey,
+                                    key: listKey,
                                     initialItemCount:
                                         blacklistedHomeSections.length + 1,
                                     itemBuilder: (cntxt, idx, animation) {
@@ -1564,7 +1564,7 @@ class _SettingPageState extends State<SettingPage> {
                                                       'blacklistedHomeSections',
                                                       blacklistedHomeSections,
                                                     );
-                                                    _listKey.currentState!
+                                                    listKey.currentState!
                                                         .insertItem(
                                                       blacklistedHomeSections
                                                           .length,
@@ -1597,7 +1597,7 @@ class _SettingPageState extends State<SettingPage> {
                                                       'blacklistedHomeSections',
                                                       blacklistedHomeSections,
                                                     );
-                                                    _listKey.currentState!
+                                                    listKey.currentState!
                                                         .removeItem(
                                                       idx,
                                                       (
@@ -2544,7 +2544,7 @@ class _SettingPageState extends State<SettingPage> {
                           ),
                           dense: true,
                           onTap: () {
-                            final GlobalKey<AnimatedListState> _listKey =
+                            final GlobalKey<AnimatedListState> listKey =
                                 GlobalKey<AnimatedListState>();
                             showModalBottomSheet(
                               isDismissible: true,
@@ -2564,7 +2564,7 @@ class _SettingPageState extends State<SettingPage> {
                                       0,
                                       10,
                                     ),
-                                    key: _listKey,
+                                    key: listKey,
                                     initialItemCount:
                                         includedExcludedPaths.length + 2,
                                     itemBuilder: (cntxt, idx, animation) {
@@ -2706,7 +2706,7 @@ class _SettingPageState extends State<SettingPage> {
                                                 'includedExcludedPaths',
                                                 includedExcludedPaths,
                                               );
-                                              _listKey.currentState!.insertItem(
+                                              listKey.currentState!.insertItem(
                                                 includedExcludedPaths.length,
                                               );
                                             } else {
@@ -2747,7 +2747,7 @@ class _SettingPageState extends State<SettingPage> {
                                                 'includedExcludedPaths',
                                                 includedExcludedPaths,
                                               );
-                                              _listKey.currentState!.removeItem(
+                                              listKey.currentState!.removeItem(
                                                 idx,
                                                 (context, animation) =>
                                                     Container(),
@@ -2957,10 +2957,10 @@ class _SettingPageState extends State<SettingPage> {
                               showDialog(
                                 context: context,
                                 builder: (BuildContext context) {
-                                  final _controller = TextEditingController(
+                                  final controller = TextEditingController(
                                     text: settingsBox.get('proxyIp').toString(),
                                   );
-                                  final _controller2 = TextEditingController(
+                                  final controller2 = TextEditingController(
                                     text:
                                         settingsBox.get('proxyPort').toString(),
                                   );
@@ -2990,7 +2990,7 @@ class _SettingPageState extends State<SettingPage> {
                                         ),
                                         TextField(
                                           autofocus: true,
-                                          controller: _controller,
+                                          controller: controller,
                                         ),
                                         const SizedBox(
                                           height: 30,
@@ -3012,7 +3012,7 @@ class _SettingPageState extends State<SettingPage> {
                                         ),
                                         TextField(
                                           autofocus: true,
-                                          controller: _controller2,
+                                          controller: controller2,
                                         ),
                                       ],
                                     ),
@@ -3050,12 +3050,12 @@ class _SettingPageState extends State<SettingPage> {
                                         onPressed: () {
                                           settingsBox.put(
                                             'proxyIp',
-                                            _controller.text.trim(),
+                                            controller.text.trim(),
                                           );
                                           settingsBox.put(
                                             'proxyPort',
                                             int.parse(
-                                              _controller2.text.trim(),
+                                              controller2.text.trim(),
                                             ),
                                           );
                                           Navigator.pop(context);
@@ -3982,14 +3982,14 @@ class _SettingPageState extends State<SettingPage> {
 
 class BoxSwitchTile extends StatelessWidget {
   const BoxSwitchTile({
-    Key? key,
+    super.key,
     required this.title,
     this.subtitle,
     required this.keyName,
     required this.defaultValue,
     this.isThreeLine,
     this.onChanged,
-  }) : super(key: key);
+  });
 
   final Text title;
   final Text? subtitle;

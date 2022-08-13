@@ -32,7 +32,7 @@ class SearchBar extends StatefulWidget {
   final Function(String)? onQueryChanged;
   final Function(String) onSubmitted;
   const SearchBar({
-    Key? key,
+    super.key,
     this.leading,
     this.hintText,
     this.showClose = true,
@@ -43,7 +43,7 @@ class SearchBar extends StatefulWidget {
     required this.controller,
     required this.liveSearch,
     required this.onSubmitted,
-  }) : super(key: key);
+  });
 
   @override
   State<SearchBar> createState() => _SearchBarState();
@@ -175,10 +175,10 @@ class _SearchBarState extends State<SearchBar> {
                         }
                       }
                     },
-                    onSubmitted: (_query) {
-                      if (_query.trim() != '') {
-                        query = _query;
-                        widget.onSubmitted(_query);
+                    onSubmitted: (submittedQuery) {
+                      if (submittedQuery.trim() != '') {
+                        query = submittedQuery;
+                        widget.onSubmitted(submittedQuery);
                         if (!hide.value) hide.value = true;
                       }
                     },

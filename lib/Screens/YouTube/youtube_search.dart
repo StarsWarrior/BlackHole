@@ -33,7 +33,7 @@ import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
 class YouTubeSearchPage extends StatefulWidget {
   final String query;
-  const YouTubeSearchPage({Key? key, required this.query}) : super(key: key);
+  const YouTubeSearchPage({super.key, required this.query});
   @override
   _YouTubeSearchPageState createState() => _YouTubeSearchPageState();
 }
@@ -100,15 +100,15 @@ class _YouTubeSearchPageState extends State<YouTubeSearchPage> {
                     onPressed: () => Navigator.pop(context),
                   ),
                   hintText: AppLocalizations.of(context)!.searchYt,
-                  onQueryChanged: (_query) {
+                  onQueryChanged: (changedQuery) {
                     return YouTubeServices()
-                        .getSearchSuggestions(query: _query);
+                        .getSearchSuggestions(query: changedQuery);
                   },
-                  onSubmitted: (_query) async {
+                  onSubmitted: (submittedQuery) async {
                     setState(() {
                       fetched = false;
-                      query = _query;
-                      _controller.text = _query;
+                      query = submittedQuery;
+                      _controller.text = submittedQuery;
                       status = false;
                       searchedList = [];
                     });

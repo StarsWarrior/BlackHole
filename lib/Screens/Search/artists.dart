@@ -41,9 +41,9 @@ class ArtistSearchPage extends StatefulWidget {
   final Map data;
 
   const ArtistSearchPage({
-    Key? key,
+    super.key,
     required this.data,
-  }) : super(key: key);
+  });
 
   @override
   _ArtistSearchPageState createState() => _ArtistSearchPageState();

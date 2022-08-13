@@ -32,11 +32,11 @@ class SongsList extends StatefulWidget {
   final bool offline;
   final String? title;
   const SongsList({
-    Key? key,
+    super.key,
     required this.data,
     required this.offline,
     this.title,
-  }) : super(key: key);
+  });
   @override
   _SongsListState createState() => _SongsListState();
 }

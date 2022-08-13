@@ -29,11 +29,11 @@ class DownloadButton extends StatefulWidget {
   final String? icon;
   final double? size;
   const DownloadButton({
-    Key? key,
+    super.key,
     required this.data,
     this.icon,
     this.size,
-  }) : super(key: key);
+  });
 
   @override
   _DownloadButtonState createState() => _DownloadButtonState();
@@ -156,10 +156,10 @@ class MultiDownloadButton extends StatefulWidget {
   final List data;
   final String playlistName;
   const MultiDownloadButton({
-    Key? key,
+    super.key,
     required this.data,
     required this.playlistName,
-  }) : super(key: key);
+  });
 
   @override
   _MultiDownloadButtonState createState() => _MultiDownloadButtonState();
@@ -265,10 +265,10 @@ class AlbumDownloadButton extends StatefulWidget {
   final String albumId;
   final String albumName;
   const AlbumDownloadButton({
-    Key? key,
+    super.key,
     required this.albumId,
     required this.albumName,
-  }) : super(key: key);
+  });
 
   @override
   _AlbumDownloadButtonState createState() => _AlbumDownloadButtonState();

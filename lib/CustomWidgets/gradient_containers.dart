@@ -33,7 +33,7 @@ class _GradientContainerState extends State<GradientContainer> {
   MyTheme currentTheme = GetIt.I<MyTheme>();
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return DecoratedBox(
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
@@ -119,7 +119,7 @@ class _GradientCardState extends State<GradientCard> {
       ),
       clipBehavior: Clip.antiAlias,
       margin: EdgeInsets.zero,
-      child: Container(
+      child: DecoratedBox(
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,

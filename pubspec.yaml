@@ -7,7 +7,7 @@ publish_to: "none"
 version: 1.15.1+32
 
 environment:
-  sdk: ">=2.13.0 <3.0.0"
+  sdk: ">=2.17.0 <3.0.0"
 
 dependencies:
   app_links: 2.2.2
@@ -18,8 +18,8 @@ dependencies:
   carousel_slider: ^4.0.0
   cupertino_icons: ^1.0.5
   dart_des: ^1.0.2
-  device_info_plus: ^4.0.0
-  file_picker: ^4.6.1
+  device_info_plus: ^4.1.0
+  file_picker: ^5.0.1
   flip_card: ^0.6.0
   flutter:
     sdk: flutter
@@ -33,7 +33,8 @@ dependencies:
   hive_flutter: ^1.1.0
   html_unescape: ^2.0.0
   just_audio: ^0.9.28
-  just_audio_libwinmedia: ^0.0.4 # For windows and linux
+  # Discontinued, Use just_audio_windows instead.
+  # just_audio_libwinmedia: ^0.0.4 # For windows and linux.
   # logging: ^1.0.1
   marquee: ^2.2.3
   material_design_icons_flutter: 5.0.5955-rc.1
@@ -54,8 +55,8 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  lint: ^1.8.2
-  msix: ^3.6.2
+  lint: ^1.10.0
+  msix: ^3.6.3
 
 flutter:
   uses-material-design: true

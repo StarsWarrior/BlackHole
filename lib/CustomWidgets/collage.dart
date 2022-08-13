@@ -28,12 +28,12 @@ class Collage extends StatelessWidget {
   final String placeholderImage;
   final double borderRadius;
   const Collage({
-    Key? key,
+    super.key,
     this.borderRadius = 7.0,
     required this.showGrid,
     required this.imageList,
     required this.placeholderImage,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -96,11 +96,11 @@ class OfflineCollage extends StatelessWidget {
   final String placeholderImage;
   final bool showGrid;
   const OfflineCollage({
-    Key? key,
+    super.key,
     required this.showGrid,
     required this.imageList,
     required this.placeholderImage,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

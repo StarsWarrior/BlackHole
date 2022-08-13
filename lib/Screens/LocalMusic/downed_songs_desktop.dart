@@ -43,12 +43,12 @@ class DownloadedSongsDesktop extends StatefulWidget {
   final int? playlistId;
   // final bool showPlaylists;
   const DownloadedSongsDesktop({
-    Key? key,
+    super.key,
     this.cachedSongs,
     this.title,
     this.playlistId,
     // this.showPlaylists = false,
-  }) : super(key: key);
+  });
   @override
   _DownloadedSongsDesktopState createState() => _DownloadedSongsDesktopState();
 }
@@ -653,12 +653,12 @@ class SongsTab extends StatefulWidget {
   final String? playlistName;
   final String tempPath;
   const SongsTab({
-    Key? key,
+    super.key,
     required this.songs,
     required this.tempPath,
     this.playlistId,
     this.playlistName,
-  }) : super(key: key);
+  });
 
   @override
   State<SongsTab> createState() => _SongsTabState();
@@ -1280,11 +1280,11 @@ class AlbumsTabDesktop extends StatefulWidget {
   final List<String> albumsList;
   final String tempPath;
   const AlbumsTabDesktop({
-    Key? key,
+    super.key,
     required this.albums,
     required this.albumsList,
     required this.tempPath,
-  }) : super(key: key);
+  });
 
   @override
   State<AlbumsTabDesktop> createState() => _AlbumsTabDesktopState();

@@ -90,8 +90,7 @@ class HandleRoute {
 class SaavnUrlHandler extends StatelessWidget {
   final String token;
   final String type;
-  const SaavnUrlHandler({Key? key, required this.token, required this.type})
-      : super(key: key);
+  const SaavnUrlHandler({super.key, required this.token, required this.type});
 
   @override
   Widget build(BuildContext context) {
@@ -130,7 +129,7 @@ class SaavnUrlHandler extends StatelessWidget {
 
 class OfflinePlayHandler extends StatelessWidget {
   final String id;
-  const OfflinePlayHandler({Key? key, required this.id}) : super(key: key);
+  const OfflinePlayHandler({super.key, required this.id});
 
   Future<List> playOfflineSong(String id) async {
     final OfflineAudioQuery offlineAudioQuery = OfflineAudioQuery();

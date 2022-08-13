@@ -27,11 +27,11 @@ class ArtistLikeButton extends StatefulWidget {
   final Map data;
   final bool showSnack;
   const ArtistLikeButton({
-    Key? key,
+    super.key,
     this.size,
     required this.data,
     this.showSnack = false,
-  }) : super(key: key);
+  });
 
   @override
   _ArtistLikeButtonState createState() => _ArtistLikeButtonState();

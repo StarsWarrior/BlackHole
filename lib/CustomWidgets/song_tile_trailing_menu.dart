@@ -38,11 +38,11 @@ class SongTileTrailingMenu extends StatefulWidget {
   final bool isPlaylist;
   final Function(Map)? deleteLiked;
   const SongTileTrailingMenu({
-    Key? key,
+    super.key,
     required this.data,
     this.isPlaylist = false,
     this.deleteLiked,
-  }) : super(key: key);
+  });
 
   @override
   _SongTileTrailingMenuState createState() => _SongTileTrailingMenuState();
@@ -214,8 +214,7 @@ class _SongTileTrailingMenuState extends State<SongTileTrailingMenu> {
 
 class YtSongTileTrailingMenu extends StatefulWidget {
   final Video data;
-  const YtSongTileTrailingMenu({Key? key, required this.data})
-      : super(key: key);
+  const YtSongTileTrailingMenu({super.key, required this.data});
 
   @override
   _YtSongTileTrailingMenuState createState() => _YtSongTileTrailingMenuState();

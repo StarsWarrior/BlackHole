@@ -34,7 +34,7 @@ List searchedList = Hive.box('cache').get('ytHome', defaultValue: []) as List;
 List headList = Hive.box('cache').get('ytHomeHead', defaultValue: []) as List;
 
 class YouTube extends StatefulWidget {
-  const YouTube({Key? key}) : super(key: key);
+  const YouTube({super.key});
 
   @override
   _YouTubeState createState() => _YouTubeState();
@@ -137,16 +137,16 @@ class _YouTubeState extends State<YouTube>
                       MaterialLocalizations.of(context).openAppDrawerTooltip,
                 ),
               ),
-        onQueryChanged: (_query) {
-          return YouTubeServices().getSearchSuggestions(query: _query);
+        onQueryChanged: (changedQuery) {
+          return YouTubeServices().getSearchSuggestions(query: changedQuery);
         },
-        onSubmitted: (_query) {
+        onSubmitted: (submittedQuery) {
           Navigator.push(
             context,
             PageRouteBuilder(
               opaque: false,
               pageBuilder: (_, __, ___) => YouTubeSearchPage(
-                query: _query,
+                query: submittedQuery,
               ),
             ),
           );

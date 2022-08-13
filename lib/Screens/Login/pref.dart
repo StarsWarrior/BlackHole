@@ -25,7 +25,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:hive/hive.dart';
 
 class PrefScreen extends StatefulWidget {
-  const PrefScreen({Key? key}) : super(key: key);
+  const PrefScreen({super.key});
 
   @override
   _PrefScreenState createState() => _PrefScreenState();

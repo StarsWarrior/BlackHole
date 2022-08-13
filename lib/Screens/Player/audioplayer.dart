@@ -64,14 +64,14 @@ class PlayScreen extends StatefulWidget {
   final bool recommend;
   final bool fromDownloads;
   const PlayScreen({
-    Key? key,
+    super.key,
     required this.index,
     required this.songsList,
     required this.fromMiniplayer,
     required this.offline,
     required this.recommend,
     required this.fromDownloads,
-  }) : super(key: key);
+  });
   @override
   _PlayScreenState createState() => _PlayScreenState();
 }
@@ -308,7 +308,7 @@ class _PlayScreenState extends State<PlayScreen> {
 
     return Dismissible(
       direction: DismissDirection.down,
-      background: Container(color: Colors.transparent),
+      background: const ColoredBox(color: Colors.transparent),
       key: const Key('playScreen'),
       onDismissed: (direction) {
         Navigator.pop(context);

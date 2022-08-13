@@ -42,7 +42,7 @@ bool emptyViral = false;
 
 class TopCharts extends StatefulWidget {
   final PageController pageController;
-  const TopCharts({Key? key, required this.pageController}) : super(key: key);
+  const TopCharts({super.key, required this.pageController});
 
   @override
   _TopChartsState createState() => _TopChartsState();
@@ -182,7 +182,7 @@ Future<List> scrapData(String type) async {
 
 class TopPage extends StatefulWidget {
   final String type;
-  const TopPage({Key? key, required this.type}) : super(key: key);
+  const TopPage({super.key, required this.type});
   @override
   _TopPageState createState() => _TopPageState();
 }

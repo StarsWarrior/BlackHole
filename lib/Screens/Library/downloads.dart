@@ -41,7 +41,7 @@ import 'package:hive/hive.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class Downloads extends StatefulWidget {
-  const Downloads({Key? key}) : super(key: key);
+  const Downloads({super.key});
   @override
   _DownloadsState createState() => _DownloadsState();
 }
@@ -509,7 +509,7 @@ class _DownloadsState extends State<Downloads>
                           ),
                         ],
                       ),
-                floatingActionButton: Container(
+                floatingActionButton: DecoratedBox(
                   decoration: BoxDecoration(
                     color: Theme.of(context).cardColor,
                     borderRadius: BorderRadius.circular(100.0),
@@ -542,7 +542,7 @@ class _DownloadsState extends State<Downloads>
                           valueListenable: _showShuffle,
                           builder: (
                             BuildContext context,
-                            bool _showFullShuffle,
+                            bool showFullShuffle,
                             Widget? child,
                           ) {
                             return Row(
@@ -557,9 +557,8 @@ class _DownloadsState extends State<Downloads>
                                       : Colors.black,
                                   size: 24.0,
                                 ),
-                                if (_showFullShuffle)
-                                  const SizedBox(width: 5.0),
-                                if (_showFullShuffle)
+                                if (showFullShuffle) const SizedBox(width: 5.0),
+                                if (showFullShuffle)
                                   Text(
                                     AppLocalizations.of(context)!.shuffle,
                                     style: TextStyle(
@@ -572,8 +571,7 @@ class _DownloadsState extends State<Downloads>
                                     ),
                                     textAlign: TextAlign.center,
                                   ),
-                                if (_showFullShuffle)
-                                  const SizedBox(width: 2.5),
+                                if (showFullShuffle) const SizedBox(width: 2.5),
                               ],
                             );
                           },
@@ -600,19 +598,19 @@ Future<Map> editTags(Map song, BuildContext context) async {
 
       FileImage songImage = FileImage(File(song['image'].toString()));
 
-      final _titlecontroller =
+      final titlecontroller =
           TextEditingController(text: song['title'].toString());
-      final _albumcontroller =
+      final albumcontroller =
           TextEditingController(text: song['album'].toString());
-      final _artistcontroller =
+      final artistcontroller =
           TextEditingController(text: song['artist'].toString());
-      final _albumArtistController =
+      final albumArtistController =
           TextEditingController(text: song['albumArtist'].toString());
-      final _genrecontroller =
+      final genrecontroller =
           TextEditingController(text: song['genre'].toString());
-      final _yearcontroller =
+      final yearcontroller =
           TextEditingController(text: song['year'].toString());
-      final _pathcontroller =
+      final pathcontroller =
           TextEditingController(text: song['path'].toString());
 
       return AlertDialog(
@@ -635,13 +633,13 @@ Future<Map> editTags(Map song, BuildContext context) async {
                       message: 'Pick Image',
                     );
                     if (filePath != '') {
-                      final _imagePath = filePath;
-                      File(_imagePath).copy(song['image'].toString());
+                      final imagePath = filePath;
+                      File(imagePath).copy(song['image'].toString());
 
-                      songImage = FileImage(File(_imagePath));
+                      songImage = FileImage(File(imagePath));
 
                       final Tag tag = Tag(
-                        artwork: _imagePath,
+                        artwork: imagePath,
                       );
                       try {
                         await [
@@ -688,7 +686,7 @@ Future<Map> editTags(Map song, BuildContext context) async {
                 ),
                 TextField(
                   autofocus: true,
-                  controller: _titlecontroller,
+                  controller: titlecontroller,
                   onSubmitted: (value) {},
                 ),
                 const SizedBox(
@@ -706,7 +704,7 @@ Future<Map> editTags(Map song, BuildContext context) async {
                 ),
                 TextField(
                   autofocus: true,
-                  controller: _artistcontroller,
+                  controller: artistcontroller,
                   onSubmitted: (value) {},
                 ),
                 const SizedBox(
@@ -724,7 +722,7 @@ Future<Map> editTags(Map song, BuildContext context) async {
                 ),
                 TextField(
                   autofocus: true,
-                  controller: _albumArtistController,
+                  controller: albumArtistController,
                   onSubmitted: (value) {},
                 ),
                 const SizedBox(
@@ -742,7 +740,7 @@ Future<Map> editTags(Map song, BuildContext context) async {
                 ),
                 TextField(
                   autofocus: true,
-                  controller: _albumcontroller,
+                  controller: albumcontroller,
                   onSubmitted: (value) {},
                 ),
                 const SizedBox(
@@ -760,7 +758,7 @@ Future<Map> editTags(Map song, BuildContext context) async {
                 ),
                 TextField(
                   autofocus: true,
-                  controller: _genrecontroller,
+                  controller: genrecontroller,
                   onSubmitted: (value) {},
                 ),
                 const SizedBox(
@@ -778,7 +776,7 @@ Future<Map> editTags(Map song, BuildContext context) async {
                 ),
                 TextField(
                   autofocus: true,
-                  controller: _yearcontroller,
+                  controller: yearcontroller,
                   onSubmitted: (value) {},
                 ),
                 const SizedBox(
@@ -796,7 +794,7 @@ Future<Map> editTags(Map song, BuildContext context) async {
                 ),
                 TextField(
                   autofocus: true,
-                  controller: _pathcontroller,
+                  controller: pathcontroller,
                   onSubmitted: (value) {},
                 ),
               ],
@@ -822,20 +820,20 @@ Future<Map> editTags(Map song, BuildContext context) async {
             ),
             onPressed: () async {
               Navigator.pop(context);
-              song['title'] = _titlecontroller.text;
-              song['album'] = _albumcontroller.text;
-              song['artist'] = _artistcontroller.text;
-              song['albumArtist'] = _albumArtistController.text;
-              song['genre'] = _genrecontroller.text;
-              song['year'] = _yearcontroller.text;
-              song['path'] = _pathcontroller.text;
+              song['title'] = titlecontroller.text;
+              song['album'] = albumcontroller.text;
+              song['artist'] = artistcontroller.text;
+              song['albumArtist'] = albumArtistController.text;
+              song['genre'] = genrecontroller.text;
+              song['year'] = yearcontroller.text;
+              song['path'] = pathcontroller.text;
               final tag = Tag(
-                title: _titlecontroller.text,
-                artist: _artistcontroller.text,
-                album: _albumcontroller.text,
-                genre: _genrecontroller.text,
-                year: _yearcontroller.text,
-                albumArtist: _albumArtistController.text,
+                title: titlecontroller.text,
+                artist: artistcontroller.text,
+                album: albumcontroller.text,
+                genre: genrecontroller.text,
+                year: yearcontroller.text,
+                albumArtist: albumArtistController.text,
               );
               try {
                 try {
@@ -887,11 +885,11 @@ class DownSongsTab extends StatefulWidget {
   final Function(Map item) onDelete;
   final ScrollController scrollController;
   const DownSongsTab({
-    Key? key,
+    super.key,
     required this.songs,
     required this.onDelete,
     required this.scrollController,
-  }) : super(key: key);
+  });
 
   @override
   State<DownSongsTab> createState() => _DownSongsTabState();

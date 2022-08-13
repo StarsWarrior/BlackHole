@@ -35,7 +35,7 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:url_launcher/url_launcher.dart';
 
 class ImportPlaylist extends StatelessWidget {
-  ImportPlaylist({Key? key}) : super(key: key);
+  ImportPlaylist({super.key});
 
   final Box settingsBox = Hive.box('settings');
   final List playlistNames =
@@ -353,12 +353,12 @@ Future<void> fetchPlaylists(
 
                         final Map data = await SpotifyApi()
                             .getTracksOfPlaylist(accessToken, value, 0);
-                        final int _total = data['total'] as int;
+                        final int total = data['total'] as int;
 
                         Stream<Map> songsAdder() async* {
-                          int _done = 0;
+                          int done = 0;
                           final List tracks = [];
-                          for (int i = 0; i * 100 <= _total; i++) {
+                          for (int i = 0; i * 100 <= total; i++) {
                             final Map data =
                                 await SpotifyApi().getTracksOfPlaylist(
                               accessToken,
@@ -385,9 +385,9 @@ Future<void> fetchPlaylists(
                               trackArtist = track['track']['artists'][0]['name']
                                   .toString();
                               trackName = track['track']['name'].toString();
-                              yield {'done': ++_done, 'name': trackName};
+                              yield {'done': ++done, 'name': trackName};
                             } catch (e) {
-                              yield {'done': ++_done, 'name': ''};
+                              yield {'done': ++done, 'name': ''};
                             }
                             try {
                               final List result =
@@ -405,7 +405,7 @@ Future<void> fetchPlaylists(
                         }
 
                         await SearchAddPlaylist.showProgress(
-                          _total,
+                          total,
                           context,
                           songsAdder(),
                         );
@@ -465,12 +465,12 @@ Future<void> fetchPlaylists(
     if (index != null) {
       String playName =
           spotifyPlaylists[index]['name'].toString().replaceAll('/', ' ');
-      final int _total = spotifyPlaylists[index]['tracks']['total'] as int;
+      final int total = spotifyPlaylists[index]['tracks']['total'] as int;
 
       Stream<Map> songsAdder() async* {
-        int _done = 0;
+        int done = 0;
         final List tracks = [];
-        for (int i = 0; i * 100 <= _total; i++) {
+        for (int i = 0; i * 100 <= total; i++) {
           final Map data = await SpotifyApi().getTracksOfPlaylist(
             accessToken,
             spotifyPlaylists[index]['id'].toString(),
@@ -494,9 +494,9 @@ Future<void> fetchPlaylists(
           try {
             trackArtist = track['track']['artists'][0]['name'].toString();
             trackName = track['track']['name'].toString();
-            yield {'done': ++_done, 'name': trackName};
+            yield {'done': ++done, 'name': trackName};
           } catch (e) {
-            yield {'done': ++_done, 'name': ''};
+            yield {'done': ++done, 'name': ''};
           }
           try {
             final List result = await SaavnAPI()
@@ -508,7 +508,7 @@ Future<void> fetchPlaylists(
         }
       }
 
-      await SearchAddPlaylist.showProgress(_total, context, songsAdder());
+      await SearchAddPlaylist.showProgress(total, context, songsAdder());
     }
   } else {
     // print('Failed');

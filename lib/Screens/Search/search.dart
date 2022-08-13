@@ -41,11 +41,11 @@ class SearchPage extends StatefulWidget {
   final bool fromHome;
   final bool autofocus;
   const SearchPage({
-    Key? key,
+    super.key,
     required this.query,
     this.fromHome = false,
     this.autofocus = false,
-  }) : super(key: key);
+  });
 
   @override
   _SearchPageState createState() => _SearchPageState();
@@ -605,11 +605,11 @@ class _SearchPageState extends State<SearchPage> {
                                     ).toList(),
                                   ),
                                 ),
-                  onSubmitted: (String _query) {
+                  onSubmitted: (String submittedQuery) {
                     setState(
                       () {
                         fetched = false;
-                        query = _query;
+                        query = submittedQuery;
                         status = false;
                         fromHome = false;
                         searchedData = {};

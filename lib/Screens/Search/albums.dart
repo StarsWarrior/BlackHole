@@ -35,10 +35,10 @@ class AlbumSearchPage extends StatefulWidget {
   final String type;
 
   const AlbumSearchPage({
-    Key? key,
+    super.key,
     required this.query,
     required this.type,
-  }) : super(key: key);
+  });
 
   @override
   _AlbumSearchPageState createState() => _AlbumSearchPageState();

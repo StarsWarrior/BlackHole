@@ -35,11 +35,11 @@ class YouTubePlaylist extends StatefulWidget {
   final String playlistName;
   final String playlistImage;
   const YouTubePlaylist({
-    Key? key,
+    super.key,
     required this.playlistId,
     required this.playlistName,
     required this.playlistImage,
-  }) : super(key: key);
+  });
 
   @override
   _YouTubePlaylistState createState() => _YouTubePlaylistState();

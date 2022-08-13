@@ -26,11 +26,11 @@ class PlaylistHead extends StatelessWidget {
   final bool offline;
   final bool fromDownloads;
   const PlaylistHead({
-    Key? key,
+    super.key,
     required this.songsList,
     required this.fromDownloads,
     required this.offline,
-  }) : super(key: key);
+  });
   @override
   Widget build(BuildContext context) {
     return Container(

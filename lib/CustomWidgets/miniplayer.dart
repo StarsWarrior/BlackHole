@@ -28,7 +28,7 @@ import 'package:get_it/get_it.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 class MiniPlayer extends StatefulWidget {
-  const MiniPlayer({Key? key}) : super(key: key);
+  const MiniPlayer({super.key});
 
   @override
   _MiniPlayerState createState() => _MiniPlayerState();
@@ -129,7 +129,7 @@ class _MiniPlayerState extends State<MiniPlayer> {
                         rotated;
                     final List preferredMiniButtons = Hive.box('settings').get(
                       'preferredMiniButtons',
-                      defaultValue: ['Previous', 'Play/Pause', 'Next'],
+                      defaultValue: ['Like', 'Play/Pause', 'Next'],
                     )?.toList() as List;
 
                     return Card(
@@ -231,7 +231,7 @@ class _MiniPlayerState extends State<MiniPlayer> {
                                   buttons: mediaItem.artUri
                                           .toString()
                                           .startsWith('file:')
-                                      ? ['Previous', 'Play/Pause', 'Next']
+                                      ? ['Like', 'Play/Pause', 'Next']
                                       : preferredMiniButtons,
                                 ),
                               ),

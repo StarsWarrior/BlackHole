@@ -38,9 +38,9 @@ class SongsListPage extends StatefulWidget {
   final Map listItem;
 
   const SongsListPage({
-    Key? key,
+    super.key,
     required this.listItem,
-  }) : super(key: key);
+  });
 
   @override
   _SongsListPageState createState() => _SongsListPageState();
@@ -136,6 +136,15 @@ class _SongsListPageState extends State<SongsListPage> {
         });
         break;
       default:
+        setState(() {
+          fetched = true;
+          loading = false;
+        });
+        ShowSnackBar().showSnackBar(
+          context,
+          'Error: Unsupported Type ${widget.listItem['type']}',
+          duration: const Duration(seconds: 3),
+        );
         break;
     }
   }
@@ -152,30 +161,6 @@ class _SongsListPageState extends State<SongsListPage> {
                   ? const Center(
                       child: CircularProgressIndicator(),
                     )
-                  // : songList.isEmpty
-                  //     ? Column(
-                  //         children: [
-                  //           AppBar(
-                  //             backgroundColor: Theme.of(context).brightness ==
-                  //                     Brightness.dark
-                  //                 ? Colors.transparent
-                  //                 : Theme.of(context).colorScheme.secondary,
-                  //             elevation: 0,
-                  //           ),
-                  //           Expanded(
-                  //             child: emptyScreen(
-                  //               context,
-                  //               0,
-                  //               ':( ',
-                  //               100,
-                  //               AppLocalizations.of(context)!.sorry,
-                  //               60,
-                  //               AppLocalizations.of(context)!.resultsNotFound,
-                  //               20,
-                  //             ),
-                  //           ),
-                  //         ],
-                  //       )
                   : BouncyImageSliverScrollView(
                       scrollController: _scrollController,
                       actions: [

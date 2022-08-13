@@ -96,7 +96,7 @@ class _RecentlyPlayedState extends State<RecentlyPlayed> {
                             : Dismissible(
                                 key: Key(_songs[index]['id'].toString()),
                                 direction: DismissDirection.endToStart,
-                                background: Container(
+                                background: ColoredBox(
                                   color: Colors.redAccent,
                                   child: Padding(
                                     padding: const EdgeInsets.symmetric(

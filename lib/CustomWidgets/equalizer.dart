@@ -26,7 +26,7 @@ import 'package:get_it/get_it.dart';
 import 'package:hive/hive.dart';
 
 class Equalizer extends StatefulWidget {
-  const Equalizer({Key? key}) : super(key: key);
+  const Equalizer({super.key});
 
   @override
   _EqualizerState createState() => _EqualizerState();
@@ -134,13 +134,13 @@ class VerticalSlider extends StatefulWidget {
   final AudioPlayerHandler audioHandler;
 
   const VerticalSlider({
-    Key? key,
+    super.key,
     required this.value,
     this.min = 0.0,
     this.max = 1.0,
     required this.bandIndex,
     required this.audioHandler,
-  }) : super(key: key);
+  });
 
   @override
   _VerticalSliderState createState() => _VerticalSliderState();
