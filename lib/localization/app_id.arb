@@ -658,5 +658,9 @@
   "topCharts": "Tangga Lagu Teratas",
   "@topCharts": {},
   "playRadio": "Putar Radio",
-  "@playRadio": {}
+  "@playRadio": {},
+  "importPlaylist": "Inpor Daftar Putar",
+  "@importPlaylist": {},
+  "mergePlaylists": "Gabungkan Daftar Putar",
+  "@mergePlaylists": {}
 }
