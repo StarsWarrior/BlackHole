@@ -652,5 +652,9 @@
   "importPlaylist": "Lejátszási lista importálása",
   "@importPlaylist": {},
   "mergePlaylists": "Lejátszási listák egyesítése",
-  "@mergePlaylists": {}
+  "@mergePlaylists": {},
+  "top": "Legjobb",
+  "@top": {},
+  "viral": "Virális",
+  "@viral": {}
 }
