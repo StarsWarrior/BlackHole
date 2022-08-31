@@ -19,6 +19,7 @@
 
 import 'package:blackhole/CustomWidgets/empty_screen.dart';
 import 'package:blackhole/CustomWidgets/gradient_containers.dart';
+import 'package:blackhole/CustomWidgets/like_button.dart';
 import 'package:blackhole/CustomWidgets/miniplayer.dart';
 import 'package:blackhole/Screens/Player/audioplayer.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -138,6 +139,19 @@ class _RecentlyPlayedState extends State<RecentlyPlayed> {
                                         image: AssetImage('assets/cover.jpg'),
                                       ),
                                     ),
+                                  ),
+                                  trailing: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      // DownloadButton(
+                                      //   data: _songs[index] as Map,
+                                      //   icon: 'download',
+                                      // ),
+                                      LikeButton(
+                                        mediaItem: null,
+                                        data: _songs[index] as Map,
+                                      ),
+                                    ],
                                   ),
                                   title: Text(
                                     '${_songs[index]["title"]}',

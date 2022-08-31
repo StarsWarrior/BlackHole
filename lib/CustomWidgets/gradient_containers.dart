@@ -33,7 +33,8 @@ class _GradientContainerState extends State<GradientContainer> {
   MyTheme currentTheme = GetIt.I<MyTheme>();
   @override
   Widget build(BuildContext context) {
-    return DecoratedBox(
+    // ignore: use_decorated_box
+    return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,

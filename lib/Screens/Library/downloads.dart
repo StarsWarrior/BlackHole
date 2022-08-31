@@ -804,7 +804,7 @@ Future<Map> editTags(Map song, BuildContext context) async {
         actions: [
           TextButton(
             style: TextButton.styleFrom(
-              primary: Theme.of(context).brightness == Brightness.dark
+              foregroundColor: Theme.of(context).brightness == Brightness.dark
                   ? Colors.white
                   : Colors.grey[700],
             ),
@@ -815,7 +815,7 @@ Future<Map> editTags(Map song, BuildContext context) async {
           ),
           TextButton(
             style: TextButton.styleFrom(
-              primary: Colors.white,
+              foregroundColor: Colors.white,
               backgroundColor: Theme.of(context).colorScheme.secondary,
             ),
             onPressed: () async {

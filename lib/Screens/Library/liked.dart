@@ -23,6 +23,7 @@ import 'package:blackhole/CustomWidgets/data_search.dart';
 import 'package:blackhole/CustomWidgets/download_button.dart';
 import 'package:blackhole/CustomWidgets/empty_screen.dart';
 import 'package:blackhole/CustomWidgets/gradient_containers.dart';
+import 'package:blackhole/CustomWidgets/like_button.dart';
 import 'package:blackhole/CustomWidgets/miniplayer.dart';
 import 'package:blackhole/CustomWidgets/playlist_head.dart';
 import 'package:blackhole/CustomWidgets/song_tile_trailing_menu.dart';
@@ -710,6 +711,11 @@ class _SongsTabState extends State<SongsTab>
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
+                          if (widget.playlistName != 'Favorite Songs')
+                            LikeButton(
+                              mediaItem: null,
+                              data: widget.songs[index] as Map,
+                            ),
                           DownloadButton(
                             data: widget.songs[index] as Map,
                             icon: 'download',

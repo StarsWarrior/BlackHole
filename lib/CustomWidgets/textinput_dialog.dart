@@ -62,7 +62,7 @@ Future<void> showTextInputDialog({
         actions: [
           TextButton(
             style: TextButton.styleFrom(
-              primary: Theme.of(context).brightness == Brightness.dark
+              foregroundColor: Theme.of(context).brightness == Brightness.dark
                   ? Colors.white
                   : Colors.grey[700],
             ),
@@ -73,9 +73,10 @@ Future<void> showTextInputDialog({
           ),
           TextButton(
             style: TextButton.styleFrom(
-              primary: Theme.of(context).colorScheme.secondary == Colors.white
-                  ? Colors.black
-                  : Colors.white,
+              foregroundColor:
+                  Theme.of(context).colorScheme.secondary == Colors.white
+                      ? Colors.black
+                      : Colors.white,
               backgroundColor: Theme.of(context).colorScheme.secondary,
             ),
             onPressed: () {

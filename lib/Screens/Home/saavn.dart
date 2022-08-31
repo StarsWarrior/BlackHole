@@ -28,7 +28,6 @@ import 'package:blackhole/CustomWidgets/snackbar.dart';
 import 'package:blackhole/CustomWidgets/song_tile_trailing_menu.dart';
 import 'package:blackhole/Helpers/extensions.dart';
 import 'package:blackhole/Helpers/format.dart';
-import 'package:blackhole/Helpers/mediaitem_converter.dart';
 import 'package:blackhole/Screens/Common/song_list.dart';
 import 'package:blackhole/Screens/Library/liked.dart';
 import 'package:blackhole/Screens/Player/audioplayer.dart';
@@ -813,11 +812,8 @@ class _SaavnHomePageState extends State<SaavnHomePage>
                                                       children: [
                                                         if (isHover)
                                                           LikeButton(
-                                                            mediaItem:
-                                                                MediaItemConverter
-                                                                    .mapToMediaItem(
-                                                              item,
-                                                            ),
+                                                            mediaItem: null,
+                                                            data: item,
                                                           ),
                                                         SongTileTrailingMenu(
                                                           data: item,

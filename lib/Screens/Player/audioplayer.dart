@@ -876,7 +876,7 @@ class _PlayScreenState extends State<PlayScreen> {
               children: [
                 TextButton(
                   style: TextButton.styleFrom(
-                    primary: Theme.of(context).colorScheme.secondary,
+                    foregroundColor: Theme.of(context).colorScheme.secondary,
                   ),
                   onPressed: () {
                     sleepTimer(0);
@@ -890,7 +890,7 @@ class _PlayScreenState extends State<PlayScreen> {
                 TextButton(
                   style: TextButton.styleFrom(
                     backgroundColor: Theme.of(context).colorScheme.secondary,
-                    primary:
+                    foregroundColor:
                         Theme.of(context).colorScheme.secondary == Colors.white
                             ? Colors.black
                             : Colors.white,

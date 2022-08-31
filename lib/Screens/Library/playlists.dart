@@ -268,7 +268,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                                     actions: [
                                       TextButton(
                                         style: TextButton.styleFrom(
-                                          primary:
+                                          foregroundColor:
                                               Theme.of(context).brightness ==
                                                       Brightness.dark
                                                   ? Colors.white
@@ -286,7 +286,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                                       ),
                                       TextButton(
                                         style: TextButton.styleFrom(
-                                          primary: Theme.of(context)
+                                          foregroundColor: Theme.of(context)
                                                       .colorScheme
                                                       .secondary ==
                                                   Colors.white
@@ -563,9 +563,10 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                                           actions: [
                                             TextButton(
                                               style: TextButton.styleFrom(
-                                                primary: Theme.of(context)
-                                                    .iconTheme
-                                                    .color,
+                                                foregroundColor:
+                                                    Theme.of(context)
+                                                        .iconTheme
+                                                        .color,
                                               ),
                                               onPressed: () {
                                                 Navigator.pop(context);
@@ -579,7 +580,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                                             ),
                                             TextButton(
                                               style: TextButton.styleFrom(
-                                                primary: Colors.white,
+                                                foregroundColor: Colors.white,
                                                 backgroundColor:
                                                     Theme.of(context)
                                                         .colorScheme
