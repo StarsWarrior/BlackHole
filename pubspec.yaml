@@ -4,7 +4,7 @@ description: An Open Source Music Player App.
 # Prevent accidental publishing to pub.dev.
 publish_to: "none"
 
-version: 1.15.1+32
+version: 1.15.2+33
 
 environment:
   sdk: ">=2.17.0 <3.0.0"
@@ -18,7 +18,7 @@ dependencies:
   carousel_slider: ^4.0.0
   cupertino_icons: ^1.0.5
   dart_des: ^1.0.2
-  device_info_plus: ^4.1.0
+  device_info_plus: ^4.1.2
   file_picker: ^5.0.1
   flip_card: ^0.6.0
   flutter:
@@ -40,7 +40,7 @@ dependencies:
   material_design_icons_flutter: 5.0.5955-rc.1
   on_audio_query: ^2.6.1
   package_info_plus: ^1.4.0
-  palette_generator: ^0.3.3+1
+  palette_generator: ^0.3.3+2
   path_provider: ^2.0.11
   permission_handler: ^9.2.0
   receive_sharing_intent: ^1.4.5

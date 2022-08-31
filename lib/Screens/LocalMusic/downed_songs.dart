@@ -17,6 +17,8 @@
  * Copyright (c) 2021-2022, Ankit Sangwan
  */
 
+import 'dart:developer';
+
 import 'package:blackhole/CustomWidgets/add_playlist.dart';
 import 'package:blackhole/CustomWidgets/custom_physics.dart';
 import 'package:blackhole/CustomWidgets/data_search.dart';
@@ -141,31 +143,35 @@ class _DownloadedSongsState extends State<DownloadedSongs>
     added = true;
     setState(() {});
     for (int i = 0; i < _songs.length; i++) {
-      if (_albums.containsKey(_songs[i].album)) {
-        _albums[_songs[i].album]!.add(_songs[i]);
-      } else {
-        _albums.addEntries([
-          MapEntry(_songs[i].album!, [_songs[i]])
-        ]);
-        _sortedAlbumKeysList.add(_songs[i].album!);
-      }
+      try {
+        if (_albums.containsKey(_songs[i].album ?? 'Unknown')) {
+          _albums[_songs[i].album ?? 'Unknown']!.add(_songs[i]);
+        } else {
+          _albums.addEntries([
+            MapEntry(_songs[i].album ?? 'Unknown', [_songs[i]])
+          ]);
+          _sortedAlbumKeysList.add(_songs[i].album!);
+        }
 
-      if (_artists.containsKey(_songs[i].artist)) {
-        _artists[_songs[i].artist]!.add(_songs[i]);
-      } else {
-        _artists.addEntries([
-          MapEntry(_songs[i].artist!, [_songs[i]])
-        ]);
-        _sortedArtistKeysList.add(_songs[i].artist!);
-      }
+        if (_artists.containsKey(_songs[i].artist ?? 'Unknown')) {
+          _artists[_songs[i].artist ?? 'Unknown']!.add(_songs[i]);
+        } else {
+          _artists.addEntries([
+            MapEntry(_songs[i].artist ?? 'Unknown', [_songs[i]])
+          ]);
+          _sortedArtistKeysList.add(_songs[i].artist!);
+        }
 
-      if (_genres.containsKey(_songs[i].genre)) {
-        _genres[_songs[i].genre]!.add(_songs[i]);
-      } else {
-        _genres.addEntries([
-          MapEntry(_songs[i].genre!, [_songs[i]])
-        ]);
-        _sortedGenreKeysList.add(_songs[i].genre!);
+        if (_genres.containsKey(_songs[i].genre ?? 'Unknown')) {
+          _genres[_songs[i].genre ?? 'Unknown']!.add(_songs[i]);
+        } else {
+          _genres.addEntries([
+            MapEntry(_songs[i].genre ?? 'Unknown', [_songs[i]])
+          ]);
+          _sortedGenreKeysList.add(_songs[i].genre!);
+        }
+      } catch (e) {
+        log(e.toString());
       }
     }
   }
