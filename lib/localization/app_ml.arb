@@ -323,7 +323,7 @@
   "@latest": {},
   "minAudioAlert": "ഓഡിയോയുടെ മിനിമം ദൈർഘ്യം (സെക്കൻ്റുകളിൽ)",
   "@minAudioAlert": {},
-  "confirmViewable": "പ്ലേലിസ്റ്റ്  ദൃശ്യമാക്കുക",
+  "confirmViewable": "പ്ലേലിസ്റ്റ് ദൃശ്യമാക്കുക",
   "@confirmViewable": {},
   "downFilename": "ഡൗൺലോഡ് ചെയ്യുന്നതിനുള്ള പേര് ഫോർമാറ്റ്",
   "@downFilename": {},
