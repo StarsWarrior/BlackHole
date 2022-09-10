@@ -88,5 +88,11 @@
   "bottomGrad": "নীচের পাতার রং",
   "@bottomGrad": {},
   "bottomGradSub": "নীচের পাতাগুলোয় ব্যবহৃত রং",
-  "@bottomGradSub": {}
+  "@bottomGradSub": {},
+  "cardColorSub": "অনুসন্ধান বারের রঙ, সতর্কতা ডায়ালগ, কার্ড",
+  "@cardColorSub": {},
+  "cardColor": "কার্ডের রঙ",
+  "@cardColor": {},
+  "canvasColorSub": "ব্যাকগ্রাউন্ড ক্যানভাসের রঙ",
+  "@canvasColorSub": {}
 }
