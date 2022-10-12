@@ -73,7 +73,7 @@ Y hay más por venir...
 
 Blackhole está licenciado bajo la licencia libre [GNU GPL v3.0](https://github.com/Sangwan5688/BlackHole/blob/main/LICENSE). Eso significa que puede redistribuir y/o modificar el proyecto bajo los terminos descritos en la Licencia Pública General de GNU v3.0 tal cual lo publica la Free Software Foundation.<br>
 
-Copyright © 2021 Ankit Sangwan
+Copyright © 2021 Wali Ullah Shuvo
 
 ## Compilar
 

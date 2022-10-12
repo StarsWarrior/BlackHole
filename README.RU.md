@@ -80,7 +80,7 @@
 
 ## Лицензия
 ```
-Copyright © 2021 Ankit Sangwan
+Copyright © 2021 Wali Ullah Shuvo
 
 BlackHole is free software licensed under GPL v3.0.
 You can redistribute and/or modify it under the terms of the GNU General Public License as published by

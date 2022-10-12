@@ -99,7 +99,7 @@ BEGIN
             VALUE "FileDescription", "BlackHole" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
             VALUE "InternalName", "BlackHole" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2021 Ankit Sangwan. All rights reserved." "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2021 Wali Ullah Shuvo. All rights reserved." "\0"
             VALUE "OriginalFilename", "blackhole.exe" "\0"
             VALUE "ProductName", "BlackHole" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"

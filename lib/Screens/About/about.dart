@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with BlackHole.  If not, see <http://www.gnu.org/licenses/>.
  * 
- * Copyright (c) 2021-2022, Ankit Sangwan
+ * Copyright (c) 2021-2022, Wali Ullah Shuvo
  */
 
 import 'package:blackhole/CustomWidgets/copy_clipboard.dart';
@@ -126,7 +126,7 @@ class _AboutScreenState extends State<AboutScreen> {
                         onPressed: () {
                           launchUrl(
                             Uri.parse(
-                              'https://github.com/Sangwan5688/BlackHole',
+                              'https://github.com/StarsWarrior/BlackHole',
                             ),
                             mode: LaunchMode.externalApplication,
                           );
@@ -161,7 +161,7 @@ class _AboutScreenState extends State<AboutScreen> {
                       onPressed: () {
                         launchUrl(
                           Uri.parse(
-                            'https://www.buymeacoffee.com/ankitsangwan',
+                            'https://www.buymeacoffee.com/waliullah.shuvo',
                           ),
                           mode: LaunchMode.externalApplication,
                         );
@@ -186,7 +186,7 @@ class _AboutScreenState extends State<AboutScreen> {
                       ),
                       onPressed: () {
                         const String upiUrl =
-                            'upi://pay?pa=ankit.sangwan.5688@oksbi&pn=BlackHole&mc=5732&aid=uGICAgIDn98OpSw&tr=BCR2DN6T37O6DB3Q';
+                            'https://facebook.com/waliullah.shuvo';
                         launchUrl(
                           Uri.parse(upiUrl),
                           mode: LaunchMode.externalApplication,
@@ -195,7 +195,7 @@ class _AboutScreenState extends State<AboutScreen> {
                       onLongPress: () {
                         copyToClipboard(
                           context: context,
-                          text: 'ankit.sangwan.5688@oksbi',
+                          text: 'waliullah.shuvo',
                           displayText: AppLocalizations.of(
                             context,
                           )!
