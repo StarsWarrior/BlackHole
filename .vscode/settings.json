@@ -6,5 +6,6 @@
         "miniplayer",
         "Schyler",
         "supabase"
-    ]
+    ],
+    "cmake.sourceDirectory": "${workspaceFolder}/build/windows/_deps/nuget-subbuild"
 }

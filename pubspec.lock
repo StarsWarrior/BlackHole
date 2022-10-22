@@ -951,7 +951,7 @@ packages:
     source: hosted
     version: "2.0.13"
   url_launcher_windows:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: url_launcher_windows
       url: "https://pub.dartlang.org"

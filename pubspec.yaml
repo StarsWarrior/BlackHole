@@ -49,6 +49,7 @@ dependencies:
   sliding_up_panel: ^2.0.0+1
   supabase: ^0.2.15
   url_launcher: ^6.1.5
+  url_launcher_windows: ^3.0.1
   uuid: ^3.0.6
   youtube_explode_dart: 1.10.6
 
