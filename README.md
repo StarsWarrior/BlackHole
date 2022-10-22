@@ -4,13 +4,13 @@
 
 An Open-Source Music Player App for all your needs!
 
-[![made-with-flutter](https://img.shields.io/badge/Made%20with-Flutter-1f425f.svg)](https://flutter.dev/) ![Release](https://img.shields.io/github/v/release/Sangwan5688/BlackHole) ![Downloads](https://img.shields.io/github/downloads/Sangwan5688/BlackHole/total)
-[![Build](https://github.com/Sangwan5688/BlackHole/actions/workflows/flutter.yml/badge.svg)](https://github.com/Sangwan5688/BlackHole/actions/workflows/flutter.yml)
+[![made-with-flutter](https://img.shields.io/badge/Made%20with-Flutter-1f425f.svg)](https://flutter.dev/) ![Release](https://img.shields.io/github/v/release/StarsWarrior/BlackHole) ![Downloads](https://img.shields.io/github/downloads/StarsWarrior/BlackHole/total)
+[![Build](https://github.com/StarsWarrior/BlackHole/actions/workflows/flutter.yml/badge.svg)](https://github.com/StarsWarrior/BlackHole/actions/workflows/flutter.yml)
 [![Translation-Status](https://hosted.weblate.org/widgets/blackhole/-/translations/svg-badge.svg)](https://hosted.weblate.org/engage/blackhole/)
 
 ### Don't forget to :star: the repo
 
-[![GitHub stars](https://img.shields.io/github/stars/Sangwan5688/BlackHole.svg?style=social&label=Star)](https://github.com//Sangwan5688/BlackHole) ![GitHub forks](https://img.shields.io/github/forks/Sangwan5688/BlackHole.svg?style=social&label=Forks) ![GitHub followers](https://img.shields.io/github/followers/Sangwan5688.svg?style=social&label=Follow)
+[![GitHub stars](https://img.shields.io/github/stars/StarsWarrior/BlackHole.svg?style=social&label=Star)](https://github.com//StarsWarrior/BlackHole) ![GitHub forks](https://img.shields.io/github/forks/StarsWarrior/BlackHole.svg?style=social&label=Forks) ![GitHub followers](https://img.shields.io/github/followers/StarsWarrior.svg?style=social&label=Follow)
 
 ## Download
 
@@ -80,7 +80,7 @@ Check it yourself :)
 
 ## Screenshots
 
-<img src="https://github.com/Sangwan5688/BlackHole/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/1.png?raw=true" width="32%"> <img src="https://github.com/Sangwan5688/BlackHole/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/2.png?raw=true" width="32%"> <img src="https://github.com/Sangwan5688/BlackHole/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/3.png?raw=true" width="32%"> <img src="https://github.com/Sangwan5688/BlackHole/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/4.png?raw=true" width="32%"> <img src="https://github.com/Sangwan5688/BlackHole/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/5.png?raw=true" width="32%"> <img src="https://github.com/Sangwan5688/BlackHole/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/6.png?raw=true" width="32%">
+<img src="https://github.com/StarsWarrior/BlackHole/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/1.png?raw=true" width="32%"> <img src="https://github.com/StarsWarrior/BlackHole/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/2.png?raw=true" width="32%"> <img src="https://github.com/StarsWarrior/BlackHole/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/3.png?raw=true" width="32%"> <img src="https://github.com/StarsWarrior/BlackHole/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/4.png?raw=true" width="32%"> <img src="https://github.com/StarsWarrior/BlackHole/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/5.png?raw=true" width="32%"> <img src="https://github.com/StarsWarrior/BlackHole/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/6.png?raw=true" width="32%">
 
 ## License
 
@@ -109,7 +109,7 @@ how to obtain the original software, should clearly STATE ALL CHANGES made and s
 Use of this software under any "non-free" license is NOT permitted.
 ```
 
-See the [GNU General Public License](https://github.com/Sangwan5688/BlackHole/blob/main/LICENSE) for more details.
+See the [GNU General Public License](https://github.com/StarsWarrior/BlackHole/blob/main/LICENSE) for more details.
 
 ## Building from Source
 
@@ -117,7 +117,7 @@ See the [GNU General Public License](https://github.com/Sangwan5688/BlackHole/bl
 2. Fetch latest source code from master branch.
 
 ```
-git clone https://github.com/Sangwan5688/BlackHole.git
+git clone https://github.com/StarsWarrior/BlackHole.git
 ```
 
 3. Run the app with Android Studio or VS Code. Or the command line:
@@ -129,11 +129,11 @@ flutter run
 
 ## Contribute
 
-Contributions are welcome. Please read our [contributing guidelines](https://github.com/Sangwan5688/BlackHole/blob/main/CONTRIBUTING.md) before contributing.
+Contributions are welcome. Please read our [contributing guidelines](https://github.com/StarsWarrior/BlackHole/blob/main/CONTRIBUTING.md) before contributing.
 
 ## Facing any Issue?
 
-Have a look at some [common Issues](https://github.com/Sangwan5688/BlackHole/wiki/Common-Issues) that you might face. If your problem is not there, feel free to open an Issue :)
+Have a look at some [common Issues](https://github.com/StarsWarrior/BlackHole/wiki/Common-Issues) that you might face. If your problem is not there, feel free to open an Issue :)
 
 ## Want to test Beta Versions? Need help??
 
@@ -145,4 +145,4 @@ You can join our [Telegram Channel](https://t.me/blackhole_official) or [Telegra
 
 ## What's New
 
-To read full changelog visit the [wiki page](https://github.com/Sangwan5688/BlackHole/wiki/Changelog)
+To read full changelog visit the [wiki page](https://github.com/StarsWarrior/BlackHole/wiki/Changelog)
