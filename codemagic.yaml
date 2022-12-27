@@ -1,1 +1,79 @@
-
+workflows:
+    ios-workflow:
+      name: BlackHole
+      environment:
+        groups:
+        # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
+          - app_store_credentials # <-- (APP_STORE_CONNECT_ISSUER_ID, APP_STORE_CONNECT_KEY_IDENTIFIER, APP_STORE_CONNECT_PRIVATE_KEY)
+            # APP_STORE_CONNECT_ISSUER_ID <-- Put your App Store Connect Issuer Id here 
+            # APP_STORE_CONNECT_KEY_IDENTIFIER <-- Put your App Store Connect Key Identifier here 
+            # APP_STORE_CONNECT_PRIVATE_KEY <-- Put your App Store Connect Private Key here
+            # See the following link for more details - https://docs.codemagic.io/code-signing-yaml/signing-ios/
+            # https://appstoreconnect.apple.com/access/api
+          - certificate_credentials # <-- (CERTIFICATE_PRIVATE_KEY - Put your Certificate Private Key here)
+          - other
+        vars:
+          XCODE_WORKSPACE: "swiftly.xcworkspace" # <-- Put the name of your workspace here.
+          XCODE_SCHEME: "swiftly" # <-- Put the name of your scheme here.
+          BUNDLE_ID: "io.codemagic.swiftly" # <-- Put your Bundle Id here.
+          APP_STORE_APP_ID: 1555555551 # <-- Put the app id number here. This is found in App Store Connect > App > General > App Information
+        xcode: latest
+        cocoapods: default
+      triggering:
+        events:
+          - push
+          - tag
+          - pull_request
+        branch_patterns:
+          - pattern: 'develop'
+            include: true
+            source: true
+      scripts:
+        - name: Set up keychain to be used for codesigning using Codemagic CLI 'keychain' command
+          script: |
+            keychain initialize
+        - name: Fetch signing files
+          script: |
+            app-store-connect fetch-signing-files $BUNDLE_ID --type IOS_APP_STORE --create
+        - name: Use system default keychain
+          script: |
+            keychain add-certificates
+        - name: Set up code signing settings on Xcode project
+          script: |
+            xcode-project use-profiles
+        - name: Increment build number
+          script: |
+            #!/bin/sh
+            set -e
+            set -x
+            cd $FCI_BUILD_DIR
+            # agvtool new-version -all $(($BUILD_NUMBER + 1))
+            agvtool new-version -all $(($(app-store-connect get-latest-testflight-build-number "$APP_STORE_APP_ID") + 1))
+        - name: Build ipa for distribution
+          script: |
+            xcode-project build-ipa --workspace "$XCODE_WORKSPACE" --scheme "$XCODE_SCHEME"
+      artifacts:
+        - build/ios/ipa/*.ipa
+        - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
+      publishing:
+        app_store_connect:   # https://docs.codemagic.io/publishing-yaml/distribution              
+            api_key: $APP_STORE_CONNECT_PRIVATE_KEY         # Contents of the API key, can also reference environment variable such as $APP_STORE_CONNECT_PRIVATE_KEY
+            key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER       # Alphanumeric value that identifies the API key, can also reference environment variable such as $APP_STORE_CONNECT_KEY_IDENTIFIER
+            issuer_id: $APP_STORE_CONNECT_ISSUER_ID         # Alphanumeric value that identifies who created the API key, can also reference environment variable such as $APP_STORE_CONNECT_ISSUER_ID
+            submit_to_testflight: false                     # Optional boolean, defaults to false. Whether or not to submit the uploaded build to TestFlight beta review. Required for distributing to beta groups. Note: This action is performed during post-processing.
+            # beta_groups:                                  # Specify the names of beta tester groups that will get access to the build once it has passed beta review. 
+            #       - group name 1
+            #       - group name 2
+        email:
+            recipients:
+              - waliullahshuvo6@gmail.com
+              - waliullahshuvo5@gmail.com
+            notify:
+              success: true
+              failure: true
+        slack:
+            channel: '#builds'
+            notify_on_build_start: true    # To receive a notification when a build starts
+            notify:
+              success: false               # To not receive a notification when a build succeeds
+              failure: false               # To not receive a notification when a build fails
